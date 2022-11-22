@@ -28,7 +28,7 @@ const ClientSearch = () => {
     const { service, setService } = useState("");
     const { city, setCity } = useState("");
     const SerData = [
-        { key: '0', value: 'قاعات' },
+        { key: '00', value: 'قاعات' },
         { key: '1', value: 'تصوير' },
         { key: '2', value: 'فساتين' },
         { key: '3', value: 'صالون تلبيس عرائس ' },
