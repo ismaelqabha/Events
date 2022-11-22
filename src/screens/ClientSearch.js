@@ -10,7 +10,7 @@ const ClientSearch = () => {
     const { text, setText } = React.useState('Empty');
 
     const changeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
+        const currentDate = selectedDate || date; 
         setShow(Platform.OS === 'android');
         setDate(currentDate);
 
