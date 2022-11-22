@@ -5,7 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ClientSearch = () => {
     const { date, setDate } = React.useState(new date());
-    const { mode, setMode } = React.useState('date');
+    const { modde, setMode } = React.useState('date');
     const { show, setShow } = React.useState(false);
     const { text, setText } = React.useState('Empty');
 
