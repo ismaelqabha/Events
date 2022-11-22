@@ -16,7 +16,7 @@ const ClientSearch = () => {
 
         let tempDate = new date(currentDate);
         let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
-
+    
         setDate(fDate);
     }
 
