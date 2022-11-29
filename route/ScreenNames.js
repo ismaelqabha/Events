@@ -8,5 +8,7 @@ export const ScreenNames ={
     ClientSearch: 'ClientSearch',
     ClientServiceDetail: 'ClientServiceDetail',
     ClientHomeAds: 'ClientHomeAds',
+    ServiceDescr: 'ServiceDescr',
+    VideoPlayer: 'VideoPlayer',
 
 };

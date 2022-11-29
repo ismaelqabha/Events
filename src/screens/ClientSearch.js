@@ -1,32 +1,14 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Pressable, Text, Platform } from 'react-native';
+import { View, StyleSheet, TextInput, Pressable, Text, Platform, Button } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from 'react-native-date-picker';
 
 const ClientSearch = () => {
-    const { date, setDate } = React.useState(new date());
-    const { modde, setMode } = React.useState('date');
-    const { show, setShow } = React.useState(false);
-    const { text, setText } = React.useState('Empty');
 
-    const changeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date; 
-        setShow(Platform.OS === 'android');
-        setDate(currentDate);
+    const [service, setService] = useState("");
+    const [city, setCity] = useState("");
 
-        let tempDate = new date(currentDate);
-        let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
-    
-        setDate(fDate);
-    }
 
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    }
-
-    const { service, setService } = useState("");
-    const { city, setCity } = useState("");
     const SerData = [
         { key: '001', value: 'قاعات' },
         { key: '1', value: 'تصوير' },
@@ -47,17 +29,29 @@ const ClientSearch = () => {
         { key: '6', value: 'برطعة' },
 
     ];
+    const [date, setDate] = useState(new Date())
+    const [open, setOpen] = useState(false)
     return (
         <View style={styles.container}>
             <Text style={styles.text}> الرجاء اختيار تفاصيل البحث المطلوبة</Text>
             <View style={styles.textIn}>
-                <Pressable
-                    style={styles.btnDate}
-                    onPress={() => showMode('date')}
-                >
-                    <Text style={styles.txtُEnter}>اختر التاريخ</Text>
-                </Pressable>
-                <Text style={styles.txtُEnter}>{text}</Text>
+               
+
+                <Button title="أختر التاريخ" onPress={() => setOpen(true)} style={styles.date} />
+                <DatePicker
+                    modal
+                    open={open}
+                    date={date}
+                    onConfirm={(date) => {
+                        setOpen(false)
+                        setDate(date)
+                    }}
+                    onCancel={() => {
+                        setOpen(false)
+                    }}
+                    mode={'date'}
+                />
+                
                 <SelectList
                     data={SerData}
                     setSelected={setCity}
@@ -77,15 +71,6 @@ const ClientSearch = () => {
 
                 />
             </View>
-            {show && (
-                <DateTimePicker
-                    testID='dateTimePicker'
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    display={'default'}
-                    onChange={onchange}
-                />)}
             <Pressable style={styles.btnEnter} >
                 <Text style={styles.txtُEnter}>بحث</Text>
             </Pressable>
@@ -150,7 +135,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
-        color: 'white',
+        color: 'black',
     },
     btnEnter: {
         width: 200,
@@ -162,15 +147,19 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         backgroundColor: '#1e90ff'
     },
-    btnDate:{
-        width: 80,
+    btnDate: {
+        width: 200,
         height: 50,
-        borderRadius: 20,
-        marginTop: 100,
+        borderRadius: 15,
+        marginTop: 50,
         marginLeft: 90,
         justifyContent: 'center',
         textAlign: 'center',
-        backgroundColor: 'white'
+        borderWidth: 1,
+        borderColor: '#1e90ff',
+    },
+    date:{
+       
     },
 })
 

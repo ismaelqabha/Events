@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, Pressable,TouchableOpacity } from 'react-native';
-import { ScreenNames } from '../../route/ScreenNames';
+
 import { useNavigation } from '@react-navigation/native';
 
 const HomeCards = (props) => {

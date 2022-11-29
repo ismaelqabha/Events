@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Picker, onOpen } from 'react-native-actions-sheet-picker';
 import ActionSheet from 'react-native-actions-sheet';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
 
 export default function App() {
@@ -34,6 +35,7 @@ export default function App() {
                 onPress = {showActionSheet}
             >
                 <Text style={styles.text}>بحث الخدمات</Text>
+               
             </TouchableOpacity>
             
             <ActionSheet

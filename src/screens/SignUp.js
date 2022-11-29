@@ -56,7 +56,6 @@ const SignUp = (props) => {
                     iconRight
                     checkedIcon='check_circle'
                     uncheckedIcon='circle-o'
-                // onPress={}
                 />
             </View>
 
