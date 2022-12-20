@@ -9,7 +9,7 @@ const SignIn = (props) => {
             {/* <Text onPress={() => props.navigation.navigate(ScreenNames.SignUp)}>In</Text> */}
             {/* <Text onPress={()=> props.navigation.navigate('Tabs' , {screen:ScreenNames.ClientInfo}) }>In</Text> */}
             <Image
-                source={require('../../assets/loginlogo.png')}
+                source={require('../../src/assets/signIn.png')}
                 style={styles.image}
             />
 

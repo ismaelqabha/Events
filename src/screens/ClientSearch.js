@@ -1,13 +1,37 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Pressable, Text, Platform, Button } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, TextInput, Pressable, Text, Image, Button } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import DatePicker from 'react-native-date-picker';
+import { ScreenNames } from '../../route/ScreenNames';
+import SearchContext from '../../store/SearchContext';
+import { BackgroundImage } from 'react-native-elements/dist/config';
+import { servicesCategory } from '../resources/data';
 
-const ClientSearch = () => {
 
-    const [service, setService] = useState("");
-    const [city, setCity] = useState("");
 
+const ClientSearch = (props) => {
+   
+    const {  setCity, setService,  city, Service } = useContext(SearchContext);
+   
+    const onPressHandler = () => {
+        props.navigation.goBack();
+    }
+
+    const onBtnPress = () => {
+        props.navigation.navigate(ScreenNames.ClientResult, { data: { ...props } });
+        console.log(city, Service);
+    }
+    const query = () => {
+        return servicesCategory || [];
+    }
+    const renderReigon = () => {
+        const data = query();
+
+        const eventName = data.map(Ename => {
+            return Ename.titleCategory;
+        });
+        return eventName;
+    };
 
     const SerData = [
         { key: '001', value: 'قاعات' },
@@ -17,149 +41,127 @@ const ClientSearch = () => {
         { key: '4', value: 'بدلات عرسان' },
         { key: '5', value: 'مطربين' },
         { key: '6', value: 'Dj' },
-
     ];
     const CitData = [
-        { key: '0', value: 'ام الفحم' },
-        { key: '1', value: 'الطيبة' },
-        { key: '2', value: 'الناصرة' },
-        { key: '3', value: 'حيفا ' },
-        { key: '4', value: 'عكا' },
-        { key: '5', value: 'عرعرة' },
-        { key: '6', value: 'برطعة' },
-
+        { key: '2', value: 'الجليل' },
+        { key: '3', value: 'النقب ' },
+        { key: '5', value: 'الساحل' },
+        { key: '0', value: 'المثلث الشمالي' },
+        { key: '1', value: 'المثلث الجنوبي' },
+        { key: '4', value: 'الضفة الغربية' },   
     ];
-    const [date, setDate] = useState(new Date())
-    const [open, setOpen] = useState(false)
-    return (
-        <View style={styles.container}>
-            <Text style={styles.text}> الرجاء اختيار تفاصيل البحث المطلوبة</Text>
-            <View style={styles.textIn}>
-               
 
-                <Button title="أختر التاريخ" onPress={() => setOpen(true)} style={styles.date} />
-                <DatePicker
-                    modal
-                    open={open}
-                    date={date}
-                    onConfirm={(date) => {
-                        setOpen(false)
-                        setDate(date)
-                    }}
-                    onCancel={() => {
-                        setOpen(false)
-                    }}
-                    mode={'date'}
-                />
-                
+    return (
+        <BackgroundImage style={styles.container} source={require('../assets/Bground.png')}>
+            <View style={styles.headerImg}>
+                <Pressable onPress={onBtnPress}>
+                    <Image
+                        source={require('../assets/done.png')}
+                        style={styles.img}
+                    />
+                </Pressable>
+                <Pressable onPress={onPressHandler}
+                >
+                    <Image
+                        source={require('../assets/back.png')}
+                        style={styles.img}
+                    />
+                </Pressable>
+            </View>
+           
+            <View style={styles.textIn}>
                 <SelectList
                     data={SerData}
-                    setSelected={setCity}
+                    setSelected={(val => {
+                        let serObj = SerData.find(Service => Service.key == val);
+                        setService(serObj.value)
+                        console.log('list: ', serObj.value);
+
+                    })}
                     placeholder='اختر الخدمة'
                     boxStyles={styles.dropdown}
                     inputStyles={styles.droptext}
                     dropdownTextStyles={styles.dropstyle}
-
                 />
                 <SelectList
                     data={CitData}
-                    setSelected={setService}
-                    placeholder='اختر المدينة'
+                    setSelected={(val => {
+                        let cityObj = CitData.find(city => city.key == val);
+                        console.log('list: ', cityObj.value);
+                        setCity(cityObj.value)
+                    })}
+                    placeholder='أختر المنطقة'
                     boxStyles={styles.dropdown}
                     inputStyles={styles.droptext}
                     dropdownTextStyles={styles.dropstyle}
-
                 />
+            
             </View>
-            <Pressable style={styles.btnEnter} >
-                <Text style={styles.txtُEnter}>بحث</Text>
-            </Pressable>
-        </View>
+           
+        </BackgroundImage>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-
+        backgroundColor: '#ffe4e1',
     },
     text: {
         fontSize: 20,
         textAlign: 'center',
         fontWeight: 'bold',
-        color: '#1e90ff',
-        marginTop: 20,
+        color: 'black',
+
     },
-    input: {
-        alignContent: 'center',
+    headerText: {
+        fontSize: 40,
         textAlign: 'center',
-        height: 40,
-        width: 300,
-        fontSize: 17,
-        borderRadius: 15,
         fontWeight: 'bold',
-        borderWidth: 1,
-        borderColor: '#1e90ff',
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.3,
-        marginTop: 10,
-        Color: '#1e90ff',
+        color: '#87ceeb',
+        marginTop: 20,
     },
     textIn: {
         alignItems: 'center',
-        marginTop: 50,
-
+        marginVertical: 90,
     },
     dropdown: {
         height: 50,
-        width: 300,
+        width: 350,
         fontSize: 17,
         borderRadius: 15,
         fontWeight: 'bold',
-        borderWidth: 1,
-        borderColor: '#1e90ff',
         shadowOffset: { width: 1, height: 1 },
         shadowOpacity: 0.3,
         marginTop: 10,
+        backgroundColor: '#87ceeb',
     },
     droptext: {
         fontSize: 15,
         fontWeight: 'bold',
-        Color: '#1e90ff',
+        color: 'black'
 
     },
     dropstyle: {
-        textAlign: 'center'
-    },
-    txtُEnter: {
-        fontSize: 20,
-        fontWeight: 'bold',
         textAlign: 'center',
         color: 'black',
+        fontWeight: 'bold',
+        fontSize: 15,
     },
-    btnEnter: {
-        width: 200,
-        height: 40,
-        borderRadius: 20,
-        marginTop: 100,
-        marginLeft: 90,
+   
+    headerImg: {
+        flexDirection: 'row-reverse',
         justifyContent: 'center',
-        textAlign: 'center',
-        backgroundColor: '#1e90ff'
-    },
-    btnDate: {
-        width: 200,
         height: 50,
-        borderRadius: 15,
-        marginTop: 50,
-        marginLeft: 90,
-        justifyContent: 'center',
-        textAlign: 'center',
-        borderWidth: 1,
-        borderColor: '#1e90ff',
+        backgroundColor: '#87ceeb',
     },
-    date:{
-       
+    img: {
+        width: 40,
+        height: 40,
+        marginLeft: 130,
+        marginRight:130,
+        marginTop:5,
+        
     },
 })
 

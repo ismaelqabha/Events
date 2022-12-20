@@ -1,40 +1,45 @@
 import React from 'react';
-import { View, StyleSheet, Text,ScrollView,Image,TouchableOpacity  } from 'react-native';
+import { View, StyleSheet, Text,Image,TouchableOpacity  } from 'react-native';
 import {  Card, Button, Icon } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 const SearchResCard = (props) => {
     const navigation = useNavigation();
+    const { src, subTitle, title, page } = props;
+    
+    const onCaardPress = () => {
+        navigation.navigate(props.linkPage, { data: { ...props } })
+    }
+
+   
     return (
         <View style={styles.container}>
-        <Card>
+        <Card style={styles.card}>
             <Card.Title>{props.title}</Card.Title>
             <Card.Divider />
-            <TouchableOpacity onPress={() => navigation.navigate(props.page)}>
+            <TouchableOpacity onPress={onCaardPress}>
             <Card.Image
                 style={{ padding: 0 }}
-                source={props.src}
+                source={props.img}
                     // }
             />
             <Text style={{ marginBottom: 10, fontSize: 18 }}>
-               {props.desc}
+               {props.subTitle}
             </Text>
             </TouchableOpacity>
             <Button
                 icon={
-                    
-                    <Icon
-                        name="sync"
-                        color="#ffffff"
-                        iconStyle={{ marginRight: 10 }}
-                    />
+                    <Image
+                    source={require('../../src/assets/mobile-order.png')}
+                    style={styles.image}
+                />
                 }
                 buttonStyle={{
                     borderRadius: 0,
                     marginLeft: 0,
                     marginRight: 0,
                     marginBottom: 0,
+                    
                 }}
                 title="احجز الان"
             />
@@ -46,6 +51,13 @@ const SearchResCard = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    image:{
+        width: 20,
+        height: 20,
+    },
+    card:{
+        borderRadius: 15,
     },
 })
 

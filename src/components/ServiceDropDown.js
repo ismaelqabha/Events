@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View,Image } from 'react-native';
 import { Picker, onOpen } from 'react-native-actions-sheet-picker';
 import ActionSheet from 'react-native-actions-sheet';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
@@ -34,7 +34,11 @@ export default function App() {
                 style={styles.button}
                 onPress = {showActionSheet}
             >
-                <Text style={styles.text}>بحث الخدمات</Text>
+                <Text style={styles.text}>بحث الخدمات </Text>
+                <Image
+                        source={require('../assets/search.png')}
+                        style={styles.img}
+                    />
                
             </TouchableOpacity>
             
@@ -59,19 +63,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     button: {
-        backgroundColor: '#f0f8ff',
+        flexDirection: 'row-reverse',
+        justifyContent:'center',
+        backgroundColor: '#fff0f5',
         padding: 10,
-        borderRadius: 20,
-        marginTop: 10,
-        marginLeft: 40,
-        width: 150,
-        height: 40,
-        borderWidth:1
+        borderRadius: 25,
+        marginTop: 30,
+        width: 350,
+        height: 60,
+       
+        borderColor: 'black'
     },
     text:{
-        color:'#1e90ff',
-        textAlign:'right',
-        fontWeight: 'bold'
+        color:'black',
+        textAlign:'center',
+        fontWeight: '900',
+        marginTop: 5,
+        fontSize: 15,
     },
     textS:{
         color:'#1e90ff',
@@ -83,5 +91,14 @@ const styles = StyleSheet.create({
     },
     select:{
         backgroundColor: 'red'
+    },
+    img: {
+        width: 50,
+        height: 50,
+       marginBottom:30,
+        marginRight:200
+        
+       
+
     },
 });

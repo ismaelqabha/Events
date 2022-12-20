@@ -10,5 +10,6 @@ export const ScreenNames ={
     ClientHomeAds: 'ClientHomeAds',
     ServiceDescr: 'ServiceDescr',
     VideoPlayer: 'VideoPlayer',
+    ClientEvents: 'ClientEvents',
 
 };

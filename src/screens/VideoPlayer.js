@@ -16,7 +16,7 @@ const VideoPlayer = () => {
                     style={styles.backgroundVideo}
                 />
            
-            <Text>VideoPlayer</Text>
+            <Text>VideoPlayer</Text>  
         </View>
     );
 }

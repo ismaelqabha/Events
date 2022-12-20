@@ -8,7 +8,7 @@ import ClientInfo from "../src/screens/ClientInfo";
 import ClientSearch from "../src/screens/ClientSearch";
 import ClientResult from "../src/screens/ClientResult";
 import ServiceDescr from "../src/screens/ServiceDescr";
-import {  Image } from 'react-native';
+import ClientEvents from "../src/screens/ClientEvents";
 import { ScreenNames } from "./ScreenNames";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
@@ -20,7 +20,7 @@ const DrawerNavigator = () => {
     return (
         <Drawer.Navigator
             drawerType="front"
-            drawerPoistion="left"
+            drawerPoistion="Right"
             edgewidth={100}
             overlayColor='#ffffff'
             drawerStyle={{
@@ -35,7 +35,7 @@ const DrawerNavigator = () => {
                 headerStyle: {
                     backgroundColor: '#fffaf0'
                 },
-                headerTintColor: '#1e90ff',
+                headerTintColor: 'black',
                 headerTitleStyle: {
                     fontSize: 25,
                     fontWeight: 'bold',
@@ -46,32 +46,27 @@ const DrawerNavigator = () => {
             <Drawer.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds}
                 options={{
                     title: 'الرئيسيه',
-                    drawerIcon: () => (
-                        <FontAwesome5
-                            name='home'
-                            style={{ fontSize: 20, color: '#1e90ff' }}
-                        />
-                    )
+                    // drawerIcon: () => (
+                    //     <FontAwesome5
+                    //         name='home'
+                    //         style={{ fontSize: 20, color: '#1e90ff' }}
+                    //     />
+                    // )
                 }}
-
             />
-            <Drawer.Screen name={ScreenNames.ClientSearch} component={ClientSearch}
+            <Drawer.Screen name={ScreenNames.ClientEvents} component={ClientEvents}
                 options={{
-                    title: 'بحث الخدمات',
-                    drawerIcon: () => (
-                        
-                        <FontAwesome5
-                            name='search'
-                            style={{ fontSize: 20, color: '#1e90ff' }}
-                        />
-                    )
-                }} />
+                    title: 'ادارة الاحداث',
+                }}
+            />
+
+            <Drawer.Screen name={ScreenNames.ClientInfo} component={ClientInfo}/>
+            <Drawer.Screen name={ScreenNames.ClientSearch} component={ClientSearch} />
+            <Drawer.Screen name={ScreenNames.ClientBook} component={ClientBook} />
             <Drawer.Screen name={ScreenNames.ServiceDescr} component={ServiceDescr} />
-            <Drawer.Screen name={ScreenNames.ClientResult} component={ClientResult} />
             <Drawer.Screen name={ScreenNames.SignUp} component={SignUp} />
-            {/* <Drawer.Screen name={ScreenNames.ClientBook} component={ClientBook} /> */}
+            <Drawer.Screen name={ScreenNames.ClientResult} component={ClientResult} />
             <Drawer.Screen name={ScreenNames.SignIn} component={SignIn} />
-            <Drawer.Screen name={ScreenNames.ClientInfo} component={ClientInfo} />
 
         </Drawer.Navigator>
     )

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, Pressable } from 'react-native';
+import { View, StyleSheet, Text, TextInput, Pressable,Image } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import { CheckBox, Icon } from "react-native-elements";
 import { ScreenNames } from '../../route/ScreenNames';
@@ -16,6 +16,10 @@ const SignUp = (props) => {
 
     return (
         <View>
+            <Image
+                source={require('../../src/assets/signIn.png')}
+                style={styles.image1}
+            />
             <Text style={styles.text}>مرحبا بك ونشكرك على التسجيل في التطبيق</Text>
             <View style={styles.textIn}>
                 <TextInput
@@ -81,7 +85,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         color: '#1e90ff',
-        marginTop: 20,
+       
 
     },
     input: {
@@ -102,7 +106,7 @@ const styles = StyleSheet.create({
     txt: {
         color: 'black',
         fontSize: 15,
-        marginTop: 10,
+        //marginTop: 10,
         paddingRight: 45,
     },
 
@@ -137,6 +141,12 @@ const styles = StyleSheet.create({
     },
     check: {
         width: '70%',
+    },
+    image1:{
+       width: 100,
+       height: 100,
+       marginLeft: 125,
+       marginTop: 20,
     },
 
 })
