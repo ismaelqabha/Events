@@ -1,8 +1,38 @@
-import React from 'react';
+import React,{useContext,useState} from 'react';
 import { View, StyleSheet, Text, Image, TextInput, Pressable, ImageBackground } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
+import SearchContext from '../../store/SearchContext';
 
 const SignIn = (props) => {
+    const { userId, setuserId,UserState, setUserState } = useContext(SearchContext);
+    const [userName, setuserName] = useState()
+    const [Password, setPassword] = useState()
+
+    const CheckUser = () => {
+        const isUser = UserState.find(item => item.User_name === userName && item.Password === Password)
+        return !!isUser;
+    }
+    const onEnterPress = () => {
+        if(!CheckUser()){
+            renderUserId();
+            props.navigation.navigate(ScreenNames.ClientHomeAds);
+        }
+        console.log('LogIn',userId);
+    }
+    const query = () => {
+        return UserState.filter(use => {
+            return use.Password === Password;
+        })
+    }
+
+    const renderUserId = () => { 
+        const data = query();
+        const UserArray = data.map(id => {
+            return setuserId(id.USER_ID)
+        });
+        return UserArray;
+    };
+
     return (
         <ImageBackground style={styles.container} source={require('../../assets/bg.png')}>
             {/* <View style={styles.container}> */}
@@ -19,22 +49,24 @@ const SignIn = (props) => {
                     style={styles.input}
                     keyboardType="email-address"
                     placeholder='البريد الالكتروني'
+                    onChangeText={(value) => setuserName(value)}
                 />
                 <TextInput
                     style={styles.input}
                     keyboardType="visible-password"
                     placeholder='كلمة المرور'
+                    onChangeText={(value) => setPassword(value)}
                 />
             </View>
             <Pressable>
                 <Text style={styles.txt}>نسيت كلمةالمرور?</Text>
             </Pressable>
 
-            <Pressable style={styles.btnEnter}>
+            <Pressable style={styles.btnEnter} onPress={() => onEnterPress()}>
                 <Text style={styles.txtُEnter}>دخول</Text>
             </Pressable>
 
-            {/* </View> */}
+            
         </ImageBackground>
     );
 }

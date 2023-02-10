@@ -1,68 +1,55 @@
-import React,{useContext} from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, Text, Pressable, ScrollView, Image } from 'react-native';
-import { ScreenNames } from '../../route/ScreenNames';
 import BookingCard from '../../src/components/BookingCard';
-import { bookingList } from '../resources/data';
-import DataNotExist from '../components/DataNotExist';
+import { Request } from '../resources/data';
+import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 
 
 const ClientBook = (props) => {
-    const {eventId} = props;
-    const {evId,setevId} = useContext(SearchContext);
+   
+    const { AddResToEventFile } = useContext(SearchContext);
     const { data } = props?.route.params;
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    //setevId(eventId);
-    
-    const query = () => {
-        
-        console.log(evId);
-        if (!evId) {
-            return BookingCard || [];
-        }
 
-        return bookingList.filter(id => {
-            return id.eventId == evId ;
+    const query = () => {
+        if (!data.EventId) {
+            return AddResToEventFile || [];
+        }
+        return AddResToEventFile.filter(event => {
+            return event.ReqEventId == data.EventId;
         })
     }
-
     const renderCard = () => {
-       
         const data = query();
-
-        if (!data?.length) {
-            //TODO : return no data component
-            return (
-                <DataNotExist />
-            );
-        }
-
         const cardsArray = data.map(card => {
             return <BookingCard  {...card} />;
         }); return cardsArray;
     };
+    // console.log("New Files " ,AddResToEventFile )
+    // console.log("New Files " ,query().length )
+    // console.log("all " ,AddResToEventFile.map(event=> event.ReqEventId) , "id: " ,  data.EventId)
+
     return (
         <View style={styles.container}>
-            <View style={styles.headerImg}>
-                <Pressable onPress={() => props.navigation.navigate(ScreenNames.ClientSearch)}>
-                    <Image
-                        source={require('../assets/add.png')}
-                        style={styles.img}
-                    />
-                </Pressable>
-                <Pressable onPress={onPressHandler}>
-                    <Image
-                        source={require('../assets/back.png')}
-                        style={styles.img}
-                    />
-                </Pressable>
-            </View>
-            <View style={styles.vieText}>
-                <Text style={styles.title}>{data?.eventName || 'no event'}</Text>
 
+            <View style={styles.headerImg}>
+                <View style={styles.viewIcon}>
+                    <Pressable onPress={onPressHandler}
+                    >
+                        <Ionicons
+                            style={styles.icon}
+                            name={"arrow-back"}
+                            color={"black"}
+                            size={25} />
+                    </Pressable>
+                </View>
+                <View style={styles.viewtitle}>
+                    <Text style={styles.title}>{data?.eventName || 'no event'}</Text>
+                </View>
             </View>
             <ScrollView contentContainerStyle={styles.home}>
                 {renderCard()}
@@ -76,33 +63,30 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     home: {
-        borderRadius: 40,
-        backgroundColor: '#87ceeb',
+        paddingBottom: 30,
     },
-    vieText: {
-        alignItems: 'center',
-        justifyContent:'center',
+    viewtitle: {
+        justifyContent: 'center',
         height: 50,
-        backgroundColor:'white',
     },
     title: {
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
         color: 'black',
-    },
-    img: {
-        width: 50,
-        height: 50,
-        marginLeft: 130,
-        marginRight: 130,
-        marginTop: 5,
-
+        marginRight: 30,
     },
     headerImg: {
-        flexDirection: 'row-reverse',
-        justifyContent: 'center',
+        flexDirection: 'row',
         height: 60,
-        backgroundColor: '#87ceeb',
+        justifyContent:'space-between',
+        marginTop:10,
+    },
+    viewIcon: {
+       alignItems: 'center',
+       justifyContent: 'center',
+    },
+    icon: {
+        marginLeft: 10,
     },
 
 })

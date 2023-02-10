@@ -1,58 +1,108 @@
-import React from 'react';
-import { View, StyleSheet, Pressable, ScrollView, Text, Image } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput } from 'react-native';
 import EventsCard from '../components/EventsCard';
 import { Events } from '../resources/data';
-import DataNotExist from '../components/DataNotExist';
-import { ScreenNames } from '../../route/ScreenNames';
-import { calcCost } from '../utils/utils';
+import { FlatList } from 'react-native-gesture-handler';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import SearchContext from '../../store/SearchContext';
+import 'react-native-get-random-values'
+import { v4 as uuidv4 } from 'uuid';
+
 
 const ClientEvents = (props) => {
+    const {isFromAddEventClick} = props.route?.params || {}
+    const [showModal, setShowModal] = useState(false);
+    const [fileEventName, setfileEventName] = useState();
+    const { userId,fileEventState, setfileEventState } = useContext(SearchContext);
+
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-
-
-    const query = () => {
-        return Events || [];
-
-        // return servicesData.filter(nameItem => {
-        //     return nameItem.address == city && nameItem.servType == Service;
-        // })
+    const onPressModalHandler = () => {
+        setShowModal(true);
     }
-    const renderCard = () => {
-        const data = query();
 
-        if (!data?.length) {
-            //TODO : return no data component
-            return (
-                <DataNotExist />
-            );
+    const onModalBtnPress = () => {
+        const EventFile = {
+            EventId: uuidv4(),
+            userId: userId,
+            eventName: fileEventName,
         }
+        let EvArr = fileEventState;
+        EvArr.push(EventFile)
+        setfileEventState([...EvArr])
 
-        const cardsArray = data.map(card => {
-            return <EventsCard  {...card} />;
-        });
-        return cardsArray;
+        setShowModal(false)
+    }
+    
+    const query = () => {
+        return fileEventState || [];
+    }
+    const renderCard = ({ item }) => {
+        return <EventsCard  {...item} isFromAddEventClick={isFromAddEventClick} />;
+       
     };
+
     return (
         <View style={styles.container}>
-            <View style={styles.headerImg}>
-                <Pressable onPress={() => props.navigation.navigate(ScreenNames.ClientInfo)}>
+            <View style={styles.title}>
+                <Pressable onPress={onPressHandler}
+                >
+                    <Ionicons
+                        style={styles.icon}
+                        name={"arrow-back"}
+                        color={"black"}
+                        size={25} />
+                </Pressable>
+            </View>
+            <FlatList
+                data={query()}
+                renderItem={renderCard}
+                numColumns={2}
+            />
+
+            <View style={styles.footer}>
+                <Pressable
+                    onPress={() => onPressModalHandler()}
+                >
                     <Image
                         source={require('../assets/add.png')}
                         style={styles.img}
                     />
                 </Pressable>
-                <Pressable onPress={onPressHandler}>
-                    <Image
-                        source={require('../assets/back.png')}
-                        style={styles.img}
-                    />
-                </Pressable>
             </View>
-            <ScrollView contentContainerStyle={styles.home}>
-                {renderCard()}
-            </ScrollView>
+            <Modal
+                transparent
+                visible={showModal}
+                animationType='fade'
+                onRequestClose={() =>
+                    setShowModal(false)
+                }
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.detailModal}>
+                        <View style={styles.Motitle}>
+                            <Text style={styles.text}>انشاء مناسبة</Text>
+                        </View>
+                        <View style={styles.body}>
+                            <Text style={styles.text}>اسم المناسبة</Text>
+                            <TextInput
+                                style={styles.input}
+                                keyboardType='default'
+                                placeholder='ادخل اسم المناسبة '
+                                onChangeText={setfileEventName}
+                            //value={fileEventName}
+                            //editable={false}
+                            />
+                        </View>
+                        <Pressable onPress={() => onModalBtnPress()} style={styles.btn}>
+                            <Text style={styles.text}>OK</Text>
+                        </Pressable>
+                    </View>
+                </View>
+
+            </Modal>
         </View>
     );
 }
@@ -60,21 +110,76 @@ const ClientEvents = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
     },
     img: {
-        width: 50,
-        height: 50,
-        marginLeft: 70,
-        marginRight: 200,
-        marginTop: 5,
-
-    },
-    headerImg: {
-        flexDirection: 'row-reverse',
-        justifyContent: 'center',
+        width: 60,
         height: 60,
-        backgroundColor: '#87ceeb',
+    },
+    footer: {
+        alignItems: 'flex-end',
+        marginTop: 20,
+        marginRight: 20,
+    },
+    title: {
+        flexDirection: 'row',
+        marginTop: 20,
+    },
+    icon: {
+        alignSelf: 'flex-start',
+        marginLeft: 10,
+    },
+    detailModal: {
+        width: 320,
+        height: 250,
+        backgroundColor: '#ffffff',
+        borderColor: '#000',
+        borderRadius: 20,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    Motitle: {
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'gray',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    body: {
+        height: 120,
+        marginTop: 50,
+        alignSelf: 'flex-end',
+        marginRight: 50,
+    },
+    text: {
+        textAlign: 'center',
+        fontSize: 20,
+        color: 'black'
+    },
+    btn: {
+        //borderWidth: 1,
+        height: 40,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        backgroundColor: 'gray',
+    },
+    input: {
+        textAlign: 'center',
+        height: 50,
+        width: 200,
+        borderWidth: 1,
+        borderRadius: 30,
+        borderColor: 'black',
+        fontSize: 15,
+        fontWeight: 'bold',
+        // marginTop: 20,
+        marginRight: 10,
+        color: 'black',
+        backgroundColor: '#fffaf0',
     },
 })
 

@@ -1,34 +1,57 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
-import { Card, Button } from 'react-native-elements';
+import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
+import { ScreenNames } from "../../route/ScreenNames";
 import SearchContext from '../../store/SearchContext';
-import {bookingList} from '../resources/data';
+import 'react-native-get-random-values'
+import { v4 as uuidv4 } from 'uuid';
+
 
 const EventsCard = (props) => {
+    const { isFromAddEventClick } = props;
     const navigation = useNavigation();
-    const { eventName, eventDate,EventId } = props;
-    const {eventTotalCost,setEventTotalCost} = useContext(SearchContext);
+    const { eventName, eventDate, eventCost } = props;
+    const { userId, ServId, DateText, TimeText, AddResToEventFile, setAddResToEventFile,RequestIdState } = useContext(SearchContext);
 
-   console.log(EventId);
-    const rendercost = () => {
-        const eventIdinBooking = bookingList.filter(eveId => {
-            return eveId.eventId == EventId;
-        })
+    let ReqId = uuidv4();
+    console.log(ServId, DateText,TimeText);
 
-        const serviceCost = eventIdinBooking.map(Scost => {
-            return Scost.srrCost;
-        });
-        return serviceCost;
-
-        serviceCost.forEach(cost => {
-            setEventTotalCost += cost;
-        });
-        return setEventTotalCost
-    };
+    const checkIfInEvent = () => {
+        const isinEvent = AddResToEventFile.find(ResDate => ResDate.reservationDate == DateText && ResDate.reservationTime == TimeText && ResDate.ReqServId == ServId);
+        return !!isinEvent;
+    }
 
     const onCaardPress = () => {
-        navigation.navigate(props.linkPage, { data: { ...props } })
+        if (isFromAddEventClick) {
+            if (checkIfInEvent()) {
+                console.log("already Added");
+                navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
+            } else {
+                const AddBookingtoFile = {
+                    RequestId: ReqId,
+                    ReqEventId: props.EventId,
+                    ReqServId: ServId,
+                    ReqUserId: userId,
+                    ReqStatus: false,
+                    // ReqDate: '10/1/2023',
+                    reservationDate: DateText,
+                    reservationTime: TimeText,
+                }
+                let ResArr = AddResToEventFile;
+                ResArr.push(AddBookingtoFile)
+                setAddResToEventFile([...ResArr])
+                navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
+                console.log("Adding");
+                console.log("isFromAddEventClick: ", isFromAddEventClick);
+            }
+
+        } else {
+            console.log("navigate without adding");
+            navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
+            return;
+        }
+
     }
     return (
         <View style={styles.container}>
@@ -36,14 +59,14 @@ const EventsCard = (props) => {
                 <Card.Title style={styles.title}>{eventName}</Card.Title>
                 <Card.Divider />
                 <TouchableOpacity onPress={onCaardPress} style={styles.body}>
-                    <Text style={{ marginBottom: 10, fontSize: 18, color: '#87ceeb' }}>
+                    <Text style={{ marginBottom: 10, fontSize: 18, color: 'black' }}>
                         {eventDate}
                     </Text>
-                    <Text style={{ marginBottom: 10, fontSize: 18, color: '#87ceeb', }}>
-                        التكلفة
+                    <Text style={{ marginBottom: 10, fontSize: 18, color: 'black' }}>
+                        80:20:55:23
                     </Text>
                     <Text style={styles.text}>
-                    ₪{eventTotalCost} 
+                        ₪{eventCost}
                     </Text>
                 </TouchableOpacity>
 
@@ -72,15 +95,12 @@ const styles = StyleSheet.create({
     text: {
         marginBottom: 10,
         fontSize: 18,
-        borderWidth: 1,
-        borderRadius: 5,
-        color: '#87ceeb',
-        borderColor: '#87ceeb'
+        color: 'black',
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#87ceeb',
+        color: 'black',
     },
 })
 

@@ -71,11 +71,11 @@ const ClientSearch = (props) => {
            
             <View style={styles.textIn}>
                 <SelectList
-                    data={SerData}
+                    data={renderReigon()}
                     setSelected={(val => {
-                        let serObj = SerData.find(Service => Service.key == val);
-                        setService(serObj.value)
-                        console.log('list: ', serObj.value);
+                        // let serObj = SerData.find(Service => Service.key == val);
+                        setService(val)
+                        // console.log('list: ', serObj.value);
 
                     })}
                     placeholder='اختر الخدمة'
@@ -95,7 +95,6 @@ const ClientSearch = (props) => {
                     inputStyles={styles.droptext}
                     dropdownTextStyles={styles.dropstyle}
                 />
-            
             </View>
            
         </BackgroundImage>

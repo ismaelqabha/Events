@@ -13,17 +13,14 @@ const ClientResult = (props) => {
     // const { data } = props?.route.params;
 
     const query = () => {
-        
         console.log(city,  Service);
         if (!city && !Service) {
             return servicesData || [];
         }
-
         return servicesData.filter(nameItem => {
             return nameItem.address == city && nameItem.servType == Service;
         })
     }
-
     const renderCard = () => {
         const data = query();
 

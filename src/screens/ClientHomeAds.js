@@ -1,64 +1,56 @@
-import React, { useContext,useEffect } from 'react';
+import React, { useState,useContext,useEffect } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import Header from "../components/Header";
 import HomeCards from '../components/HomeCards';
-import strings from '../assets/res/strings'
-import { ScreenNames } from '../../route/ScreenNames';
 import { BackgroundImage } from '@rneui/base';
 import SearchContext from '../../store/SearchContext';
 import { servicesData } from '../resources/data';
-import DataNotExist from '../components/DataNotExist';
-import { useNavigation } from '@react-navigation/native';
 
-const ClientHomeAds = () => {
-    const { cat } = useContext(SearchContext);
-    const navigation = useNavigation();
 
-    useEffect(() => {
-        navigation.setOptions({
-            headerLargeTitle: true,
-        });
-    }, [navigation]);
-    
+const ClientHomeAds = (props) => {
+    const { data } = props.route.params || {}
+    const { cat , userFavorates,ServiceDataInfo} = useContext(SearchContext);
+   
+    const [favorates, setFavoratis] = useState([]);
+
+    const getfav = async () => {
+        var favoritsFromStorage = await AsyncStorage.getItem('favorite');
+        if (favoritsFromStorage) {
+            favoritsFromStorage = await JSON.parse(favoritsFromStorage);
+        } else {
+            favoritsFromStorage = []
+        }
+        return favoritsFromStorage;
+    }
+
+
+    const checkIsFavorate = (id) => {
+        const isFav = userFavorates.find(item => item.favoListServiceId === id)
+        return !!isFav;
+    }
+
     const query = () => {
         if (!cat) {
-            return servicesData || [];
+            return ServiceDataInfo || [];
         }
-
-        return servicesData.filter(nameItem => {
+        return ServiceDataInfo.filter(nameItem => {
             return nameItem.servType == cat;
         })
     }
 
-    const renderCard = () => {
-        const arr = [
-            {
-                src: (require('../../src/assets/x1.png')),
-                //text: 'على استعداد لتلبية جميع مناسباتكم',
-                title: 'قاعة الماسة للافراح',
-                subTitle: strings.cardtxt1,
-                page: ScreenNames.ServiceDescr,
-            },
-            {
-                src: (require('../../assets/photos.png')),
-                title: 'تصوير الاحلام',
-                subTitle: 'استديو الاحلام لتصوير جميع مناسباتك الجميلة',
-                page: ScreenNames.ServiceDescr,
-            },
-            {
-                src: (require('../../assets/salon.png')),
-                title: 'صالون اميرة للسيدات',
-                subTitle: 'احدث موديلات العرائس والتجميل',
-                page: ScreenNames.ServiceDescr,
-            },
-        ];
-       
+    const renderCard = () => { 
         const data = query();
         const cardsArray = data.map(card => {
-            return <HomeCards  {...card} />;
+            return <HomeCards  {...card}
+                   // service_id={item}
+                    isFavorate={checkIsFavorate(data?.service_id)}
+            />;
         });
         return cardsArray;
     };
+    useEffect(() => {
+        getfav().then(res => setFavoratis([...res]))
+    }, []);
 
     return (
         <BackgroundImage style={styles.bg}
@@ -75,12 +67,13 @@ const ClientHomeAds = () => {
 const styles = StyleSheet.create({
     home: {
         borderRadius: 40,
-        backgroundColor: '#fff0f5',
+        backgroundColor: 'white',
+      
 
     },
     bg: {
         flex: 1,
-        backgroundColor: '#fff0f5',
+        backgroundColor: 'white',
 
     }
 })

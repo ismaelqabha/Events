@@ -1,6 +1,6 @@
 
 
-import React from 'react';
+import React,{useEffect} from 'react';
 
 import {
  
@@ -14,6 +14,14 @@ import MainNavigation from "../Events/route/nav";
 import SearchProvider from '../Events/store/SearchProvider';
 
 const App: () => Node = () => {
+
+  useEffect(() => {
+   var url = "https://nameless-meadow-25389.herokuapp.com/server"
+   fetch(url)
+   .then(res => res.json())
+   .then(resJson => console.log("res",resJson))
+  }, []);
+
   return (
 
     <SearchProvider>

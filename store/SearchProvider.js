@@ -1,29 +1,94 @@
-import React, {useContext,useState} from 'react';
+import React, { useState } from 'react';
+import { favoritesList, fileFavorites, Events, Request, Payment, serviceDetail, subDetail, subDetailData, servicesData, ServiceImages, Users } from '../src/resources/data';
 import SearchContext from '../store/SearchContext';
-import { bookingList } from '../resources/data';
+
 
 const SearchProvider = props => {
- const [Service, setService] = useState({});
- const [city, setCity] = useState({});
- const [date, setDate] = useState(null);
- const [cat, setCat] = useState({});
- const [evId, setevId] = useState(2);
- const [eventTotalCost, setEventTotalCost] = useState(0);
+  const [Service, setService] = useState({});
+  const [city, setCity] = useState({});
+  const [cat, setCat] = useState({});
+
+  const [userId, setuserId] = useState(1);
+  const [sType, setSType] = useState({});
+  const [fId, setFId] = useState({});
+  const [ServId, setServId] = useState('');
+  const [favorite, setFavorite] = useState();
+
+  const [UserState, setUserState] = useState(Users || [])
+  const [userFavorates, setUserFavorates] = useState(favoritesList || [])
+  const [fileFavoriteState, setFileFavoriteState] = useState(fileFavorites || [])
+  const [fileEventState, setfileEventState] = useState(Events || [])
+  const [AddResToEventFile, setAddResToEventFile] = useState(Request || [])
+  const [userPayment, setUserPayment] = useState(Payment || [])
+  const [detailOfServ, setDetailOfServ] = useState(serviceDetail || [])
+  const [serviceSubDetail, setserviceSubDetail] = useState(subDetail || [])
+  const [SubDetData, setSubDetData] = useState(subDetailData || [])
+  const [ServiceDataInfo, setServiceDataInfo] = useState(servicesData || [])
+  const [serviceImg, setserviceImg] = useState(ServiceImages || [])
+
+  const [checkInDesc, setcheckInDesc] = useState()
+  const [ServiceImg, setServiceImg] = useState()
+  const [isDateAvailable, setisDateAvailable] = useState(false)
+  const [DateText, setDateText] = useState('dd/mm/yyyy');
+  const [TimeText, setTimeText] = useState('00:00');
+  const [detailIdState, setdetailIdState] = useState();
+  const [RequestIdState, setRequestIdState] = useState();
+
   return (
     <SearchContext.Provider
-       value={{
-        Service:Service,
+      value={{
+        Service: Service,
         setService,
         city: city,
         setCity,
-        date,
-        setDate,
+        userId,
+        setuserId,
         cat,
         setCat,
-        evId,
-        setevId,
-        eventTotalCost,
-        setEventTotalCost,
+        sType,
+        setSType,
+        fId,
+        setFId,
+        ServId,
+        setServId,
+        favorite,
+        setFavorite,
+        userFavorates,
+        setUserFavorates,
+        fileFavoriteState,
+        setFileFavoriteState,
+        checkInDesc,
+        setcheckInDesc,
+        fileEventState,
+        setfileEventState,
+        AddResToEventFile,
+        setAddResToEventFile,
+        ServiceImg,
+        setServiceImg,
+        userPayment,
+        setUserPayment,
+        isDateAvailable,
+        setisDateAvailable,
+        DateText,
+        setDateText,
+        TimeText,
+        setTimeText,
+        detailOfServ,
+        setDetailOfServ,
+        serviceSubDetail,
+        setserviceSubDetail,
+        ServiceDataInfo,
+        setServiceDataInfo,
+        detailIdState,
+        setdetailIdState,
+        SubDetData,
+        setSubDetData,
+        RequestIdState,
+        setRequestIdState,
+        serviceImg,
+        setserviceImg,
+        UserState,
+        setUserState,
       }}>
       {props.children}
     </SearchContext.Provider>

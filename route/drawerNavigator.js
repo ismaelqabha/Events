@@ -3,15 +3,20 @@ import React from "react";
 import SignUp from "../src/screens/SignUp";
 import SignIn from "../src/screens/SignIn";
 import ClientHomeAds from "../src/screens/ClientHomeAds";
-import ClientBook from "../src/screens/ClientBook";
-import ClientInfo from "../src/screens/ClientInfo";
 import ClientSearch from "../src/screens/ClientSearch";
-import ClientResult from "../src/screens/ClientResult";
-import ServiceDescr from "../src/screens/ServiceDescr";
-import ClientEvents from "../src/screens/ClientEvents";
+import FileFavoritesShow from "../src/screens/FileFavoritesShow";
+import FileFavorites from '../src/screens/FileFavorites';
+import ClientEvents from '../src/screens/ClientEvents';
+
+import ProviderServiceListing from '../src/screens/ProviderScreens/ProviderServiceListing';
+import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
+
+
 import { ScreenNames } from "./ScreenNames";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import Fontisto from 'react-native-vector-icons/Fontisto'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 
 const DrawerNavigator = () => {
@@ -40,34 +45,64 @@ const DrawerNavigator = () => {
                     fontSize: 25,
                     fontWeight: 'bold',
                 }
-
             }}
         >
-            <Drawer.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds}
+            <Drawer.Screen name={ScreenNames.ProviderHomeAds} component={ClientHomeAds}
                 options={{
                     title: 'الرئيسيه',
-                    // drawerIcon: () => (
-                    //     <FontAwesome5
-                    //         name='home'
-                    //         style={{ fontSize: 20, color: '#1e90ff' }}
-                    //     />
-                    // )
+                    drawerIcon: () => (
+                        <FontAwesome5
+                            name='home'
+                            style={{ fontSize: 20, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', }}
+                        />
+                    ),
                 }}
             />
+
             <Drawer.Screen name={ScreenNames.ClientEvents} component={ClientEvents}
                 options={{
-                    title: 'ادارة الاحداث',
+                    title: 'مناسباتي',
+                    drawerIcon: () => (
+                        <MaterialIcons
+                            name='emoji-events'
+                            style={{ fontSize: 30, color: '#1e90ff' }}
+                        />
+                    )
                 }}
             />
+            <Drawer.Screen name={ScreenNames.FileFavorites} component={FileFavorites}
+                options={{
+                    title: 'المفضلة',
+                    drawerIcon: () => (
+                        <Fontisto
+                            name='favorite'
+                            style={{ fontSize: 30, color: '#1e90ff' }}
+                        />
+                    )
+                }}
+            />
+            <Drawer.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing} 
+             options={{
+                title: 'أنشاء خدمة جديدة',
+                drawerIcon: () => (
+                    <Fontisto
+                        name='favorite'
+                        style={{ fontSize: 30, color: '#1e90ff' }}
+                    />
+                )
+            }}
+            />
 
-            <Drawer.Screen name={ScreenNames.ClientInfo} component={ClientInfo}/>
-            <Drawer.Screen name={ScreenNames.ClientSearch} component={ClientSearch} />
-            <Drawer.Screen name={ScreenNames.ClientBook} component={ClientBook} />
-            <Drawer.Screen name={ScreenNames.ServiceDescr} component={ServiceDescr} />
+            <Drawer.Screen name={ScreenNames.ProviderServiceListing} component={ProviderServiceListing} />
             <Drawer.Screen name={ScreenNames.SignUp} component={SignUp} />
-            <Drawer.Screen name={ScreenNames.ClientResult} component={ClientResult} />
             <Drawer.Screen name={ScreenNames.SignIn} component={SignIn} />
 
+        
+
+            {/* <Drawer.Screen name={ScreenNames.ClientSearch} component={ClientSearch} />
+            <Drawer.Screen name={ScreenNames.SignUp} component={SignUp} />
+            <Drawer.Screen name={ScreenNames.SignIn} component={SignIn} />
+            <Drawer.Screen name={ScreenNames.FileFavoritesShow} component={FileFavoritesShow} /> */}
         </Drawer.Navigator>
     )
 }

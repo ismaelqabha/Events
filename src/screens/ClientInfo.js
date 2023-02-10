@@ -46,7 +46,7 @@ const ClientInfo = (props) => {
                 <Text style={styles.txt}>التاريخ</Text>
                 <View style={styles.viewDate}>
                     <Text>{date?.toLocaleDateString() || "dd/mm/yyyy"}</Text>
-                    <Pressable onPress={() => setOpen(true)} style={styles.date}>
+                    <Pressable onPress={() => setOpen(true)}>
                         <Image
                             style={styles.icon}
                             source={require('../assets/calendar-3.png')}

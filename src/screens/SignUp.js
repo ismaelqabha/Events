@@ -1,18 +1,46 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TextInput, Pressable,Image } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, StyleSheet, Text, TextInput, Pressable, Image } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import { CheckBox, Icon } from "react-native-elements";
 import { ScreenNames } from '../../route/ScreenNames';
+import SearchContext from '../../store/SearchContext';
+import 'react-native-get-random-values'
+import { v4 as uuidv4 } from 'uuid';
 
 const SignUp = (props) => {
+    let UI = uuidv4();
+
     const [checked, setChecked] = React.useState('first');
     const navigation = useNavigation()
 
     const [client, setClient] = React.useState(false);
     const [provider, setProvider] = React.useState(false);
 
+    const { userId, setuserId, UserState, setUserState } = useContext(SearchContext);
+    const [userName, setuserName] = useState()
+    const [Password, setPassword] = useState()
 
+    const chickIfExist = () => {
+        const isChecked = UserState.find(item => item.USER_ID === UI)
+        return !!isChecked;
+    }
+
+    const onCreateUser = () => {
+        const AddNewUser = {
+            USER_ID: UI,
+            User_name: userName,
+            Password: Password,
+        }
+
+        let UsersArr = UserState;
+        if (!chickIfExist()) {
+            UsersArr.push(AddNewUser);
+            setUserState([...UsersArr])
+            setuserId(UI)
+        } 
+        console.log('UI', UI);
+    }
 
     return (
         <View>
@@ -31,11 +59,13 @@ const SignUp = (props) => {
                     style={styles.input}
                     keyboardType="email-address"
                     placeholder='البريد الالكتروني'
+                    onChangeText={(value) => setuserName(value)}
                 />
                 <TextInput
                     style={styles.input}
                     keyboardType="visible-password"
                     placeholder='كلمة المرور'
+                    onChangeText={(value) => setPassword(value)}
                 />
             </View>
 
@@ -62,8 +92,9 @@ const SignUp = (props) => {
                     uncheckedIcon='circle-o'
                 />
             </View>
-
-            
+            <Pressable style={styles.btnEnter} onPress={() => onCreateUser()}>
+                <Text style={styles.txtُEnter}>انشاء ودخول</Text>
+            </Pressable>
         </View>
     );
 }
@@ -85,7 +116,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         color: '#1e90ff',
-       
+
 
     },
     input: {
@@ -142,11 +173,11 @@ const styles = StyleSheet.create({
     check: {
         width: '70%',
     },
-    image1:{
-       width: 100,
-       height: 100,
-       marginLeft: 125,
-       marginTop: 20,
+    image1: {
+        width: 100,
+        height: 100,
+        marginLeft: 125,
+        marginTop: 20,
     },
 
 })

@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 
-const ClientServiceDetail = () => {
+const ProviderServiceListing = () => {
     return (
         <View>
             
@@ -11,4 +11,4 @@ const ClientServiceDetail = () => {
 
 const styles = StyleSheet.create({})
 
-export default ClientServiceDetail;
+export default ProviderServiceListing;
