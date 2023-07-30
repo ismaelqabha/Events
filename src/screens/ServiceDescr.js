@@ -1,21 +1,22 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState,useEffect } from 'react';
 import { TextInput } from 'react-native';
 import { View, StyleSheet, Text, Pressable, Image, Modal, ScrollView } from 'react-native';
-import { SliderBox } from "react-native-image-slider-box";
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
 import HallOrderComp from '../components/HallOrderComp';
 import DateTPicker from '../components/DateTPicker'
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
+ import { SliderBox } from 'react-native-image-slider-box';
+import { getImagDescBage } from '../resources/API';
 
 
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
     const [showModal, setShowModal] = useState(false);
-    const { setcheckInDesc, isDateAvailable, DateText, TimeText, setServId, setRequestIdState } = useContext(SearchContext);
-
+    const { setcheckInDesc, isDateAvailable, DateText, TimeText, setServId, setRequestIdState, serviceImg,setserviceImg } = useContext(SearchContext);
+    console.log("data.service_id", data.service_id);
 
     setcheckInDesc(true);
 
@@ -47,20 +48,31 @@ const ServiceDescr = (props) => {
     const modalPressHandler = () => {
         setShowModal(false);
         setRequestIdState(uuidv4());
-        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...props } })
+        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
     }
+
+
+    
+    const renderImg = () => {
+    
+        const imageArray = data.images.map(photos => {
+            return photos.image;
+        });
+        return imageArray;
+    };
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.home}>
-                <View style={styles.slider} >
+                <View >
                     <SliderBox
-                        // sliderBoxHeight={250}
-                        images={data.image}
+                        sliderBoxHeight={200}
+                        images={renderImg()}
                         dotColor="blue"
                         dotStyle={{ width: 15, height: 15, borderRadius: 50 }}
                         autoplay={true}                // style={{ width: 400, }}
                     />
+
                     <Image source={data.img} style={styles.logo} />
                 </View>
 
@@ -79,12 +91,12 @@ const ServiceDescr = (props) => {
                         source={require('../assets/playvideo.png')}
                     />
                 </Pressable>
-                
+
                 <Text style={styles.line}>____________________________________________________</Text>
 
                 <Text style={styles.desc1}>قائمة الخدمات </Text>
                 <View style={styles.HallView}>
-                    <HallOrderComp />
+                    <HallOrderComp service_id={ data.service_id} />
                 </View>
                 <Text style={styles.line}>____________________________________________________</Text>
                 <Text style={styles.desc}>عرض التغذية الراجعة عن الخدمة المختارة</Text>

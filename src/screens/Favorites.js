@@ -1,31 +1,44 @@
-import React,{useContext} from 'react';
-import {View, StyleSheet,Text, ScrollView,Pressable} from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { View, StyleSheet, Text, ScrollView, Pressable } from 'react-native';
 import HomeCards from '../components/HomeCards';
-import { servicesData } from '../resources/data';
 import SearchContext from '../../store/SearchContext';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { getFavoritesServiceInfo } from '../resources/API';
 
 const Favorites = (props) => {
-    const { userId, ServId,fileId , userFavorates , fId} = useContext(SearchContext);
-    const { fileName } = props?.route.params;
+    const { userId, ServId, userFavorates, setUserFavorates, ServiceDataInfo, fId } = useContext(SearchContext);
+    const { fileName, fileId } = props?.route.params;
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    const query = () => {
-        const filterdFav = userFavorates.filter(favService => {
-            return favService.favoListFileId ==  fId &&
-            favService.favoListUserId == userId ;
+    
+
+    const getFavoritesFromApi = () => {
+        getFavoritesServiceInfo({ favoListFileId: fileId, favoListUserId: userId }).then(res => {
+            setUserFavorates(res)
+            console.log("userFavorates: ", res);
         })
-
-
-       const faveArr = filterdFav.map(fav => servicesData.find(ser => ser.service_id === fav.favoListServiceId))
-       return faveArr ;
     }
+    useEffect(() => {
+        getFavoritesFromApi()
+    }, [])
+
+    // const query = () => {
+    //     const filterdFav = userFavorates?.filter(favService => {
+    //         return favService.favoListFileId ==  fId &&
+    //         favService.favoListUserId == userId ;
+    //     })
+
+    //    const faveArr = filterdFav.map(fav => ServiceDataInfo.find(ser => ser.service_id === fav.favoListServiceId))
+    //    return faveArr ;
+    // }
     const renderCard = () => {
-        const data = query();
-        const cardsArray = data.map(card => {
-            return card ? <HomeCards  {...card} /> : null;
+        const data = userFavorates;
+        const cardsArray = data?.map(card => {
+            return <HomeCards  {...card.favorateInfo}
+                images={card?.serImages}
+            />;
         });
         return cardsArray;
     };
@@ -43,7 +56,7 @@ const Favorites = (props) => {
                     </Pressable>
                 </View>
                 <View style={styles.viewtitle}>
-                <Text style={styles.title}>{fileName}</Text>
+                    <Text style={styles.title}>{fileName}</Text>
                 </View>
             </View>
             <View style={styles.body}>
@@ -78,18 +91,18 @@ const styles = StyleSheet.create({
     headerImg: {
         flexDirection: 'row',
         height: 60,
-        justifyContent:'space-between',
-        marginTop:10,
+        justifyContent: 'space-between',
+        marginTop: 10,
     },
     viewIcon: {
-       alignItems: 'center',
-       justifyContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     icon: {
         marginLeft: 10,
     },
-    contentContainerStyle:{
-        paddingBottom:100,
+    contentContainerStyle: {
+        paddingBottom: 100,
     }
 })
 

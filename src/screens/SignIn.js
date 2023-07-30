@@ -13,11 +13,11 @@ const SignIn = (props) => {
         return !!isUser;
     }
     const onEnterPress = () => {
-        if(!CheckUser()){
-            renderUserId();
-            props.navigation.navigate(ScreenNames.ClientHomeAds);
-        }
-        console.log('LogIn',userId);
+        // if(!CheckUser()){
+        //     renderUserId();
+        //     props.navigation.navigate(ScreenNames.ClientHomeAds);
+        // }
+        // console.log('LogIn',userId);
     }
     const query = () => {
         return UserState.filter(use => {

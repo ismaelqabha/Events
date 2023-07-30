@@ -10,6 +10,7 @@ import ClientResult from "../src/screens/ClientResult";
 import ClientInfo from "../src/screens/ClientInfo";
 import ClientRequest from "../src/screens/ClientRequest";
 import Favorites from "../src/screens/Favorites";
+import ClientSearch from "../src/screens/ClientSearch";
 
 import ProviderChooseService from '../src/screens/ProviderScreens/ProviderChooseService';
 import ProviderSetPhotos from "../src/screens/ProviderScreens/ProviderSetPhotos";
@@ -28,6 +29,8 @@ import DrawerNavigator from "./drawerNavigator";
 import TabNavigator from "./tabNavigator";
 import { Easing } from "react-native";
 import { CardStyleInterpolators } from "@react-navigation/stack";
+import HomeNavigator from "./HomeNavigator";
+import Splash from "../src/screens/Splash";
 
 const MainNavigation = (props) => {
     const Stack = createNativeStackNavigator();
@@ -52,7 +55,7 @@ const MainNavigation = (props) => {
     return (
         <NavigationContainer>
             <Stack.Navigator
-                initialRouteName={'Drawr'}
+                initialRouteName={"Splash"}
                 screenOptions={{
                     headerShown: false,
                     gestureEnabled: true,
@@ -66,19 +69,23 @@ const MainNavigation = (props) => {
             >
                 <Stack.Screen name="Drawr" component={DrawerNavigator} />
                 <Stack.Screen name="Tap" component={TabNavigator} />
+                <Stack.Screen name={ScreenNames.Splash} component={Splash} />
 
                 {/* <Stack.Screen name={ScreenNames.SignIn} component={SignIn} /> */}
                 {/* <Stack.Screen name={ScreenNames.SignUp} component={SignUp} /> */}
-                
-                <Stack.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds} />
+                {/* <Stack.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds} /> */}
+
+
                 <Stack.Screen name={ScreenNames.VideoPlayer} component={VideoPlayer} />
                 <Stack.Screen name={ScreenNames.ClientBook} component={ClientBook} />
                 <Stack.Screen name={ScreenNames.ServiceDescr} component={ServiceDescr} />
                 <Stack.Screen name={ScreenNames.ClientResult} component={ClientResult} />
                 <Stack.Screen name={ScreenNames.Favorites} component={Favorites} />
-                {/* <Stack.Screen name={ScreenNames.FileFavorites} component={FileFavorites} /> */}
+                <Stack.Screen name={ScreenNames.ClientSearch} component={ClientSearch} />
                 <Stack.Screen name={ScreenNames.ClientInfo} component={ClientInfo} />
                 <Stack.Screen name={ScreenNames.ClientRequest} component={ClientRequest} />
+
+                {/* <Stack.Screen name={ScreenNames.FileFavorites} component={FileFavorites} /> */}
                 {/* <Stack.Screen name={ScreenNames.ClientEvents} component={ClientEvents} /> */}
                 
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />
@@ -88,7 +95,6 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderAddSubDetail} component={ProviderAddSubDetail} />
                 <Stack.Screen name={ScreenNames.ProviderAddServiceDetail} component={ProviderAddServiceDetail} />
                 <Stack.Screen name={ScreenNames.ProviderSetPrice} component={ProviderSetPrice} />
-
             </Stack.Navigator>
         </NavigationContainer>
     )

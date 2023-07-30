@@ -5,19 +5,22 @@ import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
 import { TouchableOpacity } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
+import { AddNewFavorites  } from '../resources/API';
+
 
 
 const FileFavoCard = (props) => {
-    const { isFromFavorateClick } = props;
+    const { isFromFavorateClick, fileName, fileImg, fileId, fileFavoUserId } = props;
     const { setFId, fId, ServId, userId, userFavorates, setUserFavorates } = useContext(SearchContext);
     const navigation = useNavigation();
 
 
-    const query = () => {
-        return userFavorates.filter(fav => {
-            return fav.favoListFileId == fId;
-        })
-    }
+
+    // const query = () => {
+    //     return userFavorates.filter(fav => {
+    //         return fav.favoListFileId == fId;
+    //     })
+    // }
 
     const resetStack = () => {
         navigation.reset({
@@ -28,33 +31,35 @@ const FileFavoCard = (props) => {
         })
     }
 
-    const onCaardPress = () => {
 
+    const setNewFavoritFromApi = () => {
+        console.log( "favoListFileId: ", fileId, "favoListUserId: ", userId, "favoListServiceId: ", ServId);
+
+        const newFavorateItem = { favoListFileId: fileId, favoListUserId: userId, favoListServiceId: ServId }
+
+        console.log("newFavorateItem: " , newFavorateItem);
+
+        AddNewFavorites(newFavorateItem).then(res => {
+
+            console.log("fav res : " , res);
+
+            const userFav = userFavorates || [];
+            userFav.push(newFavorateItem)
+            setUserFavorates([...userFav])
+        })
+    }
+
+    const onCaardPress = () => {
+        setFId(props.fileId);
+        console.log("ServId: ",ServId);
         if (!isFromFavorateClick) {
-            navigation.navigate(ScreenNames.Favorites, { fileName: props.fileName })
+            navigation.navigate(ScreenNames.Favorites, { fileName: fileName })
             return;
         }
 
-        setFId(props.fileId);
-
-        const favItem = {
-            favoListFileId: props.fileId,
-            favoListUserId: userId,
-            favoListServiceId: ServId,
-        }
-
-        let favArr = userFavorates;
-        favArr.push(favItem)
-        setUserFavorates([...favArr])
-
-        // setUserFavorates(prev => prev.push(favItem))
-
-        console.log("isFromFavorateClick: ", isFromFavorateClick);
-
+        setNewFavoritFromApi()
 
         resetStack()
-        //  navigation.goBack()
-
     }
     return (
         <View style={styles.container}>
@@ -64,9 +69,9 @@ const FileFavoCard = (props) => {
                 >
                     <Card.Image
                         style={styles.image}
-                        source={props.fileImg}
+                        source={{ uri: fileImg }}
                     />
-                    <Card.Title style={{ fontSize: 20, marginLeft: 90 }}>{props.fileName}</Card.Title>
+                    <Card.Title style={{ fontSize: 20, marginLeft: 90 }}>{fileName}</Card.Title>
                 </TouchableOpacity>
             </Card>
         </View>

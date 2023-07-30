@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
@@ -9,6 +9,14 @@ const ServiceCard = (props) => {
     const { isFromChooseServiceClick, isChecked } = props;
     const { cat, setCat, ServiceDataInfo, setServiceDataInfo, ServId, userId } = useContext(SearchContext);
     const navigation = useNavigation();
+
+    
+    // useEffect(()=> {
+    //     getHomePageData().then(res => {
+    //         console.log("res:" , res);
+    //         setserviceImg(res)
+    //     } ) 
+    // } , [])
 
     const chickIfChecked = () => {
         return isChecked
@@ -35,7 +43,7 @@ const ServiceCard = (props) => {
             setCat(x);
             navigation.navigate(ScreenNames.ClientHomeAds, { data: { ...props } });
         }
-        console.log(ServiceDataInfo);
+        //console.log(ServiceDataInfo);
     }
 
 
@@ -77,23 +85,30 @@ const styles = StyleSheet.create({
     },
     body: {
         height: 100,
-        width: 80,
+        width: 100,
         borderRadius: 12,
         alignItems: 'center',
+        justifyContent:'space-between' ,
         marginTop: 10,
-        borderColor: 'white',
-        marginLeft: 5,
+        // borderColor: 'white',
+        marginLeft: 10,
+        // padding:20, 
+        // borderWidth:1 , 
+        paddingVertical:20 ,
+        backgroundColor:'#ffff' ,
+        elevation:5 , 
     },
     img: {
-        width: 50,
-        height: 50,
+        width: 25,
+        height: 25,
     },
     text: {
         textAlign: 'center',
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: 'bold',
         color: 'black',
-        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        // fontFamily: 'Cairo-VariableFont_slnt,wght',
+        width:'100%' 
     },
     otherbody: {
         height: 120,

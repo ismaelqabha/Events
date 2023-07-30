@@ -1,6 +1,5 @@
 
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import React from "react";
 import ClientHomeAds from "../src/screens/ClientHomeAds";
 import ClientEvents from "../src/screens/ClientEvents";
@@ -15,7 +14,7 @@ const TabNavigator = () => {
     const Tap = createMaterialBottomTabNavigator();
 
     return (
-        <NavigationContainer>
+        
             <Tap.Navigator
                 // activeColor="red"
                 // inactiveColor="green"
@@ -49,41 +48,41 @@ const TabNavigator = () => {
                 })}
             >
                 <Tap.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds}
-                    // options={{
-                    //     title: 'الرئيسيه',
-                    //     tapBarIcon: () => (
-                    //         <FontAwesome5
-                    //             name='home'
-                    //             style={{ fontSize: 20, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', }}
-                    //         />
-                    //     ),
-                    // }}
+                    options={{
+                        title: 'الرئيسيه',
+                        tapBarIcon: () => (
+                            <FontAwesome5
+                                name='home'
+                                style={{ fontSize: 25, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', fontWeight:'bold' }}
+                            />
+                        ),
+                    }}
                 />
 
                 <Tap.Screen name={ScreenNames.ClientEvents} component={ClientEvents}
-                    // options={{
-                    //     title: 'مناسباتي',
-                    //     tapBarIcon: () => (
-                    //         <MaterialIcons
-                    //             name='emoji-events'
-                    //             style={{ fontSize: 30, color: '#1e90ff' }}
-                    //         />
-                    //     )
-                    // }}
+                    options={{
+                        title: 'مناسباتي',
+                        tapBarIcon: () => (
+                            <MaterialIcons
+                                name='emoji-events'
+                                style={{ fontSize: 30, color: '#1e90ff',fontFamily: 'Cairo-VariableFont_slnt,wght', fontWeight:'bold'  }}
+                            />
+                        )
+                    }}
                 />
                 <Tap.Screen name={ScreenNames.FileFavorites} component={FileFavorites}
-                    // options={{
-                    //     title: 'المفضلة',
-                    //     tapBarIcon: () => (
-                    //         <Fontisto
-                    //             name='favorite'
-                    //             style={{ fontSize: 30, color: '#1e90ff' }}
-                    //         />
-                    //     )
-                    // }}
+                    options={{
+                        title: 'المفضلة',
+                        tapBarIcon: () => (
+                            <Fontisto
+                                name='favorite'
+                                style={{ fontSize: 30, color: '#1e90ff' }}
+                            />
+                        )
+                    }}
                 />
             </Tap.Navigator>
-        </NavigationContainer>
+       
     )
 }
 

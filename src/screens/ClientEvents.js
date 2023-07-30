@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput } from 'react-native';
 import EventsCard from '../components/EventsCard';
 import { Events } from '../resources/data';
@@ -7,6 +7,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
+import { getEventsInfoBage } from '../resources/API';
 
 
 const ClientEvents = (props) => {
@@ -35,6 +36,12 @@ const ClientEvents = (props) => {
 
         setShowModal(false)
     }
+    //  useEffect(()=> {
+    //     getEventsInfoBage().then(res => {
+    //         console.log("res:" , res);
+    //         setfileEventState(res)
+    //     } ) 
+    // } , [])
     
     const query = () => {
         return fileEventState || [];

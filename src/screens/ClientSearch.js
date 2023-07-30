@@ -6,16 +6,18 @@ import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { servicesCategory } from '../resources/data';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 
 
 const ClientSearch = (props) => {
-   
-    const {  setCity, setService,  city, Service } = useContext(SearchContext);
-   
+
+    const { setCity, setService, city, Service } = useContext(SearchContext);
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
 
     const onBtnPress = () => {
         props.navigation.navigate(ScreenNames.ClientResult, { data: { ...props } });
@@ -48,27 +50,22 @@ const ClientSearch = (props) => {
         { key: '5', value: 'الساحل' },
         { key: '0', value: 'المثلث الشمالي' },
         { key: '1', value: 'المثلث الجنوبي' },
-        { key: '4', value: 'الضفة الغربية' },   
+        { key: '4', value: 'الضفة الغربية' },
     ];
 
     return (
-        <BackgroundImage style={styles.container} source={require('../assets/Bground.png')}>
-            <View style={styles.headerImg}>
-                <Pressable onPress={onBtnPress}>
-                    <Image
-                        source={require('../assets/done.png')}
-                        style={styles.img}
-                    />
-                </Pressable>
+        <BackgroundImage style={styles.container} >
+            <View style={styles.title}>
                 <Pressable onPress={onPressHandler}
                 >
-                    <Image
-                        source={require('../assets/back.png')}
-                        style={styles.img}
-                    />
+                    <Ionicons
+                        style={styles.icon}
+                        name={"arrow-back"}
+                        color={"black"}
+                        size={25} />
                 </Pressable>
             </View>
-           
+
             <View style={styles.textIn}>
                 <SelectList
                     data={renderReigon()}
@@ -95,8 +92,11 @@ const ClientSearch = (props) => {
                     inputStyles={styles.droptext}
                     dropdownTextStyles={styles.dropstyle}
                 />
+                <Pressable onPress={onBtnPress} style={styles.btnSearch}>
+                    <Text style={styles.text}>بحث</Text>
+                </Pressable>
             </View>
-           
+
         </BackgroundImage>
     );
 }
@@ -104,7 +104,7 @@ const ClientSearch = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffe4e1',
+         backgroundColor: '#fff',
     },
     text: {
         fontSize: 20,
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 1, height: 1 },
         shadowOpacity: 0.3,
         marginTop: 10,
-        backgroundColor: '#87ceeb',
+       
     },
     droptext: {
         fontSize: 15,
@@ -147,20 +147,22 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 15,
     },
-   
-    headerImg: {
-        flexDirection: 'row-reverse',
-        justifyContent: 'center',
-        height: 50,
-        backgroundColor: '#87ceeb',
+    title: {
+        flexDirection: 'row',
+        marginTop: 20,
     },
-    img: {
-        width: 40,
+    icon: {
+        alignSelf: 'flex-start',
+        marginLeft: 10,
+    },
+    btnSearch: {
+        width: 200,
         height: 40,
-        marginLeft: 130,
-        marginRight:130,
-        marginTop:5,
-        
+        borderRadius: 5,
+        backgroundColor: '#ffff',
+        elevation: 5,
+        justifyContent: 'center',
+        marginTop: 50,
     },
 })
 

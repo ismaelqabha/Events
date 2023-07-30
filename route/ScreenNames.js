@@ -28,5 +28,7 @@ export const ScreenNames ={
     ProviderAddSubDetail: 'ProviderAddSubDetail',
     ProviderSetPrice: 'ProviderSetPrice',
     ProviderHomeAds: 'ProviderHomeAds',
+    ProviderCalender: 'ProviderCalender',
+    Splash: 'Splash',
 
 };

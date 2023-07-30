@@ -6,7 +6,7 @@ import SearchContext from '../store/SearchContext';
 const SearchProvider = props => {
   const [Service, setService] = useState({});
   const [city, setCity] = useState({});
-  const [cat, setCat] = useState({});
+  const [cat, setCat] = useState('');
 
   const [userId, setuserId] = useState(1);
   const [sType, setSType] = useState({});
@@ -15,19 +15,19 @@ const SearchProvider = props => {
   const [favorite, setFavorite] = useState();
 
   const [UserState, setUserState] = useState(Users || [])
-  const [userFavorates, setUserFavorates] = useState(favoritesList || [])
-  const [fileFavoriteState, setFileFavoriteState] = useState(fileFavorites || [])
+  const [userFavorates, setUserFavorates] = useState( [])
+  const [fileFavoriteState, setFileFavoriteState] = useState( [])
   const [fileEventState, setfileEventState] = useState(Events || [])
   const [AddResToEventFile, setAddResToEventFile] = useState(Request || [])
   const [userPayment, setUserPayment] = useState(Payment || [])
-  const [detailOfServ, setDetailOfServ] = useState(serviceDetail || [])
+  const [detailOfServ, setDetailOfServ] = useState([])
   const [serviceSubDetail, setserviceSubDetail] = useState(subDetail || [])
   const [SubDetData, setSubDetData] = useState(subDetailData || [])
-  const [ServiceDataInfo, setServiceDataInfo] = useState(servicesData || [])
-  const [serviceImg, setserviceImg] = useState(ServiceImages || [])
+  const [ServiceDataInfo, setServiceDataInfo] = useState([])
+  const [serviceImg, setserviceImg] = useState( [])
 
   const [checkInDesc, setcheckInDesc] = useState()
-  const [ServiceImg, setServiceImg] = useState()
+  const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
   const [DateText, setDateText] = useState('dd/mm/yyyy');
   const [TimeText, setTimeText] = useState('00:00');
@@ -63,8 +63,8 @@ const SearchProvider = props => {
         setfileEventState,
         AddResToEventFile,
         setAddResToEventFile,
-        ServiceImg,
-        setServiceImg,
+         ImgOfServeice,
+        setImgOfServeice,
         userPayment,
         setUserPayment,
         isDateAvailable,

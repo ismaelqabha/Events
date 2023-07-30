@@ -1,12 +1,14 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState,useEffect } from 'react';
 import { Pressable } from 'react-native';
 import { View, StyleSheet, TouchableOpacity, Text, Modal, Card } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import SubDetailComp from './SubDetailComp';
+import { getServiceDetail } from '../resources/API';
+import { log } from 'react-native-reanimated';
 
 
 const HallOrderComp = (props) => {
-    const { ServId, checkInDesc, detailOfServ, setDetailOfServ, userId, setdetailIdState, detailIdState } = useContext(SearchContext);
+    const { ServId, checkInDesc, detailOfServ, setDetailOfServ, setdetailIdState } = useContext(SearchContext);
     const [showModal, setShowModal] = useState(false);
 
     const onPressHandler = (DId) => {
@@ -25,21 +27,34 @@ const HallOrderComp = (props) => {
     }
 
 
+    console.log("props.service_id", props.service_id)
+    
+    const getDetailFromApi = () => {
+        getServiceDetail({SDserviceID: props.service_id}).then(res => {
+            setDetailOfServ(res)
+        })
+    }
+
+    useEffect(()=> {
+        getDetailFromApi()
+    } , [])
+
+
     const query = () => {
         if (!ServId) {
             return detailOfServ || [];
         }
-        return detailOfServ.filter(ItemSerType => {
-            return ItemSerType.SDserviceID == ServId;
+        return detailOfServ?.filter(ItemSerType => {
+            return ItemSerType.serviceDetail.SDserviceID == ServId;
         })
     }
     const renderDetail = () => {
         const data = query();
 
         if (checkInDesc == true) {
-            const cardsArray = data.map(card => {
+            const cardsArray = data?.map(card => {
                 return <View style={styles.serviceView}>
-                    <Text style={styles.txt1}>{card.detailTitle}</Text>
+                    <Text style={styles.txt1}>{card?.detailTitle}</Text>
                 </View>;
 
             });
@@ -47,8 +62,8 @@ const HallOrderComp = (props) => {
         } else {
             const cardsArray = data.map(card => {
 
-                return <TouchableOpacity onPress={() => onPressHandler(card.detail_Id)} style={styles.touchView}>
-                    <Text style={styles.text}>{card.detailTitle}</Text>
+                return <TouchableOpacity onPress={() => onPressHandler(card.serviceDetail.detailTitle)} style={styles.touchView}>
+                    <Text style={styles.text}>{card.serviceDetail?.detailTitle}</Text>
                 </TouchableOpacity>;
             });
             return cardsArray;

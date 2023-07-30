@@ -28,10 +28,10 @@ const Header = (props) => {
             style={styles.header} >
             <Pressable
                 style={styles.search}
-                //onPress={() => navigation.navigate(ScreenNames.ClientSearch)}
+                onPress={() => navigation.navigate(ScreenNames.ClientSearch)}
             >
                 <Image style={styles.img} source={require('../assets/search.png')} />
-                <Text style={styles.txt}>بحث /حسب المنطقة/حسب البحث المباشر</Text>
+                <Text style={styles.txt}>بحث</Text>
             </Pressable>
             <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false} >
                 {renderCard()}
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: 10,
     },
     home: {
 
@@ -54,17 +55,19 @@ const styles = StyleSheet.create({
     search: {
         flexDirection: 'row',
         alignItems: 'center',
-        height: 40,
+        height: 50,
         width: 300,
         fontSize: 18,
         borderRadius: 20,
         fontWeight: 'bold',
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.3,
-        backgroundColor: 'white',
+        // shadowOffset: { width: 1, height: 1 },
+        // shadowOpacity: 0.3,
+        // backgroundColor: 'white',
         marginTop: 10,
         justifyContent: 'space-between',
-        borderWidth: 1,
+        //borderWidth: 1,
+        backgroundColor:'#ffff' ,
+        elevation:5 , 
     },
     img: {
         width: 30,

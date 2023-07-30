@@ -4,64 +4,72 @@ import { fileFavorites } from '../resources/data';
 import SearchContext from '../../store/SearchContext';
 import FileFavoCard from '../components/FileFavoCard';
 import { v4 as uuidv4 } from 'uuid';
+import { AddFileFavorite, getFileFavoriteBage } from '../resources/API';
 
 
 const FileFavorites = (props) => {
-    const {isFromFavorateClick} = props.route?.params || {}
+    const {isFromFavorateClick, service_id} = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [fileFavoriteName, setfileFavoriteName] = useState();
-    const { userId ,fileFavoriteState , setFileFavoriteState,ServId, userFavorates, setUserFavorates,ServiceImg } = useContext(SearchContext);
-    const  data = userFavorates;
-
-    console.log('screen ' , props.route?.params);
-
+    const { userId ,fileFavoriteState, setFileFavoriteState,ImgOfServeice,ServId } = useContext(SearchContext);
+  
     const onPressModalHandler = () => {
         setShowModal(true);
     }
+    
+    
 
-    const query = () => {
-        if (!data.fileId) {
-            return fileFavoriteState || [];
-        }
-        return fileFavoriteState.filter(id => {
-            return id.fileFavoUserId == userId;
+    const getFavFileFromApi = () => {
+        getFileFavoriteBage({fileFavoUserId: userId}).then(res => {
+            setFileFavoriteState(res)
         })
     }
+
+    useEffect(()=> {
+        getFavFileFromApi()
+    } , [])
+
+    // const query = () => {
+    //     // if (!data.fileId) {
+    //     //     return fileFavoriteState || [];
+    //     // }
+    //     return fileFavoriteState?.filter(id => {
+    //         return id.fileFavoUserId == userId;
+    //     })
+    // }
+
     const renderFiles = () => {
-        const data = query();
-        const cardsArray = data.map(card => {
-            return <FileFavoCard  {...card} isFromFavorateClick={isFromFavorateClick} />;
+      
+        const data = fileFavoriteState;
+        const cardsArray = data?.map(card => {
+            return <FileFavoCard  {...card} isFromFavorateClick={isFromFavorateClick}/>;
         }); 
+        
         return cardsArray;
     };
+    const AddNewFile = () => {
+        AddFileFavorite({fileName: fileFavoriteName, fileFavoUserId: userId}).then (res => {
+            setFileFavoriteState(res)
+            //console.log("fileFavoriteState: ", res)
+        })
+    }
 
     const onAddFileFavoPress =() => {
-        const favFile = {
-            fileId: uuidv4(),
-            fileName: fileFavoriteName,
-            fileImg: ServiceImg,
-            fileFavoUserId: userId,
-        }
-
-        let favArr = fileFavoriteState;
-        favArr.push(favFile)
-        setFileFavoriteState([...favArr])
-
-        // const favItem = {
-        //     favoListFileId: favFile.fileId,
-        //     favoListUserId: userId,
-        //     favoListServiceId: ServId, 
+        // const favFile = {
+        //     fileId: uuidv4(),
+        //     fileName: fileFavoriteName,
+        //     fileImg: ImgOfServeice,
+        //     fileFavoUserId: userId,
         // }
 
-        // let favUserArr = userFavorates;
-        // favUserArr.push(favItem)
-        // setUserFavorates([...favUserArr])
+        // let favArr = fileFavoriteState;
+        // favArr.push(favFile)
+        // setFileFavoriteState([...favArr])
+
+        AddNewFile()
         setShowModal(false)
     }
 
-    useEffect(()=>{
-
-    } , [fileFavoriteState])
 
     
     return (
@@ -105,8 +113,6 @@ const FileFavorites = (props) => {
                                 keyboardType='default'
                                 placeholder='ادخل اسم الملف '
                                 onChangeText={setfileFavoriteName}
-                                //value={fileEventName}
-                            //editable={false}
                             />
                         </View>
                         <Pressable onPress={() => onAddFileFavoPress()} style={styles.btn}>
@@ -146,10 +152,6 @@ const styles = StyleSheet.create({
 
     },
     footer: {
-        //alignItems: 'flex-end',
-        //marginTop: 20,
-        //marginRight: 20,
-        //borderWidth:1,
         borderRadius:30,
         width: 64,
         marginLeft: 150,

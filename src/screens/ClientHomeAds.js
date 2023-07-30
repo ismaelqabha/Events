@@ -1,66 +1,59 @@
-import React, { useState,useContext,useEffect } from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import { BackgroundImage } from '@rneui/base';
+import React, { useContext, useEffect } from 'react';
+import { ScrollView, StyleSheet , View } from 'react-native';
+import SearchContext from '../../store/SearchContext';
 import Header from "../components/Header";
 import HomeCards from '../components/HomeCards';
-import { BackgroundImage } from '@rneui/base';
-import SearchContext from '../../store/SearchContext';
-import { servicesData } from '../resources/data';
+import { getHomePageData } from '../resources/API';
 
 
 const ClientHomeAds = (props) => {
-    const { data } = props.route.params || {}
-    const { cat , userFavorates,ServiceDataInfo} = useContext(SearchContext);
+    const { cat ,ServiceDataInfo  , servType , setServiceDataInfo} = useContext(SearchContext);
    
-    const [favorates, setFavoratis] = useState([]);
-
-    const getfav = async () => {
-        var favoritsFromStorage = await AsyncStorage.getItem('favorite');
-        if (favoritsFromStorage) {
-            favoritsFromStorage = await JSON.parse(favoritsFromStorage);
-        } else {
-            favoritsFromStorage = []
-        }
-        return favoritsFromStorage;
-    }
-
-
-    const checkIsFavorate = (id) => {
-        const isFav = userFavorates.find(item => item.favoListServiceId === id)
-        return !!isFav;
-    }
 
     const query = () => {
         if (!cat) {
             return ServiceDataInfo || [];
         }
-        return ServiceDataInfo.filter(nameItem => {
-            return nameItem.servType == cat;
+        return ServiceDataInfo?.filter(nameItem => {
+            return nameItem.serviceData.servType == cat;
         })
     }
 
     const renderCard = () => { 
         const data = query();
-        const cardsArray = data.map(card => {
-            return <HomeCards  {...card}
-                   // service_id={item}
-                    isFavorate={checkIsFavorate(data?.service_id)}
+        const cardsArray = data?.map(card => {
+            return <HomeCards  {...card.serviceData}
+                   images={card?.serviceImages}
             />;
         });
         return cardsArray;
     };
-    useEffect(() => {
-        getfav().then(res => setFavoratis([...res]))
-    }, []);
+    
+
+    
+    const getDataFromApi = () => {
+        getHomePageData({servType: servType}).then(res => {
+            setServiceDataInfo(res)
+        } ) 
+    }
+
+
+    useEffect(()=> {
+       getDataFromApi()
+    } , [servType])
+
+
+
 
     return (
-        <BackgroundImage style={styles.bg}
-        //source={require('../../src/assets/bg.png')}
+        <View style={styles.bg}
         >
             <Header />
             <ScrollView contentContainerStyle={styles.home}>
                 {renderCard()}
             </ScrollView>
-        </BackgroundImage>
+        </View>
     );
 }
 
