@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useContext } from 'react';
+import React, { useContext,useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
@@ -12,10 +12,13 @@ const HomeCards = (props) => {
     const { setSType, setServId } = useContext(SearchContext);
 
     const onCaardPress = () => {
-        setServId(props.service_id)
         setSType((props.servType))
         navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props } })
     }
+
+    useEffect(() => {
+        
+    }, [])
 
 
     return (

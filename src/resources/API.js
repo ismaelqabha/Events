@@ -10,7 +10,10 @@ export const getHomePageData = async (body) => {
 export const getServiceDetail = async (body) => {
     const url = 'serviceDetail/getServiceDetailByServID'
     return await AppFetch(url, 'POST', body)
-
+}
+export const getCampaigns = async (body) => {
+    const url = 'Campaigns/getCampaigns'
+    return await AppFetch(url, 'POST', body)
 }
 export const getImagDescBage = async () => {
     const url = ''
@@ -34,9 +37,16 @@ export const AddFileFavorite = async (body) => {
 
 }
 
+//Cites
+export const getCities = async (body) => {
+    const url = 'City/getCity'
+    return await AppFetch(url, 'POST', body)
+}
+
 // Favorites Services Info
 
 export const getFavoritesforUser = async (body) => {
+   
     const url = 'FavoritesList/getFavoritesList'
     return await AppFetch(url, 'POST', body)
 }
@@ -45,7 +55,7 @@ export const getFavoritesServiceInfo = async (body) => {
     return await AppFetch(url, 'POST', body)
 }
 export const AddNewFavorites = async (body) => {
-    console.log("AddNewFavorites: ", body);
+    //console.log("AddNewFavorites: ", body);
     const url = 'FavoritesList/addFavoritesList'
     return await AppFetch(url, 'POST', body)
 }

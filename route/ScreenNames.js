@@ -30,5 +30,6 @@ export const ScreenNames ={
     ProviderHomeAds: 'ProviderHomeAds',
     ProviderCalender: 'ProviderCalender',
     Splash: 'Splash',
+    Results: 'Results',
 
 };

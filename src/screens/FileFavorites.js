@@ -17,8 +17,6 @@ const FileFavorites = (props) => {
         setShowModal(true);
     }
     
-    
-
     const getFavFileFromApi = () => {
         getFileFavoriteBage({fileFavoUserId: userId}).then(res => {
             setFileFavoriteState(res)
@@ -50,22 +48,12 @@ const FileFavorites = (props) => {
     const AddNewFile = () => {
         AddFileFavorite({fileName: fileFavoriteName, fileFavoUserId: userId}).then (res => {
             setFileFavoriteState(res)
-            //console.log("fileFavoriteState: ", res)
+           
         })
     }
 
     const onAddFileFavoPress =() => {
-        // const favFile = {
-        //     fileId: uuidv4(),
-        //     fileName: fileFavoriteName,
-        //     fileImg: ImgOfServeice,
-        //     fileFavoUserId: userId,
-        // }
-
-        // let favArr = fileFavoriteState;
-        // favArr.push(favFile)
-        // setFileFavoriteState([...favArr])
-
+        renderFiles()
         AddNewFile()
         setShowModal(false)
     }

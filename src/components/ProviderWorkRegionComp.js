@@ -30,7 +30,7 @@ const ProviderWorkRegionComp = (props) => {
         const SDInfo = ServiceDataInfo;
         const isChecked = checkIfChecked(item);
 
-        console.log('isChecked: ', isChecked);
+        //console.log('isChecked: ', isChecked);
 
         if (isChecked === null) {
             return;
@@ -44,7 +44,7 @@ const ProviderWorkRegionComp = (props) => {
             SDInfo[regionItemIndex].workingRegion = prods
             setServiceDataInfo([...SDInfo])
         }
-        console.log('xxxx',ServiceDataInfo);
+        //console.log('xxxx',ServiceDataInfo);
     }
     const clicked = checkIfChecked(props, true);
 

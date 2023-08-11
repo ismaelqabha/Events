@@ -33,27 +33,23 @@ const FileFavoCard = (props) => {
 
 
     const setNewFavoritFromApi = () => {
-        console.log( "favoListFileId: ", fileId, "favoListUserId: ", userId, "favoListServiceId: ", ServId);
-
+        //console.log("favoListFileId: ", fileId, "favoListUserId: ", userId, "favoListServiceId: " ,ServId);
         const newFavorateItem = { favoListFileId: fileId, favoListUserId: userId, favoListServiceId: ServId }
 
-        console.log("newFavorateItem: " , newFavorateItem);
-
         AddNewFavorites(newFavorateItem).then(res => {
-
-            console.log("fav res : " , res);
 
             const userFav = userFavorates || [];
             userFav.push(newFavorateItem)
             setUserFavorates([...userFav])
         })
+        navigation.navigate(ScreenNames.Results)
     }
 
     const onCaardPress = () => {
-        setFId(props.fileId);
-        console.log("ServId: ",ServId);
+        
+       
         if (!isFromFavorateClick) {
-            navigation.navigate(ScreenNames.Favorites, { fileName: fileName })
+            navigation.navigate(ScreenNames.Favorites, { fileName: fileName, fileId: fileId })
             return;
         }
 

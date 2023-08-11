@@ -14,44 +14,26 @@ const width = SIZES.screenWidth - 40;
 const SliderImage = (props) => {
     const navigation = useNavigation();
     const [active, setActive] = useState();
-    const { setSType, setServId, userFavorates, setUserFavorates, setImgOfServeice, userId } = useContext(SearchContext);
-
-
-    const getFavoritesFromApi = () => {
-        getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
-            !resjson?.message ?
-                setUserFavorates(res) :
-                null
-            console.log("userFav", userFavorates);
-        })
-    }
-
-    useEffect(() => {
-         getFavoritesFromApi()
-    }, [])
-
+    const { setSType, userFavorates, setUserFavorates, setImgOfServeice, userId,setServId } = useContext(SearchContext);
 
 
     const checkIfFavorate = () => {
-        //console.log("userFAvorites check,", userFavorates);
         const isFav = userFavorates?.find(item =>
             item.favoListServiceId === props.service_id)
         return !!isFav;
     }
-    console.log("checkIfFavorate(): ", checkIfFavorate())
+    
 
 
     const removeFromFavorates = () => {
-       
+
         RemoveFavorite({ favoListUserId: userId, favoListServiceId: props.service_id }).then(res => {
+           // console.log("remove in");
             setUserFavorates(res?.favorates)
-           // console.log("userFavorates: ", res)
         })
     }
 
     const navigateToFavoratesList = () => {
-        console.log("props.service_id: ", props.service_id);
-        setServId(props.service_id)
         setImgOfServeice(props.img)
         navigation.navigate(ScreenNames.FileFavorites, { isFromFavorateClick: true }, { ...props });
     }
@@ -60,6 +42,7 @@ const SliderImage = (props) => {
         if (checkIfFavorate()) {
             removeFromFavorates()
         } else {
+            setServId(props.service_id)
             navigateToFavoratesList()
         }
     }

@@ -10,13 +10,6 @@ const ServiceCard = (props) => {
     const { cat, setCat, ServiceDataInfo, setServiceDataInfo, ServId, userId } = useContext(SearchContext);
     const navigation = useNavigation();
 
-    
-    // useEffect(()=> {
-    //     getHomePageData().then(res => {
-    //         console.log("res:" , res);
-    //         setserviceImg(res)
-    //     } ) 
-    // } , [])
 
     const chickIfChecked = () => {
         return isChecked
@@ -24,7 +17,7 @@ const ServiceCard = (props) => {
 
     const onCatPress = (item) => {
         if (isFromChooseServiceClick) {
-            
+
             props.onCatPress(props.titleCategory);
 
             let ServiceArr = ServiceDataInfo;
@@ -41,7 +34,7 @@ const ServiceCard = (props) => {
         } else {
             const x = props.titleCategory;
             setCat(x);
-            navigation.navigate(ScreenNames.ClientHomeAds, { data: { ...props } });
+            navigation.navigate(ScreenNames.Results, { data: { ...props } });
         }
         //console.log(ServiceDataInfo);
     }
@@ -61,13 +54,16 @@ const ServiceCard = (props) => {
             </TouchableOpacity>;
 
         } else {
-            return <TouchableOpacity style={styles.body} onPress={() => onCatPress()}>
-                <Image
-                    source={props.img}
-                    style={styles.img}
-                />
+            return <View>
+                <TouchableOpacity style={styles.body} onPress={() => onCatPress()}>
+                    <Image
+                        source={props.img}
+                        style={styles.img}
+                    />
+                    
+                </TouchableOpacity>
                 <Text style={styles.text}>{props.titleCategory}</Text>
-            </TouchableOpacity>;
+            </View>;
         }
     }
 
@@ -84,31 +80,27 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     body: {
-        height: 100,
-        width: 100,
-        borderRadius: 12,
+        height: 80,
+        width: 80,
+        borderRadius: 50,
         alignItems: 'center',
-        justifyContent:'space-between' ,
-        marginTop: 10,
-        // borderColor: 'white',
-        marginLeft: 10,
-        // padding:20, 
-        // borderWidth:1 , 
-        paddingVertical:20 ,
-        backgroundColor:'#ffff' ,
-        elevation:5 , 
+        justifyContent: 'space-between',
+        margin: 10,
+        paddingVertical: 20,
+        backgroundColor: '#ffff',
+        elevation: 5,
     },
     img: {
-        width: 25,
-        height: 25,
+        width: 40,
+        height: 40,
     },
     text: {
         textAlign: 'center',
         fontSize: 14,
         fontWeight: 'bold',
-        color: 'black',
-        // fontFamily: 'Cairo-VariableFont_slnt,wght',
-        width:'100%' 
+        //color: 'black',
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        width: '100%'
     },
     otherbody: {
         height: 120,

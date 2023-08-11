@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import SearchContext from '../../store/SearchContext';
 
-const ClientNeeds = () => {
+const DateTPicker = () => {
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
@@ -14,7 +14,6 @@ const ClientNeeds = () => {
     const onChange = (event, selectedDate) => {
         setShow(false)
         const currentDate = selectedDate || date;
-        // setShow(Platform.OS === 'android');
         setDate(currentDate);
 
         let tempDate = new Date(currentDate);
@@ -113,4 +112,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default ClientNeeds;
+export default DateTPicker;

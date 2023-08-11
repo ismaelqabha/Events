@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, Pressable } from 'react-native';
 import HomeCards from '../components/HomeCards';
 import SearchContext from '../../store/SearchContext';
@@ -6,8 +6,12 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { getFavoritesServiceInfo } from '../resources/API';
 
 const Favorites = (props) => {
-    const { userId, ServId, userFavorates, setUserFavorates, ServiceDataInfo, fId } = useContext(SearchContext);
+    const context = useContext(SearchContext); 
+    const { userId, ServId , ServiceDataInfo, fId } = context ; 
     const { fileName, fileId } = props?.route.params;
+   // const [ userId, userFavorates ,setUserFavorates ] = useContext(SearchContext); 
+
+    const [userFavorates ,setUserFavorates ] =  useState([])
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -15,27 +19,19 @@ const Favorites = (props) => {
     
 
     const getFavoritesFromApi = () => {
+       
         getFavoritesServiceInfo({ favoListFileId: fileId, favoListUserId: userId }).then(res => {
-            setUserFavorates(res)
-            console.log("userFavorates: ", res);
+             setUserFavorates(res)
+            //console.log("UFavorates: ", res.map(i => i.favorateInfo.service_id)); 
         })
     }
-    useEffect(() => {
+ useEffect(() => {
         getFavoritesFromApi()
     }, [])
 
-    // const query = () => {
-    //     const filterdFav = userFavorates?.filter(favService => {
-    //         return favService.favoListFileId ==  fId &&
-    //         favService.favoListUserId == userId ;
-    //     })
 
-    //    const faveArr = filterdFav.map(fav => ServiceDataInfo.find(ser => ser.service_id === fav.favoListServiceId))
-    //    return faveArr ;
-    // }
     const renderCard = () => {
-        const data = userFavorates;
-        const cardsArray = data?.map(card => {
+        const cardsArray = userFavorates?.map(card => {
             return <HomeCards  {...card.favorateInfo}
                 images={card?.serImages}
             />;

@@ -31,6 +31,7 @@ import { Easing } from "react-native";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 import HomeNavigator from "./HomeNavigator";
 import Splash from "../src/screens/Splash";
+import Results from "../src/screens/Results";
 
 const MainNavigation = (props) => {
     const Stack = createNativeStackNavigator();
@@ -84,6 +85,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ClientSearch} component={ClientSearch} />
                 <Stack.Screen name={ScreenNames.ClientInfo} component={ClientInfo} />
                 <Stack.Screen name={ScreenNames.ClientRequest} component={ClientRequest} />
+                <Stack.Screen name={ScreenNames.Results} component={Results} />
 
                 {/* <Stack.Screen name={ScreenNames.FileFavorites} component={FileFavorites} /> */}
                 {/* <Stack.Screen name={ScreenNames.ClientEvents} component={ClientEvents} /> */}

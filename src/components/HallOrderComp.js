@@ -52,8 +52,8 @@ const HallOrderComp = (props) => {
         const data = query();
 
         if (checkInDesc == true) {
-            const cardsArray = data?.map(card => {
-                return <View style={styles.serviceView}>
+            const cardsArray = data?.map((card,i) => {
+                return <View key={i} style={styles.serviceView}>
                     <Text style={styles.txt1}>{card?.detailTitle}</Text>
                 </View>;
 

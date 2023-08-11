@@ -24,7 +24,9 @@ const SearchProvider = props => {
   const [serviceSubDetail, setserviceSubDetail] = useState(subDetail || [])
   const [SubDetData, setSubDetData] = useState(subDetailData || [])
   const [ServiceDataInfo, setServiceDataInfo] = useState([])
-  const [serviceImg, setserviceImg] = useState( [])
+  const [serviceImg, setserviceImg] = useState([])
+  const [campInfo, setCampInfo] = useState([])
+  const [town, setTown] = useState([])
 
   const [checkInDesc, setcheckInDesc] = useState()
   const [ImgOfServeice, setImgOfServeice] = useState()
@@ -33,6 +35,9 @@ const SearchProvider = props => {
   const [TimeText, setTimeText] = useState('00:00');
   const [detailIdState, setdetailIdState] = useState();
   const [RequestIdState, setRequestIdState] = useState();
+  const [userRegion, setUserRegion] = useState ('المثلث الشمالي');
+  const [showModal, setShowModal] = useState(false);
+
 
   return (
     <SearchContext.Provider
@@ -89,6 +94,14 @@ const SearchProvider = props => {
         setserviceImg,
         UserState,
         setUserState,
+        campInfo,
+        setCampInfo,
+        userRegion, 
+        setUserRegion,
+        showModal, 
+        setShowModal,
+        town, 
+        setTown,
       }}>
       {props.children}
     </SearchContext.Provider>
