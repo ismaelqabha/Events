@@ -46,6 +46,7 @@ const ProviderChooseService = (props) => {
                     data={query()}
                     renderItem={renderCard}
                     numColumns={2}
+                  
                 />
             </View>
 

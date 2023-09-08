@@ -3,14 +3,17 @@ import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
 import { useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
 
 
 const ServiceCard = (props) => {
     const { isFromChooseServiceClick, isChecked } = props;
-    const { cat, setCat, ServiceDataInfo, setServiceDataInfo, ServId, userId } = useContext(SearchContext);
+    const { cat, setCat, ServiceDataInfo, setServiceDataInfo, ServId, userId, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
 
+    const [pressed, setPressed] = useState(true)
 
+    //console.log("ServId", ServId);
     const chickIfChecked = () => {
         return isChecked
     }
@@ -34,9 +37,21 @@ const ServiceCard = (props) => {
         } else {
             const x = props.titleCategory;
             setCat(x);
-            navigation.navigate(ScreenNames.Results, { data: { ...props } });
+            setCategorychozen(true)
+            props.onCatPress(props.titleCategory);
+            let ServiceArr = ServiceDataInfo;
+            const isChecked = chickIfChecked(item);
+            if (!isChecked) {
+                let serviceIndex = ServiceArr.findIndex(ser => ser.service_id === ServId)
+
+                if (serviceIndex != -1) {
+                    ServiceArr[serviceIndex].servType = props.titleCategory;
+                }
+                setServiceDataInfo([...ServiceArr])
+            }
+            //navigation.navigate(ScreenNames.Results, { data: { ...props } });
         }
-        //console.log(ServiceDataInfo);
+
     }
 
 
@@ -54,13 +69,15 @@ const ServiceCard = (props) => {
             </TouchableOpacity>;
 
         } else {
+            const ServiceCard = props;
+            const clicked = chickIfChecked(ServiceCard);
             return <View>
-                <TouchableOpacity style={styles.body} onPress={() => onCatPress()}>
+                <TouchableOpacity style={clicked ? styles.pressBody : styles.body} onPress={() => onCatPress()}>
                     <Image
                         source={props.img}
                         style={styles.img}
                     />
-                    
+
                 </TouchableOpacity>
                 <Text style={styles.text}>{props.titleCategory}</Text>
             </View>;
@@ -80,9 +97,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     body: {
-        height: 80,
-        width: 80,
-        borderRadius: 50,
+        height: 95,
+        width: 95,
+        borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'space-between',
         margin: 10,
@@ -90,13 +107,26 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffff',
         elevation: 5,
     },
+    pressBody: {
+        height: 100,
+        width: 100,
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        margin: 10,
+        paddingVertical: 20,
+        backgroundColor: '#ffff',
+        elevation: 5,
+        borderColor: 'gray',
+        borderWidth: 2
+    },
     img: {
-        width: 40,
-        height: 40,
+        width: 60,
+        height: 60,
     },
     text: {
         textAlign: 'center',
-        fontSize: 14,
+        fontSize: 17,
         fontWeight: 'bold',
         //color: 'black',
         fontFamily: 'Cairo-VariableFont_slnt,wght',

@@ -14,7 +14,6 @@ export const ScreenNames ={
     FileFavoritesShow: 'FileFavoritesShow',
     ClientShowEvents: 'ClientShowEvents',
     ClientInfo:'ClientInfo',
-    ClientNeeds: 'ClientNeeds',
     ClientResult: 'ClientResult',
     ClientSearch: 'ClientSearch',
 // Provider Screens
@@ -31,5 +30,6 @@ export const ScreenNames ={
     ProviderCalender: 'ProviderCalender',
     Splash: 'Splash',
     Results: 'Results',
+    SearchServcies: 'SearchServcies',
 
 };

@@ -1,34 +1,16 @@
 import { BackgroundImage } from '@rneui/base';
 import React, { useContext, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, Pressable, Image } from 'react-native';
 import SearchContext from '../../store/SearchContext';
-import Header from "../components/Header";
-import HomeCards from '../components/HomeCards';
 import CampaignCard from '../components/CampaignCard';
-
+import { useNavigation } from '@react-navigation/native';
+import { ScreenNames } from '../../route/ScreenNames';
+import { SliderBox } from 'react-native-image-slider-box';
+import AddNewDates from '../components/AddNewDates';
 
 const ClientHomeAds = (props) => {
-    const { cat, ServiceDataInfo, campInfo, userRegion} = useContext(SearchContext);
-
-
-    const query = () => {
-        if (!cat) {
-            return ServiceDataInfo || [];
-        }
-        return ServiceDataInfo?.filter(nameItem => {
-            return nameItem.serviceData.servType == cat;
-        })
-    }
-
-    const renderCard = () => {
-        const data = query();
-        const cardsArray = data?.map(card => {
-            return <HomeCards  {...card.serviceData}
-                images={card?.serviceImages}
-            />;
-        });
-        return cardsArray;
-    };
+    const { cat, ServiceDataInfo, campInfo, userRegion } = useContext(SearchContext);
+    const navigation = useNavigation();
 
     const queryCampaign = () => {
         return campInfo?.filter(res => {
@@ -37,6 +19,7 @@ const ClientHomeAds = (props) => {
     }
 
     const renderCampaigns = () => {
+        //const x = AddNewDates()
 
         const CampData = queryCampaign();
         const campArray = CampData?.map(camp => {
@@ -44,22 +27,45 @@ const ClientHomeAds = (props) => {
         });
         return campArray;
     }
+    const photo = [
+        require('../assets/abofaneh.png'),
+        require('../assets/ameer.png'),
+        require('../assets/djSamer.png')
+    ]
 
 
     return (
         <View style={styles.bg}>
             <ScrollView contentContainerStyle={styles.home}>
-            <Header />
-            <View style={styles.campighn}>
-                <Text style={styles.titleText}>أفضل العروض</Text>
-                <View style={styles.campBox}>
-                    <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
-                        {renderCampaigns()}
-                    </ScrollView>
+                <View >
+                    <SliderBox
+                        sliderBoxHeight={300}
+                        images={photo}
+                        dotColor="blue"
+                        dotStyle={{ width: 15, height: 15, borderRadius: 50 }}
+                        autoplay={true}
+                    />
                 </View>
-            </View>
-            
-                {renderCard()}
+
+                <Pressable
+                    style={styles.search}
+                    onPress={() => navigation.navigate(ScreenNames.ClientSearch)}
+                >
+                    <Image style={styles.img} source={require('../assets/search1.png')} />
+                    <View>
+                        <Text style={styles.txt}>بحث خدمات المناسبات</Text>
+                        <Text style={styles.txt}>حسب المكان / حسب الزمان</Text>
+                    </View>
+                </Pressable>
+
+                <View style={styles.campighn}>
+                    <Text style={styles.titleText}>أفضل العروض</Text>
+                    <View style={styles.campBox}>
+                        <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
+                            {renderCampaigns()}
+                        </ScrollView>
+                    </View>
+                </View>
             </ScrollView>
         </View>
     );
@@ -77,13 +83,13 @@ const styles = StyleSheet.create({
     },
     campighn: {
         borderColor: 'black',
-        flexDirection: 'column',
+        marginTop: 40,
     },
     campBox: {
         flexDirection: 'row',
         justifyContent: 'center',
-       padding: 10,
-       
+        padding: 10,
+
     },
     titleText: {
         fontSize: 20,
@@ -93,7 +99,35 @@ const styles = StyleSheet.create({
         marginRight: 20,
         marginTop: 10,
         //marginBottom: 10,
-    }
+    },
+    search: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 60,
+        width: '90%',
+        fontSize: 18,
+        borderRadius: 50,
+        fontWeight: 'bold',
+        marginTop: 10,
+        justifyContent: 'space-between',
+        backgroundColor: 'white',
+        elevation: 5,
+        marginBottom: 10,
+        alignSelf: 'center'
+
+    },
+    img: {
+        width: 40,
+        height: 40,
+        marginLeft: 7,
+    },
+    txt: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginRight: 20,
+        color: 'gray'
+    },
+
 })
 
 export default ClientHomeAds;

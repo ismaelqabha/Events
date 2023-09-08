@@ -54,7 +54,6 @@ const FileFavoCard = (props) => {
         }
 
         setNewFavoritFromApi()
-
         resetStack()
     }
     return (

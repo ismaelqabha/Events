@@ -12,31 +12,55 @@ const SearchProvider = props => {
   const [sType, setSType] = useState({});
   const [fId, setFId] = useState({});
   const [ServId, setServId] = useState('');
-  const [favorite, setFavorite] = useState();
+
+
+
+  // Data Base Tables
+  const [userFavorates, setUserFavorates] = useState([])
+  const [fileFavoriteState, setFileFavoriteState] = useState([])
+  const [ServiceDataInfo, setServiceDataInfo] = useState([])
+  const [ServiceImages, setServiceImages] = useState([])
+  const [ServiceDatesforBooking, setServiceDatesforBooking] = useState([])
+  const [campInfo, setCampInfo] = useState([])
+  const [datesforBooking, setDatesforBooking] = useState([])
+  // Service Descrption Request
+  const [detailOfServ, setDetailOfServ] = useState([])
+  const [isFromServiceDescription, setisFromServiceDescription] = useState()
+
+  const [town, setTown] = useState([])
+
+  // ClientSearch
+  const [cityselected, setcityselected] = useState("");
+  const [regionselect, setregionselect] = useState("");
+  const [selectDateforSearch, setselectDateforSearch] = useState();
+  const [selectMonthforSearch, setselectMonthforSearch] = useState();
+  const [Categorychozen, setCategorychozen] = useState(false)
+  //
+  const [userRegion, setUserRegion] = useState('المثلث الشمالي');
+  const [requestedDate, setrequestedDate] = useState()
+
+
+
+
+
+
 
   const [UserState, setUserState] = useState(Users || [])
-  const [userFavorates, setUserFavorates] = useState( [])
-  const [fileFavoriteState, setFileFavoriteState] = useState( [])
   const [fileEventState, setfileEventState] = useState(Events || [])
   const [AddResToEventFile, setAddResToEventFile] = useState(Request || [])
   const [userPayment, setUserPayment] = useState(Payment || [])
-  const [detailOfServ, setDetailOfServ] = useState([])
+  
   const [serviceSubDetail, setserviceSubDetail] = useState(subDetail || [])
   const [SubDetData, setSubDetData] = useState(subDetailData || [])
-  const [ServiceDataInfo, setServiceDataInfo] = useState([])
-  const [serviceImg, setserviceImg] = useState([])
-  const [campInfo, setCampInfo] = useState([])
-  const [town, setTown] = useState([])
 
-  const [checkInDesc, setcheckInDesc] = useState()
+  const [serviceImg, setserviceImg] = useState([])
+
   const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
-  const [DateText, setDateText] = useState('dd/mm/yyyy');
-  const [TimeText, setTimeText] = useState('00:00');
   const [detailIdState, setdetailIdState] = useState();
   const [RequestIdState, setRequestIdState] = useState();
-  const [userRegion, setUserRegion] = useState ('المثلث الشمالي');
-  const [showModal, setShowModal] = useState(false);
+
+
 
 
   return (
@@ -56,28 +80,20 @@ const SearchProvider = props => {
         setFId,
         ServId,
         setServId,
-        favorite,
-        setFavorite,
         userFavorates,
         setUserFavorates,
         fileFavoriteState,
         setFileFavoriteState,
-        checkInDesc,
-        setcheckInDesc,
         fileEventState,
         setfileEventState,
         AddResToEventFile,
         setAddResToEventFile,
-         ImgOfServeice,
+        ImgOfServeice,
         setImgOfServeice,
         userPayment,
         setUserPayment,
         isDateAvailable,
         setisDateAvailable,
-        DateText,
-        setDateText,
-        TimeText,
-        setTimeText,
         detailOfServ,
         setDetailOfServ,
         serviceSubDetail,
@@ -96,12 +112,30 @@ const SearchProvider = props => {
         setUserState,
         campInfo,
         setCampInfo,
-        userRegion, 
+        userRegion,
         setUserRegion,
-        showModal, 
-        setShowModal,
-        town, 
+        town,
         setTown,
+        cityselected,
+        setcityselected,
+        regionselect,
+        setregionselect,
+        selectDateforSearch,
+        setselectDateforSearch,
+        selectMonthforSearch,
+        setselectMonthforSearch,
+        datesforBooking,
+        setDatesforBooking,
+        ServiceImages,
+        setServiceImages,
+        ServiceDatesforBooking,
+        setServiceDatesforBooking,
+        requestedDate,
+        setrequestedDate,
+        Categorychozen,
+        setCategorychozen,
+        isFromServiceDescription, 
+        setisFromServiceDescription
       }}>
       {props.children}
     </SearchContext.Provider>

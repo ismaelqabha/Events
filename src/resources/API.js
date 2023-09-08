@@ -11,26 +11,26 @@ export const getServiceDetail = async (body) => {
     const url = 'serviceDetail/getServiceDetailByServID'
     return await AppFetch(url, 'POST', body)
 }
-export const getCampaigns = async (body) => {
-    const url = 'Campaigns/getCampaigns'
-    return await AppFetch(url, 'POST', body)
-}
-export const getImagDescBage = async () => {
-    const url = ''
-    return await AppFetch(url)
-
-}
 export const getEventsInfoBage = async () => {
     const url = ''
     return await AppFetch(url)
 
+}
+// Camaighns
+export const getCampaigns = async (body) => {
+    const url = 'Campaigns/getCampaigns'
+    return await AppFetch(url, 'POST', body)
+}
+//Add New Dates According Service Id
+export const NewDatesAdding = async (body) => {
+    const url = 'Dates/addDates'
+    return await AppFetch(url, 'POST', body)
 }
 // File Favorite Info
 export const getFileFavoriteBage = async (body) => {
     const url = 'fileFavorites/getfileFavoritesByUserId'
     return await AppFetch(url, 'POST', body)
 }
-
 export const AddFileFavorite = async (body) => {
     const url = 'fileFavorites/addFileFavorate'
     return await AppFetch(url, 'POST', body)
@@ -43,10 +43,20 @@ export const getCities = async (body) => {
     return await AppFetch(url, 'POST', body)
 }
 
-// Favorites Services Info
+//Service Images
+export const getServiceImages = async (body) => {
+    const url = 'ServiceImags/getImg'
+    return await AppFetch(url, 'POST', body)
+}
 
+// Service Booking Dates
+export const getbookingDates = async (body) => {
+    const url = 'Dates/getDates'
+    return await AppFetch(url, 'POST', body)
+}
+
+// Favorites Services Info
 export const getFavoritesforUser = async (body) => {
-   
     const url = 'FavoritesList/getFavoritesList'
     return await AppFetch(url, 'POST', body)
 }
@@ -66,10 +76,6 @@ export const RemoveFavorite = async (body) => {
 
 const AppFetch = async (url, method, body) => {
     const fullUrl = baseUrl + url
-    // console.log("fullUrl: ", fullUrl);
-    // console.log("fetch body ", body);
-
-
     const bodyStr = JSON.stringify(body) || ''
 
 

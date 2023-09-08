@@ -61,11 +61,9 @@ const SliderImage = (props) => {
 
 
     const renderImages = () => {
-
         const imageArray = props.images?.map(photo => {
             return photo.image;
         });
-
         return imageArray?.map((image, index) => {
             return (
                 <Pressable onPress={onImagesPress}>

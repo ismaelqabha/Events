@@ -17,7 +17,10 @@ import SearchProvider from '../Events/store/SearchProvider';
 
 const App: () => Node = () => {
 
-  LogBox.ignoreLogs(['source.uri should not be an empty string'])
+  LogBox.ignoreLogs([
+    'source.uri should not be an empty string',
+    'Warning: Each child in a list should have a unique "key" prop.'
+  ])
 
   useEffect(() => {
    var url = "https://nameless-meadow-25389.herokuapp.com/server"

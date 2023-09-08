@@ -3,10 +3,7 @@ import { View, StyleSheet, Pressable, Text, Modal, Image, TextInput } from 'reac
 import SearchContext from '../../store/SearchContext';
 import HomeCards from '../components/HomeCards';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import ModalFilterComp from '../components/ModalFilterComp';
 
-import ProviderWorkRegionComp from '../components/ProviderWorkRegionComp';
-import { regionData } from '../resources/data';
 import { ScrollView } from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider'
 import { SelectList } from 'react-native-dropdown-select-list'
@@ -14,32 +11,49 @@ import { MultipleSelectList } from 'react-native-dropdown-select-list'
 import { getCities } from '../resources/API';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import moment from "moment";
+
 
 
 const Results = (props) => {
-    const { cat, ServiceDataInfo, showModal, setShowModal, town, setTown } = useContext(SearchContext);
-    const [range, setRang] = useState('50');
-    const [sliding, setSliding] = useState('Inactive');
-    const [selected, setSelected] = useState("");
-    const [select, setSelect] = useState([]);
-    const [guestNum, setGuestNum] = useState()
+    const {
+        cat,
+        ServiceDataInfo,
+        town, setTown, DateText,
+        setDateText, TimeText, setTimeText, cityselected, regionselect,
+        setselectDateforSearch, selectDateforSearch, selectMonthforSearch, setselectMonthforSearch } = useContext(SearchContext);
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
-    const [DateText, setDateText] = useState('dd/mm/yyyy');
-    const [TimeText, setTimeText] = useState('00:00');
+    const [showModal, setShowModal] = useState(false);
+    const [dataFilterd, setDataFilterd] = useState(false)
+
+    const [typeClicked, settypeClicked] = useState("");
+    const [range, setRang] = useState('50');
+    const [sliding, setSliding] = useState('Inactive');
+    const [selectedCity, setSelectedCity] = useState("");
+    const [selectRigon, setSelectRigon] = useState("");
+    const [guestNum, setGuestNum] = useState(0)
+
+    const [chozenfilter, setchozenfilter] = useState({ ...objectFilter })
+    const maxPrice = 10000
+    const objectFilter = {
+        selectRigon,
+        range,
+        guestNum,
+        typeClicked,
+        selectedCity
+    }
+
+    const objectResult = {
+        cityselected,
+        regionselect,
+        selectDateforSearch,
+        selectMonthforSearch
+    }
 
 
-    const data = [
-        { key: '1', value: 'Mobiles' },
-        { key: '2', value: 'Appliances' },
-        { key: '3', value: 'Cameras' },
-        { key: '4', value: 'Computers' },
-        { key: '5', value: 'Vegetables' },
-        { key: '6', value: 'Diary Products' },
-        { key: '7', value: 'Drinks' },
-    ]
     const regionData = [
         { key: '2', value: 'الجليل' },
         { key: '3', value: 'النقب ' },
@@ -83,25 +97,29 @@ const Results = (props) => {
         });
         return cityName;
     };
-    const renderRiegon = () => {
-        const data = regionData;
+    // const renderRiegon = () => {
+    //     const data = regionData;
 
-        const regionName = data.map(Rname => {
-            return Rname.city;
-        });
-        return regionName;
-    };
+    //     const regionName = data.map(Rname => {
+    //         return Rname.city;
+    //     });
+    //     return regionName;
+    // };
 
 
     const onPressHandler = () => {
+        objectResult.cityselected = ''
+        objectResult.regionselect = ''
         props.navigation.goBack();
     }
     const modalPress = () => {
         setShowModal(true);
+
     }
 
     const closeModal = () => {
-        setShowModal(false);;
+        setDataFilterd(true);
+        setShowModal(false);
     }
 
     const query = () => {
@@ -110,31 +128,135 @@ const Results = (props) => {
         }
         return ServiceDataInfo?.filter(nameItem => {
             return nameItem.serviceData.servType == cat;
+
         })
+
     }
 
-    const renderCard = () => {
+    const checkSelect = (nameItem) => {
+        return objectFilter.selectRigon == "" ? true : nameItem.serviceData.region == objectFilter.selectRigon
+    }
+    const filterData = () => {
         const data = query();
+        return data?.filter(nameItem => {
+            const isPriceinRange = chozenfilter.range ? nameItem.serviceData.servicePrice <= chozenfilter.range : true
+            const isRegonSelected = checkSelect(nameItem)
+            const isCpicitInrange = objectFilter.guestNum ? nameItem.serviceData.maxCapasity >= objectFilter.guestNum : true
+            const isHallType = objectFilter.typeClicked ? nameItem.serviceData.hallType == objectFilter.typeClicked : true
+            const isSeletedCity = objectFilter.selectedCity ? nameItem.serviceData.address == objectFilter.selectedCity : true
+            const filterQury = isPriceinRange && isRegonSelected && isCpicitInrange && isHallType && isSeletedCity
+            return filterQury;
+        })
+    }
+    const renderServCard = () => {
+        const data = filterData();
         const cardsArray = data?.map(card => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
+                dates={card?.serviceDates}
             />;
         });
         return cardsArray;
     };
 
-    const query1 = () => {
-        return regionData || [];
+    const findFirstDateAvailable = (serviceDates) => {
+        const requestedDate = moment(new Date())
+
+        const Resultwithoutfilter = serviceDates?.filter?.(sevice => {
+            const { bookDate, serviceStutes } = sevice;
+            const bookDateMoment = moment(bookDate);
+            const res1 = bookDateMoment.isAfter(requestedDate)
+            const res2 = serviceStutes == 'true'
+            //console.log("serviceStutes",serviceStutes , "res1", res1);
+            return res1 && res2
+        })
+        const dateArray = Resultwithoutfilter[0]
+        //console.log("dateArray", dateArray);
+        return dateArray;
+    };
+
+    const checkDateIsAvilable = (serviceDates) => {
+       
+        const requestedDate = moment(new Date(objectResult.selectDateforSearch)).startOf('day')
+
+
+        const isAvilable = serviceDates?.find(sevice => {
+            const { bookDate, serviceStutes } = sevice;
+            const bookDateMoment = moment(bookDate).startOf('day');
+            //console.log("bookDateMoment", bookDateMoment, "requestedDate", requestedDate);
+            const res1 = bookDateMoment.isSame(requestedDate)
+            const res2 = serviceStutes == 'true'
+            // console.log("res1", res1, "res2", res2);
+            return res1 && res2
+        })
+        return !!isAvilable;
     }
-    const renderCard1 = () => {
-        const data = query1();
-        const cardsArray = data.map(card => {
-            return <ProviderWorkRegionComp  {...card} />;
+    const checkMonthAvailableDate = (serviceDates) => {
+        const requestedMonth = objectResult.selectMonthforSearch;
+        
+
+        const AvilableMonth = serviceDates?.find(sevice => {
+            const { bookDate, serviceStutes } = sevice;
+            const wholeDate = moment(bookDate);
+            const gittingMonth = wholeDate.format('M')
+           // console.log("gittingMonth", gittingMonth, "requestedMonth", requestedMonth);
+            const isSameMonth = gittingMonth == requestedMonth 
+            return isSameMonth && serviceStutes == 'true'
+        })
+
+        return !!AvilableMonth;
+    }
+    const comparingData = (dateAviable, monthAvailble, source) => {
+        if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
+            return dateAviable || monthAvailble 
+        } else {
+            return findFirstDateAvailable(source)
+        }
+    }
+
+    const dataSearchResult = () => {
+        const data = query();
+
+        const filtered = data?.filter(item => {
+            const isAvilable = checkDateIsAvilable(item.serviceDates);
+            const AvilableMonth =  checkMonthAvailableDate(item.serviceDates);
+            const result = comparingData(isAvilable, AvilableMonth, item.serviceDates)
+
+            const isCitySelect = objectResult.cityselected == '' ? true : item.serviceData.address == objectResult.cityselected
+            const isRiogenSelect = objectResult.regionselect == '' ? true : item.serviceData.region == objectResult.regionselect
+            const ResultQuery = isCitySelect && isRiogenSelect && result
+            //console.log("ResultQuery", ResultQuery);
+            return ResultQuery;
+        })
+        return filtered
+
+    }
+    const renderCard = () => {
+        const data = dataSearchResult();
+        //console.log("data ", data);
+        const cardsArray = data?.map(card => {
+            return <HomeCards  {...card.serviceData}
+                images={card?.serviceImages}
+                dates={card?.serviceDates}
+            />;
         });
         return cardsArray;
     };
 
 
+    ///////////////
+    const OutClicked = () => {
+        settypeClicked('قاعة خارجية')
+    }
+    const InClicked = () => {
+        settypeClicked('قاعة داخلية')
+    }
+    const RestClicked = () => {
+        settypeClicked('مطعم')
+    }
+    const HotClicked = () => {
+        settypeClicked('فندق')
+    }
 
     const hallType = () => {
         return (
@@ -146,17 +268,32 @@ const Results = (props) => {
                         style={styles.Capacityinput}
                         keyboardType="numeric"
                         placeholder='عدد المدعوين'
-                        onChangeText={(value) => setGuestNum(value)}
+                        onChangeText={(value) =>
+                            setGuestNum(parseInt(value))
+                        }
                     />
                 </View>
                 {/* Hall Type */}
                 <Text style={styles.bodyText}>ما هو نوع القاعة التي تبحث عنها </Text>
                 <View style={styles.insideView}>
                     <View style={{ flexDirection: 'row', }}>
-                        <Pressable style={styles.HallTypeView}><Text style={styles.TypeText}>قاعه خارجية</Text></Pressable>
-                        <Pressable style={styles.HallTypeView}><Text style={styles.TypeText}>قاعه داخلية</Text></Pressable>
-                        <Pressable style={styles.HallTypeView}><Text style={styles.TypeText}>مطعم</Text></Pressable>
-                        <Pressable style={styles.HallTypeView}><Text style={styles.TypeText}>فندق</Text></Pressable>
+                        <Pressable
+                            style={[styles.HallTypeView, typeClicked == 'قاعة خارجية' ? styles.HallTypeViewClicked : styles.HallTypeView]}
+                            onPress={() => OutClicked()}>
+                            <Text style={styles.TypeText}>قاعه خارجية</Text>
+                        </Pressable>
+                        <Pressable style={[styles.HallTypeView, typeClicked == 'قاعة داخلية' ? styles.HallTypeViewClicked : styles.HallTypeView]}
+                            onPress={() => InClicked()}>
+                            <Text style={styles.TypeText}>قاعه داخلية</Text>
+                        </Pressable>
+                        <Pressable style={[styles.HallTypeView, typeClicked == 'مطعم' ? styles.HallTypeViewClicked : styles.HallTypeView]}
+                            onPress={() => RestClicked()}>
+                            <Text style={styles.TypeText}>مطعم</Text>
+                        </Pressable>
+                        <Pressable style={[styles.HallTypeView, typeClicked == 'فندق' ? styles.HallTypeViewClicked : styles.HallTypeView]}
+                            onPress={() => HotClicked()}>
+                            <Text style={styles.TypeText}>فندق</Text>
+                        </Pressable>
                     </View>
                 </View>
             </View>
@@ -169,20 +306,27 @@ const Results = (props) => {
                 <Text style={styles.bodyText}>ما هو نطاق السعر المتوقع</Text>
                 <View style={styles.insideView}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{sliding}</Text>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{range}</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>₪</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{(parseInt(chozenfilter.range)) || 0}</Text>
 
                     </View>
                     <Slider
                         style={{ width: '100%', height: 40 }} s
-                        minimumValue={0}
-                        maximumValue={100}
+                        minimumValue={50}
+                        maximumValue={maxPrice}
                         minimumTrackTintColor="tomato"
                         maximumTrackTintColor="#000000"
                         value={.5}
-                        onValueChange={value => setRang(parseInt(value))}
-                        onSlidingStart={() => setSliding('Slider')}
-                        onSlidingComplete={() => setSliding('Inactive')}
+                        // onValueChange={value => setRang(parseInt(value))}
+                        onValueChange={value => {
+                            setchozenfilter({ ...chozenfilter, range: value });
+
+                            // setRang(parseInt(value))
+                        }
+
+                        }
+                    // onSlidingStart={() => setSliding('Slider')}
+                    // onSlidingComplete={() => setSliding('Inactive')}
                     />
                 </View>
             </View>
@@ -194,8 +338,8 @@ const Results = (props) => {
             <View style={{ flex: 1 }}>
                 <Text style={styles.bodyText}>في أي مدينة او منطقة تبحث</Text>
                 <View style={styles.insideView}>
-                    <MultipleSelectList
-                        setSelected={(val) => setSelected(val)}
+                    <SelectList
+                        setSelected={(val) => setSelectedCity(val)}
                         data={renderCity()}
                         save="value"
                         placeholder='اختر المدينة'
@@ -204,7 +348,9 @@ const Results = (props) => {
                         dropdownTextStyles={styles.dropstyle}
                     />
                     <SelectList
-                        setSelected={(val) => setSelect(val)}
+                        setSelected={(val) =>
+                            setSelectRigon(val)
+                        }
                         data={regionData}
                         save="value"
                         // onSelect={() => console.log(select)}
@@ -262,6 +408,7 @@ const Results = (props) => {
         قاعات: hallType(),
     }
 
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -276,8 +423,9 @@ const Results = (props) => {
                     <Image source={require('../assets/filter.png')} />
                 </Pressable>
             </View>
-            {renderCard()}
-
+            <ScrollView contentContainerStyle={styles.home}>
+                {dataFilterd ? renderServCard() : renderCard()}
+            </ScrollView>
             <Modal
                 transparent
                 visible={showModal}
@@ -299,7 +447,6 @@ const Results = (props) => {
                                 {priceComp()}
                                 {/* Address */}
                                 {addressComp()}
-                                {/* capacity */}
 
                                 {/* Hall Type */}
                                 {object[cat]}
@@ -451,7 +598,15 @@ const styles = StyleSheet.create({
     HallTypeView: {
         width: 50,
         height: 50,
-        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 10,
+        borderRadius: 5
+    },
+    HallTypeViewClicked: {
+        width: 50,
+        height: 50,
+        backgroundColor: "gray",
         justifyContent: 'center',
         alignItems: 'center',
         margin: 10,

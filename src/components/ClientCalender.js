@@ -1,25 +1,33 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Calendar,LocaleConfig } from 'react-native-calendars';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { useState } from 'react';
+import SearchContext from '../../store/SearchContext';
 
-const ProviderCalender = (props) => {
-    const [date,setDate] = useState(new Date() )
-    const [selected, setSelected] = useState('');
+const ClientCalender = (props) => {
+    const {selectDateforSearch, setselectDateforSearch} = useContext(SearchContext);
+    const [selected, setSelected] = useState('')
+    const [date, setDate] = useState(new Date())
 
+
+    useEffect(()=> {
+         setselectDateforSearch(null)   
+    },[])
+    
     return (
         <View style={styles.container}>
             <Calendar
+                
                 style={{
-                    
+
                     borderColor: 'gray',
-                    height: 400,
-                    width: 350,
+                    height: 250,
+                    width: 300,
                     borderRadius: 20,
-                    padding: 10,
-                    backgroundColor: '#ffff',
-                    elevation: 5,
+                    //padding: 10,
+                    backgroundColor: 'snow',
+                    // elevation: 5,
 
                 }}
                 theme={{
@@ -41,22 +49,24 @@ const ProviderCalender = (props) => {
                     textDayFontSize: 20,
                     textMonthFontSize: 20,
                     textDayHeaderFontSize: 14,
-                    width: 300
+                    width: 200
                 }}
-                // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
+
                 minDate={date}
-                // Handler which gets executed on day press. Default = undefined
+                maxDate='2023-12-31'
                 onDayPress={day => {
-                    setSelected(day.dateString);
-                    // props.navigation.navigate(ScreenNames.ProviderServiceListing)
-                    console.log('selected day', selected);
+                    setselectDateforSearch(day.dateString);
+                    setSelected(day.dateString)
+                   console.log('selected da **', day.dateString);
                 }}
                 markedDates={{
-                    [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'}
-                  }}
+                    [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' }
+                }}
+
+
                 // Handler which gets executed on day long press. Default = undefined
                 onDayLongPress={day => {
-                    console.log('selected day', day.year);
+                    // console.log('selected day', day);
                 }}
                 // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
                 monthFormat={'MM yyyy'}
@@ -72,9 +82,9 @@ const ProviderCalender = (props) => {
                 onPressArrowLeft={subtractMonth => subtractMonth()}
                 // Handler which gets executed when press arrow icon right. It receive a callback can go next month
                 onPressArrowRight={addMonth => addMonth()}
-                 // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
+                // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
                 disableAllTouchEventsForDisabledDays={true}
-                 // Enable the option to swipe between months. Default = false
+                // Enable the option to swipe between months. Default = false
                 enableSwipeMonths={false}
             />
         </View>
@@ -84,10 +94,10 @@ const ProviderCalender = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        //justifyContent: 'center',
         alignItems: 'center',
 
     },
 })
 
-export default ProviderCalender;
+export default ClientCalender;

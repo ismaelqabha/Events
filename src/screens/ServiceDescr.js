@@ -1,65 +1,147 @@
-import React, { useContext, useState,useEffect } from 'react';
-import { TextInput } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, Image, Modal, ScrollView } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
-import HallOrderComp from '../components/HallOrderComp';
+import ServiceDetailComp from '../components/ServiceDetailComp';
 import DateTPicker from '../components/DateTPicker'
 import 'react-native-get-random-values'
-import { v4 as uuidv4 } from 'uuid';
- import { SliderBox } from 'react-native-image-slider-box';
-import { getImagDescBage } from '../resources/API';
-
-
+import { SliderBox } from 'react-native-image-slider-box';
+import { getbookingDates } from '../resources/API';
+import moment from 'moment';
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
-    const [showModal, setShowModal] = useState(false);
-    const { setcheckInDesc, isDateAvailable, DateText, TimeText, setServId, setRequestIdState, serviceImg,setserviceImg } = useContext(SearchContext);
-    console.log("data.service_id", data.service_id);
 
-    setcheckInDesc(true);
+    const { setServId, setServiceDatesforBooking, ServiceDatesforBooking, setisFromServiceDescription,
+        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, isDateAvailable, setRequestIdState } = useContext(SearchContext);
 
-    const checkDateResult = () => {
-        if (isDateAvailable == true) {
-            return <Pressable onPress={() => modalBtnPress()} style={styles.Modalbtn}>
-                <Text style={styles.text}>رجوع</Text>
-            </Pressable>;
-        } else {
-            if (DateText == "dd/mm/yyyy" && TimeText == "00:00") {
-                return <Pressable onPress={() => modalBtnPress()} style={styles.Modalbtn}>
-                    <Text style={styles.text}>رجوع</Text>
-                </Pressable>;
-            } else {
-                return <Pressable onPress={() => modalPressHandler()} style={styles.Modalbtn}>
-                    <Text style={styles.text}>التالي</Text>
-                </Pressable>;
-            }
-        }
+    const [select, setSelect] = useState(false)
+
+    const getDatesfromApi = () => {
+        getbookingDates({ service_ID: data?.service_id }).then(res => {
+            setServiceDatesforBooking(res)
+        })
     }
-    const modalBtnPress = () => {
-        setShowModal(false);;
-    }
+    useEffect(() => {
+        getDatesfromApi()
+        setisFromServiceDescription(true)
+    }, [])
+
 
     const onPressHandler = () => {
-        setShowModal(true);
-        setServId(data.service_id);
-    }
-    const modalPressHandler = () => {
-        setShowModal(false);
-        setRequestIdState(uuidv4());
-        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
+        setisFromServiceDescription(false)
+        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
     }
 
+    const SelectDatePressed = (dat) => {
+        setSelect(true)
+        setrequestedDate(dat)
+    }
 
-    
+    const queryfirstDates = () => {
+        const requestedDate = moment(new Date())
+        const DateFiltered = ServiceDatesforBooking.filter(datee => {
+            const { bookDate, serviceStutes } = datee;
+            const bookDateMoment = moment(bookDate);
+            const res1 = bookDateMoment.isAfter(requestedDate)
+            const res2 = serviceStutes == 'true'
+            return res1 && res2
+        });
+        const firstDateAvailable = DateFiltered[0]
+        return firstDateAvailable;
+    };
+
+    const queryDatesAccorMonth = () => {
+        const requestedMonth = selectMonthforSearch;
+        return ServiceDatesforBooking.filter(datee => {
+            const { bookDate, serviceStutes } = datee;
+            const wholeDate = moment(bookDate);
+            const gittingMonth = wholeDate.format('M')
+            const res1 = gittingMonth == requestedMonth
+            return res1 && serviceStutes == 'true'
+        })
+    }
+    const querySpacificDate = () => {
+        const requestedDate = moment(new Date(selectDateforSearch)).startOf('day')
+        return ServiceDatesforBooking.filter(datee => {
+            const { bookDate, serviceStutes } = datee;
+            const bookDateMoment = moment(bookDate).startOf('day');
+            const res1 = bookDateMoment.isSame(requestedDate)
+            const res2 = serviceStutes == 'true'
+            return res1 && res2
+        })
+    }
+
+    const renderDates = () => {
+
+        if (selectMonthforSearch) {
+            const DatesAvailable = queryDatesAccorMonth()
+            const dateArray = DatesAvailable?.map(dat => {
+                return <View>
+                    <Pressable style={[styles.viewselectdate, select ? styles.viewselectdatepress : styles.viewselectdate]}
+                        onPress={() => SelectDatePressed(dat.bookDate)}
+                    >
+                        <Text style={styles.tex}>{moment(dat.bookDate).format('dddd')}</Text>
+                        <Text style={styles.tex}>{moment(dat.bookDate).format('LL')}</Text>
+                    </Pressable>
+                </View>;
+            });
+            return dateArray;
+        }
+        if (selectDateforSearch) {
+            const DatesAvailable = querySpacificDate()
+            const dateArray = DatesAvailable?.map(dat => {
+                return <View><Text style={styles.tex}>{`${moment(dat.bookDate).format('LL')}`}</Text>
+                    <Text style={styles.tex}>{`${moment(dat.bookDate).format('dddd')}`}</Text>
+                </View>;
+            });
+            return dateArray;
+        } else {
+            const firstAvilableDate = queryfirstDates()
+
+            return <View><Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
+                <Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('LL')}`}</Text>
+            
+            </View>;
+
+        }
+    };
+
+
     const renderImg = () => {
-    
         const imageArray = data.images.map(photos => {
             return photos.image;
         });
         return imageArray;
     };
+
+    const renderHederInfo = () => {
+        return <View style={styles.headerInfo}>
+            <Text style={styles.title}>{data?.title || 'no event'}</Text>
+            <Text style={styles.address}>{data.address}</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.feedback}>5★</Text>
+                <Text style={styles.feedback}>التغذيه الراجعة 13</Text>
+
+            </View>
+        </View>
+    }
+
+    const renderServiceDetail = () => {
+        return <View style={styles.descView}>
+            <Text style={styles.desc1}>قائمة الخدمات </Text>
+            <View style={styles.HallView}>
+                <ServiceDetailComp service_id={data.service_id}  />
+            </View>
+        </View>
+    }
+    const renderSoialMedia = () => {
+        return <View style={styles.icon}>
+            <Image style={styles.insicon} source={require('../assets/facebook--v2.png')} />
+            <Image style={styles.insicon} source={require('../assets/instagram-new.png')} />
+            <Image style={styles.insicon} source={require('../assets/apple-phone.png')} />
+        </View>
+    }
 
     return (
         <View style={styles.container}>
@@ -70,48 +152,41 @@ const ServiceDescr = (props) => {
                         images={renderImg()}
                         dotColor="blue"
                         dotStyle={{ width: 15, height: 15, borderRadius: 50 }}
-                        autoplay={true}                // style={{ width: 400, }}
+                        autoplay={true}
                     />
-
                     <Image source={data.img} style={styles.logo} />
                 </View>
 
-                <Text style={styles.title}>{data?.title || 'no event'}</Text>
-                <Text style={styles.address}>{data.address}</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                    <Text style={styles.feedback}>التغذيه الراجعة 13</Text>
-                    <Text style={styles.feedback}>5★</Text>
-                </View>
-                <Text style={styles.line}>____________________________________________________</Text>
+                {renderHederInfo()}
 
-                <Text style={styles.desc}>تحتوي هذة الخانة على شرح  عن الخدمة المعروضة بحيث يتم عرض الخدمات التي تقدمها</Text>
-                <Pressable style={{ flexDirection: 'row', justifyContent: 'space-around' }} onPress={() => props.navigation.navigate(ScreenNames.VideoPlayer)}>
+                <View style={styles.descView}>
+                    {renderDates()}
+                </View>
+
+                <View style={styles.descView}>
+                    <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن الخدمة المعروضة </Text>
+                </View>
+
+                {renderServiceDetail()}
+
+                <View style={styles.descView}>
+                    <Text style={styles.desc1}>تاريخ المناسبة</Text>
+                    <Text style={styles.desc1}>{requestedDate || '2023/9/15'}</Text>
+
+                </View>
+                <View style={styles.descView}>
                     <Image
-                        style={styles.image}
-                        source={require('../assets/playvideo.png')}
-                    />
-                </Pressable>
-
-                <Text style={styles.line}>____________________________________________________</Text>
-
-                <Text style={styles.desc1}>قائمة الخدمات </Text>
-                <View style={styles.HallView}>
-                    <HallOrderComp service_id={ data.service_id} />
+                        style={styles.mapImage}
+                        source={require('../assets/location.png')} />
                 </View>
-                <Text style={styles.line}>____________________________________________________</Text>
-                <Text style={styles.desc}>عرض التغذية الراجعة عن الخدمة المختارة</Text>
-                <Text style={styles.line}>____________________________________________________</Text>
-                <Image
-                    style={styles.image}
-                    source={require('../assets/location.png')} />
-                <Text style={styles.line}>____________________________________________________</Text>
-                <View style={styles.icon}>
-                    <Image style={styles.insicon} source={require('../assets/facebook--v2.png')} />
-                    <Image style={styles.insicon} source={require('../assets/instagram-new.png')} />
-                    <Image style={styles.insicon} source={require('../assets/apple-phone.png')} />
+                <View style={styles.descView}>
+                    <Text style={styles.descText}>عرض التغذية الراجعة عن الخدمة المختارة</Text>
                 </View>
+
+                {renderSoialMedia()}
+
             </ScrollView>
-            <Modal
+            {/* <Modal
                 transparent
                 visible={showModal}
                 animationType='slide'
@@ -131,10 +206,11 @@ const ServiceDescr = (props) => {
                     </View>
                 </View>
 
-            </Modal>
+            </Modal> */}
+
             <View style={styles.foter}>
                 <Pressable style={styles.btnview} onPress={() => onPressHandler()}>
-                    <Text style={styles.btntext}>فحص الامكانية</Text>
+                    <Text style={styles.btntext}>طلب حجز</Text>
                 </Pressable>
             </View>
         </View>
@@ -153,22 +229,34 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginTop: 150,
     },
-    HallView: {
-        marginRight: 20,
+    headerInfo: {
+        borderWidth: 1,
+        margin: 10,
+        padding: 20
     },
-    VHall: {
+    descView: {
+        borderWidth: 1,
+        margin: 10,
+        padding: 20,
+    },
+    mapImage: {
+        alignSelf: 'center'
+    },
+    viewDate: {
         flexDirection: 'row',
+        borderColor: '#808080',
+        width: 250,
+        height: 50,
+        borderRadius: 15,
         alignItems: 'center',
+        backgroundColor: 'white',
+        justifyContent: 'space-around',
+        alignSelf: 'center'
     },
-    // text: {
-    //     marginRight: 20,
-    //     fontSize: 15,
-    //     color: 'black',
-    // },
     icon: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        marginTop: 30,
+        margin: 50
     },
     insicon: {
         width: 40,
@@ -179,44 +267,28 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: 'bold',
         color: 'black',
-        marginRight: 20,
-        marginTop: 50,
     },
     feedback: {
         fontSize: 12,
         color: 'black',
-        marginRight: 20,
     },
-    line: {
-        textAlign: 'center',
-        color: '#d3d3d3'
-    },
-    desc: {
-        fontSize: 20,
+
+    descText: {
+        fontSize: 15,
         fontWeight: 'bold',
         color: 'black',
-        marginRight: 20,
-        marginTop: 20,
-        marginBottom: 20,
     },
     desc1: {
-        fontSize: 20,
+        fontSize: 15,
         fontWeight: 'bold',
         color: 'black',
-        marginRight: 20,
-        marginTop: 20,
-
     },
     address: {
         fontSize: 16,
         color: 'black',
-        marginRight: 20,
         marginBottom: 20,
     },
-    image: {
-        width: 40,
-        height: 40,
-    },
+
     foter: {
         height: 80,
         justifyContent: 'center',
@@ -237,53 +309,69 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginRight: 20,
     },
-    input: {
-        textAlign: 'center',
-        height: 50,
-        width: 200,
-        borderWidth: 1,
-        borderRadius: 30,
-        borderColor: 'black',
-        fontSize: 15,
-        fontWeight: 'bold',
-        marginTop: 20,
-        marginRight: 10,
-        color: 'black',
-        backgroundColor: '#fffaf0',
-    },
-    detailModal: {
-        width: "100%",
-        height: 500,
-        backgroundColor: '#ffffff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        backgroundColor: '#00000099',
-    },
-    Motitle: {
-        height: 50,
+    viewselectdate: {
+        flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        margin: 2
+
     },
-    body: {
-        height: '80%',
-        alignItems: 'center',
-        marginTop: 10,
+    viewselectdatepress: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: 'gray'
     },
-    text: {
-        textAlign: 'center',
-        fontSize: 20,
-        color: 'black',
+    tex: {
+        fontSize: 15,
+        margin: 5,
+        color: 'black'
     },
-    Modalbtn: {
-        marginBottom: 20,
-    },
+    // input: {
+    //     textAlign: 'center',
+    //     height: 50,
+    //     width: 200,
+    //     borderWidth: 1,
+    //     borderRadius: 30,
+    //     borderColor: 'black',
+    //     fontSize: 15,
+    //     fontWeight: 'bold',
+    //     marginTop: 20,
+    //     marginRight: 10,
+    //     color: 'black',
+    //     backgroundColor: '#fffaf0',
+    // },
+    // detailModal: {
+    //     width: "100%",
+    //     height: 500,
+    //     backgroundColor: '#ffffff',
+    //     borderTopLeftRadius: 20,
+    //     borderTopRightRadius: 20,
+    // },
+    // centeredView: {
+    //     flex: 1,
+    //     justifyContent: 'flex-end',
+    //     alignItems: 'center',
+    //     backgroundColor: '#00000099',
+    // },
+    // Motitle: {
+    //     height: 50,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     borderTopLeftRadius: 20,
+    //     borderTopRightRadius: 20,
+    // },
+    // body: {
+    //     height: '80%',
+    //     alignItems: 'center',
+    //     marginTop: 10,
+    // },
+    // text: {
+    //     textAlign: 'center',
+    //     fontSize: 20,
+    //     color: 'black',
+    // },
+    // Modalbtn: {
+    //     marginBottom: 20,
+    // },
 })
 
 export default ServiceDescr;

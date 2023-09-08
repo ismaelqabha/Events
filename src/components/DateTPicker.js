@@ -76,7 +76,7 @@ const DateTPicker = () => {
                     value={date}
                     mode={mode}
                     is24Hour={true}
-                    display='default'
+                    display='clock'
                     onChange={onChange}
                 />
             )}

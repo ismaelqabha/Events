@@ -1,55 +1,129 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import HallOrderComp from '../components/HallOrderComp';
+import ServiceDetailComp from '../components/ServiceDetailComp';
 import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import { ScreenNames } from '../../route/ScreenNames';
 import { servicesData } from '../resources/data';
+import moment from 'moment';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { getServiceImages } from '../resources/API';
 
 
 
 const ClientRequest = (props) => {
-    //const { data } = props?.route.params
-    const { sType, setcheckInDesc, ServId, DateText, TimeText, setRequestIdState } = useContext(SearchContext);
+    const { data, isFromServiceRequest } = props?.route.params
+    const { sType, ServId, ServiceImages, setServiceImages,requestedDate,setisFromServiceDescription, setRequestIdState } = useContext(SearchContext);
     const [textValue, setTextValue] = useState('');
 
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('time');
+    const [show, setShow] = useState(false);
+    const [TimeText, setTimeText] = useState()
 
-    setcheckInDesc(false);
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    }
+    const onChange = (event, selectedDate) => {
+        setShow(false)
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let fTime = tempDate.getHours() + ':' + tempDate.getMinutes();
+        setTimeText(fTime);
+
+    }
+
+
+
     const onPressRequest = () => {
-        props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...props }, isFromAddEventClick: true })
+        // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...props }, isFromAddEventClick: true })
     }
 
     const onPressHandler = () => {
-        setcheckInDesc(true);
+       setisFromServiceDescription(true);
         props.navigation.goBack();
     }
-    const query = () => {
-        if (!sType) {
-            return servicesData || [];
-        }
-        return servicesData.filter(ItemSerId => {
-            return ItemSerId.service_id == ServId;
+  
+    const getImagesfromApi = () => {
+        getServiceImages({ serviceID: data?.service_id }).then(res => {
+            setServiceImages(res)
         })
     }
-    const renderServiceInfo = () => {
-        const data = query();
-        const cardsArray = data.map(card => {
-            return <View style={styles.imgTitle}>
-                <View style={{ justifyContent: 'space-between' }}>
-                    <Text style={styles.text}>{card.title}</Text>
-                    <Text style={{ textAlign: 'right', marginRight: 10 }}>5★</Text>
-                </View>
-                <Image
-                    source={card.img}
-                    style={styles.img}
-                />
-            </View>;
+    
+    useEffect(() => {
+        getImagesfromApi()
+        setisFromServiceDescription(false)
+    }, [])
+
+    const queryImg = () => {
+        return ServiceImages.filter(photo => {
+            return photo.coverPhoto == true
         });
-        return cardsArray;
     };
 
+    const renderServiceImage = () => {
+        const logo = queryImg();
+        const coverphoto = logo.map(img => {
+            return <Image
+                source={{ uri: img.image }}
+                style={styles.img}
+            />
+        })
+        
+        return coverphoto
+    }
 
+    const renderServiceinfo = () => {
+        return <View style={styles.imgTitle}>
+            <View style={{ justifyContent: 'center', margin:10 }}>
+                <Text style={styles.text}>{data?.title}</Text>
+                <Text style={styles.text}>{data?.address}</Text>
+                <Text style={{ textAlign: 'right', marginRight: 10 }}>5★</Text>
+            </View>
+            {renderServiceImage()}
+        </View>;
+    }
 
+    const renderDateTime = () => {
+        return <View style={styles.DateView}>
+            <Text style={styles.t1}> الزمان </Text>
+            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <Text style={styles.t3}>{moment(requestedDate).format('LL')}</Text>
+                <Text style={styles.t3}>{moment(requestedDate).format('dddd')}</Text>
+            </View>
+            <Pressable onPress={() => showMode('time')} >
+                <View style={styles.viewDate}>
+                    <Text style={styles.text}>{TimeText || "00:00"}</Text>
+                    <Image
+                        style={styles.icoon}
+                        source={require('../assets/time.png')}
+                    />
+                </View>
+            </Pressable>
+            {show && (
+                <DateTimePicker
+                    testID='dateTimePicker'
+                    value={date}
+                    mode={mode}
+                    is24Hour={true}
+                    display='clock'
+                    onChange={onChange}
+                />
+            )}
+        </View>
+    }
+
+    const renderServiceDetail = () => {
+        return <View style={styles.HallView}>
+            <Text style={styles.desc1}>قائمة الخدمات </Text>
+            <Text style={styles.feedback}>قم بالضغط لتحديد التفاصيل  </Text>
+            {checkType()}
+            <ServiceDetailComp service_id={data.service_id} isFromServiceRequest={isFromServiceRequest} />
+        </View>
+    }
     const CatOfService = {
         'قاعات': [{
             style: styles.input,
@@ -101,6 +175,9 @@ const ClientRequest = (props) => {
             </View>
         )
     }
+
+
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -115,24 +192,15 @@ const ClientRequest = (props) => {
                     </Pressable>
                     <Text style={styles.txt}>Request</Text>
                 </View>
-                {renderServiceInfo()}
+                {renderServiceinfo()}
             </View>
+
             <ScrollView contentContainerStyle={styles.home}>
-                <View style={styles.DateView}>
-                    <Text style={styles.t1}>تفاصيل الحجز </Text>
-                    <View style={{ flexDirection: 'row', justifyContent:'space-between' }}>
-                        <Text style={styles.t3}>{TimeText}</Text>
-                        <Text style={styles.t2}>الوقت</Text>
-                        <Text style={styles.t3}>{DateText}</Text>
-                        <Text style={styles.t2}>التاريخ</Text>
-                    </View>
-                </View>
-                <View style={styles.HallView}>
-                    <Text style={styles.desc1}>قائمة الخدمات </Text>
-                    <Text style={styles.feedback}>قم بالضغط لتحديد التفاصيل  </Text>
-                    {checkType()}
-                    <HallOrderComp />
-                </View>
+
+                {renderDateTime()}
+
+                {renderServiceDetail()}
+
                 <View style={styles.body}>
                     <Text style={styles.t1}>سياسة الغاء الحجز</Text>
 
@@ -167,9 +235,11 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     DateView: {
+        alignItems: 'center',
         backgroundColor: 'white',
-        height: 120,
+        height: 200,
         marginBottom: 10,
+        justifyContent: 'center',
     },
     t1: {
         fontSize: 20,
@@ -187,13 +257,26 @@ const styles = StyleSheet.create({
     },
     t3: {
         fontSize: 15,
-        marginTop: 10,
-        marginLeft: 20,
-        textAlign: 'right',
+        color: 'black',
+        margin: 10
+    },
+    viewDate: {
+        flexDirection: 'row',
+        width: 200,
+        height: 50,
+        borderRadius: 5,
+        elevation: 5,
+        alignItems: 'center',
+        //borderWidth: 1,
+        justifyContent: 'space-evenly',
+    },
+    icoon: {
+        width: 35,
+        height: 35,
     },
     text: {
-        fontSize: 15,
-        marginRight: 10,
+        fontSize: 20,
+        color: 'black'
     },
     txt: {
         fontSize: 20,
@@ -218,16 +301,15 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     img: {
-        width: 120,
-        height: 100,
+        width: 150,
+        height: 120,
         borderRadius: 15,
-        marginRight: 20,
-
+        backgroundColor: 'black',
     },
     imgTitle: {
         flexDirection: 'row',
         marginTop: 20,
-        alignSelf: 'flex-end',
+        alignItems:'center'
     },
     feedback: {
         fontSize: 12,
