@@ -15,6 +15,20 @@ const strings = {
         backWarning:"الخروج سوف يحذف كل شيء",
         cancelButton:"البقاء",
         confirmButton:"الخروج",
+    },
+    ProviderAddInfo:{
+        HeadText:"املئ التفاصيل التالية:",
+        title:"العنوان",
+        subTitle:"العنوان الفرعي",
+        description:"الوصف ",
+        LocationHeadText:"قم بأضافة تفاصيل الموقع :",
+        back:"رجوع",
+        next:"التالي",
+        showMessage:"الرجاء اختيار التصنيف قبل الاستمرار",
+        warning: "انتباه" ,
+        backWarning:"الخروج سوف يحذف كل شيء",
+        cancelButton:"البقاء",
+        confirmButton:"الخروج",
     }
   },
 };

@@ -23,7 +23,7 @@ const ProviderChooseService = props => {
   const onNextPress = () => {
     selectServiceType
       ? props.navigation.navigate(ScreenNames.ProviderAddInfo, {
-          data: {...props},
+          data: {...props,selectServiceType:selectServiceType},
         })
       : showMessage();
   };
