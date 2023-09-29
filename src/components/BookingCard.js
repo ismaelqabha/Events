@@ -1,42 +1,56 @@
-import React, { useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Pressable } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, Pressable, Image } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
-import { servicesData } from '../resources/data';
+
+
 
 
 
 const BookingCard = (props) => {
-    const { userPayment,AddResToEventFile } = useContext(SearchContext);
+    const { userPayment} = useContext(SearchContext);
     const navigation = useNavigation();
+   
 
     const checkIfPayed = () => {
         const isPayed = userPayment.find(item => item.ReqId === props.RequestId)
         return !!isPayed;
     }
+   
+    
+    const queryImg = () => {
+        return props.image?.filter(photo => {
+            return photo.coverPhoto == true
+        });
+    };
 
-    const query = () => {
-        return servicesData.filter(id => {
-            return id.service_id == props.ReqServId;
+    const renderServiceLogo = () => {
+        const logo = queryImg();
+        const cover = logo?.map(img => {
+            return <Image
+                source={{ uri: img.image}}
+                style={styles.img}
+            />;
         })
+        return cover
     }
-    const renderServInfo = () => {
-        const data = query();
 
-        const cardsArray = data.map(card => {
+    const renderServInfo = () => {
+        const data = props.services;
+        const cardsArray = data?.map(card => {
+        
             return <View style={styles.cardHeader}>
-                <Card.Image
-                    style={styles.image}
-                    source={card.img}
-                />
-                <Card.Title style={{ fontSize: 20, marginLeft: 90 }}>{card.title}</Card.Title>
+                <View style={{}}>{renderServiceLogo()}</View>
+                
+                <View style={{}}><Text style={{fontSize: 15, color:'back',fontWeight:'bold'}}>{card.title}</Text></View>
             </View>;
         }); return cardsArray;
     };
+   
 
     const checkIfAccepted = () => {
-        if (props.ReqStatus == true) {
+        if (props.ReqStatus == 'true') {
             if (checkIfPayed()) {
                 return <View><Text style={{ marginBottom: 10, fontSize: 18 }}>
                     الحالة:  محجوز
@@ -73,7 +87,7 @@ const BookingCard = (props) => {
                             التاريخ: {props.reservationDate}
                         </Text>
                         <Text style={{ marginBottom: 10, fontSize: 18 }}>
-                        الوقت: {props.reservationTime}
+                            الوقت: {props.reservationTime}
                         </Text>
                     </View>
                     <View style={styles.status}>
@@ -96,7 +110,7 @@ const BookingCard = (props) => {
                         التاريخ: {props.reservationDate}
                     </Text>
                     <Text style={{ marginBottom: 10, fontSize: 18 }}>
-                    الوقت: {props.reservationTime}
+                        الوقت: {props.reservationTime}
                     </Text>
                 </View></View>;
         }
@@ -111,7 +125,7 @@ const BookingCard = (props) => {
                 //style={{ flexDirection: 'row', }}
                 //onPress={() => navigation.navigate(props.page)}
                 >
-                    {checkIfAccepted()}
+                {checkIfAccepted()}
                 </TouchableOpacity>
             </Card>
         </View>
@@ -123,10 +137,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    image: {
-        width: 70,
-        height: 70,
-        borderRadius: 30,
+    img: {
+        width: 100,
+        height: 100,
+        borderRadius: 5
     },
     card: {
         marginTop: 20,
@@ -134,12 +148,9 @@ const styles = StyleSheet.create({
     },
     cardHeader: {
         flexDirection: 'row',
-        //backgroundColor: '#87ceeb',
+        justifyContent: 'space-around',
         alignItems: 'center',
         elevation: 2,
-        shadowOffset: { width: 1, height: 1 },
-        shadowColor: '#87ceeb',
-        shadowOpacity: 0.1,
         marginBottom: 10,
     },
     status: {

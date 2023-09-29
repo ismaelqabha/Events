@@ -1,25 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import ServiceDetailComp from '../components/ServiceDetailComp';
 import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import { ScreenNames } from '../../route/ScreenNames';
-import { servicesData } from '../resources/data';
 import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { getServiceImages } from '../resources/API';
+import { addNewRequest, getServiceImages } from '../resources/API';
+import DetailComp from '../components/DetailComp';
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 
 const ClientRequest = (props) => {
-    const { data, isFromServiceRequest } = props?.route.params
-    const { sType, ServId, ServiceImages, setServiceImages,requestedDate,setisFromServiceDescription, setRequestIdState } = useContext(SearchContext);
+    const { data } = props?.route.params
+    const { sType, userId, ServiceImages, setServiceImages, requestedDate,TimeText, setTimeText,
+        setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState,setRequestIdState } = useContext(SearchContext);
     const [textValue, setTextValue] = useState('');
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('time');
     const [show, setShow] = useState(false);
-    const [TimeText, setTimeText] = useState()
+   
 
     const showMode = (currentMode) => {
         setShow(true);
@@ -36,26 +38,44 @@ const ClientRequest = (props) => {
 
     }
 
-
-
     const onPressRequest = () => {
-        // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...props }, isFromAddEventClick: true })
+        props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
 
     const onPressHandler = () => {
-       setisFromServiceDescription(true);
+        setisFromRequestScreen(false)
         props.navigation.goBack();
     }
-  
+
     const getImagesfromApi = () => {
         getServiceImages({ serviceID: data?.service_id }).then(res => {
             setServiceImages(res)
+            creatNewRequest()
         })
     }
-    
+   
+    const creatNewRequest = () => {
+        const idReq = uuidv4()
+       setRequestIdState(idReq)
+        const newRequestItem = {
+            RequestId: idReq ,
+            ReqServId: data?.service_id,
+            ReqUserId: userId,
+            ReqStatus: 'بأنتظار الرد',
+            ReqDate: moment(date).format('L'),
+            reservationDate: moment(requestedDate).format('L')
+        }
+        console.log("idReq",idReq);
+        addNewRequest(newRequestItem).then(res => {
+            const req = requestInfo || [];
+            req.push(newRequestItem)
+            setRequestInfo([...req])
+        })
+    }
+
     useEffect(() => {
         getImagesfromApi()
-        setisFromServiceDescription(false)
+        setisFromRequestScreen(true)
     }, [])
 
     const queryImg = () => {
@@ -72,19 +92,19 @@ const ClientRequest = (props) => {
                 style={styles.img}
             />
         })
-        
+
         return coverphoto
     }
 
     const renderServiceinfo = () => {
-        return <View style={styles.imgTitle}>
-            <View style={{ justifyContent: 'center', margin:10 }}>
+        return <View style={styles.DateView}><View style={styles.imgTitle}>
+            <View style={{ margin: 10, alignItems: 'flex-end' }}>
                 <Text style={styles.text}>{data?.title}</Text>
                 <Text style={styles.text}>{data?.address}</Text>
-                <Text style={{ textAlign: 'right', marginRight: 10 }}>5★</Text>
+                <Text style={{}}>5★</Text>
             </View>
             {renderServiceImage()}
-        </View>;
+        </View></View>;
     }
 
     const renderDateTime = () => {
@@ -99,7 +119,7 @@ const ClientRequest = (props) => {
                     <Text style={styles.text}>{TimeText || "00:00"}</Text>
                     <Image
                         style={styles.icoon}
-                        source={require('../assets/time.png')}
+                        source={require('../assets/photos/time.png')}
                     />
                 </View>
             </Pressable>
@@ -119,9 +139,10 @@ const ClientRequest = (props) => {
     const renderServiceDetail = () => {
         return <View style={styles.HallView}>
             <Text style={styles.desc1}>قائمة الخدمات </Text>
-            <Text style={styles.feedback}>قم بالضغط لتحديد التفاصيل  </Text>
-            {checkType()}
-            <ServiceDetailComp service_id={data.service_id} isFromServiceRequest={isFromServiceRequest} />
+            <View style={{ alignSelf: 'center' }}>
+                {checkType()}
+                <DetailComp service_id={data.service_id} />
+            </View>
         </View>
     }
     const CatOfService = {
@@ -168,6 +189,7 @@ const ClientRequest = (props) => {
                 onChangeText={setTextValue} />)
         })
     }
+
     const checkType = () => {
         return (
             <View style={styles.VHall}>
@@ -175,8 +197,9 @@ const ClientRequest = (props) => {
             </View>
         )
     }
-
-
+    const pricingPress = () => {
+        props.navigation.navigate(ScreenNames.ServiceDetail, { data: { ...data } })
+    }
 
     return (
         <View style={styles.container}>
@@ -192,14 +215,21 @@ const ClientRequest = (props) => {
                     </Pressable>
                     <Text style={styles.txt}>Request</Text>
                 </View>
-                {renderServiceinfo()}
+
             </View>
 
             <ScrollView contentContainerStyle={styles.home}>
+                {renderServiceinfo()}
 
                 {renderDateTime()}
 
                 {renderServiceDetail()}
+
+                {/* <View style={styles.body}>
+                    <Pressable style={styles.priceView} onPress={pricingPress}>
+                        <Text style={styles.descText}>تحديد الرزمة</Text>
+                    </Pressable>
+                </View> */}
 
                 <View style={styles.body}>
                     <Text style={styles.t1}>سياسة الغاء الحجز</Text>
@@ -229,28 +259,45 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     HallView: {
-        alignItems: 'center',
         backgroundColor: 'white',
-        height: 280,
-        marginBottom: 10,
+        height: 430,
+        borderRadius: 5,
+        margin: 5,
+
     },
     DateView: {
-        alignItems: 'center',
         backgroundColor: 'white',
         height: 200,
-        marginBottom: 10,
         justifyContent: 'center',
+        borderRadius: 5,
+        margin: 5,
     },
+    descText: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: 'black',
+    },
+
+    priceView: {
+        backgroundColor: 'snow',
+        height: 50,
+        width: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+        elevation: 5
+    },
+
     t1: {
         fontSize: 20,
-        marginTop: 10,
+        //marginTop: 10,
         marginRight: 20,
         color: 'black',
         fontWeight: 'bold',
     },
     t2: {
         fontSize: 15,
-        marginTop: 10,
+        //marginTop: 10,
         marginRight: 20,
         color: 'black',
         fontWeight: 'bold',
@@ -262,13 +309,14 @@ const styles = StyleSheet.create({
     },
     viewDate: {
         flexDirection: 'row',
+        alignSelf: 'center',
         width: 200,
         height: 50,
         borderRadius: 5,
-        elevation: 5,
         alignItems: 'center',
-        //borderWidth: 1,
+        backgroundColor: 'snow',
         justifyContent: 'space-evenly',
+        elevation: 5
     },
     icoon: {
         width: 35,
@@ -284,13 +332,18 @@ const styles = StyleSheet.create({
     },
     header: {
         backgroundColor: 'white',
-        height: 200,
-        marginBottom: 10,
+        //height: 200,
+        // marginBottom: 10,
     },
     body: {
         backgroundColor: 'white',
-        height: 200,
-        marginBottom: 10,
+        height: 100,
+        margin: 5,
+
+        borderRadius: 5,
+        margin: 5,
+        //alignItems: 'center',
+
     },
     title: {
         flexDirection: 'row',
@@ -305,17 +358,14 @@ const styles = StyleSheet.create({
         height: 120,
         borderRadius: 15,
         backgroundColor: 'black',
+        justifyContent: 'flex-end'
     },
     imgTitle: {
         flexDirection: 'row',
-        marginTop: 20,
-        alignItems:'center'
+        //marginTop: 20,
+        justifyContent: 'space-around'
     },
-    feedback: {
-        fontSize: 12,
-        color: 'black',
-        marginRight: 20,
-    },
+
     desc1: {
         fontSize: 20,
         fontWeight: 'bold',
@@ -328,7 +378,7 @@ const styles = StyleSheet.create({
         height: 50,
         width: 200,
         borderWidth: 1,
-        borderRadius: 30,
+        borderRadius: 10,
         borderColor: 'black',
         fontSize: 15,
         fontWeight: 'bold',
@@ -354,8 +404,9 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 15,
+        borderRadius: 10,
         marginRight: 20,
+        elevation: 5
     },
 })
 

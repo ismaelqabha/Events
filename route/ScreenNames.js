@@ -6,15 +6,17 @@ export const ScreenNames ={
     ClientHomeAds: 'ClientHomeAds',
     ServiceDescr: 'ServiceDescr',
     ClientRequest: 'ClientRequest',
-    VideoPlayer: 'VideoPlayer',
+
     ClientEvents: 'ClientEvents',
     FileFavorites: 'FileFavorites',
     Favorites: 'Favorites',
+    ServiceDetail: 'ServiceDetail',
+    SubDetailPrices: 'SubDetailPrices',
 
-    FileFavoritesShow: 'FileFavoritesShow',
-    ClientShowEvents: 'ClientShowEvents',
-    ClientInfo:'ClientInfo',
-    ClientResult: 'ClientResult',
+   
+   
+   
+   
     ClientSearch: 'ClientSearch',
 // Provider Screens
     ProviderServiceListing: 'ProviderServiceListing',

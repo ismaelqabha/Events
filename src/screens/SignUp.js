@@ -45,7 +45,7 @@ const SignUp = (props) => {
     return (
         <View>
             <Image
-                source={require('../../src/assets/signIn.png')}
+                source={require('../assets/photos/signIn.png')}
                 style={styles.image1}
             />
             <Text style={styles.text}>مرحبا بك ونشكرك على التسجيل في التطبيق</Text>

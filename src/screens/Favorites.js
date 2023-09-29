@@ -7,10 +7,8 @@ import { getFavoritesServiceInfo } from '../resources/API';
 
 const Favorites = (props) => {
     const context = useContext(SearchContext); 
-    const { userId, ServId , ServiceDataInfo, fId } = context ; 
+    const { userId} = context ; 
     const { fileName, fileId } = props?.route.params;
-   // const [ userId, userFavorates ,setUserFavorates ] = useContext(SearchContext); 
-
     const [userFavorates ,setUserFavorates ] =  useState([])
 
     const onPressHandler = () => {
@@ -19,10 +17,11 @@ const Favorites = (props) => {
     
 
     const getFavoritesFromApi = () => {
-       
+        console.log("fileId",fileId, "userId",userId);
         getFavoritesServiceInfo({ favoListFileId: fileId, favoListUserId: userId }).then(res => {
              setUserFavorates(res)
             //console.log("UFavorates: ", res.map(i => i.favorateInfo.service_id)); 
+            console.log("userFavorates",res);
         })
     }
  useEffect(() => {
