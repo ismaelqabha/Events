@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
 import { TouchableOpacity } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
-import { AddNewFavorites  } from '../resources/API';
+import { AddNewFavorites } from '../resources/API';
 
 
 
@@ -13,7 +13,6 @@ const FileFavoCard = (props) => {
     const { isFromFavorateClick, fileName, fileImg, fileId, fileFavoUserId } = props;
     const { setFId, fId, ServId, userId, userFavorates, setUserFavorates } = useContext(SearchContext);
     const navigation = useNavigation();
-
 
 
     // const query = () => {
@@ -30,14 +29,10 @@ const FileFavoCard = (props) => {
             ]
         })
     }
-
-
     const setNewFavoritFromApi = () => {
-        //console.log("favoListFileId: ", fileId, "favoListUserId: ", userId, "favoListServiceId: " ,ServId);
         const newFavorateItem = { favoListFileId: fileId, favoListUserId: userId, favoListServiceId: ServId }
 
         AddNewFavorites(newFavorateItem).then(res => {
-
             const userFav = userFavorates || [];
             userFav.push(newFavorateItem)
             setUserFavorates([...userFav])
@@ -46,8 +41,8 @@ const FileFavoCard = (props) => {
     }
 
     const onCaardPress = () => {
-        
-       
+
+
         if (!isFromFavorateClick) {
             navigation.navigate(ScreenNames.Favorites, { fileName: fileName, fileId: fileId })
             return;

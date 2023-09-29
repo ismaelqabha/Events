@@ -1,20 +1,60 @@
 
 const baseUrl = "https://ev-server.onrender.com/";
-//const baseUrl = "http://localhost:7000/"
+// const baseUrl = "https://localhost:7000/"
 
+
+// Service Data
 export const getHomePageData = async (body) => {
     const url = 'servicesData/getServiceAccordingCategory'
     return await AppFetch(url, 'POST', body)
-
 }
+export const getServiceInfoById = async (body) => {
+    const url = 'servicesData/getServiceById'
+    return await AppFetch(url, 'POST', body)
+}
+//Service Detail
 export const getServiceDetail = async (body) => {
     const url = 'serviceDetail/getServiceDetailByServID'
     return await AppFetch(url, 'POST', body)
 }
-export const getEventsInfoBage = async () => {
-    const url = ''
-    return await AppFetch(url)
-
+//Service sub Detail
+export const getServiceSubDetail = async (body) => {
+    const url = 'subDetail/getSubDetail'
+    return await AppFetch(url, 'POST', body)
+}
+export const getOrderSubdetailInfo = async (body) => {
+    const url = 'OrderServiceDetail/getOrderDetailById'
+    return await AppFetch(url, 'POST', body)
+}
+export const addNewOrderDetail = async (body) => {
+    const url = 'OrderServiceDetail/addOrderDetail'
+    return await AppFetch(url, 'POST', body)
+}
+//Event
+export const getEventsInfo = async (body) => {
+    const url = 'Events/getEvent'
+    return await AppFetch(url, 'POST', body)
+}
+export const createNewEvent = async (body) => {
+    const url = 'Events/create'
+    return await AppFetch(url, 'POST', body)
+}
+export const updateEvent = async (body) => {
+    const url = 'Events/updateByid'
+    return await AppFetch(url, 'PATCH', body)
+}
+// Request
+export const getRequestInfoWithservice = async (body) => {
+    const url = 'Request/getRequestService'
+    return await AppFetch(url, 'POST', body)
+}
+export const addNewRequest = async (body) => {
+    const url = 'Request/addRequest'
+    return await AppFetch(url, 'POST', body)
+}
+export const updateRequest = async (body) => {
+    const url = 'Request/updateByid'
+    return await AppFetch(url, 'PATCH', body)
 }
 // Camaighns
 export const getCampaigns = async (body) => {

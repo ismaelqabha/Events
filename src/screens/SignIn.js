@@ -34,12 +34,12 @@ const SignIn = (props) => {
     };
 
     return (
-        <ImageBackground style={styles.container} source={require('../../assets/bg.png')}>
+        <ImageBackground style={styles.container} source={require('../assets/photos/bg.png')}>
             {/* <View style={styles.container}> */}
             {/* <Text onPress={() => props.navigation.navigate(ScreenNames.SignUp)}>In</Text> */}
             {/* <Text onPress={()=> props.navigation.navigate('Tabs' , {screen:ScreenNames.ClientInfo}) }>In</Text> */}
             <Image
-                source={require('../../src/assets/signIn.png')}
+                source={require('../assets/photos/signIn.png')}
                 style={styles.image}
             />
 

@@ -75,7 +75,7 @@ const FileFavorites = (props) => {
                    onPress={() => onPressModalHandler()}
                     >
                     <Image
-                        source={require('../assets/add.png')}
+                        source={require('../assets/photos/add.png')}
                         style={styles.img}
                     />
                 </Pressable>

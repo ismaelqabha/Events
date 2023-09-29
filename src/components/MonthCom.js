@@ -176,7 +176,7 @@ const MonthCom = (props) => {
         }
     }
 
-    console.log("selectMonthforSearch: " , selectMonthforSearch );
+   // console.log("selectMonthforSearch: " , selectMonthforSearch );
 
     const onCardPress = (num) => {
         setMonthPress(true)
@@ -196,7 +196,8 @@ const MonthCom = (props) => {
 
 
     const renderMonth = () => months.map(month =>
-        <Pressable style={monthPressed ? styles.monthViewPress : styles.monthView} onPress={() => {onCardPress(month.monNum)}}>
+        <Pressable style={({pressed}) =>[ styles.monthView,
+            pressed ? styles.monthViewPress : styles.monthView]} onPress={() => {onCardPress(month.monNum)}}>
             <View style={styles.MView}>
                 <Text style={styles.monthText}>
                     {month.year}
