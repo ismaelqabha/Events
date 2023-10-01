@@ -6,53 +6,95 @@ import { ScreenNames } from "../../route/ScreenNames";
 import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
+import { updateEvent, updateRequest as updateRequestAPI } from '../resources/API';
+import moment from 'moment';
+import CalculetRemaingTime from './CalculetRemaingTime';
 
 
 const EventsCard = (props) => {
-    const { isFromAddEventClick } = props;
+    const { isFromAddEventClick, service_id } = props
     const navigation = useNavigation();
     const { eventName, eventDate, eventCost } = props;
-    const { userId, ServId, DateText, TimeText, AddResToEventFile, setAddResToEventFile,RequestIdState } = useContext(SearchContext);
+   
+    const { TimeText, requestInfo, setRequestInfo, requestedDate, RequestIdState, userId, eventInfo, setEventInfo } = useContext(SearchContext);
 
-    let ReqId = uuidv4();
-    console.log(ServId, DateText,TimeText);
+    console.log("requestedDate", props.eventDate);
+    const requestItemIndex = requestInfo?.findIndex(item => item.request_Id === RequestIdState && item.ReqUserId === userId);
+    const eventItemIndex = eventInfo?.findIndex(item => item.EventId === props.EventId && item.userId === userId)
 
+
+
+    console.log("RequestIdState", RequestIdState);
     const checkIfInEvent = () => {
-        const isinEvent = AddResToEventFile.find(ResDate => ResDate.reservationDate == DateText && ResDate.reservationTime == TimeText && ResDate.ReqServId == ServId);
+        //console.log("requestedDate", requestedDate, "TimeText", TimeText, "service_id", service_id);
+        const isinEvent = requestInfo.find(ResDate => {
+            const res1 = moment(ResDate.reservationDate).format('L') == moment(requestedDate).format('L')
+            const res2 = moment(ResDate.reservationTime).format('LT') == moment(TimeText).format('LT')
+            const res3 = ResDate.ReqServId == service_id
+            // console.log("ResDate.ReqServId", ResDate.ReqServId);
+            // console.log("res1", res1, "res2", res2, "res3", res3);
+            const result = res1 && res3
+            return result
+        });
+
         return !!isinEvent;
     }
 
-    const onCaardPress = () => {
-        if (isFromAddEventClick) {
-            if (checkIfInEvent()) {
-                console.log("already Added");
-                navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
-            } else {
-                const AddBookingtoFile = {
-                    RequestId: ReqId,
-                    ReqEventId: props.EventId,
-                    ReqServId: ServId,
-                    ReqUserId: userId,
-                    ReqStatus: false,
-                    // ReqDate: '10/1/2023',
-                    reservationDate: DateText,
-                    reservationTime: TimeText,
-                }
-                let ResArr = AddResToEventFile;
-                ResArr.push(AddBookingtoFile)
-                setAddResToEventFile([...ResArr])
-                navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
-                console.log("Adding");
-                console.log("isFromAddEventClick: ", isFromAddEventClick);
+    const UpdateRequest = () => {
+        const newRequestInfo = {
+            RequestId: RequestIdState,
+            ReqEventId: props.EventId,
+            reservationTime: TimeText//moment(TimeText).format('LT')
+        }
+        updateRequestAPI(newRequestInfo).then(res => {
+            const req = requestInfo || [];
+            if (requestItemIndex > -1) {
+                req[requestItemIndex] = newRequestInfo;
             }
+            setRequestInfo([...req])
+        })
+    }
+    const UpdateEventInfo = () => {
+        const newEventItem = {
+            EventId: props.EventId,
+            userId: userId,
+            eventDate: moment(requestedDate).format('L'),
+            // eventCost: "50890",
+        }
+        updateEvent(newEventItem).then(res => {
+            const ev = eventInfo || [];
+            if (eventItemIndex > -1) {
+                ev[eventItemIndex] = newEventItem;
+            }
+            setEventInfo([...ev])
+        })
+    }
+    //console.log( "isFromAddEventClick", isFromAddEventClick);
 
-        } else {
+    const onCaardPress = () => {
+
+        if (!isFromAddEventClick) {
             console.log("navigate without adding");
             navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
             return;
         }
 
+        console.log("Update request");
+        UpdateRequest()
+        UpdateEventInfo()
+        navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
+
+        // if (checkIfInEvent()) {
+        //     console.log("already Added");
+        //     navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
+        // } else {
+        //     console.log("Update request");
+        //     UpdateRequest()
+
+        // }
     }
+
+    
     return (
         <View style={styles.container}>
             <Card style={styles.card1}>
@@ -63,10 +105,10 @@ const EventsCard = (props) => {
                         {eventDate}
                     </Text>
                     <Text style={{ marginBottom: 10, fontSize: 18, color: 'black' }}>
-                        80:20:55:23
+                       <CalculetRemaingTime targetDate={props.eventDate}/>
                     </Text>
                     <Text style={styles.text}>
-                        ₪{eventCost}
+                        {eventCost ? ("₪" + eventCost) : ''}
                     </Text>
                 </TouchableOpacity>
 

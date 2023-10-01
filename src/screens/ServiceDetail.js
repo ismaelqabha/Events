@@ -2,17 +2,18 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Pressable } from 'react-native';
 import { View, StyleSheet, TouchableOpacity, Text, Modal, Card } from 'react-native';
 import SearchContext from '../../store/SearchContext';
-import SubDetailComp from './SubDetailComp';
 import { getServiceDetail } from '../resources/API';
-import { log } from 'react-native-reanimated';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 
-const ServiceDetailComp = (props) => {
-    const {  isFromServiceRequest } = props;
-    const { detailOfServ, setDetailOfServ,isFromServiceDescription, setdetailIdState } = useContext(SearchContext);
+
+const ServiceDetail = (props) => {
+    const { data, isFromServiceDesc } = props.route?.params || {}
+    const { detailOfServ, setDetailOfServ, isFromServiceDescription, setdetailIdState } = useContext(SearchContext);
     const [showModal, setShowModal] = useState(false);
 
     const onPressHandler = (DId) => {
+        setdetailIdState(DId)
         setShowModal(true);
     }
     const onPressModal = () => {
@@ -27,12 +28,12 @@ const ServiceDetailComp = (props) => {
     }
 
 
-    console.log("props.service_id", props.service_id)
+    //console.log("props.service_id", data.service_id)
 
     const getDetailFromApi = () => {
-        getServiceDetail({ SDserviceID: props.service_id }).then(res => {
+        getServiceDetail({ SDserviceID: data?.service_id }).then(res => {
             setDetailOfServ(res)
-            console.log("detailOfServ", res);
+            //console.log("detailOfServ", res);
         })
     }
 
@@ -40,41 +41,58 @@ const ServiceDetailComp = (props) => {
         getDetailFromApi()
     }, [])
 
+    const backPress = () => {
+        props.navigation.goBack();
+    }
+
 
     const query = () => {
         return detailOfServ?.filter(ItemSerType => {
-            return ItemSerType.SDserviceID == props.service_id;
+            return ItemSerType.SDserviceID == data?.service_id;
         })
     }
     const renderDetail = () => {
-        const data = query();
-
-        console.log("isFromServiceDescription", isFromServiceDescription);
-
-        if (isFromServiceDescription == true) {
-            const cardsArray = data?.map((card, i) => {
+        const dataa = query();
+        if (isFromServiceDesc) {
+            const cardsArray = dataa?.map((card, i) => {
                 return <View key={i} style={styles.serviceView}>
-                    <Text style={styles.txt1}>{card?.detailTitle}</Text>
+                    <Text style={styles.txt1}>{card?.detailDescription}</Text>
+                    <Text style={styles.txt1}>{card?.cost}</Text>
                 </View>;
 
             });
-            console.log("cardsArray", cardsArray);
             return cardsArray;
-        } else {
+        }
 
-            const cardsArray = data.map(card => {
-                return <TouchableOpacity onPress={() => onPressHandler(card.detailTitle)} style={styles.touchView}>
-                    <Text style={styles.text}>{card?.detailTitle}</Text>
+        if (!isFromServiceDesc) {
+            const cardsArray = dataa.map(card => {
+                return <TouchableOpacity onPress={() => onPressHandler(card.detail_Id)} style={styles.touchView}>
+                    <Text style={styles.txt1}>{card?.detailDescription}</Text>
+                    <Text style={styles.txt1}>{card?.cost}</Text>
                 </TouchableOpacity>;
             });
             return cardsArray;
         }
+
     };
 
     return (
         <View style={styles.container}>
+            <View style={styles.title}>
+                <Pressable onPress={backPress}
+                >
+                    <Ionicons
+                        style={styles.icon}
+                        name={"arrow-back"}
+                        color={"black"}
+                        size={25} />
+                </Pressable>
+            </View>
             {renderDetail()}
-            <Modal
+
+
+
+            {/* <Modal
                 transparent
                 visible={showModal}
                 animationType='fade'
@@ -91,7 +109,7 @@ const ServiceDetailComp = (props) => {
                             <View style={{ marginBottom: 20 }}>
                                 <Text style={styles.text}>الرجاء اختيار تفاصيل الخدمة</Text>
                             </View>
-                            <SubDetailComp />
+                            <SubDetailComp/>
                         </View>
                         <Pressable onPress={() => onPressModal()} style={styles.btnfooter}>
                             <Text style={styles.text}>تم</Text>
@@ -99,7 +117,7 @@ const ServiceDetailComp = (props) => {
                     </View>
                 </View>
 
-            </Modal>
+            </Modal> */}
         </View>
     );
 }
@@ -107,6 +125,25 @@ const ServiceDetailComp = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        // alignItems:'center'
+    },
+    title: {
+        flexDirection: 'row',
+        margin: 20,
+    },
+    icon: {
+        justifyContent: 'flex-start'
+    },
+    serviceView: {
+        alignSelf: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        width: '90%',
+        height: 100,
+        margin: 5,
+        borderRadius: 10,
+        elevation: 5
+
     },
     touchView: {
         borderRadius: 10,
@@ -121,14 +158,13 @@ const styles = StyleSheet.create({
     },
     detailModal: {
         width: "100%",
-        height: 500,
+        height: "100%",
         backgroundColor: '#ffffff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },
     centeredView: {
         flex: 1,
-        justifyContent: 'flex-end',
         alignItems: 'center',
         backgroundColor: '#00000099',
     },
@@ -138,9 +174,7 @@ const styles = StyleSheet.create({
 
     },
     body: {
-        height: '85%',
-        marginTop: 10,
-        marginRight: 10
+        height: '100%',
     },
     text: {
         textAlign: 'center',
@@ -149,6 +183,7 @@ const styles = StyleSheet.create({
     },
     txt1: {
         fontSize: 15,
+
     },
     btnfooter: {
         height: '15%',
@@ -160,4 +195,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default ServiceDetailComp;
+export default ServiceDetail;

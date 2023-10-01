@@ -63,7 +63,7 @@ const DateTPicker = () => {
 
                     <Image
                         style={styles.icon}
-                        source={require('../assets/time.png')}
+                        source={require('../assets/photos/time.png')}
                     />
                 </View>
             </Pressable>

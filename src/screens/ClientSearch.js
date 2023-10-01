@@ -7,18 +7,18 @@ import { servicesCategory } from '../resources/data';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from '@react-navigation/native';
 import { FlatList } from 'react-native-gesture-handler';
-import DateTimePicker from '@react-native-community/datetimepicker';
+
 import MonthCom from '../components/MonthCom';
 import { SelectList } from 'react-native-dropdown-select-list'
-import { MultipleSelectList } from 'react-native-dropdown-select-list'
+
 import { getCities } from '../resources/API';
 import ClientCalender from '../components/ClientCalender';
 import AddNewDates from '../components/AddNewDates';
 
 
 const ClientSearch = (props) => {
-    const { town, setTown, setcityselected, setregionselect, setselectMonthforSearch, setselectDateforSearch
-        , Categorychozen, setCategorychozen } = useContext(SearchContext);
+    const { town, setTown, cityselected, setcityselected, regionselect, setregionselect, setselectMonthforSearch, selectMonthforSearch, setselectDateforSearch
+        , selectDateforSearch, Categorychozen, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
     // Determine which view is open
     const [isPressed, setIsPressed] = useState(true);
@@ -93,13 +93,10 @@ const ClientSearch = (props) => {
         setplaceViewIsPressed(false)
     }
     const calenderPress = () => {
-        if (selectServiceType == '') {
-            alert("الرجاء اختيار نوع الخدمة")
-        } else {
-            setIsPressed(false)
-            setdateViewIsPressed(true)
-            setplaceViewIsPressed(false)
-        }
+        setIsPressed(false)
+        setdateViewIsPressed(true)
+        setplaceViewIsPressed(false)
+
     }
     const placePress = () => {
         setIsPressed(false)
@@ -172,13 +169,34 @@ const ClientSearch = (props) => {
         { key: '1', value: 'المثلث الجنوبي' },
         { key: '4', value: 'الضفة الغربية' },
     ]
+    const showDate = () => {
+        if (selectMonthforSearch != null) {
+            if (monthly) {
+                return 'شهر' + '  ' + selectMonthforSearch
+            }
+        }
+        if (spacificDate) {
+            return selectDateforSearch
+        }
+    }
+    const showLocation = () => {
 
+        if (myriogen) {
+            return regionselect
+        }
+        if (spacificPlace) {
+            return cityselected
+        }
+    }
     // Function for designing the screen
     const searchBar = () => {
         return (
             <View style={[styles.header, isPressed ? styles.header : styles.pressHeader]}>
                 <TouchableOpacity onPress={categoryPress}>
-                    <Text style={styles.headerText}>ما هي الخدمة ؟</Text>
+                    <View style={{ flexDirection: 'row', marginBottom: 50 }}>
+                        {!isPressed && <Text style={styles.headerTextL}>{selectServiceType}</Text>}
+                        <Text style={styles.headerTextR}>ما هي الخدمة ؟</Text>
+                    </View>
                 </TouchableOpacity>
                 {isPressed &&
                     <View style={{ flex: 1 }}>
@@ -186,7 +204,7 @@ const ClientSearch = (props) => {
                             style={styles.search}
                             onPress={() => navigation.navigate(ScreenNames.SearchServcies)}
                         >
-                            <Image style={styles.img} source={require('../assets/search1.png')} />
+                            <Image style={styles.img} source={require('../assets/photos//search1.png')} />
                             <Text style={styles.txt}>بحث الخدمات</Text>
                         </Pressable>
                         <FlatList
@@ -208,7 +226,10 @@ const ClientSearch = (props) => {
         return (
             <View style={[styles.dateView, dateViewPressed ? styles.dateView : styles.pressDateView]}>
                 <TouchableOpacity onPress={calenderPress}>
-                    <Text style={styles.headerText}>في أي تاريخ ؟</Text>
+                    <View style={{ flexDirection: 'row', marginBottom: 50 }}>
+                        {!dateViewPressed && <Text style={styles.headerTextL}>{showDate()}</Text>}
+                        <Text style={styles.headerTextR}>في أي تاريخ ؟</Text>
+                    </View>
                 </TouchableOpacity>
                 {dateViewPressed &&
                     <View style={{ flex: 1 }}>
@@ -242,7 +263,10 @@ const ClientSearch = (props) => {
         return (
             <View style={[styles.placeView, placeViewPressed ? styles.placeView : styles.pressplaceView]}>
                 <TouchableOpacity onPress={placePress}>
-                    <Text style={styles.headerText}>في أي مكان ؟</Text>
+                    <View style={{ flexDirection: 'row', marginBottom: 50 }}>
+                        {!placeViewPressed && <Text style={styles.headerTextL}>{showLocation()}</Text>}
+                        <Text style={styles.headerTextR}>في أي مكان ؟</Text>
+                    </View>
                 </TouchableOpacity>
                 {placeViewPressed &&
                     <View style={{ flex: 1 }}>
@@ -255,7 +279,7 @@ const ClientSearch = (props) => {
                         <View style={styles.insideView}>
                             {myriogen &&
                                 <SelectList
-                                    setSelected={(val) => setcityselected(val)}
+                                    setSelected={(val) => setregionselect(val)}
                                     data={renderCity()}
                                     save="value"
                                     placeholder='اختر المدينة'
@@ -267,7 +291,7 @@ const ClientSearch = (props) => {
                             {spacificPlace &&
                                 <SelectList
                                     setSelected={(val) =>
-                                        setregionselect(val)
+                                        setcityselected(val)
                                     }
                                     data={regionData}
                                     save="value"
@@ -287,7 +311,6 @@ const ClientSearch = (props) => {
 
 
     const onBtnSearchPress = () => {
-
         if (Categorychozen) {
             props.navigation.navigate(ScreenNames.Results, { data: { ...props } });
         }
@@ -395,12 +418,24 @@ const styles = StyleSheet.create({
     },
 
     headerText: {
+
+    },
+    headerTextR: {
         fontSize: 20,
         fontWeight: 'bold',
         margin: 10,
-        alignSelf: 'flex-end'
-
+        position: 'absolute',
+        right: 0,
+        top: 0
     },
+    headerTextL: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        margin: 10,
+        //borderWidth: 1,
+        height: 25,
+    },
+
 
     search: {
         flexDirection: 'row',

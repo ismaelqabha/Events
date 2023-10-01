@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { favoritesList, fileFavorites, Events, Request, Payment, serviceDetail, subDetail, subDetailData, servicesData, ServiceImages, Users } from '../src/resources/data';
 import SearchContext from '../store/SearchContext';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const SearchProvider = props => {
   const [Service, setService] = useState({});
   const [city, setCity] = useState({});
   const [cat, setCat] = useState('');
-
   const [userId, setuserId] = useState(1);
   const [sType, setSType] = useState({});
   const [fId, setFId] = useState({});
@@ -15,19 +15,32 @@ const SearchProvider = props => {
 
 
 
-  // Data Base Tables
+  // Data service favorites
   const [userFavorates, setUserFavorates] = useState([])
   const [fileFavoriteState, setFileFavoriteState] = useState([])
+  // service Info
   const [ServiceDataInfo, setServiceDataInfo] = useState([])
   const [ServiceImages, setServiceImages] = useState([])
   const [ServiceDatesforBooking, setServiceDatesforBooking] = useState([])
-  const [campInfo, setCampInfo] = useState([])
   const [datesforBooking, setDatesforBooking] = useState([])
+  // campighin
+  const [campInfo, setCampInfo] = useState([])
+ 
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
-  const [isFromServiceDescription, setisFromServiceDescription] = useState()
-
   const [town, setTown] = useState([])
+  const [serviceSubDetail, setserviceSubDetail] = useState([])
+  const [detailIdState, setdetailIdState] = useState();
+
+  // Request
+  const [requestInfo, setRequestInfo] = useState( [])
+  const [orderSubdetail, setOrderSubdetail] = useState([])
+  const [isFromRequestScreen, setisFromRequestScreen] = useState()
+  const [RequestIdState, setRequestIdState] = useState();
+  const [TimeText, setTimeText] = useState()
+
+ // Event 
+ const [eventInfo, setEventInfo] = useState([])
 
   // ClientSearch
   const [cityselected, setcityselected] = useState("");
@@ -35,30 +48,25 @@ const SearchProvider = props => {
   const [selectDateforSearch, setselectDateforSearch] = useState();
   const [selectMonthforSearch, setselectMonthforSearch] = useState();
   const [Categorychozen, setCategorychozen] = useState(false)
-  //
   const [userRegion, setUserRegion] = useState('المثلث الشمالي');
   const [requestedDate, setrequestedDate] = useState()
 
 
+  //Booking
+ 
 
 
 
+
+ 
 
 
   const [UserState, setUserState] = useState(Users || [])
-  const [fileEventState, setfileEventState] = useState(Events || [])
-  const [AddResToEventFile, setAddResToEventFile] = useState(Request || [])
   const [userPayment, setUserPayment] = useState(Payment || [])
-  
-  const [serviceSubDetail, setserviceSubDetail] = useState(subDetail || [])
-  const [SubDetData, setSubDetData] = useState(subDetailData || [])
-
   const [serviceImg, setserviceImg] = useState([])
-
   const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
-  const [detailIdState, setdetailIdState] = useState();
-  const [RequestIdState, setRequestIdState] = useState();
+ 
 
 
 
@@ -84,10 +92,8 @@ const SearchProvider = props => {
         setUserFavorates,
         fileFavoriteState,
         setFileFavoriteState,
-        fileEventState,
-        setfileEventState,
-        AddResToEventFile,
-        setAddResToEventFile,
+        requestInfo, 
+        setRequestInfo,
         ImgOfServeice,
         setImgOfServeice,
         userPayment,
@@ -102,8 +108,6 @@ const SearchProvider = props => {
         setServiceDataInfo,
         detailIdState,
         setdetailIdState,
-        SubDetData,
-        setSubDetData,
         RequestIdState,
         setRequestIdState,
         serviceImg,
@@ -134,8 +138,15 @@ const SearchProvider = props => {
         setrequestedDate,
         Categorychozen,
         setCategorychozen,
-        isFromServiceDescription, 
-        setisFromServiceDescription
+        isFromRequestScreen, 
+        setisFromRequestScreen,
+        orderSubdetail, 
+        setOrderSubdetail,
+        eventInfo, 
+        setEventInfo,
+        TimeText, 
+        setTimeText,
+        
       }}>
       {props.children}
     </SearchContext.Provider>

@@ -36,7 +36,7 @@ const SearchServcies = (props) => {
                     placeholder='بحث الخدمات'
                     onChangeText={(value) => setSearched(value)}
                 />
-                <Image style={styles.img} source={require('../assets/search1.png')} />
+                <Image style={styles.img} source={require('../assets/photos/search1.png')} />
             </View>
             <View style={styles.recentsView}><Text style={styles.recentText}>عمليات البحث الأخيرة</Text></View>
         </View>

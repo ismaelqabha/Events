@@ -2,12 +2,11 @@ import React from "react";
 import { ScreenNames } from "../route/ScreenNames";
 import SignIn from "../src/screens/SignIn";
 import SignUp from "../src/screens/SignUp";
-import VideoPlayer from "../src/screens/VideoPlayer";
+
 import ClientHomeAds from "../src/screens/ClientHomeAds";
 import ClientBook from "../src/screens/ClientBook";
 import ServiceDescr from "../src/screens/ServiceDescr";
-import ClientResult from "../src/screens/ClientResult";
-import ClientInfo from "../src/screens/ClientInfo";
+
 import ClientRequest from "../src/screens/ClientRequest";
 import Favorites from "../src/screens/Favorites";
 import ClientSearch from "../src/screens/ClientSearch";
@@ -33,6 +32,10 @@ import HomeNavigator from "./HomeNavigator";
 import Splash from "../src/screens/Splash";
 import Results from "../src/screens/Results";
 import SearchServcies from "../src/screens/SearchServcies";
+
+import SubDetailPrices from "../src/screens/SubDetailPrices";
+import ServiceDetail from "../src/screens/ServiceDetail";
+
 
 
 const MainNavigation = (props) => {
@@ -78,17 +81,17 @@ const MainNavigation = (props) => {
                 {/* <Stack.Screen name={ScreenNames.SignUp} component={SignUp} /> */}
                 {/* <Stack.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds} /> */}
 
-
-                <Stack.Screen name={ScreenNames.VideoPlayer} component={VideoPlayer} />
                 <Stack.Screen name={ScreenNames.ClientBook} component={ClientBook} />
                 <Stack.Screen name={ScreenNames.ServiceDescr} component={ServiceDescr} />
-                <Stack.Screen name={ScreenNames.ClientResult} component={ClientResult} />
+               
                 <Stack.Screen name={ScreenNames.Favorites} component={Favorites} />
                 <Stack.Screen name={ScreenNames.ClientSearch} component={ClientSearch} />
-                <Stack.Screen name={ScreenNames.ClientInfo} component={ClientInfo} />
+               
                 <Stack.Screen name={ScreenNames.ClientRequest} component={ClientRequest} />
                 <Stack.Screen name={ScreenNames.Results} component={Results} />
                 <Stack.Screen name={ScreenNames.SearchServcies} component={SearchServcies} />
+                <Stack.Screen name={ScreenNames.ServiceDetail} component={ServiceDetail} />
+                <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
 
                 {/* <Stack.Screen name={ScreenNames.FileFavorites} component={FileFavorites} /> */}
                 {/* <Stack.Screen name={ScreenNames.ClientEvents} component={ClientEvents} /> */}

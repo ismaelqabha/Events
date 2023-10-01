@@ -2,17 +2,18 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, Image, Modal, ScrollView } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
-import ServiceDetailComp from '../components/ServiceDetailComp';
 import DateTPicker from '../components/DateTPicker'
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
-import { getbookingDates } from '../resources/API';
+import { getServiceDetail, getbookingDates } from '../resources/API';
 import moment from 'moment';
+import 'moment/locale/ar-dz'
+import DetailComp from '../components/DetailComp';
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
-    const { setServId, setServiceDatesforBooking, ServiceDatesforBooking, setisFromServiceDescription,
+    const { setServId, setServiceDatesforBooking, ServiceDatesforBooking,setDetailOfServ,
         selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, isDateAvailable, setRequestIdState } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
@@ -22,14 +23,19 @@ const ServiceDescr = (props) => {
             setServiceDatesforBooking(res)
         })
     }
+    const getDetailFromApi = () => {
+        getServiceDetail({ SDserviceID: data?.service_id }).then(res => {
+            setDetailOfServ(res)
+        })
+    }
+
     useEffect(() => {
         getDatesfromApi()
-        setisFromServiceDescription(true)
+        getDetailFromApi()
     }, [])
 
 
     const onPressHandler = () => {
-        setisFromServiceDescription(false)
         props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
     }
 
@@ -75,11 +81,16 @@ const ServiceDescr = (props) => {
     const renderDates = () => {
 
         if (selectMonthforSearch) {
+            //const pressableStyle = isPressed ? styles.pressablePressed : styles.pressableDefault;
+            moment.locale('ar-dz');
             const DatesAvailable = queryDatesAccorMonth()
             const dateArray = DatesAvailable?.map(dat => {
+
                 return <View>
-                    <Pressable style={[styles.viewselectdate, select ? styles.viewselectdatepress : styles.viewselectdate]}
+                    <Pressable style={({ pressed }) =>
+                        [styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
                         onPress={() => SelectDatePressed(dat.bookDate)}
+
                     >
                         <Text style={styles.tex}>{moment(dat.bookDate).format('dddd')}</Text>
                         <Text style={styles.tex}>{moment(dat.bookDate).format('LL')}</Text>
@@ -91,6 +102,7 @@ const ServiceDescr = (props) => {
         if (selectDateforSearch) {
             const DatesAvailable = querySpacificDate()
             const dateArray = DatesAvailable?.map(dat => {
+                setrequestedDate(dat.bookDate)
                 return <View><Text style={styles.tex}>{`${moment(dat.bookDate).format('LL')}`}</Text>
                     <Text style={styles.tex}>{`${moment(dat.bookDate).format('dddd')}`}</Text>
                 </View>;
@@ -98,10 +110,10 @@ const ServiceDescr = (props) => {
             return dateArray;
         } else {
             const firstAvilableDate = queryfirstDates()
-
-            return <View><Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
+            setrequestedDate(firstAvilableDate?.bookDate)
+            return <View style={{flexDirection: 'row'}}><Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
                 <Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('LL')}`}</Text>
-            
+
             </View>;
 
         }
@@ -126,20 +138,23 @@ const ServiceDescr = (props) => {
             </View>
         </View>
     }
-
+    const pricingPress = () => {
+        props.navigation.navigate(ScreenNames.ServiceDetail, { data: {...data} })
+    }
+ 
     const renderServiceDetail = () => {
         return <View style={styles.descView}>
-            <Text style={styles.desc1}>قائمة الخدمات </Text>
+            <Text style={styles.desc1}>التفاصيل المرفقة لتحديد السعر</Text>
             <View style={styles.HallView}>
-                <ServiceDetailComp service_id={data.service_id}  />
+                <DetailComp service_id={data.service_id}/>
             </View>
         </View>
     }
     const renderSoialMedia = () => {
         return <View style={styles.icon}>
-            <Image style={styles.insicon} source={require('../assets/facebook--v2.png')} />
-            <Image style={styles.insicon} source={require('../assets/instagram-new.png')} />
-            <Image style={styles.insicon} source={require('../assets/apple-phone.png')} />
+            <Image style={styles.insicon} source={require('../assets/photos/facebook.png')} />
+            <Image style={styles.insicon} source={require('../assets/photos/instagram-new.png')} />
+            <Image style={styles.insicon} source={require('../assets/photos/apple-phone.png')} />
         </View>
     }
 
@@ -166,18 +181,23 @@ const ServiceDescr = (props) => {
                 <View style={styles.descView}>
                     <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن الخدمة المعروضة </Text>
                 </View>
+                {/* <View style={styles.descView}>
+                    <Pressable style={styles.priceView} onPress={pricingPress}>
+                        <Text style={styles.descText}>رزم الأسعار</Text>
+                    </Pressable>
+                </View> */}
 
                 {renderServiceDetail()}
 
-                <View style={styles.descView}>
+                {/* <View style={styles.descView}>
                     <Text style={styles.desc1}>تاريخ المناسبة</Text>
                     <Text style={styles.desc1}>{requestedDate || '2023/9/15'}</Text>
 
-                </View>
+                </View> */}
                 <View style={styles.descView}>
                     <Image
                         style={styles.mapImage}
-                        source={require('../assets/location.png')} />
+                        source={require('../assets/photos/location.png')} />
                 </View>
                 <View style={styles.descView}>
                     <Text style={styles.descText}>عرض التغذية الراجعة عن الخدمة المختارة</Text>
@@ -186,27 +206,6 @@ const ServiceDescr = (props) => {
                 {renderSoialMedia()}
 
             </ScrollView>
-            {/* <Modal
-                transparent
-                visible={showModal}
-                animationType='slide'
-                onRequestClose={() =>
-                    setShowModal(false)
-                }
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.detailModal}>
-                        <View style={styles.Motitle}>
-                            <Text style={styles.text}>...</Text>
-                        </View>
-                        <View style={styles.body}>
-                            <DateTPicker />
-                        </View>
-                        {checkDateResult()}
-                    </View>
-                </View>
-
-            </Modal> */}
 
             <View style={styles.foter}>
                 <Pressable style={styles.btnview} onPress={() => onPressHandler()}>
@@ -219,7 +218,8 @@ const ServiceDescr = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        
     },
     logo: {
         borderRadius: 50,
@@ -231,12 +231,14 @@ const styles = StyleSheet.create({
     },
     headerInfo: {
         borderWidth: 1,
+        borderRadius: 10,
         margin: 10,
         padding: 20
     },
     descView: {
-        borderWidth: 1,
-        margin: 10,
+        backgroundColor: '#fffaf0',
+        //borderWidth: 1,
+        margin: 5,
         padding: 20,
     },
     mapImage: {
@@ -279,7 +281,7 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     desc1: {
-        fontSize: 15,
+        fontSize: 20,
         fontWeight: 'bold',
         color: 'black',
     },
@@ -301,13 +303,14 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     btnview: {
-        backgroundColor: '#f0ffff',
+        backgroundColor: 'white',
         width: 150,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 15,
+        borderRadius: 10,
         marginRight: 20,
+        elevation:5
     },
     viewselectdate: {
         flexDirection: 'row',
@@ -323,55 +326,20 @@ const styles = StyleSheet.create({
     tex: {
         fontSize: 15,
         margin: 5,
-        color: 'black'
+        color: 'black',
+        fontWeight: 'bold'
     },
-    // input: {
-    //     textAlign: 'center',
-    //     height: 50,
-    //     width: 200,
-    //     borderWidth: 1,
-    //     borderRadius: 30,
-    //     borderColor: 'black',
-    //     fontSize: 15,
-    //     fontWeight: 'bold',
-    //     marginTop: 20,
-    //     marginRight: 10,
-    //     color: 'black',
-    //     backgroundColor: '#fffaf0',
-    // },
-    // detailModal: {
-    //     width: "100%",
-    //     height: 500,
-    //     backgroundColor: '#ffffff',
-    //     borderTopLeftRadius: 20,
-    //     borderTopRightRadius: 20,
-    // },
-    // centeredView: {
-    //     flex: 1,
-    //     justifyContent: 'flex-end',
-    //     alignItems: 'center',
-    //     backgroundColor: '#00000099',
-    // },
-    // Motitle: {
-    //     height: 50,
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    //     borderTopLeftRadius: 20,
-    //     borderTopRightRadius: 20,
-    // },
-    // body: {
-    //     height: '80%',
-    //     alignItems: 'center',
-    //     marginTop: 10,
-    // },
-    // text: {
-    //     textAlign: 'center',
-    //     fontSize: 20,
-    //     color: 'black',
-    // },
-    // Modalbtn: {
-    //     marginBottom: 20,
-    // },
+    priceView: {
+        backgroundColor: 'snow',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+        elevation: 5
+    },
+    HallView:{
+        marginTop :20
+    }
 })
 
 export default ServiceDescr;

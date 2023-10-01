@@ -7,7 +7,7 @@ import SliderImage from '../components/SliderImage';
 
 
 const HomeCards = (props) => {
-    // const { data } = props?.route.params
+    
     const navigation = useNavigation();
     const { subTitle, address } = props;
     const { setSType} = useContext(SearchContext);
@@ -29,7 +29,7 @@ const HomeCards = (props) => {
                         <Text style={styles.text} numberOfLines={2}>{subTitle}....</Text>
                     </View>
                     <Text style={styles.text}>{address}</Text>
-                    {/* {renderDates()} */}
+                   
                 </View>
             </TouchableOpacity>
         </View>

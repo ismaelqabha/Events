@@ -1,37 +1,50 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, ScrollView, Image } from 'react-native';
 import BookingCard from '../../src/components/BookingCard';
 import { Request } from '../resources/data';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
+import { getRequestInfoWithservice } from '../resources/API';
 
 
 const ClientBook = (props) => {
-   
-    const { AddResToEventFile } = useContext(SearchContext);
+
+    const { requestInfo, setRequestInfo } = useContext(SearchContext);
     const { data } = props?.route.params;
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+   // console.log("data.EventId", data.EventId);
 
-    const query = () => {
-        if (!data.EventId) {
-            return AddResToEventFile || [];
-        }
-        return AddResToEventFile.filter(event => {
-            return event.ReqEventId == data.EventId;
+    const getRequestfromApi = () => {
+        getRequestInfoWithservice({ ReqEventId: data?.EventId }).then(res => {
+            setRequestInfo(res)
+          //console.log("requestInfo", res);
         })
     }
+    useEffect(() => {
+        getRequestfromApi()
+    }, [])
+
+    // const query = () => {
+    //     if (!data.EventId) {
+    //         return requestInfo || [];
+    //     }
+    //     return requestInfo.filter(event => {
+    //         return event.ReqEventId == data.EventId;
+    //     })++
+    // }
     const renderCard = () => {
-        const data = query();
-        const cardsArray = data.map(card => {
-            return <BookingCard  {...card} />;
-        }); return cardsArray;
+        const dataa = requestInfo;
+        const cardsArray = dataa.map(card => {
+            return <BookingCard {...card.requestInfo}
+                services={card?.serviceData}
+                image={card?.serviceImage} />;
+        });
+        return cardsArray;
     };
-    // console.log("New Files " ,AddResToEventFile )
-    // console.log("New Files " ,query().length )
-    // console.log("all " ,AddResToEventFile.map(event=> event.ReqEventId) , "id: " ,  data.EventId)
+
 
     return (
         <View style={styles.container}>
@@ -78,12 +91,12 @@ const styles = StyleSheet.create({
     headerImg: {
         flexDirection: 'row',
         height: 60,
-        justifyContent:'space-between',
-        marginTop:10,
+        justifyContent: 'space-between',
+        marginTop: 10,
     },
     viewIcon: {
-       alignItems: 'center',
-       justifyContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     icon: {
         marginLeft: 10,
