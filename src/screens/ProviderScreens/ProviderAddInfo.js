@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,83 +9,48 @@ import {
 } from 'react-native';
 import {SelectList} from 'react-native-dropdown-select-list';
 import {ScreenNames} from '../../../route/ScreenNames';
-import SearchContext from '../../../store/SearchContext';
 import {regionData} from '../../resources/data';
 import strings from '../../assets/res/strings';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const ProviderAddInfo = props => {
-  const {ServiceDataInfo, setServiceDataInfo, ServId} =
-    useContext(SearchContext);
-  const [serviceAddress, setserviceAddress] = useState(null);
-  const [serviceRegion, setserviceRegion] = useState(null);
-  const [title, setTitle] = useState(null);
-  const [SuTitle, setSuTitle] = useState(null);
-  const [description, setDescription] = useState(null);
+  const language = strings.arabic.ProviderScreens.ProviderAddInfo;
 
-  const language = strings.arabic.ProviderAddInfo;
+  //   service Data
+  const {
+    serviceAddress,
+    setserviceAddress,
+    serviceRegion,
+    setserviceRegion,
+    title,
+    setTitle,
+    SuTitle,
+    setSuTitle,
+    description,
+    setDescription,
+  } = useContext(ServiceProviderContext);
 
-  let serviceIndex = ServiceDataInfo.findIndex(
-    ser => ser.service_id === ServId,
-  );
-  let serviceObj = ServiceDataInfo[serviceIndex];
+  //   to save data on leaving, on return user can continue where he left off
+  const params = {
+    saveData: {
+      serviceAddress: serviceAddress,
+      serviceRegion: serviceRegion,
+      title: title,
+      SuTitle: SuTitle,
+      description: description,
+      isFromChooseServiceClick: true,
+    },
+  };
 
   const onNextPress = () => {
-    selectServiceType
-      ? props.navigation.navigate(ScreenNames.ProviderAddInfo, {
-          data: {...props},
-        })
-      : showMessage();
+    props.navigation.navigate(ScreenNames.ProviderSetPhotos, { data: { ...props } });
+
   };
-
-//   const onNextPress = () => {
-//     let service = ServiceDataInfo;
-
-//     if (serviceIndex != -1) {
-//       service[serviceIndex].region = serviceRegion;
-//       service[serviceIndex].address = serviceAddress;
-//       service[serviceIndex].title = title;
-//       service[serviceIndex].subTitle = SuTitle;
-//       service[serviceIndex].desc = description;
-//     }
-
-//     setServiceDataInfo([...service]);
-//     console.log(ServiceDataInfo);
-//     props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
-//       data: {...props},
-//     });
-//   };
 
   const onBackPress = () => {
-    checkIfFilled() ? RenderConfirmationBox() : props.navigation.goBack();
+    props.navigation.goBack();
   };
 
-  const checkIfFilled=()=>{
-    serviceAddress || serviceRegion || title || SuTitle || description ? true : false
-  }
-
-  //   confirmation popup for leaving with out saving the progress
-  const RenderConfirmationBox = () => {
-    let warningButtons = [
-      {
-        text: language.cancelButton,
-        onPress: () => null,
-      },
-      {
-        text: language.confirmButton,
-        onPress: () =>
-          props.navigation.navigate(ScreenNames.ProviderCreateListing, {
-            data: {...props},
-          }),
-      },
-    ];
-    return Alert.alert(language.warning, language.backWarning, warningButtons);
-  };
-
-  const showMessage = () => {
-    Platform.OS === 'android'
-      ? ToastAndroid.show(language.showMessage, ToastAndroid.SHORT)
-      : Alert.IOS.alert(language.showMessage);
-  };
 
   const RenderHeader = () => {
     return (
@@ -96,7 +61,7 @@ const ProviderAddInfo = props => {
   };
 
   const RenderHeaderTitle = () => {
-    return <Text style={styles.headText}> عنوان الخدمة خاصتك؟</Text>;
+    return <Text style={styles.headText}>{language.HeaderTitle}</Text>;
   };
 
   const RenderTitleBox = () => {
@@ -110,6 +75,7 @@ const ProviderAddInfo = props => {
           onChangeText={value => {
             setTitle(value);
           }}
+          value={title}
         />
       </View>
     );
@@ -127,6 +93,7 @@ const ProviderAddInfo = props => {
           onChangeText={value => {
             setSuTitle(value);
           }}
+          value={SuTitle}
         />
       </View>
     );
@@ -144,6 +111,7 @@ const ProviderAddInfo = props => {
           onChangeText={value => {
             setDescription(value);
           }}
+          value={description}
         />
       </View>
     );
@@ -170,7 +138,7 @@ const ProviderAddInfo = props => {
             let cityObj = regionData.find(city => city.key == val);
             setserviceRegion(cityObj.value);
           }}
-          placeholder={serviceRegion || 'أختر المنطقة'}
+          placeholder={serviceRegion || language.chooseLocation}
           boxStyles={styles.dropdown}
           inputStyles={styles.droptext}
           dropdownTextStyles={styles.dropstyle}
@@ -178,9 +146,9 @@ const ProviderAddInfo = props => {
         <TextInput
           style={styles.input}
           keyboardType="default"
-          placeholder="المدينة"
+          placeholder={language.address}
           onChangeText={value => setserviceAddress(value)}
-          //value={serviceObj.address}
+          value={serviceAddress || null}
         />
       </View>
     );
