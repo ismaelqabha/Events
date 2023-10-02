@@ -14,7 +14,7 @@ import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const ProviderAddInfo = props => {
-  const language = strings.arabic.ProviderAddInfo;
+  const language = strings.arabic.ProviderScreens.ProviderAddInfo;
 
   //   service Data
   const {

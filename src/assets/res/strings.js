@@ -1,6 +1,7 @@
 const strings = {
   cardtxt1: 'على استعداد لتلبية جميع مناسباتكم',
   arabic: {
+    ProviderScreens:{
     ProviderCreateListing: {
       HeadText: 'أهلا وسهلا, اسماعيل',
       StartService: 'ابدأ بخدمة جديده',
@@ -33,6 +34,15 @@ const strings = {
       chooseLocation: 'أختر المنطقة',
       address: 'العنوان',
     },
+    ProviderSetPhotos:{
+        Header:"قم بأضافة الصور الخاصة في القاعة:",
+        SubHeader:"يجب اضافة 5 صور على الاقل ",
+        CardTitle:"اضافة صور",
+        CapturePhoto:"التقاط صور",
+        Next:"التالي",
+        Back:"رجوع"
+    }
+},
   },
 };
 

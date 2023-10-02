@@ -26,7 +26,7 @@ const ProviderChooseService = props => {
   const {saveData} = props;
 
   // TODO: change depending on user specifid language
-  const language = strings.arabic.ProviderChooseService;
+  const language = strings.arabic.ProviderScreens.ProviderChooseService;
 
   // console.log("ServId :", ServId);
 

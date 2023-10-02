@@ -15,7 +15,7 @@ const ProviderCreateListing = props => {
   const {userId, ServiceDataInfo, setServiceDataInfo, setServId, ServId} =
     useContext(SearchContext);
 
-    const language = strings.arabic.ProviderCreateListing
+    const language = strings.arabic.ProviderScreens.ProviderCreateListing
 
   let SId = uuidv4();
 
