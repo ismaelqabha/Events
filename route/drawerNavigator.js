@@ -3,9 +3,8 @@ import React from "react";
 import SignUp from "../src/screens/SignUp";
 import SignIn from "../src/screens/SignIn";
 import ClientHomeAds from "../src/screens/ClientHomeAds";
-import FileFavoritesShow from "../src/screens/FileFavoritesShow";
-import FileFavorites from '../src/screens/FileFavorites';
-import ClientEvents from '../src/screens/ClientEvents';
+
+
 
 import ProviderServiceListing from '../src/screens/ProviderScreens/ProviderServiceListing';
 import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
@@ -102,8 +101,7 @@ const DrawerNavigator = () => {
 
 
 
-            {/* 
-            <Drawer.Screen name={ScreenNames.FileFavoritesShow} component={FileFavoritesShow} /> */}
+           
         </Drawer.Navigator>
     )
 }

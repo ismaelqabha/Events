@@ -26,9 +26,7 @@ const SliderImage = (props) => {
 
 
     const removeFromFavorates = () => {
-
         RemoveFavorite({ favoListUserId: userId, favoListServiceId: props.service_id }).then(res => {
-           // console.log("remove in");
             setUserFavorates(res?.favorates)
         })
     }

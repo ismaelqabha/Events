@@ -7,14 +7,14 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
-import { getEventsInfoBage } from '../resources/API';
+import { createNewEvent, getEventsInfo } from '../resources/API';
 
 
 const ClientEvents = (props) => {
-    const {isFromAddEventClick} = props.route?.params || {}
+    const {isFromAddEventClick,data} = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [fileEventName, setfileEventName] = useState();
-    const { userId,fileEventState, setfileEventState } = useContext(SearchContext);
+    const { userId,eventInfo, setEventInfo } = useContext(SearchContext);
 
 
     const onPressHandler = () => {
@@ -25,29 +25,36 @@ const ClientEvents = (props) => {
     }
 
     const onModalBtnPress = () => {
-        const EventFile = {
-            EventId: uuidv4(),
-            userId: userId,
-            eventName: fileEventName,
-        }
-        let EvArr = fileEventState;
-        EvArr.push(EventFile)
-        setfileEventState([...EvArr])
-
+        creatNewEvent()
         setShowModal(false)
     }
-    //  useEffect(()=> {
-    //     getEventsInfoBage().then(res => {
-    //         console.log("res:" , res);
-    //         setfileEventState(res)
-    //     } ) 
-    // } , [])
+    const getEventsfromApi = () => {
+        getEventsInfo({ userId: userId }).then(res => {
+            setEventInfo(res)
+        })
+    }
+    const creatNewEvent = () => {
+        const newEventItem = {
+            userId: userId,
+            eventName: fileEventName,
+           // eventDate: moment(requestedDate).format('L'),
+           // eventCost: "50890",
+        }
+        createNewEvent(newEventItem).then(res => {
+            const evnt = eventInfo || [];
+            evnt.push(newEventItem)
+            setEventInfo([...evnt])
+        })
+    }
+    useEffect(() => {
+        getEventsfromApi()
+    }, [])
     
     const query = () => {
-        return fileEventState || [];
+        return eventInfo || [];
     }
     const renderCard = ({ item }) => {
-        return <EventsCard  {...item} isFromAddEventClick={isFromAddEventClick} />;
+        return <EventsCard  {...item} service_id={data?.service_id}   isFromAddEventClick={isFromAddEventClick} />;
        
     };
 
@@ -74,7 +81,7 @@ const ClientEvents = (props) => {
                     onPress={() => onPressModalHandler()}
                 >
                     <Image
-                        source={require('../assets/add.png')}
+                        source={require('../assets/photos/add.png')}
                         style={styles.img}
                     />
                 </Pressable>

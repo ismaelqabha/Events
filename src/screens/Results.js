@@ -183,10 +183,8 @@ const Results = (props) => {
         const isAvilable = serviceDates?.find(sevice => {
             const { bookDate, serviceStutes } = sevice;
             const bookDateMoment = moment(bookDate).startOf('day');
-            //console.log("bookDateMoment", bookDateMoment, "requestedDate", requestedDate);
             const res1 = bookDateMoment.isSame(requestedDate)
             const res2 = serviceStutes == 'true'
-            // console.log("res1", res1, "res2", res2);
             return res1 && res2
         })
         return !!isAvilable;
@@ -385,7 +383,7 @@ const Results = (props) => {
 
                             <Image
                                 style={styles.icoon}
-                                source={require('../assets/time.png')}
+                                source={require('../assets/photos/time.png')}
                             />
                         </View>
                     </Pressable>
@@ -420,7 +418,7 @@ const Results = (props) => {
                         size={25} />
                 </Pressable>
                 <Pressable onPress={() => modalPress()}>
-                    <Image source={require('../assets/filter.png')} />
+                    <Image source={require('../assets/photos/filter.png')} />
                 </Pressable>
             </View>
             <ScrollView contentContainerStyle={styles.home}>

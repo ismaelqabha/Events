@@ -27,10 +27,13 @@ const ClientHomeAds = (props) => {
         });
         return campArray;
     }
+   
+
     const photo = [
-        require('../assets/abofaneh.png'),
-        require('../assets/ameer.png'),
-        require('../assets/djSamer.png')
+        require('../assets/photos/abofaneh.png'),
+        require('../assets/photos/djfarah.png'),
+        require('../assets/photos/djWaseem.png'),
+        require('../assets/photos/DJ.png'),
     ]
 
 
@@ -51,7 +54,7 @@ const ClientHomeAds = (props) => {
                     style={styles.search}
                     onPress={() => navigation.navigate(ScreenNames.ClientSearch)}
                 >
-                    <Image style={styles.img} source={require('../assets/search1.png')} />
+                    <Image style={styles.img} source={require('../assets/photos/search1.png')} />
                     <View>
                         <Text style={styles.txt}>بحث خدمات المناسبات</Text>
                         <Text style={styles.txt}>حسب المكان / حسب الزمان</Text>
