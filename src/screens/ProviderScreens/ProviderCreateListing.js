@@ -29,7 +29,6 @@ const ProviderCreateListing = props => {
 
   const onStartPress = () => {
     setServId(SId);
-    console.log('chickIfChecked', chickIfChecked());
     const AddNewService = {
       service_id: SId,
       UserId: userId,

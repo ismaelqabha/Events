@@ -9,11 +9,21 @@ import strings from '../../assets/res/strings';
 import {Platform} from 'react-native';
 import {ToastAndroid} from 'react-native';
 import {Alert} from 'react-native';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const ProviderChooseService = props => {
   const {isFromChooseServiceClick} = props.route?.params || {};
   const {ServId} = useContext(SearchContext);
-  const [selectServiceType, setSelectServiceType] = useState(null);
+  const {
+    selectServiceType,
+    setSelectServiceType,
+    setserviceAddress,
+    setserviceRegion,
+    setTitle,
+    setSuTitle,
+    setDescription,
+  } = useContext(ServiceProviderContext);
+  const {saveData} = props;
 
   // TODO: change depending on user specifid language
   const language = strings.arabic.ProviderChooseService;
@@ -23,7 +33,7 @@ const ProviderChooseService = props => {
   const onNextPress = () => {
     selectServiceType
       ? props.navigation.navigate(ScreenNames.ProviderAddInfo, {
-          data: {...props,selectServiceType:selectServiceType},
+          data: {...props},
         })
       : showMessage();
   };
@@ -45,13 +55,25 @@ const ProviderChooseService = props => {
       },
       {
         text: language.confirmButton,
-        onPress: () =>
+        onPress: () => {
           props.navigation.navigate(ScreenNames.ProviderCreateListing, {
             data: {...props},
-          }),
+          });
+          //   cleans the service data
+        //   CleanData();
+        },
       },
     ];
     return Alert.alert(language.warning, language.backWarning, warningButtons);
+  };
+
+  const CleanData = () => {
+    setSelectServiceType(null);
+    setserviceAddress(null);
+    setserviceRegion(null);
+    setTitle(null);
+    setSuTitle(null);
+    setDescription(null);
   };
 
   const showMessage = () => {
