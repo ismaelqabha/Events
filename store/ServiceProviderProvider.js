@@ -9,7 +9,7 @@ const ProviderProvider = props => {
   const [SuTitle, setSuTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [selectServiceType, setSelectServiceType] = useState(null);
-  const [photoSource, setPhotoSource] = useState(null);
+  const [photoArray, setPhotoArray] = useState([]);
   const [workAreas, setWorkAreas] = useState([]);
 
   return (
@@ -27,8 +27,8 @@ const ProviderProvider = props => {
         setDescription,
         selectServiceType,
         setSelectServiceType,
-        photoSource,
-        setPhotoSource,
+        photoArray,
+        setPhotoArray,
         workAreas,
         setWorkAreas,
       }}>

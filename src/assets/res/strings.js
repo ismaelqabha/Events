@@ -40,7 +40,11 @@ const strings = {
         CardTitle:"اضافة صور",
         CapturePhoto:"التقاط صور",
         Next:"التالي",
-        Back:"رجوع"
+        Back:"رجوع",
+        warning: 'انتباه',
+      backWarning: 'إزالة الصورة؟',
+      confirmButton: 'نعم، إزالة',
+      cancelButton: 'كلا، لا تزل  ',
     }
 },
   },

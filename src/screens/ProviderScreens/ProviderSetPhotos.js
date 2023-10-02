@@ -1,17 +1,17 @@
-import React, {useState, useContext} from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   StyleSheet,
   Pressable,
   Text,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Card} from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
-import SearchContext from '../../../store/SearchContext';
 import {ScreenNames} from '../../../route/ScreenNames';
 import ProviderAddPhotoComp from '../../components/ProviderAddPhotoComp';
 import 'react-native-get-random-values';
@@ -20,11 +20,8 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import strings from '../../assets/res/strings';
 
 const ProviderSetPhotos = props => {
-  const {serviceImg, setserviceImg, ServId} = useContext(SearchContext);
-  const {photoSource, setPhotoSource} = useContext(ServiceProviderContext);
+  const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
-
-  
 
   const onBackPress = () => {
     props.navigation.goBack();
@@ -37,73 +34,63 @@ const ProviderSetPhotos = props => {
 
   const onAddImgPress = () => {
     let options = {
-      storagOption: {
-        path: 'images',
-        mediaType: 'photo',
-      },
-      includeBase64: true,
+      mediaType: 'photo',
+      includeBase64: false,
     };
 
-    launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User Cancelled');
-      } else if (response.error) {
-        console.log('Error : ', response.error);
-      } else if (response.customButton) {
-        console.log('Usser tapped custom Button ', response.customButton);
-      } else {
-        let source = {uri: 'data:image/png;base64,' + response.base64};
-        setPhotoSource(source);
-        SaveImg(source);
-      }
-    });
+    launchImageLibrary(options, response => GalleryImageResponse(response));
   };
 
-  const SaveImg = (source) => {
-    const AddNewImg = {
-      imgId: uuidv4(),
-      serviceID: ServId,
-      image: source,
-      coverPhoto: true,
-    };
-    let ImgServArr = serviceImg;
-    ImgServArr.push(AddNewImg);
-    setserviceImg([...ImgServArr]);
-    console.log('service Img', serviceImg);
+  const GalleryImageResponse = response => {
+    if (response.didCancel) {
+      console.log('User Cancelled');
+    } else if (response.error) {
+      console.log('Gallery Error : ', response.error);
+    } else if (response.customButton) {
+      console.log('User tapped custom Button ', response.customButton);
+    } else {
+      let imageUri = response.uri || response.assets?.[0]?.uri;
+      SaveImg(imageUri);
+    }
+  };
+
+  const SaveImg = source => {
+    if (source) {
+      const AddNewImg = {
+        imgId: uuidv4(),
+        image: source,
+        coverPhoto: true,
+      };
+      setPhotoArray([AddNewImg, ...photoArray]);
+    } else {
+      console.log('error source isnt legable, source is :', source);
+    }
   };
 
   const onPickImgPress = () => {
     let options = {
-      storagOption: {
-        path: 'images',
-        mediaType: 'photo',
-      },
-      includeBase64: true,
+      mediaType: 'photo',
+      includeBase64: false,
       saveToPhotos: true,
     };
-    launchCamera(options, response => {
-      console.log('Response : ', response);
-      if (response.didCancel) {
-        console.log('User Cancelled');
-      } else if (response.error) {
-        console.log('Error : ', response.error);
-      } else if (response.customButton) {
-        console.log('Usser tapped custom Button ', response.customButton);
-      } else {
-        let source = {uri: 'data:image/png;base64,' + response.base64};
-        setPhotoSource(source);
-      }
-    });
-    SaveImg();
+    launchCamera(options, response => CameraImageResponse(response));
   };
 
-  const query = () => {
-    return serviceImg.filter(id => {
-      return id.serviceID == ServId;
-    });
+  const CameraImageResponse = response => {
+    if (response.didCancel) {
+      console.log('User Cancelled');
+    } else if (response.error) {
+      console.log('Camera Error : ', response.error);
+    } else if (response.customButton) {
+      console.log('Usser tapped custom Button ', response.customButton);
+    } else {
+      let imageUri = response.uri || response.assets?.[0]?.uri;
+      SaveImg(imageUri);
+    }
   };
+
   const renderServiceImg = ({item}) => {
-    return <ProviderAddPhotoComp {...item} />;
+    return <ProviderAddPhotoComp uri={item?.image} />;
   };
 
   const RenderMainHeader = () => {
@@ -143,8 +130,14 @@ const ProviderSetPhotos = props => {
 
   const RenderSelectedImages = () => {
     return (
-      <View>
-        <FlatList data={query()} renderItem={renderServiceImg} numColumns={2} />
+      <View style={{flex: 1, width: '100%'}}>
+        <FlatList
+          data={photoArray}
+          renderItem={renderServiceImg}
+          style={{flex: 1}}
+          numColumns={2}
+          keyExtractor={item=>`${item.imgId}`}
+        />
       </View>
     );
   };
@@ -200,10 +193,7 @@ const styles = StyleSheet.create({
   },
   body: {
     height: '75%',
-    //marginTop: 30,
     alignItems: 'center',
-    //justifyContent: 'center',
-    //alignContent: 'center'
   },
   footer: {
     marginTop: 20,
