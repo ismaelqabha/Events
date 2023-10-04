@@ -2,9 +2,9 @@ import React,{useContext} from 'react';
 import { View, StyleSheet,TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
-import { ScreenNames } from '../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-import SearchContext from '../../store/SearchContext';
+import SearchContext from '../../../store/SearchContext';
 
 const PoviderServiceListCard = (props) => {
     const { setServId } = useContext(SearchContext);

@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {Text, TouchableOpacity} from 'react-native';
-import ServiceProviderContext from '../../store/ServiceProviderContext';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const LocationComp = props => {
   const [pressed, setPressed] = useState(false);

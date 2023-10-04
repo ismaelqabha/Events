@@ -1,8 +1,8 @@
 import React, {useContext} from 'react';
 import {TouchableOpacity, StyleSheet, Image} from 'react-native';
-import strings from '../assets/res/strings';
+import strings from '../../assets/res/strings'
 import {Alert} from 'react-native';
-import ServiceProviderContext from '../../store/ServiceProviderContext';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const ProviderAddPhotoComp = props => {
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;

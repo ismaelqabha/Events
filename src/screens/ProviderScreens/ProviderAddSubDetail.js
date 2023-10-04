@@ -2,7 +2,7 @@ import React, { useContext,useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, Pressable, TouchableOpacity,Modal,TextInput } from 'react-native';
 import SearchContext from '../../../store/SearchContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import ProviderSubDetailComp from '../../components/ProviderSubDetailComp';
+import ProviderSubDetailComp from '../../components/ProviderComponents/ProviderSubDetailComp';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
 

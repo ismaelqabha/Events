@@ -4,7 +4,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {TouchableOpacity} from 'react-native';
 import SearchContext from '../../../store/SearchContext';
-import PoviderServiceListCard from '../../components/PoviderServiceListCard';
+import PoviderServiceListCard from '../../components/ProviderComponents/PoviderServiceListCard';
 import {ScreenNames} from '../../../route/ScreenNames';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
