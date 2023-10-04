@@ -45,6 +45,19 @@ const strings = {
       backWarning: 'إزالة الصورة؟',
       confirmButton: 'نعم، إزالة',
       cancelButton: 'كلا، لا تزل  ',
+      showMessage:"يجب اضافة 5 صور على الاقل "
+    },
+    ProviderWorkingRegion:{
+      Header:"ما هي المناطق التي تود العمل فيها؟",
+      Back:"رجوع",
+      Next:"التالي",
+    },
+    ProviderSetPrice:{
+      Header:"ما هو السعر المبدئي؟",
+      Back:"رجوع",
+      Next:"حفظ ونشر",
+      description:"اذا كان لديك عدة خدمات يتم تزويدها للزبائن واعتمادا عليها يتم تحديد السعر يمكنك اضافة هذة الخدمات والتفاصيل التي تحتويها كل خدمة تزودها",
+      addServDetailes:"أضافة تفاصيل الخدمات"
     }
 },
   },

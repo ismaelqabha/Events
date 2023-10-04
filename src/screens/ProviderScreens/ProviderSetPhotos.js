@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,8 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Card} from 'react-native-elements';
@@ -13,11 +15,13 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
 import {ScreenNames} from '../../../route/ScreenNames';
-import ProviderAddPhotoComp from '../../components/ProviderAddPhotoComp';
+import ProviderAddPhotoComp from '../../components/ProviderComponents/ProviderAddPhotoComp';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import strings from '../../assets/res/strings';
+import { ToastAndroid } from 'react-native';
+import { Alert } from 'react-native';
 
 const ProviderSetPhotos = props => {
   const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
@@ -27,9 +31,15 @@ const ProviderSetPhotos = props => {
     props.navigation.goBack();
   };
   const onNextPress = () => {
+    // photoArray.length <5 ? showMessage() :
     props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
       data: {...props},
     });
+  };
+  const showMessage = () => {
+    Platform.OS === 'android'
+      ? ToastAndroid.show(language.showMessage, ToastAndroid.SHORT)
+      : Alert.IOS.alert(language.showMessage);
   };
 
   const onAddImgPress = () => {
@@ -68,13 +78,83 @@ const ProviderSetPhotos = props => {
   };
 
   const onPickImgPress = () => {
-    let options = {
-      mediaType: 'photo',
-      includeBase64: false,
-      saveToPhotos: true,
-    };
-    launchCamera(options, response => CameraImageResponse(response));
+    LaunchCamera();
+
+    // console.log('granted = ', granted);
+    // switch (granted) {
+    //   case 'never_ask_again':
+    //     neverAskAgain();
+    //     break;
+
+    //   case 'granted':
+    //     permissionGranted();
+    //     break;
+
+    //   case 'denied':
+    //     permissionDenied();
+    //     break;
+    // }
   };
+  const neverAskAgain = () => {
+    console.log('never ask again');
+    requestPermission();
+  };
+
+  const permissionGranted = () => {
+    LaunchCamera();
+  };
+
+  const permissionDenied = () => {
+    console.log('permission denied');
+
+    requestPermission();
+  };
+
+  const LaunchCamera = () => {
+    try {
+      let options = {
+        mediaType: 'photo',
+        includeBase64: false,
+        saveToPhotos: true,
+      };
+      launchCamera(options, response => CameraImageResponse(response));
+    } catch (error) {
+      console.log('launch Camera Error -> ', error);
+    }
+  };
+
+  const requestPermission = async () => {
+    Platform.OS === 'android'
+      ? requestPermissionAndroid()
+      : requestPermissionIOS();
+  };
+
+  const requestPermissionAndroid = async () => {
+    try {
+      const response = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Cool Photo App Camera Permission',
+          message:
+            'Cool Photo App needs access to your camera ' +
+            'so you can take awesome pictures.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      setGranted(response);
+      if (response === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the camera');
+      } else {
+        console.log('Camera permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  const requestPermissionIOS = async () => {};
 
   const CameraImageResponse = response => {
     if (response.didCancel) {
@@ -136,7 +216,7 @@ const ProviderSetPhotos = props => {
           renderItem={renderServiceImg}
           style={{flex: 1}}
           numColumns={2}
-          keyExtractor={item=>`${item.imgId}`}
+          keyExtractor={item => `${item.imgId}`}
         />
       </View>
     );

@@ -11,6 +11,7 @@ const ProviderProvider = props => {
   const [selectServiceType, setSelectServiceType] = useState(null);
   const [photoArray, setPhotoArray] = useState([]);
   const [workAreas, setWorkAreas] = useState([]);
+  const [price, setPrice] = useState(null);
 
   return (
     <ServiceProviderContext.Provider
@@ -31,6 +32,8 @@ const ProviderProvider = props => {
         setPhotoArray,
         workAreas,
         setWorkAreas,
+        price,
+        setPrice
       }}>
       {props.children}
     </ServiceProviderContext.Provider>
