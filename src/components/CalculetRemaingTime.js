@@ -32,7 +32,7 @@ const CalculetRemaingTime = (props) => {
 
     return (
         <Text>
-            {timeRemaining.days} days, {timeRemaining.hours} hours, {timeRemaining.minutes} minutes, {timeRemaining.seconds} seconds
+            {timeRemaining.days} days, {timeRemaining.hours} : {timeRemaining.minutes} : {timeRemaining.seconds} 
         </Text>
     );
 };
