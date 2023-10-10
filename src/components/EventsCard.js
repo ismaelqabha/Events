@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,7 @@ const EventsCard = (props) => {
     const { isFromAddEventClick, service_id } = props
     const navigation = useNavigation();
     const { eventName, eventDate, eventCost } = props;
+    const [date, setDate] = useState(new Date())
    
     const { TimeText, requestInfo, setRequestInfo, requestedDate, RequestIdState, userId, eventInfo, setEventInfo } = useContext(SearchContext);
 
@@ -105,7 +106,7 @@ const EventsCard = (props) => {
                         {eventDate}
                     </Text>
                     <Text style={{ marginBottom: 10, fontSize: 18, color: 'black' }}>
-                       <CalculetRemaingTime targetDate={props.eventDate}/>
+                       {/* <CalculetRemaingTime targetDate={props.eventDate}/> */}
                     </Text>
                     <Text style={styles.text}>
                         {eventCost ? ("₪" + eventCost) : ''}

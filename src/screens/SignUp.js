@@ -44,10 +44,10 @@ const SignUp = (props) => {
 
     return (
         <View>
-            <Image
+            {/* <Image
                 source={require('../assets/photos/signIn.png')}
                 style={styles.image1}
-            />
+            /> */}
             <Text style={styles.text}>مرحبا بك ونشكرك على التسجيل في التطبيق</Text>
             <View style={styles.textIn}>
                 <TextInput

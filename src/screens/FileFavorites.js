@@ -38,7 +38,7 @@ const FileFavorites = (props) => {
 
     const renderFiles = () => {
       
-        const data = fileFavoriteState;
+        const data = fileFavoriteState || [];
         const cardsArray = data?.map(card => {
             return <FileFavoCard  {...card} isFromFavorateClick={isFromFavorateClick}/>;
         }); 
@@ -53,8 +53,8 @@ const FileFavorites = (props) => {
     }
 
     const onAddFileFavoPress =() => {
-        renderFiles()
         AddNewFile()
+        renderFiles()
         setShowModal(false)
     }
 
@@ -104,7 +104,7 @@ const FileFavorites = (props) => {
                             />
                         </View>
                         <Pressable onPress={() => onAddFileFavoPress()} style={styles.btn}>
-                            <Text style={styles.text}>OK</Text>
+                            <Text style={styles.text}>حفظ</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     },
     body: {
         width: '100%',
-        height: 620,
+        height: 565,
         backgroundColor: 'white',
         marginTop: 20,
     },
@@ -140,11 +140,9 @@ const styles = StyleSheet.create({
 
     },
     footer: {
-        borderRadius:30,
-        width: 64,
-        marginLeft: 150,
-        marginBottom:10,
-        backgroundColor: '#f0f8ff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
     },
     detailModal: {
         width: 320,
