@@ -106,7 +106,7 @@ const EventsCard = (props) => {
                         {eventDate}
                     </Text>
                     <Text style={{ marginBottom: 10, fontSize: 18, color: 'black' }}>
-                       <CalculetRemaingTime targetDate={props.eventDate}/>
+                       {/* <CalculetRemaingTime targetDate={props.eventDate}/> */}
                     </Text>
                     <Text style={styles.text}>
                         {eventCost ? ("₪" + eventCost) : ''}
