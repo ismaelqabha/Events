@@ -14,14 +14,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 const ClientRequest = (props) => {
     const { data } = props?.route.params
-    const { sType, userId, ServiceImages, setServiceImages, requestedDate,TimeText, setTimeText,
-        setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState,setRequestIdState } = useContext(SearchContext);
+    const { sType, userId, ServiceImages, setServiceImages, requestedDate, TimeText, setTimeText,
+        setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState, setRequestIdState } = useContext(SearchContext);
     const [textValue, setTextValue] = useState('');
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('time');
     const [show, setShow] = useState(false);
-   
+
 
     const showMode = (currentMode) => {
         setShow(true);
@@ -50,32 +50,68 @@ const ClientRequest = (props) => {
     const getImagesfromApi = () => {
         getServiceImages({ serviceID: data?.service_id }).then(res => {
             setServiceImages(res)
-            creatNewRequest()
+
         })
     }
-   
+
+    const checkIfInEvent = () => {
+        const isinEvent = requestInfo.find(ResDate => {
+            const reservDate = ResDate.reservationDate;
+            const bookdate = moment(requestedDate).format('L');
+            const res1 = reservDate === bookdate
+            const res2 = ResDate.ReqServId === data?.service_id
+            const res3 = ResDate.ReqUserId === userId
+
+            // console.log("requestInfo", requestInfo);
+            console.log("reservationDate", reservDate);
+            console.log("requestedDate", bookdate);
+
+
+            console.log("res1", res1, "res2", res2, "res3", res3);
+            const result = res1 && res2 && res3
+            console.log("result", result);
+            return result
+        });
+        return !!isinEvent;
+    }
+
     const creatNewRequest = () => {
         const idReq = uuidv4()
-       setRequestIdState(idReq)
+        setRequestIdState(idReq)
         const newRequestItem = {
-            RequestId: idReq ,
+            RequestId: idReq,
             ReqServId: data?.service_id,
             ReqUserId: userId,
             ReqStatus: 'بأنتظار الرد',
             ReqDate: moment(date).format('L'),
             reservationDate: moment(requestedDate).format('L')
         }
-        console.log("idReq",idReq);
         addNewRequest(newRequestItem).then(res => {
             const req = requestInfo || [];
             req.push(newRequestItem)
             setRequestInfo([...req])
+            console.log("Request Created");
         })
+    }
+
+    const checkavailblity = () => {
+        showMode('time')
+        if (TimeText != "00:00") {
+            if (!checkIfInEvent()) {
+                console.log("checkIfInEvent()", checkIfInEvent());
+                creatNewRequest()
+            } else {
+                console.log("already Added");
+            }
+        }else{
+            console.log("Select time");
+        }
     }
 
     useEffect(() => {
         getImagesfromApi()
         setisFromRequestScreen(true)
+        //checkavailblity()
     }, [])
 
     const queryImg = () => {
@@ -114,7 +150,7 @@ const ClientRequest = (props) => {
                 <Text style={styles.t3}>{moment(requestedDate).format('LL')}</Text>
                 <Text style={styles.t3}>{moment(requestedDate).format('dddd')}</Text>
             </View>
-            <Pressable onPress={() => showMode('time')} >
+            <Pressable onPress={() => checkavailblity()} >
                 <View style={styles.viewDate}>
                     <Text style={styles.text}>{TimeText || "00:00"}</Text>
                     <Image
@@ -241,7 +277,10 @@ const ClientRequest = (props) => {
                 </View>
             </ScrollView>
             <View style={styles.foter}>
-                <Pressable style={styles.btnview} onPress={() => onPressRequest()}>
+                <Pressable onPress={() => onPressRequest()}
+                    disabled={checkIfInEvent() ? false : true}
+                    style={[styles.btnview, checkIfInEvent() ? styles.btnview : styles.btnRequestApproved]}
+                >
                     <Text style={styles.btntext}>ارسال طلب</Text>
                 </Pressable>
             </View>
@@ -407,6 +446,17 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginRight: 20,
         elevation: 5
+    },
+    btnRequestApproved: {
+        backgroundColor: '#f0ffff',
+        width: 150,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+        marginRight: 20,
+        elevation: 5,
+        opacity: 0.3
     },
 })
 

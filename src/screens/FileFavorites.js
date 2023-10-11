@@ -1,5 +1,5 @@
-import React, { useContext,useEffect,useState } from 'react';
-import { View, StyleSheet, Text, Image, Pressable, ScrollView,Modal,TextInput } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView, Modal, TextInput } from 'react-native';
 import { fileFavorites } from '../resources/data';
 import SearchContext from '../../store/SearchContext';
 import FileFavoCard from '../components/FileFavoCard';
@@ -8,24 +8,24 @@ import { AddFileFavorite, getFileFavoriteBage } from '../resources/API';
 
 
 const FileFavorites = (props) => {
-    const {isFromFavorateClick, service_id} = props.route?.params || {}
+    const { isFromFavorateClick, service_id } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [fileFavoriteName, setfileFavoriteName] = useState();
-    const { userId ,fileFavoriteState, setFileFavoriteState,ImgOfServeice,ServId } = useContext(SearchContext);
-  
+    const { userId, fileFavoriteState, setFileFavoriteState, ImgOfServeice, ServId } = useContext(SearchContext);
+
     const onPressModalHandler = () => {
         setShowModal(true);
     }
-    
+
     const getFavFileFromApi = () => {
-        getFileFavoriteBage({fileFavoUserId: userId}).then(res => {
+        getFileFavoriteBage({ fileFavoUserId: userId }).then(res => {
             setFileFavoriteState(res)
         })
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         getFavFileFromApi()
-    } , [])
+    }, [])
 
     // const query = () => {
     //     // if (!data.fileId) {
@@ -37,29 +37,36 @@ const FileFavorites = (props) => {
     // }
 
     const renderFiles = () => {
-      
+
         const data = fileFavoriteState || [];
         const cardsArray = data?.map(card => {
-            return <FileFavoCard  {...card} isFromFavorateClick={isFromFavorateClick}/>;
-        }); 
-        
+            return <FileFavoCard  {...card} isFromFavorateClick={isFromFavorateClick} />;
+        });
+
         return cardsArray;
     };
     const AddNewFile = () => {
-        AddFileFavorite({fileName: fileFavoriteName, fileFavoUserId: userId}).then (res => {
-            setFileFavoriteState(res)
-           
+        AddFileFavorite({ fileName: fileFavoriteName, fileFavoUserId: userId }).then(res => {
+
+            const newDateCreated ={
+                fileName: fileFavoriteName,
+                fileFavoUserId: userId
+            }
+
+            if (res.message === "File Created") {
+                setFileFavoriteState([...fileFavoriteState, newDateCreated])
+            }
         })
     }
 
-    const onAddFileFavoPress =() => {
+    const onAddFileFavoPress = () => {
         AddNewFile()
         renderFiles()
         setShowModal(false)
     }
 
 
-    
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -69,17 +76,17 @@ const FileFavorites = (props) => {
                 <ScrollView contentContainerStyle={styles.home}>
                     {renderFiles()}
                 </ScrollView>
-           
-            <View style={styles.footer}>
-                <Pressable
-                   onPress={() => onPressModalHandler()}
+
+                <View style={styles.footer}>
+                    <Pressable
+                        onPress={() => onPressModalHandler()}
                     >
-                    <Image
-                        source={require('../assets/photos/add.png')}
-                        style={styles.img}
-                    />
-                </Pressable>
-            </View>
+                        <Image
+                            source={require('../assets/photos/add.png')}
+                            style={styles.img}
+                        />
+                    </Pressable>
+                </View>
             </View>
             <Modal
                 transparent
