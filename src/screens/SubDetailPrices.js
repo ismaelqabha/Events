@@ -9,7 +9,7 @@ const SubDetailPrices = (props) => {
     const { detail_ID } = props.route?.params || {}
 
     const { orderSubdetail, setOrderSubdetail, SubDetData, setSubDetData, serviceSubDetail, setserviceSubDetail, userId, RequestIdState } = useContext(SearchContext);
-    console.log("request_Id", RequestIdState);
+    //console.log("request_Id", RequestIdState);
     const orderItemIndex = orderSubdetail?.findIndex(item => item.request_Id === RequestIdState && item.UserID === userId);
     const orderItem = orderItemIndex > -1 ? orderSubdetail[orderItemIndex] : false;
 

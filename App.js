@@ -1,48 +1,39 @@
+import React, {useEffect} from 'react';
 
+import {LogBox, StyleSheet, View, YellowBox} from 'react-native';
+import 'react-native-gesture-handler';
 
-import React,{useEffect} from 'react';
-
-import {
- 
-  LogBox,
-  StyleSheet,
-  View,
-  YellowBox,
-} from 'react-native';
-import 'react-native-gesture-handler' ;
-
-
-import MainNavigation from "../Events/route/nav";
+import MainNavigation from '../Events/route/nav';
 import SearchProvider from '../Events/store/SearchProvider';
+import ServiceProviderProvider from './store/ServiceProviderProvider';
 
 const App: () => Node = () => {
-
   LogBox.ignoreLogs([
     'source.uri should not be an empty string',
-    'Warning: Each child in a list should have a unique "key" prop.'
-  ])
+    'Warning: Each child in a list should have a unique "key" prop.',
+  ]);
 
   useEffect(() => {
-   var url = "https://nameless-meadow-25389.herokuapp.com/server"
-   fetch(url)
-   .then(res => res.json())
-   .then(resJson => console.log("res",resJson))
+    var url = 'https://nameless-meadow-25389.herokuapp.com/server';
+    fetch(url)
+      .then(res => res.json())
+      .then(resJson => console.log('res', resJson));
   }, []);
 
   return (
-
-    <SearchProvider>
-      <View style={{ flex: 1 }}>
-        <MainNavigation />
-      </View>
-    </SearchProvider>
+    <ServiceProviderProvider>
+      <SearchProvider>
+        <View style={{flex: 1}}>
+          <MainNavigation />
+        </View>
+      </SearchProvider>
+    </ServiceProviderProvider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-
   },
 });
 
