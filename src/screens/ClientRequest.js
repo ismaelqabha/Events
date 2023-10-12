@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput,Alert } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { addNewRequest, getServiceImages } from '../resources/API';
+import { addNewRequest, deleteRequestbyId, getServiceImages } from '../resources/API';
 import DetailComp from '../components/DetailComp';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,6 +17,8 @@ const ClientRequest = (props) => {
     const { sType, userId, ServiceImages, setServiceImages, requestedDate, TimeText, setTimeText,
         setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState, setRequestIdState } = useContext(SearchContext);
     const [textValue, setTextValue] = useState('');
+    const [selectTime, setSelectTime] = useState(false);
+    const idReq = uuidv4()
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('time');
@@ -44,39 +46,22 @@ const ClientRequest = (props) => {
 
     const onPressHandler = () => {
         setisFromRequestScreen(false)
+        removeRequest()
         props.navigation.goBack();
     }
-
+    const removeRequest = () => {
+        deleteRequestbyId({ RequestId: idReq}).then(res => {
+            setRequestInfo(res)
+            console.log("Request Deleted");
+        }) 
+    }
     const getImagesfromApi = () => {
         getServiceImages({ serviceID: data?.service_id }).then(res => {
             setServiceImages(res)
-
+           
         })
     }
-
-    const checkIfInEvent = () => {
-        const isinEvent = requestInfo.find(ResDate => {
-            const reservDate = ResDate.reservationDate;
-            const bookdate = moment(requestedDate).format('L');
-            const res1 = reservDate === bookdate
-            const res2 = ResDate.ReqServId === data?.service_id
-            const res3 = ResDate.ReqUserId === userId
-
-            // console.log("requestInfo", requestInfo);
-            console.log("reservationDate", reservDate);
-            console.log("requestedDate", bookdate);
-
-
-            console.log("res1", res1, "res2", res2, "res3", res3);
-            const result = res1 && res2 && res3
-            console.log("result", result);
-            return result
-        });
-        return !!isinEvent;
-    }
-
     const creatNewRequest = () => {
-        const idReq = uuidv4()
         setRequestIdState(idReq)
         const newRequestItem = {
             RequestId: idReq,
@@ -97,21 +82,26 @@ const ClientRequest = (props) => {
     const checkavailblity = () => {
         showMode('time')
         if (TimeText != "00:00") {
-            if (!checkIfInEvent()) {
-                console.log("checkIfInEvent()", checkIfInEvent());
-                creatNewRequest()
-            } else {
-                console.log("already Added");
-            }
-        }else{
-            console.log("Select time");
+            setSelectTime(true)
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء اختيار الوقت الزمني للحجز',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            ); 
         }
     }
 
     useEffect(() => {
         getImagesfromApi()
         setisFromRequestScreen(true)
-        //checkavailblity()
+        creatNewRequest()
     }, [])
 
     const queryImg = () => {
@@ -278,8 +268,8 @@ const ClientRequest = (props) => {
             </ScrollView>
             <View style={styles.foter}>
                 <Pressable onPress={() => onPressRequest()}
-                    disabled={checkIfInEvent() ? false : true}
-                    style={[styles.btnview, checkIfInEvent() ? styles.btnview : styles.btnRequestApproved]}
+                    disabled={selectTime ? false : true}
+                    style={[styles.btnview, selectTime ? styles.btnview : styles.btnRequestApproved]}
                 >
                     <Text style={styles.btntext}>ارسال طلب</Text>
                 </Pressable>

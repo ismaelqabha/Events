@@ -56,6 +56,14 @@ export const updateRequest = async (body) => {
     const url = 'Request/updateByid'
     return await AppFetch(url, 'PATCH', body)
 }
+export const getRequestbyUserId = async (body) => {
+    const url = 'Request/getRequest'
+    return await AppFetch(url, 'POST', body)
+}
+export const deleteRequestbyId = async (body) => {
+    const url = 'Request/deleteByid'
+    return await AppFetch(url, 'DELETE', body)
+}
 // Camaighns
 export const getCampaigns = async (body) => {
     const url = 'Campaigns/getCampaigns'

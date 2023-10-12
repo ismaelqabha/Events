@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Pressable, Image, Modal, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
 import DateTPicker from '../components/DateTPicker'
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
-import { getServiceDetail, getbookingDates } from '../resources/API';
+import { getRequestbyUserId, getServiceDetail, getbookingDates } from '../resources/API';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
 import DetailComp from '../components/DetailComp';
@@ -13,8 +13,8 @@ import DetailComp from '../components/DetailComp';
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
-    const { setServId, setServiceDatesforBooking, ServiceDatesforBooking,setDetailOfServ,
-        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, isDateAvailable, setRequestIdState } = useContext(SearchContext);
+    const { userId, setServiceDatesforBooking, ServiceDatesforBooking, setDetailOfServ,
+        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo, isDateAvailable, setRequestIdState } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
 
@@ -28,15 +28,57 @@ const ServiceDescr = (props) => {
             setDetailOfServ(res)
         })
     }
+    const getRequestfromApi = () => {
+        getRequestbyUserId({ ReqUserId: userId }).then(res => {
+            setRequestInfo(res)
+        })
+    }
 
     useEffect(() => {
         getDatesfromApi()
         getDetailFromApi()
+        getRequestfromApi()
     }, [])
 
+    const checkIfInEvent = () => {
+        const isinEvent = requestInfo?.find(ResDate => {
+            const reservDate = ResDate.reservationDate;
+            const bookdate = moment(requestedDate).format('L');
+            const res1 = reservDate === bookdate
+            const res2 = ResDate.ReqServId === data?.service_id
+            const res3 = ResDate.ReqUserId == userId
+
+            // console.log("requestInfo", requestInfo);
+            // console.log("reservationDate", reservDate);
+            // console.log("requestedDate", bookdate);
+            // console.log("ResDate.ReqUserId", ResDate.ReqUserId, "userId",userId);
+            //console.log("res1", res1, "res2", res2, "res3", res3);
+            const result = res1 && res2 && res3
+            return result
+        });
+        // console.log("requestInfo", requestInfo);
+        // console.log("!!isinEvent()", !!isinEvent);
+        return !!isinEvent;
+    }
 
     const onPressHandler = () => {
-        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
+
+        if (!checkIfInEvent()) {
+            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
+        } else {
+            Alert.alert(
+                'تنبية',
+                '  الرجاء اختيار تفاصيل حجز اخرى التفاصيل الحالية محجوزة مسبقا لديك',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            ); 
+        }
+
     }
 
     const SelectDatePressed = (dat) => {
@@ -111,7 +153,7 @@ const ServiceDescr = (props) => {
         } else {
             const firstAvilableDate = queryfirstDates()
             setrequestedDate(firstAvilableDate?.bookDate)
-            return <View style={{flexDirection: 'row'}}><Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
+            return <View style={{ flexDirection: 'row' }}><Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
                 <Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('LL')}`}</Text>
 
             </View>;
@@ -139,14 +181,14 @@ const ServiceDescr = (props) => {
         </View>
     }
     const pricingPress = () => {
-        props.navigation.navigate(ScreenNames.ServiceDetail, { data: {...data} })
+        props.navigation.navigate(ScreenNames.ServiceDetail, { data: { ...data } })
     }
- 
+
     const renderServiceDetail = () => {
         return <View style={styles.descView}>
             <Text style={styles.desc1}>التفاصيل المرفقة لتحديد السعر</Text>
             <View style={styles.HallView}>
-                <DetailComp service_id={data.service_id}/>
+                <DetailComp service_id={data.service_id} />
             </View>
         </View>
     }
@@ -219,7 +261,7 @@ const ServiceDescr = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        
+
     },
     logo: {
         borderRadius: 50,
@@ -310,7 +352,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 10,
         marginRight: 20,
-        elevation:5
+        elevation: 5
     },
     viewselectdate: {
         flexDirection: 'row',
@@ -337,8 +379,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         elevation: 5
     },
-    HallView:{
-        marginTop :20
+    HallView: {
+        marginTop: 20
     }
 })
 

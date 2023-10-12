@@ -178,8 +178,6 @@ const Results = (props) => {
     const checkDateIsAvilable = (serviceDates) => {
        
         const requestedDate = moment(new Date(objectResult.selectDateforSearch)).startOf('day')
-
-
         const isAvilable = serviceDates?.find(sevice => {
             const { bookDate, serviceStutes } = sevice;
             const bookDateMoment = moment(bookDate).startOf('day');
@@ -191,8 +189,6 @@ const Results = (props) => {
     }
     const checkMonthAvailableDate = (serviceDates) => {
         const requestedMonth = objectResult.selectMonthforSearch;
-        
-
         const AvilableMonth = serviceDates?.find(sevice => {
             const { bookDate, serviceStutes } = sevice;
             const wholeDate = moment(bookDate);
