@@ -1,7 +1,5 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text,Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { ScreenNames } from '../../route/ScreenNames';
 
 const ProviderSubDetailComp = (props) => {
     return (

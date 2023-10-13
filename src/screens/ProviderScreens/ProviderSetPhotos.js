@@ -18,8 +18,7 @@ import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import strings from '../../assets/res/strings';
-import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
-import {PermissionsAndroid} from 'react-native';
+import { PERMISSIONS, request} from 'react-native-permissions';
 
 const ProviderSetPhotos = props => {
   const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);

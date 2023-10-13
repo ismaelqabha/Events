@@ -12,6 +12,7 @@ const ProviderProvider = props => {
   const [photoArray, setPhotoArray] = useState([]);
   const [workAreas, setWorkAreas] = useState([]);
   const [price, setPrice] = useState(null);
+  const [additionalServices, setAdditionalServices] = useState([]);
 
   return (
     <ServiceProviderContext.Provider
@@ -33,7 +34,9 @@ const ProviderProvider = props => {
         workAreas,
         setWorkAreas,
         price,
-        setPrice
+        setPrice,
+        additionalServices,
+        setAdditionalServices,
       }}>
       {props.children}
     </ServiceProviderContext.Provider>
