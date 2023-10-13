@@ -2,19 +2,19 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
-import DateTPicker from '../components/DateTPicker'
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
-import { getRequestbyUserId, getServiceDetail, getbookingDates } from '../resources/API';
+import { getCampaignsByServiceId, getRequestbyUserId, getServiceDetail, getbookingDates } from '../resources/API';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
 import DetailComp from '../components/DetailComp';
+import CampaignCard from '../components/CampaignCard';
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
-    const { userId, setServiceDatesforBooking, ServiceDatesforBooking, setDetailOfServ,
-        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo, isDateAvailable, setRequestIdState } = useContext(SearchContext);
+    const { userId, setServiceDatesforBooking, ServiceDatesforBooking, setDetailOfServ, campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
+        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
 
@@ -33,11 +33,17 @@ const ServiceDescr = (props) => {
             setRequestInfo(res)
         })
     }
+    const getCampeignsfromApi = () => {
+        getCampaignsByServiceId({ serviceId: data?.service_id }).then(res => {
+            setCampiegnsAccordingServiceId(res)
+        })
+    }
 
     useEffect(() => {
         getDatesfromApi()
         getDetailFromApi()
         getRequestfromApi()
+        getCampeignsfromApi()
     }, [])
 
     const checkIfInEvent = () => {
@@ -47,22 +53,13 @@ const ServiceDescr = (props) => {
             const res1 = reservDate === bookdate
             const res2 = ResDate.ReqServId === data?.service_id
             const res3 = ResDate.ReqUserId == userId
-
-            // console.log("requestInfo", requestInfo);
-            // console.log("reservationDate", reservDate);
-            // console.log("requestedDate", bookdate);
-            // console.log("ResDate.ReqUserId", ResDate.ReqUserId, "userId",userId);
-            //console.log("res1", res1, "res2", res2, "res3", res3);
             const result = res1 && res2 && res3
             return result
         });
-        // console.log("requestInfo", requestInfo);
-        // console.log("!!isinEvent()", !!isinEvent);
         return !!isinEvent;
     }
 
     const onPressHandler = () => {
-
         if (!checkIfInEvent()) {
             props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
         } else {
@@ -76,7 +73,7 @@ const ServiceDescr = (props) => {
                     },
                 ],
                 { cancelable: false } // Prevent closing the alert by tapping outside
-            ); 
+            );
         }
 
     }
@@ -161,7 +158,6 @@ const ServiceDescr = (props) => {
         }
     };
 
-
     const renderImg = () => {
         const imageArray = data.images.map(photos => {
             return photos.image;
@@ -180,17 +176,24 @@ const ServiceDescr = (props) => {
             </View>
         </View>
     }
-    const pricingPress = () => {
-        props.navigation.navigate(ScreenNames.ServiceDetail, { data: { ...data } })
-    }
 
     const renderServiceDetail = () => {
-        return <View style={styles.descView}>
-            <Text style={styles.desc1}>التفاصيل المرفقة لتحديد السعر</Text>
-            <View style={styles.HallView}>
-                <DetailComp service_id={data.service_id} />
-            </View>
+        return <View style={styles.HallView}>
+            <DetailComp service_id={data.service_id} />
         </View>
+
+    }
+
+    const renderCampeigns = () => {
+        const CampData = campiegnsAccordingServiceId;
+        if (CampData.message !== 'No Campaigns') {
+            const campArray = CampData?.map(camp => {
+                return <View style={styles.HallView}><Text style={styles.txt}>أو يمكنك اختيار احد العروض التالية</Text>
+                    < CampaignCard {...camp} />
+                </View>
+            });
+            return campArray;
+        }
     }
     const renderSoialMedia = () => {
         return <View style={styles.icon}>
@@ -221,21 +224,15 @@ const ServiceDescr = (props) => {
                 </View>
 
                 <View style={styles.descView}>
-                    <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن الخدمة المعروضة </Text>
+                    <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن المزود </Text>
                 </View>
-                {/* <View style={styles.descView}>
-                    <Pressable style={styles.priceView} onPress={pricingPress}>
-                        <Text style={styles.descText}>رزم الأسعار</Text>
-                    </Pressable>
-                </View> */}
 
-                {renderServiceDetail()}
+                <View style={styles.descView}>
+                    <Text style={styles.desc1}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
+                    {renderServiceDetail()}
+                    {renderCampeigns()}
+                </View >
 
-                {/* <View style={styles.descView}>
-                    <Text style={styles.desc1}>تاريخ المناسبة</Text>
-                    <Text style={styles.desc1}>{requestedDate || '2023/9/15'}</Text>
-
-                </View> */}
                 <View style={styles.descView}>
                     <Image
                         style={styles.mapImage}
@@ -279,9 +276,9 @@ const styles = StyleSheet.create({
     },
     descView: {
         backgroundColor: '#fffaf0',
-        //borderWidth: 1,
         margin: 5,
         padding: 20,
+
     },
     mapImage: {
         alignSelf: 'center'
@@ -381,6 +378,13 @@ const styles = StyleSheet.create({
     },
     HallView: {
         marginTop: 20
+    },
+    txt: {
+        fontSize: 15,
+        margin: 10,
+        fontWeight: 'bold',
+        color: 'black',
+        textAlign: 'right'
     }
 })
 

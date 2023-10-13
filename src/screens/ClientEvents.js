@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput } from 'react-native';
 import EventsCard from '../components/EventsCard';
-import { Events } from '../resources/data';
 import { FlatList } from 'react-native-gesture-handler';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
