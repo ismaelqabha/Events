@@ -10,10 +10,8 @@ const ProviderAddPhotoComp = props => {
   const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
 
   const removeSelectedPhoto = () => {
-    let index = photoArray.findIndex(Imageobj => Imageobj.image === props.uri);
-    let tempArray = photoArray;
-    tempArray.splice(index, 1);
-    setPhotoArray(tempArray);
+    let newArray = photoArray.filter(Imageobj => Imageobj.image !== props.uri);
+    setPhotoArray(newArray);
   };
 
   //   confirmation popup for removing the selected photo

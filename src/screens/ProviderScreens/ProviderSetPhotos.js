@@ -36,11 +36,6 @@ const ProviderSetPhotos = props => {
       data: {...props},
     });
   };
-  const showMessage = () => {
-    Platform.OS === 'android'
-      ? ToastAndroid.show(language.showMessage, ToastAndroid.SHORT)
-      : Alert.IOS.alert(language.showMessage);
-  };
 
   const onAddImgPress = () => {
     let options = {
