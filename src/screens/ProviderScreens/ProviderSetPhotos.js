@@ -1,12 +1,10 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   StyleSheet,
   Pressable,
   Text,
   TouchableOpacity,
-  Image,
-  PermissionsAndroid,
   Platform,
 } from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
@@ -20,8 +18,8 @@ import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import strings from '../../assets/res/strings';
-import { ToastAndroid } from 'react-native';
-import { Alert } from 'react-native';
+import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {PermissionsAndroid} from 'react-native';
 
 const ProviderSetPhotos = props => {
   const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
@@ -37,13 +35,25 @@ const ProviderSetPhotos = props => {
     });
   };
 
-  const onAddImgPress = () => {
-    let options = {
-      mediaType: 'photo',
-      includeBase64: false,
-    };
+  const onAddImgPress = async () => {
+    try {
+      const result = await request(
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.PHOTO_LIBRARY
+          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
+      );
+      if (result === 'granted') {
+        let options = {
+          mediaType: 'photo',
+          includeBase64: false,
+        };
 
-    launchImageLibrary(options, response => GalleryImageResponse(response));
+        launchImageLibrary(options, response => GalleryImageResponse(response));
+      } else {
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const GalleryImageResponse = response => {
@@ -72,37 +82,20 @@ const ProviderSetPhotos = props => {
     }
   };
 
-  const onPickImgPress = () => {
-    LaunchCamera();
-
-    // console.log('granted = ', granted);
-    // switch (granted) {
-    //   case 'never_ask_again':
-    //     neverAskAgain();
-    //     break;
-
-    //   case 'granted':
-    //     permissionGranted();
-    //     break;
-
-    //   case 'denied':
-    //     permissionDenied();
-    //     break;
-    // }
-  };
-  const neverAskAgain = () => {
-    console.log('never ask again');
-    requestPermission();
-  };
-
-  const permissionGranted = () => {
-    LaunchCamera();
-  };
-
-  const permissionDenied = () => {
-    console.log('permission denied');
-
-    requestPermission();
+  const onPickImgPress = async () => {
+    try {
+      const result = await request(
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.CAMERA
+          : PERMISSIONS.ANDROID.CAMERA,
+      );
+      if (result === 'granted') {
+        LaunchCamera();
+      } else {
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const LaunchCamera = () => {
@@ -117,39 +110,6 @@ const ProviderSetPhotos = props => {
       console.log('launch Camera Error -> ', error);
     }
   };
-
-  const requestPermission = async () => {
-    Platform.OS === 'android'
-      ? requestPermissionAndroid()
-      : requestPermissionIOS();
-  };
-
-  const requestPermissionAndroid = async () => {
-    try {
-      const response = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: 'Cool Photo App Camera Permission',
-          message:
-            'Cool Photo App needs access to your camera ' +
-            'so you can take awesome pictures.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      setGranted(response);
-      if (response === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('You can use the camera');
-      } else {
-        console.log('Camera permission denied');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
-
-  const requestPermissionIOS = async () => {};
 
   const CameraImageResponse = response => {
     if (response.didCancel) {
