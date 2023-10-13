@@ -29,29 +29,32 @@ const ClientHomeAds = (props) => {
     }
    
 
-    // const photo = [
-    //     require('../assets/photos/abofaneh.png')
-    // ]
+    const photo = [
+        require('../assets/photos/abofaneh.png'),
+        require('../assets/photos/djfarah.png'),
+        require('../assets/photos/djWaseem.png'),
+        require('../assets/photos/DJ.png'),
+    ]
 
 
     return (
         <View style={styles.bg}>
             <ScrollView contentContainerStyle={styles.home}>
                 <View >
-                    {/* <SliderBox
+                    <SliderBox
                         sliderBoxHeight={300}
-                        //images={photo}
+                        images={photo}
                         dotColor="blue"
                         dotStyle={{ width: 15, height: 15, borderRadius: 50 }}
                         autoplay={true}
-                    /> */}
+                    />
                 </View>
 
                 <Pressable
                     style={styles.search}
                     onPress={() => navigation.navigate(ScreenNames.ClientSearch)}
                 >
-                    <Image style={styles.img} source={require('../assets/photos//search1.png')} />
+                    <Image style={styles.img} source={require('../assets/photos/search1.png')} />
                     <View>
                         <Text style={styles.txt}>بحث خدمات المناسبات</Text>
                         <Text style={styles.txt}>حسب المكان / حسب الزمان</Text>

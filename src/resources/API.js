@@ -74,7 +74,14 @@ export const getFileFavoriteBage = async (body) => {
 export const AddFileFavorite = async (body) => {
     const url = 'fileFavorites/addFileFavorate'
     return await AppFetch(url, 'POST', body)
-
+}
+export const DeleteFileFavorite = async (body) => {
+    const url = 'fileFavorites/deleteByid'
+    return await AppFetch(url, 'DELETE', body)
+}
+export const UpdateFileFavorite = async (body) => {
+    const url = 'fileFavorites/updateByid'
+    return await AppFetch(url, 'PATCH', body)
 }
 
 //Cites
@@ -102,6 +109,10 @@ export const getFavoritesforUser = async (body) => {
 }
 export const getFavoritesServiceInfo = async (body) => {
     const url = 'FavoritesList/getServicesFavorites'
+    return await AppFetch(url, 'POST', body)
+}
+export const getFavoritesbyFileId = async (body) => {
+    const url = 'FavoritesList/getFavoritesListByFileId'
     return await AppFetch(url, 'POST', body)
 }
 export const AddNewFavorites = async (body) => {

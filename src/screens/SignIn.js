@@ -34,16 +34,21 @@ const SignIn = (props) => {
     };
 
     return (
+
+       
+            <View style={styles.container} >
+ {/* 
         <ImageBackground style={styles.container} source={""
-            // require('../assets/photos/bg.png')
-            }>
+             require('../assets/photos/bg.png')
+            }>*/}
+
             {/* <View style={styles.container}> */}
             {/* <Text onPress={() => props.navigation.navigate(ScreenNames.SignUp)}>In</Text> */}
             {/* <Text onPress={()=> props.navigation.navigate('Tabs' , {screen:ScreenNames.ClientInfo}) }>In</Text> */}
-            <Image
+            {/* <Image
                 source={require('../assets/photos/signIn.png')}
                 style={styles.image}
-            />
+            /> */}
 
             <Text style={styles.text}>مرحبا بك</Text>
             <View style={styles.textIn}>
@@ -68,8 +73,8 @@ const SignIn = (props) => {
                 <Text style={styles.txtُEnter}>دخول</Text>
             </Pressable>
 
-            
-        </ImageBackground>
+            </View>
+      
     );
 }
 

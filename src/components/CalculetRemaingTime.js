@@ -16,7 +16,7 @@ const CalculetRemaingTime = (props) => {
 
     function calculateTimeRemaining() {
         const currentDate = new Date();
-        const difference = targetDate - currentDate;
+        const difference = props.targetDate - currentDate;
 
         if (difference <= 0) {
             return { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -32,7 +32,7 @@ const CalculetRemaingTime = (props) => {
 
     return (
         <Text>
-            {timeRemaining.days} days, {timeRemaining.hours} hours, {timeRemaining.minutes} minutes, {timeRemaining.seconds} seconds
+            {timeRemaining.days} days, {timeRemaining.hours} : {timeRemaining.minutes} : {timeRemaining.seconds} 
         </Text>
     );
 };
