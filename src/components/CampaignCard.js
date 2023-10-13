@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity,Image,Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
 
@@ -11,16 +11,14 @@ const CampaignCard = (props) => {
 
 
     const onCaardPress = () => {
-
-        //navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props } })
-    
+        navigation.navigate(ScreenNames.Campaigns, { data: { ...props } })
     }
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.touch} onPress={onCaardPress}>
                 <View style={styles.image}>
-                    <Image style={{flex:1}} source={{ uri: campImag }} />
+                    <Image style={{ flex: 1 }} source={{ uri: campImag }} />
                 </View>
                 <View style={styles.title}>
                     <Text>{campTitle}</Text>
@@ -28,7 +26,7 @@ const CampaignCard = (props) => {
                 </View>
                 <Text style={styles.detailText}>التفاصيل</Text>
             </TouchableOpacity>
-           
+
         </View>
     );
 }
@@ -53,7 +51,7 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 8,
         marginBottom: 8,
-       // borderWidth:1
+        // borderWidth:1
     },
     title: {
         fontSize: 18,
@@ -67,17 +65,17 @@ const styles = StyleSheet.create({
 
     touch: {
         flexDirection: 'column',
-        flex:1,    
+        flex: 1,
     },
-    detailText:{
-        
-        alignSelf:'flex-start',
-        justifyContent:'flex-end',
+    detailText: {
+
+        alignSelf: 'flex-start',
+        justifyContent: 'flex-end',
         color: 'blue',
-        position:'absolute',
-        left:0,
-        bottom:0,
-       
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+
     }
 })
 
