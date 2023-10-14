@@ -79,35 +79,23 @@ const DetailComp = (props) => {
         }
     }
     const renderDetail = () => {
-        // const dataa = queryMandatoryDetail();
+        return (<View>
+            {gotMandotryDetail &&
+                <View>
+                    <Text style={styles.txt1}>الخدمات الاجبارية</Text>
+                    {renderMandotryDetail()}
+                </View>
+            }
+            {gotOptionalDetail &&
+                <View>
+                    <Text style={styles.txt1}>الخدمات الاختيارية</Text>
+                    {renderOptionalDetail()}
+                </View>
+            }
 
-        // if (isFromRequestScreen) {
-        //     const cardsArray = dataa.map(card => {
-        //         return <TouchableOpacity onPress={() => onPressHandler(card?.detail_Id)} style={styles.touchView}>
-        //             <Text style={styles.txt1}>{card?.detailTitle}</Text>
+        </View>);
 
-        //         </TouchableOpacity>;
-        //     });
-        //     return cardsArray;
-        // } else {
-            return (<View>
-                {gotMandotryDetail &&
-                    <View>
-                        <Text style={styles.txt1}>الخدمات الاجبارية</Text>
-                        {renderMandotryDetail()}
-                    </View>
-                }
-                {gotOptionalDetail &&
-                    <View>
-                        <Text style={styles.txt1}>الخدمات الاختيارية</Text>
-                        {renderOptionalDetail()}
-                    </View>
-                }
-
-            </View>);
-        // }
-
-    };
+    }
     return (
         <View style={styles.container}>
             {renderDetail()}
