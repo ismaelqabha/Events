@@ -18,7 +18,18 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const ProviderSetPrice = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderSetPrice;
-  const {price, setPrice} = useContext(ServiceProviderContext)
+  const {
+    serviceAddress,
+    price,
+    setPrice,
+    serviceRegion,
+    title,
+    SuTitle,
+    description,
+    selectServiceType,
+    photoArray,
+    workAreas,
+  } = useContext(ServiceProviderContext);
 
   const params = {
     ScreenHeader: {
@@ -40,9 +51,20 @@ const ProviderSetPrice = props => {
     },
   };
 
-  const onPublishPress=()=>{
-
-  }
+  const onPublishPress = () => {
+    console.log('--------------------------------------');
+    console.log('Service detailes -> ');
+    console.log('Price -> ', price);
+    console.log('address -> ', serviceAddress);
+    console.log('Region -> ', serviceRegion);
+    console.log('title -> ', title);
+    console.log('subTitle -> ', SuTitle);
+    console.log('description -> ', description);
+    console.log('selectServiceType -> ', selectServiceType);
+    console.log('photoArray -> ', photoArray);
+    console.log('workAreas -> ', workAreas);
+    console.log('--------------------------------------');
+  };
 
   const onAddSerPress = () => {
     props.navigation.navigate(ScreenNames.ProviderAddServiceDetail, {
@@ -72,9 +94,7 @@ const ProviderSetPrice = props => {
             width: '90%',
             borderRadius: 15,
           }}>
-          <Text style={styles.descText}>
-            {langauge.description}
-          </Text>
+          <Text style={styles.descText}>{langauge.description}</Text>
 
           <TouchableOpacity
             style={styles.AddButton}
