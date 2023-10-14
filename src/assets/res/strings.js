@@ -68,6 +68,16 @@ const strings = {
         Title: 'أدخل اسم الخدمة',
         Back: 'رجوع',
       },
+      ProviderSubDetail: {
+        Header: 'ما هي تفاصيل الخدمات التي تقدمها ؟',
+        CreateNew: 'انشاء جديد',
+        Back: 'رجوع',
+        Save: 'حفظ',
+        Cancel: 'الغاء',
+        ServDetailes: 'تفاصيل الخدمة',
+        Price: 'السعر المقترح',
+        ModalHeader: 'أدخل تفاصيل الخدمة',
+      },
     },
   },
 };

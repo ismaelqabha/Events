@@ -31,6 +31,7 @@ const ProviderAddServiceDetail = props => {
       const AddNewDetail = {
         detail_Id: Did,
         detailTitle: Dtitle,
+        subDetailArray:[]
       };
       setAdditionalServices([...additionalServices, AddNewDetail]);
       setDTitle('');
@@ -41,7 +42,6 @@ const ProviderAddServiceDetail = props => {
     let exists = additionalServices.findIndex(
       val => val?.detailTitle.toLowerCase() === Dtitle.toLowerCase(),
     );
-    console.log("exists ", exists);
     return exists == -1 ? true : false;
   };
   const modalDeletePress = () => {
