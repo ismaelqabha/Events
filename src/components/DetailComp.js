@@ -6,7 +6,7 @@ import { ScreenNames } from '../../route/ScreenNames';
 
 
 const DetailComp = (props) => {
-    const { data } = props.route?.params || {}
+    
     const { detailOfServ, setDetailOfServ, isFromRequestScreen } = useContext(SearchContext);
     const [gotMandotryDetail, setGotMandotryDetail] = useState(true)
     const [gotOptionalDetail, setGotOptionalDetail] = useState(true)
@@ -19,16 +19,18 @@ const DetailComp = (props) => {
 
     const queryMandatoryDetail = () => {
         return detailOfServ?.filter(ItemSerType => {
-            return ItemSerType.SDserviceID == props.service_id && ItemSerType.mandatroy == true;
+            return ItemSerType.SDserviceID === props.service_id && ItemSerType.mandatroy === true;
         })
     }
     const queryOptionalDetail = () => {
         return detailOfServ?.filter(ItemSerType => {
-            return ItemSerType.SDserviceID == props.service_id && ItemSerType.mandatroy == false;
+            return ItemSerType.SDserviceID === props.service_id && ItemSerType.mandatroy === false;
         })
     }
+    //console.log("queryMandatoryDetail", queryMandatoryDetail());
     const renderMandotryDetail = () => {
         const dataa = queryMandatoryDetail();
+        
         if (isFromRequestScreen) {
             const cardsArray = dataa.map(card => {
                 return <TouchableOpacity onPress={() => onPressHandler(card?.detail_Id)} style={styles.touchView}>
@@ -49,6 +51,7 @@ const DetailComp = (props) => {
             if (MDetailArray == '') {
                 setGotMandotryDetail(false)
             }
+            
             return MDetailArray;
         }
 
@@ -75,6 +78,7 @@ const DetailComp = (props) => {
             if (OpDetailArray == '') {
                 setGotOptionalDetail(false)
             }
+            
             return OpDetailArray;
         }
     }

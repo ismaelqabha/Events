@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput,Alert } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
@@ -18,8 +18,10 @@ const ClientRequest = (props) => {
         setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState, setRequestIdState } = useContext(SearchContext);
     const [textValue, setTextValue] = useState('');
     const [selectTime, setSelectTime] = useState(false);
+    const [detailViewPressed, setDetailViewPressed] = useState(false);
+    const [campaignViewPressed, setCampaignViewPressed] = useState(false);
     const idReq = uuidv4()
-    
+
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('time');
@@ -51,15 +53,15 @@ const ClientRequest = (props) => {
         props.navigation.goBack();
     }
     const removeRequest = () => {
-        deleteRequestbyId({ RequestId: idReq}).then(res => {
+        deleteRequestbyId({ RequestId: idReq }).then(res => {
             setRequestInfo(res)
             console.log("Request Deleted");
-        }) 
+        })
     }
     const getImagesfromApi = () => {
         getServiceImages({ serviceID: data?.service_id }).then(res => {
             setServiceImages(res)
-           
+
         })
     }
     const creatNewRequest = () => {
@@ -95,7 +97,7 @@ const ClientRequest = (props) => {
                     },
                 ],
                 { cancelable: false } // Prevent closing the alert by tapping outside
-            ); 
+            );
         }
     }
 
@@ -162,20 +164,73 @@ const ClientRequest = (props) => {
             )}
         </View>
     }
+    const detailPress = () => {
+        setDetailViewPressed(true)
+        setCampaignViewPressed(false)
+    }
+    const campaignPress = () => {
+        setDetailViewPressed(false)
+        setCampaignViewPressed(true)
+    }
+    const handleClosePress = () => {
+        setDetailViewPressed(false)
+        setCampaignViewPressed(false)
+    }
 
+    const renderDetail = () => {
+        return (
+            <View style={[styles.detailView, detailViewPressed ? styles.detailView : styles.pressDetailView]}>
+                <TouchableOpacity onPress={detailPress}>
+                    <Text style={styles.detailViewText}>تحديد التفاصيل</Text>
+                </TouchableOpacity>
+                {detailViewPressed &&
+                    <View style={{ flex: 1 }}>
+                        <View style={{ alignItems: 'center', marginTop: 30 }}>
+                            <ScrollView>
+                                <DetailComp service_id={data.service_id} />
+                            </ScrollView>
+                        </View>
+                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+            </View>
+        )
+    }
+    const renderCampaighn = () => {
+        return (
+            <View style={[styles.detailView, campaignViewPressed ? styles.detailView : styles.pressDetailView]}>
+                <TouchableOpacity onPress={campaignPress}>
+                    <Text style={styles.detailViewText}>اختيار احد العروض</Text>
+                </TouchableOpacity>
+                {campaignViewPressed &&
+                    <View style={{ flex: 1 }}>
+                        <View style={{ alignItems: 'center', marginTop: 30 }}>
+
+                        </View>
+                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+            </View>
+        )
+    }
     const renderServiceDetail = () => {
         return <View style={styles.HallView}>
-            <Text style={styles.desc1}>قائمة الخدمات </Text>
-            <View style={{ alignSelf: 'center' }}>
+            <Text style={styles.desc1}>تفاصيل الحجز</Text>
+            <View style={{}}>
                 {checkType()}
-                <DetailComp service_id={data.service_id} />
+                {renderDetail()}
+                {renderCampaighn()}
             </View>
         </View>
     }
     const CatOfService = {
         'قاعات': [{
             style: styles.input,
-            placeholder: 'ادخل عدد الضيوف',
+            placeholder: 'ادخل عدد المدعوين',
         }],
         'تصوير': [{
             style: styles.input,
@@ -286,11 +341,12 @@ const styles = StyleSheet.create({
     },
     VHall: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignSelf: 'center',
+        marginBottom: 10,
     },
     HallView: {
         backgroundColor: 'white',
-        height: 430,
+        height: 730,
         borderRadius: 5,
         margin: 5,
 
@@ -306,6 +362,46 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         color: 'black',
+    },
+    detailViewText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        margin: 10,
+        position: 'absolute',
+        right: 0,
+        top: 0
+    },
+    detailView: {
+        width: '90%',
+        height: 500,
+        backgroundColor: 'snow',
+        elevation: 5,
+        borderRadius: 8,
+        margin: 10,
+        alignSelf: 'center',
+
+    },
+    pressDetailView: {
+        width: 350,
+        height: 60,
+        backgroundColor: 'snow',
+        elevation: 5,
+        borderRadius: 8,
+        margin: 10,
+        alignSelf: 'center',
+    },
+    closeView: {
+        height: 30,
+        width: 80,
+        borderRadius: 5,
+        backgroundColor: '#ffff',
+        elevation: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 10,
+        position: 'absolute',
+        bottom: 0,
+        right: 0
     },
 
     priceView: {

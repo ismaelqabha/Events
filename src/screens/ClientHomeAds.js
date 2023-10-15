@@ -9,7 +9,7 @@ import { SliderBox } from 'react-native-image-slider-box';
 import AddNewDates from '../components/AddNewDates';
 
 const ClientHomeAds = (props) => {
-    const { cat, ServiceDataInfo, campInfo, userRegion } = useContext(SearchContext);
+    const { cat, ServiceDataInfo, campInfo, userRegion,setReachCampaignfrom,reachCampaignfrom } = useContext(SearchContext);
     const navigation = useNavigation();
 
     const queryCampaign = () => {
@@ -20,13 +20,17 @@ const ClientHomeAds = (props) => {
 
     const renderCampaigns = () => {
         //const x = AddNewDates()
-
+        console.log("reachCampaignfrom",reachCampaignfrom);
+        setReachCampaignfrom('fromHome')
         const CampData = queryCampaign();
         const campArray = CampData?.map(camp => {
             return < CampaignCard {...camp} />
         });
         return campArray;
     }
+    useEffect(() => {
+        //setReachCampaignfrom('fromHome')
+    }, [])
    
 
     const photo = [
