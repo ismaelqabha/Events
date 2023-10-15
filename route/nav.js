@@ -35,6 +35,7 @@ import SearchServcies from "../src/screens/SearchServcies";
 
 import SubDetailPrices from "../src/screens/SubDetailPrices";
 import ServiceDetail from "../src/screens/ServiceDetail";
+import Campaigns from "../src/screens/Campaigns";
 
 
 
@@ -92,6 +93,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.SearchServcies} component={SearchServcies} />
                 <Stack.Screen name={ScreenNames.ServiceDetail} component={ServiceDetail} />
                 <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
+                <Stack.Screen name={ScreenNames.Campaigns} component={Campaigns} />
 
                 {/* <Stack.Screen name={ScreenNames.FileFavorites} component={FileFavorites} /> */}
                 {/* <Stack.Screen name={ScreenNames.ClientEvents} component={ClientEvents} /> */}

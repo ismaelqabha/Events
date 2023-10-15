@@ -1,7 +1,7 @@
-export const ScreenNames ={ 
+export const ScreenNames = {
     SignIn: 'SignIn',
     SignUp: 'SignUp',
-//Client Screens
+    //Client Screens
     ClientBook: 'ClientBook',
     ClientHomeAds: 'ClientHomeAds',
     ServiceDescr: 'ServiceDescr',
@@ -12,13 +12,10 @@ export const ScreenNames ={
     Favorites: 'Favorites',
     ServiceDetail: 'ServiceDetail',
     SubDetailPrices: 'SubDetailPrices',
-
-   
-   
-   
-   
+    Campaigns: 'Campaigns',
     ClientSearch: 'ClientSearch',
-// Provider Screens
+
+    // Provider Screens
     ProviderServiceListing: 'ProviderServiceListing',
     ProviderCreateListing: 'ProviderCreateListing',
     ProviderChooseService: 'ProviderChooseService',

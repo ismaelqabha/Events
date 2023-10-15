@@ -96,7 +96,6 @@ const ClientSearch = (props) => {
         setIsPressed(false)
         setdateViewIsPressed(true)
         setplaceViewIsPressed(false)
-
     }
     const placePress = () => {
         setIsPressed(false)

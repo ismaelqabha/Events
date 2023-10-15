@@ -25,6 +25,8 @@ const SearchProvider = props => {
   const [datesforBooking, setDatesforBooking] = useState([])
   // campighin
   const [campInfo, setCampInfo] = useState([])
+  const [campiegnsAccordingServiceId, setCampiegnsAccordingServiceId] = useState([])
+  const [reachCampaignfrom, setReachCampaignfrom] = useState('fromHome')
  
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
@@ -54,13 +56,6 @@ const SearchProvider = props => {
 
   //Booking
  
-
-
-
-
- 
-
-
   const [UserState, setUserState] = useState(Users || [])
   const [userPayment, setUserPayment] = useState(Payment || [])
   const [serviceImg, setserviceImg] = useState([])
@@ -146,6 +141,10 @@ const SearchProvider = props => {
         setEventInfo,
         TimeText, 
         setTimeText,
+        campiegnsAccordingServiceId, 
+        setCampiegnsAccordingServiceId,
+        reachCampaignfrom, 
+        setReachCampaignfrom
         
       }}>
       {props.children}

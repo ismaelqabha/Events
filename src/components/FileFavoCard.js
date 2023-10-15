@@ -103,7 +103,12 @@ const FileFavoCard = (props) => {
                     text: 'حذف',
                     onPress: () => {
                         DeleteFileFavorite({ fileId: fileId }).then(res => {
-                            setFileFavoriteState(res)
+                           
+                            if (res.message === "Delete Sucessfuly") {
+                                const delData = fileFavoriteState
+                                const newData = delData?.filter(item => item !== fileId)
+                                setFileFavoriteState([...newData])
+                            }
                         })
                         removeFavoritList()
                         setShowModal(false)
