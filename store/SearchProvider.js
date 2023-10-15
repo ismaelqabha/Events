@@ -26,6 +26,7 @@ const SearchProvider = props => {
   // campighin
   const [campInfo, setCampInfo] = useState([])
   const [campiegnsAccordingServiceId, setCampiegnsAccordingServiceId] = useState([])
+  const [reachCampaignfrom, setReachCampaignfrom] = useState('fromHome')
  
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
@@ -141,7 +142,9 @@ const SearchProvider = props => {
         TimeText, 
         setTimeText,
         campiegnsAccordingServiceId, 
-        setCampiegnsAccordingServiceId
+        setCampiegnsAccordingServiceId,
+        reachCampaignfrom, 
+        setReachCampaignfrom
         
       }}>
       {props.children}

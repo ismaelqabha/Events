@@ -14,7 +14,7 @@ const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
     const { userId, setServiceDatesforBooking, ServiceDatesforBooking, setDetailOfServ, campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
-        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo } = useContext(SearchContext);
+        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo,setReachCampaignfrom } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
 
@@ -44,6 +44,7 @@ const ServiceDescr = (props) => {
         getDetailFromApi()
         getRequestfromApi()
         getCampeignsfromApi()
+        
     }, [])
 
     const checkIfInEvent = () => {
@@ -185,11 +186,12 @@ const ServiceDescr = (props) => {
     }
 
     const renderCampeigns = () => {
+        setReachCampaignfrom('fromServiceDescr')
         const CampData = campiegnsAccordingServiceId;
         if (CampData.message !== 'No Campaigns') {
             const campArray = CampData?.map(camp => {
                 return <View style={styles.HallView}><Text style={styles.txt}>أو يمكنك اختيار احد العروض التالية</Text>
-                    < CampaignCard {...camp} />
+                    < CampaignCard  {...camp} />
                 </View>
             });
             return campArray;
