@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet,Text} from 'react-native';
 
-const ProviderServiceListing = () => {
+const ProviderRequestNotification = () => {
     return (
         <View>
             <Text>Hello</Text>
@@ -11,4 +11,4 @@ const ProviderServiceListing = () => {
 
 const styles = StyleSheet.create({})
 
-export default ProviderServiceListing;
+export default ProviderRequestNotification;
