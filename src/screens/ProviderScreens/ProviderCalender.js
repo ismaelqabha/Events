@@ -1,33 +1,43 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+
+import React, { useState, useContext, useEffect } from 'react';
+import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
+
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { ScreenNames } from '../../../route/ScreenNames';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../../store/SearchContext';
+
+import ServiceProviderContext from '../../../store/ServiceProviderContext'
+import { getServiceInfoById } from '../../resources/API';
+
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 
 const ProviderCalender = (props) => {
     const [date, setDate] = useState(new Date())
     const [selected, setSelected] = useState('');
-    const { ServiceDataInfo, userId } = useContext(SearchContext);
+
+    const { userId } = useContext(SearchContext);
+    const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
 
-     const getServiceName = () => {
-    //     return ServiceDataInfo?.filter((item) => {
-           
-    //         console.log("item.userID", item.userID, "userId",userId);
-    //         return item.userID == userId;
-      //  })
+    const getServiceInfofromApi = () => {
+        getServiceInfoById({ userID: userId }).then(res => {
+            setServiceInfoAccorUser(res)
+        })
     }
-
+    useEffect(() => {
+        getServiceInfofromApi()
+    }, [])
 
     const renderFiles = () => {
-        const info = getServiceName();
+        const info = serviceInfoAccorUser;
+
         const ServiceInfo = info?.map(card => {
-            console.log("card",card);
+            console.log("card", card);
+
             return <CalenderServiceCard  {...card} />;
         });
         return ServiceInfo;
@@ -46,9 +56,14 @@ const ProviderCalender = (props) => {
                 </Pressable>
             </View>
             <View style={styles.body}>
-                {renderFiles()}
+
+                <ScrollView contentContainerStyle={styles.home}>
+                    {renderFiles()}
+                </ScrollView>
             </View>
-            <Calendar
+
+            {/* <Calendar
+
                 style={{
 
                     borderColor: 'gray',
@@ -114,7 +129,7 @@ const ProviderCalender = (props) => {
                 disableAllTouchEventsForDisabledDays={true}
                 // Enable the option to swipe between months. Default = false
                 enableSwipeMonths={false}
-            />
+            /> */}
         </View>
     );
 }
@@ -134,10 +149,10 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     body: {
-        //flex: 1,
-        alignItems: 'center',
+
+        flex: 1,
         marginTop: 40,
-        borderWidth:1
+
     }
 })
 
