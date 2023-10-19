@@ -1,18 +1,62 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Calendar,LocaleConfig } from 'react-native-calendars';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, StyleSheet, Pressable,ScrollView } from 'react-native';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { ScreenNames } from '../../../route/ScreenNames';
-import { useState } from 'react';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import SearchContext from '../../../store/SearchContext';
+import ServiceProviderContext from '../../../store/ServiceProviderContext'
+import { getServiceInfoById } from '../../resources/API';
+import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 
 const ProviderCalender = (props) => {
-    const [date,setDate] = useState(new Date() )
+    const [date, setDate] = useState(new Date())
     const [selected, setSelected] = useState('');
+    const { userId } = useContext(SearchContext);
+    const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
+
+    const onPressHandler = () => {
+        props.navigation.goBack();
+    }
+    const getServiceInfofromApi = () => {
+        getServiceInfoById({ userID: userId }).then(res => {
+            setServiceInfoAccorUser(res)
+        })
+    }
+    useEffect(() => {
+        getServiceInfofromApi()
+    }, [])
+
+    const renderFiles = () => {
+        const info = serviceInfoAccorUser;
+
+        const ServiceInfo = info?.map(card => {
+            console.log("card", card);
+            return <CalenderServiceCard  {...card} />;
+        });
+        return ServiceInfo;
+    };
 
     return (
         <View style={styles.container}>
-            <Calendar
+            <View style={styles.title}>
+                <Pressable onPress={onPressHandler}
+                >
+                    <Ionicons
+                        style={styles.icon}
+                        name={"arrow-back"}
+                        color={"black"}
+                        size={25} />
+                </Pressable>
+            </View>
+            <View style={styles.body}>
+                <ScrollView contentContainerStyle={styles.home}>
+                    {renderFiles()}
+                </ScrollView>
+            </View>
+
+            {/* <Calendar
                 style={{
-                    
+
                     borderColor: 'gray',
                     height: 400,
                     width: 350,
@@ -52,8 +96,8 @@ const ProviderCalender = (props) => {
                     console.log('selected day', selected);
                 }}
                 markedDates={{
-                    [selected]: {selected: true, disableTouchEvent: true, selectedDotColor: 'orange'}
-                  }}
+                    [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' }
+                }}
                 // Handler which gets executed on day long press. Default = undefined
                 onDayLongPress={day => {
                     console.log('selected day', day.year);
@@ -72,11 +116,11 @@ const ProviderCalender = (props) => {
                 onPressArrowLeft={subtractMonth => subtractMonth()}
                 // Handler which gets executed when press arrow icon right. It receive a callback can go next month
                 onPressArrowRight={addMonth => addMonth()}
-                 // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
+                // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
                 disableAllTouchEventsForDisabledDays={true}
-                 // Enable the option to swipe between months. Default = false
+                // Enable the option to swipe between months. Default = false
                 enableSwipeMonths={false}
-            />
+            /> */}
         </View>
     );
 }
@@ -84,10 +128,21 @@ const ProviderCalender = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // justifyContent: 'center',
 
     },
+    title: {
+        flexDirection: 'row',
+        marginTop: 20,
+    },
+    icon: {
+        alignSelf: 'flex-start',
+        marginLeft: 10,
+    },
+    body: {
+        flex: 1,
+        marginTop: 40,
+    }
 })
 
 export default ProviderCalender;
