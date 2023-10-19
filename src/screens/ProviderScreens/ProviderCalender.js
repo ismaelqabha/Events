@@ -1,22 +1,28 @@
+
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Pressable,ScrollView } from 'react-native';
+import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
+
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { ScreenNames } from '../../../route/ScreenNames';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../../store/SearchContext';
+
 import ServiceProviderContext from '../../../store/ServiceProviderContext'
 import { getServiceInfoById } from '../../resources/API';
+
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 
 const ProviderCalender = (props) => {
     const [date, setDate] = useState(new Date())
     const [selected, setSelected] = useState('');
+
     const { userId } = useContext(SearchContext);
     const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
     const getServiceInfofromApi = () => {
         getServiceInfoById({ userID: userId }).then(res => {
             setServiceInfoAccorUser(res)
@@ -31,6 +37,7 @@ const ProviderCalender = (props) => {
 
         const ServiceInfo = info?.map(card => {
             console.log("card", card);
+
             return <CalenderServiceCard  {...card} />;
         });
         return ServiceInfo;
@@ -49,12 +56,14 @@ const ProviderCalender = (props) => {
                 </Pressable>
             </View>
             <View style={styles.body}>
+
                 <ScrollView contentContainerStyle={styles.home}>
                     {renderFiles()}
                 </ScrollView>
             </View>
 
             {/* <Calendar
+
                 style={{
 
                     borderColor: 'gray',
@@ -140,8 +149,10 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     body: {
+
         flex: 1,
         marginTop: 40,
+
     }
 })
 

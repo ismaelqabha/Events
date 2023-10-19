@@ -16,7 +16,9 @@ export const ScreenNames = {
     ClientSearch: 'ClientSearch',
 
     // Provider Screens
+
     ProviderRequestNotifi: 'ProviderRequestNotifi',
+
     ProviderCreateListing: 'ProviderCreateListing',
     ProviderChooseService: 'ProviderChooseService',
     ProviderSetPhotos: 'ProviderSetPhotos',

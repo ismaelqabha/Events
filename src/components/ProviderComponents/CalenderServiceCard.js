@@ -7,6 +7,7 @@ const CalenderServiceCard = (props) => {
         <View style={styles.container}>
             <View style={styles.card}>
                 <Text style={styles.txt}>{props.title}</Text>
+
             </View>
         </View>
     )
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     txt: {
+
         fontSize: 15,
         fontWeight: 'bold',
         color: 'black'
