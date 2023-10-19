@@ -1,8 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from "react";
 
+
 import ClientHomeAds from "../src/screens/ClientHomeAds";
 import ProviderRequestNotifi from '../src/screens/ProviderScreens/ProviderRequestNotifi';
+
 import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
 import ProviderCalender from '../src/screens/ProviderScreens/ProviderCalender';
 
@@ -10,8 +12,10 @@ import ProviderCalender from '../src/screens/ProviderScreens/ProviderCalender';
 import { ScreenNames } from "./ScreenNames";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+
 import TabNavigator from './tabNavigator';
 
 
@@ -56,7 +60,6 @@ const DrawerNavigator = () => {
                 }}
             />
 
-
             <Drawer.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}
                 options={{
                     title: 'أنشاء خدمة جديدة',
@@ -68,7 +71,9 @@ const DrawerNavigator = () => {
                     )
                 }}
             />
+
             <Drawer.Screen name={ScreenNames.ProviderRequestNotifi} component={ProviderRequestNotifi}
+
                 options={{
                     title: 'اشعارات الحجوزات',
                     drawerIcon: () => (
@@ -81,15 +86,19 @@ const DrawerNavigator = () => {
             />
             <Drawer.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender}
                 options={{
+
                     title: 'التقويم',
+
                     drawerIcon: () => (
                         <AntDesign
                             name='calendar'
                             style={{ fontSize: 30, color: '#1e90ff' }}
                         />
                     )
+
                 }}
             />
+
 
 
         </Drawer.Navigator>
