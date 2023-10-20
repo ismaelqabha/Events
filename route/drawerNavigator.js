@@ -4,9 +4,9 @@ import React from "react";
 
 import ClientHomeAds from "../src/screens/ClientHomeAds";
 import ProviderRequestNotifi from '../src/screens/ProviderScreens/ProviderRequestNotifi';
-
+import ProviderServiceShow from '../src/screens/ProviderScreens/ProviderServiceShow';
 import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
-import ProviderCalender from '../src/screens/ProviderScreens/ProviderCalender';
+
 
 
 import { ScreenNames } from "./ScreenNames";
@@ -17,6 +17,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import TabNavigator from './tabNavigator';
+
 
 
 const DrawerNavigator = () => {
@@ -84,7 +85,7 @@ const DrawerNavigator = () => {
                     )
                 }}
             />
-            <Drawer.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender}
+            <Drawer.Screen name={ScreenNames.ProviderServiceShow} component={ProviderServiceShow}
                 options={{
 
                     title: 'التقويم',
