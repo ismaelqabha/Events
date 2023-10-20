@@ -1,14 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View,Pressable } from 'react-native'
 import React from 'react'
+import { useNavigation } from '@react-navigation/native';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 const CalenderServiceCard = (props) => {
-    
+    const navigation = useNavigation();
+
+    const onCardPress = () => {
+        navigation.navigate(ScreenNames.ProviderCalender, { data: { ...props } })
+    }
+
     return (
         <View style={styles.container}>
-            <View style={styles.card}>
+            <Pressable style={styles.card} onPress={onCardPress}>
                 <Text style={styles.txt}>{props.title}</Text>
 
-            </View>
+            </Pressable>
         </View>
     )
 }
@@ -26,7 +33,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'snow',
         borderRadius: 8,
         elevation: 5,
-        margin :10,
+        margin: 10,
         justifyContent: 'center',
         alignItems: 'center'
     },

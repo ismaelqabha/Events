@@ -176,23 +176,18 @@ const MonthCom = (props) => {
         }
     }
 
-   // console.log("selectMonthforSearch: " , selectMonthforSearch );
+   
 
     const onCardPress = (num) => {
         setMonthPress(true)
-        // setselectMonthforSearch(num)
         onMonthSelected?.(num)
-        console.log("num", num);
     }
-
-
     const cleanSearchState = () => {
         setselectMonthforSearch(null)
     }
-
-    // useEffect(()=> {
-    //    cleanSearchState()
-    // },[])
+    useEffect(()=> {
+  
+    },[])
 
 
     const renderMonth = () => months.map(month =>

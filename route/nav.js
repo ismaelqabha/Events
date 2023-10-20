@@ -36,6 +36,7 @@ import SearchServcies from "../src/screens/SearchServcies";
 import SubDetailPrices from "../src/screens/SubDetailPrices";
 import ServiceDetail from "../src/screens/ServiceDetail";
 import Campaigns from "../src/screens/Campaigns";
+import ProviderCalender from "../src/screens/ProviderScreens/ProviderCalender";
 
 
 
@@ -81,13 +82,13 @@ const MainNavigation = (props) => {
                 {/* <Stack.Screen name={ScreenNames.SignIn} component={SignIn} /> */}
                 {/* <Stack.Screen name={ScreenNames.SignUp} component={SignUp} /> */}
                 {/* <Stack.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds} /> */}
+                 {/* <Stack.Screen name={ScreenNames.FileFavorites} component={FileFavorites} /> */}
+                {/* <Stack.Screen name={ScreenNames.ClientEvents} component={ClientEvents} /> */}
 
                 <Stack.Screen name={ScreenNames.ClientBook} component={ClientBook} />
                 <Stack.Screen name={ScreenNames.ServiceDescr} component={ServiceDescr} />
-               
                 <Stack.Screen name={ScreenNames.Favorites} component={Favorites} />
                 <Stack.Screen name={ScreenNames.ClientSearch} component={ClientSearch} />
-               
                 <Stack.Screen name={ScreenNames.ClientRequest} component={ClientRequest} />
                 <Stack.Screen name={ScreenNames.Results} component={Results} />
                 <Stack.Screen name={ScreenNames.SearchServcies} component={SearchServcies} />
@@ -95,9 +96,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
                 <Stack.Screen name={ScreenNames.Campaigns} component={Campaigns} />
 
-                {/* <Stack.Screen name={ScreenNames.FileFavorites} component={FileFavorites} /> */}
-                {/* <Stack.Screen name={ScreenNames.ClientEvents} component={ClientEvents} /> */}
-                
+               
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />
                 <Stack.Screen name={ScreenNames.ProviderAddInfo} component={ProviderAddInfo} />
                 <Stack.Screen name={ScreenNames.ProviderSetPhotos} component={ProviderSetPhotos} />
@@ -105,6 +104,9 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderAddSubDetail} component={ProviderAddSubDetail} />
                 <Stack.Screen name={ScreenNames.ProviderAddServiceDetail} component={ProviderAddServiceDetail} />
                 <Stack.Screen name={ScreenNames.ProviderSetPrice} component={ProviderSetPrice} />
+                <Stack.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender} />
+
+
             </Stack.Navigator>
         </NavigationContainer>
     )
