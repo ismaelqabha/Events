@@ -27,6 +27,9 @@ export const ScreenNames = {
     ProviderHomeAds: 'ProviderHomeAds',
     ProviderServiceShow: 'ProviderServiceShow',
     ProviderCalender: 'ProviderCalender',
+    ProviderBookingRequest: 'ProviderBookingRequest',
+    ProviderWaitingPay: 'ProviderWaitingPay',
+    ProviderWaitingReply: 'ProviderWaitingReply',
 
 
     Splash: 'Splash',

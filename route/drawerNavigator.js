@@ -17,6 +17,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import TabNavigator from './tabNavigator';
+import TopTapNotificaNavig from './topTapNotificaNavig';
 
 
 
@@ -73,7 +74,7 @@ const DrawerNavigator = () => {
                 }}
             />
 
-            <Drawer.Screen name={ScreenNames.ProviderRequestNotifi} component={ProviderRequestNotifi}
+            <Drawer.Screen name="Notification" component={TopTapNotificaNavig}
 
                 options={{
                     title: 'اشعارات الحجوزات',

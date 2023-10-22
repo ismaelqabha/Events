@@ -16,36 +16,36 @@ const TabNavigator = () => {
     return (
         
             <Tap.Navigator
-                // activeColor="red"
-                // inactiveColor="green"
-                // barStyle={{ backgroundColor: 'blue' }}
-                // shifting={false}
+                activeColor="red"
+                inactiveColor="green"
+                barStyle={{ backgroundColor: 'snow' }}
+                //shifting={false}
 
-                screenOptions = {({ScreenNames}) => ({
-                    tapBarIcon: ({focused, size, color}) => {
-                        let iconName;
-                        let iconLibrary;
-                        if(ScreenNames.name === ClientHomeAds){
-                            iconLibrary = FontAwesome5;
-                            iconName = 'home';
-                            size = focused ? 25 : 20;
-                            color = focused ? 'red' : 'green';
-                        }else if (ScreenNames.name === ClientEvents){
-                            iconLibrary = MaterialIcons;
-                            iconName = 'emoji-events';
-                            size = focused ? 25 : 20;
-                            color = focused ? 'red' : 'green';
-                        }else if (ScreenNames.name === FileFavorites){
-                            iconLibrary = Fontisto;
-                            iconName = 'favorite';
-                            size = focused ? 25 : 20;
-                            color = focused ? 'red' : 'green';
-                        }
-                        return(
-                            <iconLibrary name={iconName} size={sise} color={color}/> 
-                        )
-                    }
-                })}
+                // screenOptions = {({ScreenNames}) => ({
+                //     tapBarIcon: ({focused, size, color}) => {
+                //         let iconName;
+                //         let iconLibrary;
+                //         if(ScreenNames.name === ClientHomeAds){
+                //             iconLibrary = FontAwesome5;
+                //             iconName = 'home';
+                //             size = focused ? 25 : 20;
+                //             color = focused ? 'red' : 'green';
+                //         }else if (ScreenNames.name === ClientEvents){
+                //             iconLibrary = MaterialIcons;
+                //             iconName = 'emoji-events';
+                //             size = focused ? 25 : 20;
+                //             color = focused ? 'red' : 'green';
+                //         }else if (ScreenNames.name === FileFavorites){
+                //             iconLibrary = Fontisto;
+                //             iconName = 'favorite';
+                //             size = focused ? 25 : 20;
+                //             color = focused ? 'red' : 'green';
+                //         }
+                //         return(
+                //             <iconLibrary name={iconName} size={sise} color={color}/> 
+                //         )
+                //     }
+                // })}
             >
                 <Tap.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds}
                     options={{
