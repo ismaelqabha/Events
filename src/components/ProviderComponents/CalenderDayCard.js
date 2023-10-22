@@ -2,15 +2,17 @@ import { StyleSheet, Text, View, ScrollView, Pressable, FlatList } from 'react-n
 import React, { useState } from 'react'
 import moment from "moment";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import { useNavigation } from '@react-navigation/native';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 const CalenderDayCard = (props) => {
     const [date, setDate] = useState(new Date())
     const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
     const [currentYear, setcurrentYear] = useState(date.getFullYear())
 
-    const fullDate = []
 
-    let day = 0
+    const navigation = useNavigation();
+   
     const daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
 
     const pressNextMonth = () => {
@@ -31,31 +33,43 @@ const CalenderDayCard = (props) => {
         }
     }
 
+    const fillMonthDays = () => {
+        const fullDate = []
 
-    for (var j = 0; j < daysInMonth; j++) {
-        day = day + 1
-        const completeDate = day + '-' + currentMonth + '-' + currentYear
+        for (var day = 1; day <= daysInMonth; day++) {
+            //day = day + 1
+            const completeDate = day + '-' + currentMonth + '-' + currentYear
 
-        fullDate.push(
-            {
-                currentDay: day,
-                dayInWord: moment(completeDate).format('dddd')
-            }
-        )
+            fullDate.push(
+                {
+                    currentDay: day,
+                    dayInWord: moment(completeDate).format('dddd'),
+                    wholeDate: completeDate
+                    //monthInWord: moment(currentYear + '-' + currentMonth).format('MMMM')
+                }
+            )
+        }
+
+        return fullDate;
     }
 
+    const oneDay = fillMonthDays();
 
-    const renderDaysInMonth = () => fullDate.map(oneDay =>
+    const onDayPress = (fulDate) => {
+        navigation.navigate(ScreenNames.ProviderBookingRequest,  {fulDate})
+        
+    }
+    const renderDaysInMonth = ({ item }) => (
         <Pressable
             style={({ pressed }) => [styles.card, pressed ? styles.monthcardPress : styles.card]}
-        //onPress={() => { onCardPress(month.monNum) }}
+            onPress={() => onDayPress(item.wholeDate)}
         >
             <View style={styles.body}>
                 <Text style={styles.text}>
-                    {oneDay.currentDay}
+                    {item.currentDay}
                 </Text>
                 <Text style={styles.text}>
-                    {oneDay.dayInWord}
+                    {item.dayInWord}
                 </Text>
             </View>
         </Pressable>
@@ -93,12 +107,11 @@ const CalenderDayCard = (props) => {
                 {renderTitle()}
             </View>
             <FlatList
-                data={fullDate}
+                data={oneDay}
                 renderItem={renderDaysInMonth}
-                style={{ flex: 1 }}
-                numColumns={2}
+                numColumns={4}
             />
-            {/* <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
+            {/* <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
                 {renderDaysInMonth()}
             </ScrollView> */}
         </View>
@@ -141,7 +154,7 @@ const styles = StyleSheet.create({
         //marginRight: 20,
     },
     iconBack: {
-       // marginLeft: 20,
+        // marginLeft: 20,
     },
     txtYear: {
         fontSize: 20,
@@ -154,5 +167,9 @@ const styles = StyleSheet.create({
     viewYearpress: {
         backgroundColor: '#00bfff',
         borderRadius: 5
+    },
+    home: {
+        flexDirection: 'row',
+        flexWrap: 'wrap'
     }
 })

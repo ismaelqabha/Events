@@ -41,9 +41,11 @@ const ServiceDescr = (props) => {
 
     useEffect(() => {
         getDatesfromApi()
-        getDetailFromApi()
+        // getDetailFromApi()
         getRequestfromApi()
         getCampeignsfromApi()
+        setrequestedDate(0)
+
         
     }, [])
 
@@ -179,9 +181,11 @@ const ServiceDescr = (props) => {
     }
 
     const renderServiceDetail = () => {
-        return <View style={styles.HallView}>
-            <DetailComp service_id={data.service_id} />
-        </View>
+        return (
+                <View style={styles.HallView}>
+                    <DetailComp service_id={data.service_id} />
+                </View>
+        )
 
     }
 
@@ -379,7 +383,8 @@ const styles = StyleSheet.create({
         elevation: 5
     },
     HallView: {
-        marginTop: 20
+        marginTop: 20,
+        // height: 100,
     },
     txt: {
         fontSize: 15,

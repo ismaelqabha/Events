@@ -37,6 +37,8 @@ import SubDetailPrices from "../src/screens/SubDetailPrices";
 import ServiceDetail from "../src/screens/ServiceDetail";
 import Campaigns from "../src/screens/Campaigns";
 import ProviderCalender from "../src/screens/ProviderScreens/ProviderCalender";
+import ProviderBookingRequest from "../src/screens/ProviderScreens/ProviderBookingRequest";
+import TopTapNotificaNavig from "./topTapNotificaNavig";
 
 
 
@@ -77,13 +79,12 @@ const MainNavigation = (props) => {
             >
                 <Stack.Screen name="Drawr" component={DrawerNavigator} />
                 <Stack.Screen name="Tap" component={TabNavigator} />
+                <Stack.Screen name="Tapp" component={TopTapNotificaNavig} />
                 <Stack.Screen name={ScreenNames.Splash} component={Splash} />
 
                 {/* <Stack.Screen name={ScreenNames.SignIn} component={SignIn} /> */}
                 {/* <Stack.Screen name={ScreenNames.SignUp} component={SignUp} /> */}
-                {/* <Stack.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds} /> */}
-                 {/* <Stack.Screen name={ScreenNames.FileFavorites} component={FileFavorites} /> */}
-                {/* <Stack.Screen name={ScreenNames.ClientEvents} component={ClientEvents} /> */}
+               
 
                 <Stack.Screen name={ScreenNames.ClientBook} component={ClientBook} />
                 <Stack.Screen name={ScreenNames.ServiceDescr} component={ServiceDescr} />
@@ -105,7 +106,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderAddServiceDetail} component={ProviderAddServiceDetail} />
                 <Stack.Screen name={ScreenNames.ProviderSetPrice} component={ProviderSetPrice} />
                 <Stack.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender} />
-
+                <Stack.Screen name={ScreenNames.ProviderBookingRequest} component={ProviderBookingRequest} />
 
             </Stack.Navigator>
         </NavigationContainer>
