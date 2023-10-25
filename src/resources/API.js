@@ -2,6 +2,15 @@
 const baseUrl = "https://ev-server.onrender.com/";
 // const baseUrl = "https://localhost:7000/"
 
+// Users
+export const getUserData = async (body) => {
+    const url = 'Users/getUserInfo'
+    return await AppFetch(url, 'POST', body)
+}
+export const addUser = async (body) => {
+    const url = 'Users/create'
+    return await AppFetch(url, 'POST', body)
+}
 
 // Service Data
 export const getHomePageData = async (body) => {

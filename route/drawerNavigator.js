@@ -3,7 +3,6 @@ import React from "react";
 
 
 import ClientHomeAds from "../src/screens/ClientHomeAds";
-import ProviderRequestNotifi from '../src/screens/ProviderScreens/ProviderRequestNotifi';
 import ProviderServiceShow from '../src/screens/ProviderScreens/ProviderServiceShow';
 import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
 

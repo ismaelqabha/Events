@@ -39,6 +39,7 @@ import Campaigns from "../src/screens/Campaigns";
 import ProviderCalender from "../src/screens/ProviderScreens/ProviderCalender";
 import ProviderBookingRequest from "../src/screens/ProviderScreens/ProviderBookingRequest";
 import TopTapNotificaNavig from "./topTapNotificaNavig";
+import CreateUser from "../src/screens/CreateUser";
 
 
 
@@ -96,6 +97,8 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ServiceDetail} component={ServiceDetail} />
                 <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
                 <Stack.Screen name={ScreenNames.Campaigns} component={Campaigns} />
+                <Stack.Screen name={ScreenNames.CreateUser} component={CreateUser} />
+                
 
                
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />

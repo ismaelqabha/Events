@@ -13,9 +13,10 @@ export const ScreenNames = {
     SubDetailPrices: 'SubDetailPrices',
     Campaigns: 'Campaigns',
     ClientSearch: 'ClientSearch',
+    UserProfile: 'UserProfile',
+    CreateUser: 'CreateUser',
 
     // Provider Screens
-    ProviderRequestNotifi: 'ProviderRequestNotifi',
     ProviderCreateListing: 'ProviderCreateListing',
     ProviderChooseService: 'ProviderChooseService',
     ProviderSetPhotos: 'ProviderSetPhotos',
