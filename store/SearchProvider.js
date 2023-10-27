@@ -5,11 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 const SearchProvider = props => {
+
+  const [userId, setuserId] = useState(1);
+  const [userInfo, setUserInfo] = useState([]);
+  const [sType, setSType] = useState({});
+
   const [Service, setService] = useState({});
   const [city, setCity] = useState({});
   const [cat, setCat] = useState('');
-  const [userId, setuserId] = useState(1);
-  const [sType, setSType] = useState({});
   const [fId, setFId] = useState({});
   const [ServId, setServId] = useState('');
 
@@ -144,7 +147,9 @@ const SearchProvider = props => {
         campiegnsAccordingServiceId, 
         setCampiegnsAccordingServiceId,
         reachCampaignfrom, 
-        setReachCampaignfrom
+        setReachCampaignfrom,
+        userInfo, 
+        setUserInfo
         
       }}>
       {props.children}

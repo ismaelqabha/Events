@@ -3,7 +3,6 @@ import React from "react";
 
 
 import ClientHomeAds from "../src/screens/ClientHomeAds";
-import ProviderRequestNotifi from '../src/screens/ProviderScreens/ProviderRequestNotifi';
 import ProviderServiceShow from '../src/screens/ProviderScreens/ProviderServiceShow';
 import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
 
@@ -18,6 +17,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import TabNavigator from './tabNavigator';
 import TopTapNotificaNavig from './topTapNotificaNavig';
+import ProviderTapNav from './ProviderTapNav';
+import UserProfile from '../src/screens/UserProfile';
 
 
 
@@ -50,9 +51,21 @@ const DrawerNavigator = () => {
                 },
             }}
         >
-            <Drawer.Screen name="Home" component={TabNavigator}
+            <Drawer.Screen name={ScreenNames.UserProfile} component={UserProfile}
                 options={{
-                    title: 'الرئيسيه',
+                    title: 'بروفايل',
+                    drawerIcon: () => (
+                        <AntDesign
+                            name='profile'
+                            style={{ fontSize: 30, color: '#1e90ff' }}
+                        />
+                    )
+                }}
+            />
+
+            <Drawer.Screen name="ClientHome" component={TabNavigator}
+                options={{
+                    title: 'استخدام التطبيق كزبون',
                     drawerIcon: () => (
                         <FontAwesome5
                             name='home'
@@ -61,47 +74,17 @@ const DrawerNavigator = () => {
                     ),
                 }}
             />
-
-            <Drawer.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}
+            <Drawer.Screen name="ProviderHome" component={ProviderTapNav}
                 options={{
-                    title: 'أنشاء خدمة جديدة',
+                    title: 'استخدام التطبيق كمزود خدمة',
                     drawerIcon: () => (
-                        <Ionicons
-                            name='create-outline'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
+                        <FontAwesome5
+                            name='home'
+                            style={{ fontSize: 20, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', }}
                         />
-                    )
+                    ),
                 }}
             />
-
-            <Drawer.Screen name="Notification" component={TopTapNotificaNavig}
-
-                options={{
-                    title: 'اشعارات الحجوزات',
-                    drawerIcon: () => (
-                        <AntDesign
-                            name='notification'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
-                        />
-                    )
-                }}
-            />
-            <Drawer.Screen name={ScreenNames.ProviderServiceShow} component={ProviderServiceShow}
-                options={{
-
-                    title: 'التقويم',
-
-                    drawerIcon: () => (
-                        <AntDesign
-                            name='calendar'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
-                        />
-                    )
-
-                }}
-            />
-
-
 
         </Drawer.Navigator>
     )

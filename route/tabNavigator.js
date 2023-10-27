@@ -10,6 +10,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { ScreenNames } from "./ScreenNames";
 
+
 const TabNavigator = () => {
     const Tap = createMaterialBottomTabNavigator();
 
