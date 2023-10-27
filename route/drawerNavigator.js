@@ -17,6 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import TabNavigator from './tabNavigator';
 import TopTapNotificaNavig from './topTapNotificaNavig';
+import ProviderTapNav from './ProviderTapNav';
 
 
 
@@ -49,7 +50,18 @@ const DrawerNavigator = () => {
                 },
             }}
         >
-            <Drawer.Screen name="Home" component={TabNavigator}
+            <Drawer.Screen name="ClientHome" component={TabNavigator}
+                options={{
+                    title: 'الرئيسيه',
+                    drawerIcon: () => (
+                        <FontAwesome5
+                            name='home'
+                            style={{ fontSize: 20, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', }}
+                        />
+                    ),
+                }}
+            />
+             <Drawer.Screen name="ProviderHome" component={ProviderTapNav}
                 options={{
                     title: 'الرئيسيه',
                     drawerIcon: () => (

@@ -40,6 +40,7 @@ import ProviderCalender from "../src/screens/ProviderScreens/ProviderCalender";
 import ProviderBookingRequest from "../src/screens/ProviderScreens/ProviderBookingRequest";
 import TopTapNotificaNavig from "./topTapNotificaNavig";
 import CreateUser from "../src/screens/CreateUser";
+import ProviderTapNav from "./ProviderTapNav";
 
 
 
@@ -81,6 +82,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name="Drawr" component={DrawerNavigator} />
                 <Stack.Screen name="Tap" component={TabNavigator} />
                 <Stack.Screen name="Tapp" component={TopTapNotificaNavig} />
+                <Stack.Screen name="TapProvider" component={ProviderTapNav} />
                 <Stack.Screen name={ScreenNames.Splash} component={Splash} />
 
                 {/* <Stack.Screen name={ScreenNames.SignIn} component={SignIn} /> */}
