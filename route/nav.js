@@ -81,12 +81,10 @@ const MainNavigation = (props) => {
             >
                 <Stack.Screen name="Drawr" component={DrawerNavigator} />
                 <Stack.Screen name="Tap" component={TabNavigator} />
-                <Stack.Screen name="Tapp" component={TopTapNotificaNavig} />
+                <Stack.Screen name="TapNoti" component={TopTapNotificaNavig} />
                 <Stack.Screen name="TapProvider" component={ProviderTapNav} />
                 <Stack.Screen name={ScreenNames.Splash} component={Splash} />
 
-                {/* <Stack.Screen name={ScreenNames.SignIn} component={SignIn} /> */}
-                {/* <Stack.Screen name={ScreenNames.SignUp} component={SignUp} /> */}
                
 
                 <Stack.Screen name={ScreenNames.ClientBook} component={ClientBook} />

@@ -4,6 +4,8 @@ import { ScreenNames } from "./ScreenNames";
 import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
 import TopTapNotificaNavig from './topTapNotificaNavig';
 import ProviderServiceShow from '../src/screens/ProviderScreens/ProviderServiceShow';
+import AntDesign from 'react-native-vector-icons/AntDesign'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 
 const ProviderTapNav = () => {
@@ -17,7 +19,7 @@ const ProviderTapNav = () => {
 
             <Tap.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}
                 options={{
-                    title: 'أنشاء خدمة جديدة',
+                    title: 'خدماتي',
                     drawerIcon: () => (
                         <Ionicons
                             name='create-outline'
@@ -27,9 +29,8 @@ const ProviderTapNav = () => {
                 }}
             />
             <Tap.Screen name="Notification" component={TopTapNotificaNavig}
-
                 options={{
-                    title: 'اشعارات الحجوزات',
+                    title: 'الاشعارات',
                     drawerIcon: () => (
                         <AntDesign
                             name='notification'
@@ -40,16 +41,13 @@ const ProviderTapNav = () => {
             />
             <Tap.Screen name={ScreenNames.ProviderServiceShow} component={ProviderServiceShow}
                 options={{
-
                     title: 'التقويم',
-
                     drawerIcon: () => (
                         <AntDesign
                             name='calendar'
                             style={{ fontSize: 30, color: '#1e90ff' }}
                         />
                     )
-
                 }}
             />
         </Tap.Navigator>

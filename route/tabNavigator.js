@@ -9,7 +9,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { ScreenNames } from "./ScreenNames";
-import UserProfile from '../src/screens/UserProfile';
+
 
 const TabNavigator = () => {
     const Tap = createMaterialBottomTabNavigator();
@@ -77,17 +77,6 @@ const TabNavigator = () => {
                         tapBarIcon: () => (
                             <Fontisto
                                 name='favorite'
-                                style={{ fontSize: 30, color: '#1e90ff' }}
-                            />
-                        )
-                    }}
-                />
-                 <Tap.Screen name={ScreenNames.UserProfile} component={UserProfile}
-                    options={{
-                        title: 'بروفايل',
-                        tapBarIcon: () => (
-                            <FontAwesome5
-                                name='user'
                                 style={{ fontSize: 30, color: '#1e90ff' }}
                             />
                         )
