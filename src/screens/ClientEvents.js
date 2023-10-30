@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput,ToastAndroid } from 'react-native';
+import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput, ToastAndroid } from 'react-native';
 import EventsCard from '../components/EventsCard';
 import { FlatList } from 'react-native-gesture-handler';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -7,13 +7,15 @@ import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
 import { createNewEvent, getEventsInfo } from '../resources/API';
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
 
 
 const ClientEvents = (props) => {
-    const {isFromAddEventClick,data} = props.route?.params || {}
+    const { isFromAddEventClick, data } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [fileEventName, setfileEventName] = useState();
-    const { userId,eventInfo, setEventInfo } = useContext(SearchContext);
+    const { userId, eventInfo, setEventInfo } = useContext(SearchContext);
 
 
     const onPressHandler = () => {
@@ -26,8 +28,8 @@ const ClientEvents = (props) => {
     const onModalBtnPress = () => {
         creatNewEvent()
         ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM
         )
         setShowModal(false)
     }
@@ -40,8 +42,8 @@ const ClientEvents = (props) => {
         const newEventItem = {
             userId: userId,
             eventName: fileEventName,
-           // eventDate: moment(requestedDate).format('L'),
-           // eventCost: "50890",
+            // eventDate: moment(requestedDate).format('L'),
+            // eventCost: "50890",
         }
         createNewEvent(newEventItem).then(res => {
             const evnt = eventInfo || [];
@@ -52,43 +54,44 @@ const ClientEvents = (props) => {
     useEffect(() => {
         getEventsfromApi()
     }, [])
-    
+  
+    //console.log("eventInfo",eventInfo);
     const query = () => {
         return eventInfo || [];
     }
     const renderCard = ({ item }) => {
-        return <EventsCard  {...item} service_id={data?.service_id}   isFromAddEventClick={isFromAddEventClick} />;
-       
+        return <EventsCard  {...item} service_id={data?.service_id} isFromAddEventClick={isFromAddEventClick} />;
+
     };
 
     return (
         <View style={styles.container}>
-            <View style={styles.title}>
-                <Pressable onPress={onPressHandler}
-                >
-                    <Ionicons
-                        style={styles.icon}
-                        name={"arrow-back"}
+            <View style={styles.header}>
+                <Pressable onPress={onPressHandler}>
+                    <AntDesign
+                        style={styles.iconBack}
+                        name={"left"}
                         color={"black"}
-                        size={25} />
+                        size={20} />
+                </Pressable>
+
+                <Text style={styles.txt}>منسباتي</Text>
+                <Pressable
+                    onPress={onPressModalHandler}
+                >
+                    <Entypo
+                        style={styles.icon}
+                        name={"plus"}
+                        color={"black"}
+                        size={30} />
                 </Pressable>
             </View>
+           
             <FlatList
                 data={query()}
                 renderItem={renderCard}
                 numColumns={2}
             />
-
-            <View style={styles.footer}>
-                <Pressable
-                    onPress={() => onPressModalHandler()}
-                >
-                    <Image
-                        source={require('../assets/photos/add.png')}
-                        style={styles.img}
-                    />
-                </Pressable>
-            </View>
             <Modal
                 transparent
                 visible={showModal}
@@ -128,23 +131,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    img: {
-        width: 60,
-        height: 60,
-    },
-    footer: {
-        alignItems: 'flex-end',
-        marginTop: 20,
-        marginRight: 20,
-    },
-    title: {
+    header: {
         flexDirection: 'row',
+        alignItems: 'center',
         marginTop: 20,
+        justifyContent: 'space-around'
+    },
+    iconBack: {
+        marginRight: 40
     },
     icon: {
-        alignSelf: 'flex-start',
-        marginLeft: 10,
+        marginLeft: 40
     },
+    txt: {
+        fontSize: 20,
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        color: 'black',
+    },
+    
+   
     detailModal: {
         width: 320,
         height: 250,

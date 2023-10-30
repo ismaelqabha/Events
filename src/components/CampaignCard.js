@@ -19,19 +19,19 @@ const CampaignCard = (props) => {
             return (<View style={styles.forHome}>
                 <TouchableOpacity style={styles.touch} onPress={onCaardPress}>
                     <View style={styles.image}>
-                        <Image style={{ flex: 1 }} source={{ uri: campImag }} />
+                        <Image style={{ flex: 1, borderTopLeftRadius: 30, borderBottomLeftRadius: 30 }} source={{ uri: campImag }} />
                     </View>
                     <View style={styles.title}>
-                        <Text>{campTitle}</Text>
-                        {/* <Text>{campDesc}</Text> */}
+                        <Text style={styles.titleTxt}>{campTitle}</Text>
+                        <Text style={styles.detailText}>التفاصيل</Text>
                     </View>
-                    <Text style={styles.detailText}>التفاصيل</Text>
+
                 </TouchableOpacity>
             </View>)
         }
         if (reachCampaignfrom == 'fromRequest') {
 
-        } 
+        }
         if (reachCampaignfrom == 'fromServiceDescr') {
             return (<View style={styles.forDescr}>
                 <TouchableOpacity style={styles.touch} onPress={onCaardPress}>
@@ -40,6 +40,7 @@ const CampaignCard = (props) => {
                     </View>
                     <View>
                         <Text style={styles.cardDesctxt}>{campTitle}</Text>
+
                     </View>
                     <Text style={styles.detailText}>التفاصيل</Text>
                 </TouchableOpacity>
@@ -60,16 +61,15 @@ const styles = StyleSheet.create({
     },
     forHome: {
         backgroundColor: '#fff',
-        borderRadius: 8,
-        padding: 10,
+        borderRadius: 30,
         shadowRadius: 4,
         elevation: 3,
         margin: 5,
-        width: 170,
-        height: 320
+        width: 270,
+        height: 220
     },
     forDescr: {
-        alignSelf:'center',
+        alignSelf: 'center',
         backgroundColor: '#fff',
         borderRadius: 8,
         padding: 10,
@@ -80,10 +80,17 @@ const styles = StyleSheet.create({
         height: 220
     },
     image: {
-        width: "100%",
-        height: 200,
-        borderRadius: 8,
-        marginBottom: 8,
+        width: "60%",
+        height: '100%',
+    },
+    title: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1
+    },
+    titleTxt: {
+        fontSize: 14,
+        color: 'black',
     },
     img: {
         width: "100%",
@@ -101,18 +108,14 @@ const styles = StyleSheet.create({
     },
 
     touch: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         flex: 1,
     },
     detailText: {
-
-        alignSelf: 'flex-start',
-        justifyContent: 'flex-end',
-        color: 'blue',
+        color: 'gray',
         position: 'absolute',
-        left: 0,
         bottom: 0,
-
+        marginBottom: 30
     }
 })
 
