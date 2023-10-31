@@ -76,7 +76,7 @@ const ClientEvents = (props) => {
                 </Pressable>
 
                 <Text style={styles.txt}>منسباتي</Text>
-                <Pressable
+                {/* <Pressable
                     onPress={onPressModalHandler}
                 >
                     <Entypo
@@ -84,7 +84,7 @@ const ClientEvents = (props) => {
                         name={"plus"}
                         color={"black"}
                         size={30} />
-                </Pressable>
+                </Pressable> */}
             </View>
            
             <FlatList
@@ -135,10 +135,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 20,
-        justifyContent: 'space-around'
+        justifyContent: 'space-between'
     },
     iconBack: {
-        marginRight: 40
+        marginLeft: 10
     },
     icon: {
         marginLeft: 40
@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
         color: 'black',
+        marginRight: 20
     },
     
    
