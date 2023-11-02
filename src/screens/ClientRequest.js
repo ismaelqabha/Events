@@ -70,7 +70,7 @@ const ClientRequest = (props) => {
             RequestId: idReq,
             ReqServId: data?.service_id,
             ReqUserId: userId,
-            ReqStatus: 'بأنتظار الرد',
+            ReqStatus: 'false',
             ReqDate: moment(date).format('L'),
             reservationDate: moment(requestedDate).format('L')
         }

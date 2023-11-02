@@ -31,6 +31,7 @@ export const ScreenNames = {
     ProviderBookingRequest: 'ProviderBookingRequest',
     ProviderWaitingPay: 'ProviderWaitingPay',
     ProviderWaitingReply: 'ProviderWaitingReply',
+    ProviderHome: 'ProviderHome',
 
 
     Splash: 'Splash',

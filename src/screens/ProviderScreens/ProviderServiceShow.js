@@ -23,14 +23,7 @@ const ProviderServiceShow = (props) => {
         props.navigation.goBack();
     }
 
-    const getServiceInfofromApi = () => {
-        getServiceInfoById({ userID: userId }).then(res => {
-            setServiceInfoAccorUser(res)
-        })
-    }
-    useEffect(() => {
-        getServiceInfofromApi()
-    }, [])
+    
 
     const renderFiles = () => {
         const info = serviceInfoAccorUser;

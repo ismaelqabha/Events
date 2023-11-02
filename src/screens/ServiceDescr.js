@@ -9,12 +9,15 @@ import moment from 'moment';
 import 'moment/locale/ar-dz'
 import DetailComp from '../components/DetailComp';
 import CampaignCard from '../components/CampaignCard';
+import Entypo from "react-native-vector-icons/Entypo";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
     const { userId, setServiceDatesforBooking, ServiceDatesforBooking, setDetailOfServ, campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
-        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo,setReachCampaignfrom } = useContext(SearchContext);
+        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo, setReachCampaignfrom } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
 
@@ -46,7 +49,7 @@ const ServiceDescr = (props) => {
         getCampeignsfromApi()
         setrequestedDate(0)
 
-        
+
     }, [])
 
     const checkIfInEvent = () => {
@@ -128,7 +131,7 @@ const ServiceDescr = (props) => {
             const DatesAvailable = queryDatesAccorMonth()
             const dateArray = DatesAvailable?.map(dat => {
 
-                return <View>
+                return <View style={styles.dateView}>
                     <Pressable style={({ pressed }) =>
                         [styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
                         onPress={() => SelectDatePressed(dat.bookDate)}
@@ -145,7 +148,8 @@ const ServiceDescr = (props) => {
             const DatesAvailable = querySpacificDate()
             const dateArray = DatesAvailable?.map(dat => {
                 setrequestedDate(dat.bookDate)
-                return <View><Text style={styles.tex}>{`${moment(dat.bookDate).format('LL')}`}</Text>
+                return <View style={styles.dateView}>
+                    <Text style={styles.tex}>{`${moment(dat.bookDate).format('LL')}`}</Text>
                     <Text style={styles.tex}>{`${moment(dat.bookDate).format('dddd')}`}</Text>
                 </View>;
             });
@@ -153,9 +157,9 @@ const ServiceDescr = (props) => {
         } else {
             const firstAvilableDate = queryfirstDates()
             setrequestedDate(firstAvilableDate?.bookDate)
-            return <View style={{ flexDirection: 'row' }}><Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
+            return <View style={styles.dateView}>
+                <Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
                 <Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('LL')}`}</Text>
-
             </View>;
 
         }
@@ -171,20 +175,23 @@ const ServiceDescr = (props) => {
     const renderHederInfo = () => {
         return <View style={styles.headerInfo}>
             <Text style={styles.title}>{data?.title || 'no event'}</Text>
-            <Text style={styles.address}>{data.address}</Text>
+
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={styles.feedback}>5★</Text>
-                <Text style={styles.feedback}>التغذيه الراجعة 13</Text>
-
+                <Text style={styles.address}>{data.address}</Text>
+                {/* <Text style={styles.feedback}>التغذيه الراجعة 13</Text> */}
+            </View>
+            <View>
+                <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن المزود </Text>
             </View>
         </View>
     }
 
     const renderServiceDetail = () => {
         return (
-                <View style={styles.HallView}>
-                    <DetailComp service_id={data.service_id} />
-                </View>
+            <View style={styles.HallView}>
+                <DetailComp service_id={data.service_id} />
+            </View>
         )
 
     }
@@ -194,7 +201,8 @@ const ServiceDescr = (props) => {
         const CampData = campiegnsAccordingServiceId;
         if (CampData.message !== 'No Campaigns') {
             const campArray = CampData?.map(camp => {
-                return <View style={styles.HallView}><Text style={styles.txt}>أو يمكنك اختيار احد العروض التالية</Text>
+                return <View style={styles.HallView}>
+                    <Text style={styles.text}>أو يمكنك اختيار احد العروض التالية</Text>
                     < CampaignCard  {...camp} />
                 </View>
             });
@@ -203,53 +211,95 @@ const ServiceDescr = (props) => {
     }
     const renderSoialMedia = () => {
         return <View style={styles.icon}>
-            <Image style={styles.insicon} source={require('../assets/photos/facebook.png')} />
-            <Image style={styles.insicon} source={require('../assets/photos/instagram-new.png')} />
-            <Image style={styles.insicon} source={require('../assets/photos/apple-phone.png')} />
+            <Pressable
+            //onPress={() => onPressModalHandler()}
+            >
+                <Entypo
+                    name={"facebook"}
+                    color={"blue"}
+                    size={35} />
+            </Pressable>
+
+            <Pressable
+            //onPress={() => onPressModalHandler()}
+            >
+                <Entypo
+                    name={"instagram"}
+                    color={"blue"}
+                    size={35} />
+            </Pressable>
+
+            <Pressable
+            //onPress={() => onPressModalHandler()}
+            >
+                <FontAwesome
+                    name={"phone-square"}
+                    color={"blue"}
+                    size={35} />
+            </Pressable>
         </View>
+    }
+    const seperator = () => {
+        return (
+            <View style={styles.seperaView}></View>
+        )
     }
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.home}>
-                <View >
+                <View style={styles.screenView}>
+
                     <SliderBox
-                        sliderBoxHeight={200}
+                        sliderBoxHeight={300}
                         images={renderImg()}
                         dotColor="blue"
-                        dotStyle={{ width: 15, height: 15, borderRadius: 50 }}
+                        dotStyle={{ width: 8, height: 8, borderRadius: 50 }}
                         autoplay={true}
                     />
-                    <Image source={data.img} style={styles.logo} />
-                </View>
+                    {/* <View style={styles.InfoView}> */}
+                    <View style={styles.logo}></View>
+                    {renderHederInfo()}
 
-                {renderHederInfo()}
+                    {seperator()}
 
-                <View style={styles.descView}>
-                    {renderDates()}
-                </View>
+                    <View style={{ height: 100, margin: 20 }}>
+                        <Text style={styles.text}>{selectMonthforSearch ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
+                        {renderDates()}
+                        <Pressable
+                            style={{ position: 'absolute', bottom: 0, justifyContent: 'center' }}
+                            //onPress={}
+                        >
+                            <Text style={styles.changDatetext}>تغيير التاريح</Text>
+                        </Pressable>
+                    </View>
 
-                <View style={styles.descView}>
-                    <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن المزود </Text>
-                </View>
+                    {seperator()}
 
-                <View style={styles.descView}>
-                    <Text style={styles.desc1}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
-                    {renderServiceDetail()}
-                    {renderCampeigns()}
+                    <View style={styles.ditailView}>
+                        <Text style={styles.text}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
+                        {renderServiceDetail()}
+                        {renderCampeigns()}
+                    </View >
+
+                    {seperator()}
+
+                    <View style={styles.ReviewView}>
+                        <Text style={styles.text}>عرض التغذية الراجعة عن الخدمة المختارة</Text>
+                    </View>
+
+                    {seperator()}
+
+                    <View style={styles.locationView}>
+                        <Image
+                            style={styles.mapImage}
+                            source={require('../assets/photos/location.png')} />
+                    </View>
+                    {seperator()}
+
+                    {renderSoialMedia()}
+                    {/* </View> */}
                 </View >
-
-                <View style={styles.descView}>
-                    <Image
-                        style={styles.mapImage}
-                        source={require('../assets/photos/location.png')} />
-                </View>
-                <View style={styles.descView}>
-                    <Text style={styles.descText}>عرض التغذية الراجعة عن الخدمة المختارة</Text>
-                </View>
-
-                {renderSoialMedia()}
-
             </ScrollView>
 
             <View style={styles.foter}>
@@ -258,33 +308,66 @@ const ServiceDescr = (props) => {
                 </Pressable>
             </View>
         </View>
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        //backgroundColor: 'white'
+    },
+    screenView: {
 
+    },
+    InfoView: {
+        borderTopLeftRadius: 60,
+        borderTopRightRadius: 60,
+        backgroundColor: 'snow',
+        //position: 'absolute',
+        //top: 200
+    },
+    dateView: {
+        flexDirection: 'row',
+        justifyContent: 'center'
     },
     logo: {
         borderRadius: 50,
-        width: 100,
-        height: 100,
+        width: 70,
+        height: 70,
         position: 'absolute',
-        alignSelf: 'center',
-        marginTop: 150,
+        top: 260,
+        left: 50,
+        backgroundColor: 'blue',
+    },
+    seperaView: {
+        borderWidth: 0.5,
+        borderColor: 'lightgray'
     },
     headerInfo: {
-        borderWidth: 1,
-        borderRadius: 10,
-        margin: 10,
-        padding: 20
+        height: 150,
+        margin: 20,
     },
-    descView: {
-        backgroundColor: '#fffaf0',
-        margin: 5,
-        padding: 20,
-
+    ditailView: {
+        margin: 20
+    },
+    text: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: 'black',
+    },
+    changDatetext: {
+        fontSize: 15,
+        color: 'blue',
+        fontWeight: 'bold'
+    },
+    ReviewView: {
+        height: 150,
+        margin: 20,
+    },
+    locationView: {
+        height: 150,
+        margin: 20,
     },
     mapImage: {
         alignSelf: 'center'
@@ -311,7 +394,7 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        fontSize: 25,
+        fontSize: 18,
         fontWeight: 'bold',
         color: 'black',
     },
@@ -325,11 +408,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
     },
-    desc1: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
-    },
+
     address: {
         fontSize: 16,
         color: 'black',
@@ -384,7 +463,6 @@ const styles = StyleSheet.create({
     },
     HallView: {
         marginTop: 20,
-        // height: 100,
     },
     txt: {
         fontSize: 15,

@@ -6,6 +6,7 @@ import CampaignCard from '../components/CampaignCard';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
 import { SliderBox } from 'react-native-image-slider-box';
+import AntDesign from "react-native-vector-icons/AntDesign";
 import AddNewDates from '../components/AddNewDates';
 
 const ClientHomeAds = (props) => {
@@ -44,41 +45,78 @@ const ClientHomeAds = (props) => {
     return (
         <View style={styles.bg}>
             <ScrollView contentContainerStyle={styles.home}>
+                <Pressable
+                    style={styles.search}
+                    onPress={() => navigation.navigate(ScreenNames.ClientSearch)}>
+                    <View>
+                        <Text style={styles.txt}>بحث خدمات المناسبات</Text>
+                    </View>
+                    <AntDesign
+                        style={styles.icon}
+                        name={"search1"}
+                        color={"gray"}
+                        size={25} />
+                </Pressable>
+
                 <View >
                     <SliderBox
-                        sliderBoxHeight={300}
+                        sliderBoxHeight={250}
                         images={photo}
                         dotColor="blue"
-                        dotStyle={{ width: 15, height: 15, borderRadius: 50 }}
+                        dotStyle={{ width: 8, height: 8, borderRadius: 50 }}
                         autoplay={true}
                     />
                 </View>
 
-                <Pressable
-                    style={styles.search}
-                    onPress={() => navigation.navigate(ScreenNames.ClientSearch)}
-                >
-                    <Image style={styles.img} source={require('../assets/photos/search1.png')} />
-                    <View>
-                        <Text style={styles.txt}>بحث خدمات المناسبات</Text>
-                        <Text style={styles.txt}>حسب المكان / حسب الزمان</Text>
-                    </View>
-                </Pressable>
-                <Pressable
+
+                {/* <Pressable
                     style={styles.search}
                     onPress={() => navigation.navigate(ScreenNames.CreateUser)}
                 >
                     <Text style={styles.txt}>انشاء حساب</Text>
-                </Pressable>
+                </Pressable> */}
+
+                <Text style={styles.titleText}>أفضل العروض</Text>
+
+                <View style={styles.viewSeper}>
+                    <Text style={styles.CatText}>قاعات</Text>
+                </View>
 
                 <View style={styles.campighn}>
-                    <Text style={styles.titleText}>أفضل العروض</Text>
                     <View style={styles.campBox}>
                         <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
                             {renderCampaigns()}
                         </ScrollView>
                     </View>
                 </View>
+
+                <View style={styles.viewSeper}>
+                    <Text style={styles.CatText}>تصوير</Text>
+                </View>
+
+                <View style={styles.campighn}>
+                    <View style={styles.campBox}>
+                        <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
+                            {renderCampaigns()}
+                        </ScrollView>
+                    </View>
+                </View>
+
+                <View style={styles.viewSeper}>
+                    <Text style={styles.CatText}>شيف</Text>
+                </View>
+
+                <View style={styles.campighn}>
+                    <View style={styles.campBox}>
+                        <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
+                            {renderCampaigns()}
+                        </ScrollView>
+                    </View>
+                </View>
+
+
+
+
             </ScrollView>
         </View>
     );
@@ -96,7 +134,7 @@ const styles = StyleSheet.create({
     },
     campighn: {
         borderColor: 'black',
-        marginTop: 40,
+        //marginTop: 40,
     },
     campBox: {
         flexDirection: 'row',
@@ -105,41 +143,45 @@ const styles = StyleSheet.create({
 
     },
     titleText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        //color: 'black',
-        fontFamily: 'Amiri-BoldItalic',
+        fontSize: 15,
+        color: 'black',
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        marginRight: 20,
+        marginTop: 40,
+    },
+    CatText: {
+        fontSize: 14,
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
         marginRight: 20,
         marginTop: 10,
-        //marginBottom: 10,
     },
     search: {
         flexDirection: 'row',
         alignItems: 'center',
-        height: 60,
+        height: 50,
         width: '90%',
         fontSize: 18,
         borderRadius: 50,
         fontWeight: 'bold',
-        marginTop: 10,
-        justifyContent: 'space-between',
+        marginTop: 30,
+        justifyContent: 'flex-end',
         backgroundColor: 'white',
         elevation: 5,
-        marginBottom: 10,
+        marginBottom: 30,
         alignSelf: 'center'
 
     },
-    img: {
-        width: 40,
-        height: 40,
-        marginLeft: 7,
+    icon: {
+        marginRight: 10
     },
     txt: {
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: 13,
         marginRight: 20,
         color: 'gray'
     },
+    viewSeper: {
+        marginTop: 30
+    }
 
 })
 

@@ -51,6 +51,18 @@ const DrawerNavigator = () => {
                 },
             }}
         >
+            
+             <Drawer.Screen name="ClientHome" component={TabNavigator}
+                options={{
+                    title: 'استخدام التطبيق كزبون',
+                    drawerIcon: () => (
+                        <FontAwesome5
+                            name='home'
+                            style={{ fontSize: 20, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', }}
+                        />
+                    ),
+                }}
+            />
             <Drawer.Screen name={ScreenNames.UserProfile} component={UserProfile}
                 options={{
                     title: 'بروفايل',
@@ -63,17 +75,7 @@ const DrawerNavigator = () => {
                 }}
             />
 
-            <Drawer.Screen name="ClientHome" component={TabNavigator}
-                options={{
-                    title: 'استخدام التطبيق كزبون',
-                    drawerIcon: () => (
-                        <FontAwesome5
-                            name='home'
-                            style={{ fontSize: 20, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', }}
-                        />
-                    ),
-                }}
-            />
+           
             <Drawer.Screen name="ProviderHome" component={ProviderTapNav}
                 options={{
                     title: 'استخدام التطبيق كمزود خدمة',

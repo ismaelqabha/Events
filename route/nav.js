@@ -41,6 +41,7 @@ import ProviderBookingRequest from "../src/screens/ProviderScreens/ProviderBooki
 import TopTapNotificaNavig from "./topTapNotificaNavig";
 import CreateUser from "../src/screens/CreateUser";
 import ProviderTapNav from "./ProviderTapNav";
+import ProviderCreateListing from "../src/screens/ProviderScreens/ProviderCreateListing";
 
 
 
@@ -110,6 +111,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderSetPrice} component={ProviderSetPrice} />
                 <Stack.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender} />
                 <Stack.Screen name={ScreenNames.ProviderBookingRequest} component={ProviderBookingRequest} />
+                <Stack.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}/>
 
             </Stack.Navigator>
         </NavigationContainer>
