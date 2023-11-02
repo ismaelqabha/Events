@@ -9,6 +9,7 @@ export default function Splash(props) {
 
     const getFavoritesFromApi = () => {
         getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
+           
             !resjson?.message &&
                 setUserFavorates(resjson)        
             props.navigation.replace('Drawr')

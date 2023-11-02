@@ -1,5 +1,5 @@
 import React, { useContext, useState,useEffect } from 'react';
-import { View, StyleSheet, Image, Modal, Text, Pressable, TextInput,Alert,ToastAndroid } from 'react-native';
+import { View, StyleSheet, Image, Modal, Text, Pressable, TextInput,Alert } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
@@ -82,23 +82,6 @@ const FileFavoCard = (props) => {
         }) 
     }
 
-    const removing = () => {
-        DeleteFileFavorite({ fileId: fileId }).then(res => {
-                           
-            if (res.message === "Delete Sucessfuly") {
-                const delData = fileFavoriteState
-                const newData = delData?.filter(item => item !== fileId)
-                setFileFavoriteState([...newData])
-            }
-        })
-        removeFavoritList()
-        setShowModal(false)
-        ToastAndroid.showWithGravity('تم اٍلالغاء بنجاح',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
-        )
-    }
-
     const letMenuShow = () => {
         return (
             <TouchableOpacity onPress={() => showModalMenu()}>
@@ -118,13 +101,24 @@ const FileFavoCard = (props) => {
                 },
                 {
                     text: 'حذف',
-                    onPress: () => removing(),
+                    onPress: () => {
+                        DeleteFileFavorite({ fileId: fileId }).then(res => {
+                           
+                            if (res.message === "Delete Sucessfuly") {
+                                const delData = fileFavoriteState
+                                const newData = delData?.filter(item => item !== fileId)
+                                setFileFavoriteState([...newData])
+                            }
+                        })
+                        removeFavoritList()
+                        setShowModal(false)
+                    },
                     style: 'destructive', // Use 'destructive' for a red-colored button
                 },
             ],
             { cancelable: false } // Prevent closing the alert by tapping outside
         );
-        
+
     }
 
     const onUpdatePress = () => {

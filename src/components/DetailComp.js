@@ -1,9 +1,8 @@
-import React, { useContext, useState,useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
-import { getServiceDetail } from '../resources/API';
 
 
 const DetailComp = (props) => {
@@ -13,16 +12,6 @@ const DetailComp = (props) => {
     const [gotOptionalDetail, setGotOptionalDetail] = useState(true)
 
     const navigation = useNavigation()
-
-    //console.log("detailOfServ",detailOfServ);
-    const getDetailFromApi = () => {
-        getServiceDetail({ SDserviceID: props.service_id }).then(res => {
-            setDetailOfServ(res)
-        })
-    }
-    useEffect(() => {
-        getDetailFromApi()
-    }, [])
 
     const onPressHandler = (detail_ID) => {
         navigation.navigate(ScreenNames.SubDetailPrices, { detail_ID })
@@ -122,8 +111,6 @@ const DetailComp = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor:'#199199',
-        // height: 200,
     },
     serviceView: {
         justifyContent: 'center',

@@ -15,8 +15,6 @@ import strings from '../../assets/res/strings';
 import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
-import SearchContext from '../../../store/SearchContext';
-import {addService} from '../../resources/API';
 
 const ProviderSetPrice = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderSetPrice;
@@ -31,9 +29,7 @@ const ProviderSetPrice = props => {
     selectServiceType,
     photoArray,
     workAreas,
-    additionalServices,
   } = useContext(ServiceProviderContext);
-  const {userId} = useContext(SearchContext);
 
   const params = {
     ScreenHeader: {
@@ -55,40 +51,19 @@ const ProviderSetPrice = props => {
     },
   };
 
-  const onPublishPress = async () => {
-    const body = {
-      userID: userId,
-      servType: selectServiceType,
-      title: title,
-      subTitle: SuTitle,
-      desc: description,
-      region: serviceRegion,
-      address: serviceAddress,
-      servicePrice: price,
-      workingRegion: workAreas,
-      additionalServices: additionalServices,
-    };
-    await addService(body)
-      .then(res => {
-        console.log('res ->', res);
-      })
-      .catch(e => {
-        console.log('create new event error : ', e);
-      });
-    // console.log('--------------------------------------');
-    // console.log('Service detailes -> ');
-    // console.log('User ID -> ', userId);
-    // console.log('Price -> ', price);
-    // console.log('address -> ', serviceAddress);
-    // console.log('Region -> ', serviceRegion);
-    // console.log('title -> ', title);
-    // console.log('subTitle -> ', SuTitle);
-    // console.log('description -> ', description);
-    // console.log('selectServiceType -> ', selectServiceType);
-    // console.log('photoArray -> ', photoArray);
-    // console.log('workAreas -> ', workAreas);
-    // console.log('additional services  -> ', additionalServices);
-    // console.log('--------------------------------------');
+  const onPublishPress = () => {
+    console.log('--------------------------------------');
+    console.log('Service detailes -> ');
+    console.log('Price -> ', price);
+    console.log('address -> ', serviceAddress);
+    console.log('Region -> ', serviceRegion);
+    console.log('title -> ', title);
+    console.log('subTitle -> ', SuTitle);
+    console.log('description -> ', description);
+    console.log('selectServiceType -> ', selectServiceType);
+    console.log('photoArray -> ', photoArray);
+    console.log('workAreas -> ', workAreas);
+    console.log('--------------------------------------');
   };
 
   const onAddSerPress = () => {

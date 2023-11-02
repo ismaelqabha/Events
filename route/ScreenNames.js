@@ -6,6 +6,7 @@ export const ScreenNames = {
     ClientHomeAds: 'ClientHomeAds',
     ServiceDescr: 'ServiceDescr',
     ClientRequest: 'ClientRequest',
+
     ClientEvents: 'ClientEvents',
     FileFavorites: 'FileFavorites',
     Favorites: 'Favorites',
@@ -13,10 +14,9 @@ export const ScreenNames = {
     SubDetailPrices: 'SubDetailPrices',
     Campaigns: 'Campaigns',
     ClientSearch: 'ClientSearch',
-    UserProfile: 'UserProfile',
-    CreateUser: 'CreateUser',
 
     // Provider Screens
+    ProviderServiceListing: 'ProviderServiceListing',
     ProviderCreateListing: 'ProviderCreateListing',
     ProviderChooseService: 'ProviderChooseService',
     ProviderSetPhotos: 'ProviderSetPhotos',
@@ -26,13 +26,7 @@ export const ScreenNames = {
     ProviderAddSubDetail: 'ProviderAddSubDetail',
     ProviderSetPrice: 'ProviderSetPrice',
     ProviderHomeAds: 'ProviderHomeAds',
-    ProviderServiceShow: 'ProviderServiceShow',
     ProviderCalender: 'ProviderCalender',
-    ProviderBookingRequest: 'ProviderBookingRequest',
-    ProviderWaitingPay: 'ProviderWaitingPay',
-    ProviderWaitingReply: 'ProviderWaitingReply',
-
-
     Splash: 'Splash',
     Results: 'Results',
     SearchServcies: 'SearchServcies',

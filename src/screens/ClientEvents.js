@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput,ToastAndroid } from 'react-native';
+import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput } from 'react-native';
 import EventsCard from '../components/EventsCard';
 import { FlatList } from 'react-native-gesture-handler';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -25,10 +25,6 @@ const ClientEvents = (props) => {
 
     const onModalBtnPress = () => {
         creatNewEvent()
-        ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
-        )
         setShowModal(false)
     }
     const getEventsfromApi = () => {
