@@ -14,6 +14,9 @@ const ProviderProvider = props => {
   const [price, setPrice] = useState(null);
   const [additionalServices, setAdditionalServices] = useState([]);
 
+  // Calender Scrren
+  const [serviceInfoAccorUser, setServiceInfoAccorUser] = useState([]);
+
   return (
     <ServiceProviderContext.Provider
       value={{
@@ -37,6 +40,8 @@ const ProviderProvider = props => {
         setPrice,
         additionalServices,
         setAdditionalServices,
+        serviceInfoAccorUser, 
+        setServiceInfoAccorUser,
       }}>
       {props.children}
     </ServiceProviderContext.Provider>

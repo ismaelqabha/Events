@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Image, Pressable, ScrollView, Modal, TextInput } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView, Modal, TextInput,ToastAndroid } from 'react-native';
 import { fileFavorites } from '../resources/data';
 import SearchContext from '../../store/SearchContext';
 import FileFavoCard from '../components/FileFavoCard';
@@ -63,6 +63,10 @@ const FileFavorites = (props) => {
         AddNewFile()
         renderFiles()
         setShowModal(false)
+        ToastAndroid.showWithGravity('تم اٍنشاء الملف بنجاح',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM
+        )
     }
 
 
