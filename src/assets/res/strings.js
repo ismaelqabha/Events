@@ -18,7 +18,7 @@ const strings = {
         confirmButton: 'الخروج',
       },
       ProviderAddInfo: {
-        HeadText: 'املئ التفاصيل التالية:',
+        HeadText: ' إنشاء خدمة جديدة',
         title: 'العنوان',
         subTitle: 'العنوان الفرعي',
         description: 'الوصف ',
@@ -30,9 +30,13 @@ const strings = {
         backWarning: 'الخروج سوف يحذف كل شيء',
         cancelButton: 'البقاء',
         confirmButton: 'الخروج',
-        HeaderTitle: ' عنوان الخدمة خاصتك؟',
+        SubHeader: ' عنوان الخدمة خاصتك؟',
+        HeaderTitle:'املئ التفاصيل التالية:',
         chooseLocation: 'أختر المنطقة',
         address: 'العنوان',
+        titleRequired:'* العنوان الزامي ',
+        SuTitleRequired : '* العنوان الفرعي الزامي',
+        descriptionRequired:'* الوصف  الزامي ',
       },
       ProviderSetPhotos: {
         Header: 'قم بأضافة الصور الخاصة في القاعة:',
