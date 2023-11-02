@@ -27,7 +27,8 @@ const CreateUser = (props) => {
             Email: email,
             UserAdress: userAddress,
             UserPhone: userPhone,
-            Password: firstPassword
+            Password: firstPassword,
+            UserType: 'client'
         }
         addUser(AddNewUser).then(res => {
             let UsersArr = userInfo || [];

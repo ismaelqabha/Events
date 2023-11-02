@@ -1,21 +1,22 @@
-import React, {useState, useContext} from 'react';
-import {View, StyleSheet, Text, TouchableHighlight} from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, StyleSheet, Text, TouchableHighlight, Pressable } from 'react-native';
+import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {TouchableOpacity} from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import SearchContext from '../../../store/SearchContext';
 import PoviderServiceListCard from '../../components/ProviderComponents/PoviderServiceListCard';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import strings from '../../assets/res/strings';
 
 const ProviderCreateListing = props => {
   const [supmeted, setSupmeted] = useState(false);
-  const {userId, ServiceDataInfo, setServiceDataInfo, setServId, ServId} =
+  const { userId, ServiceDataInfo, setServiceDataInfo, setServId, ServId } =
     useContext(SearchContext);
 
-    const language = strings.arabic.ProviderScreens.ProviderCreateListing
+  const language = strings.arabic.ProviderScreens.ProviderCreateListing
 
   let SId = uuidv4();
 
@@ -45,7 +46,7 @@ const ProviderCreateListing = props => {
     }
 
     props.navigation.navigate(ScreenNames.ProviderChooseService, {
-      data: {...props},
+      data: { ...props },
       isFromChooseServiceClick: true,
     });
   };
@@ -92,31 +93,42 @@ const ProviderCreateListing = props => {
     );
   };
 
+  const onBackPress = () => {
+    props.navigation.goBack();
+  }
+
+
   //   create a new service component
   const newService = () => {
     return (
-      <TouchableOpacity
-        style={styles.AddButton}
-        onPress={() => onStartPress()}
-        //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
-      >
-        <AntDesign name="plussquareo" style={styles.plusSquare} />
-        <Text style={styles.footText}>
-          {language.NewService}
-        </Text>
-        <FontAwesome5 name="less-than" style={styles.lessThan} />
-      </TouchableOpacity>
+      <View style={styles.title}>
+        <Pressable onPress={onBackPress}
+        >
+          <Ionicons
+            style={styles.icon}
+            name={"arrow-back"}
+            color={"black"}
+            size={25} />
+        </Pressable>
+        <TouchableOpacity
+          onPress={() => onStartPress()}
+          //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
+          >
+          <AntDesign name="plussquareo" style={styles.plusSquare} />
+        </TouchableOpacity>
+      </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      {HeadText()}
-      <View style={styles.body}>{renderService()}</View>
+      {newService()}
       {seperator()}
+      <View style={styles.body}>
+        {renderService()}
+      </View>
+
       <View style={styles.footer}>
-        {footerText()}
-        {newService()}
       </View>
     </View>
   );
@@ -140,12 +152,7 @@ const styles = StyleSheet.create({
     //alignItems: 'flex-end',
     marginTop: 20,
   },
-  AddButton: {
-    flexDirection: 'row-reverse',
-    width: '100%',
-    height: 60,
-    justifyContent: 'space-between',
-  },
+  
   headText: {
     fontSize: 25,
     color: 'black',
@@ -167,8 +174,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#d3d3d3',
   },
-  lessThan: {fontSize: 20, alignSelf: 'center', marginLeft: 30},
-  plusSquare: {fontSize: 30, alignSelf: 'center', marginRight: 30},
+  lessThan: { fontSize: 20, alignSelf: 'center', marginLeft: 30 },
+  plusSquare: { fontSize: 30, alignSelf: 'center', marginRight: 30 },
+
+
+  title: {
+    flexDirection: 'row',
+    marginTop: 20,
+    justifyContent: 'space-between',
+  },
+  icon: {
+    alignSelf: 'flex-start',
+    marginLeft: 10,
+  },
+
 });
 
 export default ProviderCreateListing;

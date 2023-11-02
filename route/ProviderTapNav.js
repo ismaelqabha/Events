@@ -6,6 +6,7 @@ import TopTapNotificaNavig from './topTapNotificaNavig';
 import ProviderServiceShow from '../src/screens/ProviderScreens/ProviderServiceShow';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import ProviderHome from '../src/screens/ProviderScreens/ProviderHome';
 
 
 const ProviderTapNav = () => {
@@ -17,7 +18,7 @@ const ProviderTapNav = () => {
             inactiveColor="green"
             barStyle={{ backgroundColor: 'snow' }}>
 
-            <Tap.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}
+            <Tap.Screen name={ScreenNames.ProviderHome} component={ProviderHome}
                 options={{
                     title: 'خدماتي',
                     drawerIcon: () => (
@@ -28,6 +29,8 @@ const ProviderTapNav = () => {
                     )
                 }}
             />
+
+
             <Tap.Screen name="Notification" component={TopTapNotificaNavig}
                 options={{
                     title: 'الاشعارات',

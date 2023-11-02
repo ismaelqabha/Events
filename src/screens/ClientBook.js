@@ -1,8 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, ScrollView, Image } from 'react-native';
 import BookingCard from '../../src/components/BookingCard';
-import { Request } from '../resources/data';
-import Ionicons from "react-native-vector-icons/Ionicons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import SearchContext from '../../store/SearchContext';
 import { getRequestInfoWithservice } from '../resources/API';
 
@@ -15,12 +14,12 @@ const ClientBook = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-   // console.log("data.EventId", data.EventId);
+    // console.log("data.EventId", data.EventId);
 
     const getRequestfromApi = () => {
         getRequestInfoWithservice({ ReqEventId: data?.EventId }).then(res => {
             setRequestInfo(res)
-          //console.log("requestInfo", res);
+            //console.log("requestInfo", res);
         })
     }
     useEffect(() => {
@@ -53,11 +52,12 @@ const ClientBook = (props) => {
                 <View style={styles.viewIcon}>
                     <Pressable onPress={onPressHandler}
                     >
-                        <Ionicons
+                        <AntDesign
                             style={styles.icon}
-                            name={"arrow-back"}
+                            name={"left"}
                             color={"black"}
-                            size={25} />
+                            size={20} />
+
                     </Pressable>
                 </View>
                 <View style={styles.viewtitle}>
@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
         height: 50,
     },
     title: {
-        fontSize: 25,
-        fontWeight: 'bold',
+        fontSize: 20,
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
         color: 'black',
         marginRight: 30,
     },

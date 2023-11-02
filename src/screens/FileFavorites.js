@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Image, Pressable, ScrollView, Modal, TextInput,ToastAndroid } from 'react-native';
-import { fileFavorites } from '../resources/data';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView, Modal, TextInput, ToastAndroid } from 'react-native';
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
 import SearchContext from '../../store/SearchContext';
 import FileFavoCard from '../components/FileFavoCard';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,6 +16,9 @@ const FileFavorites = (props) => {
 
     const onPressModalHandler = () => {
         setShowModal(true);
+    }
+    const onPressHandler = () => {
+        props.navigation.goBack();
     }
 
     const getFavFileFromApi = () => {
@@ -48,7 +52,7 @@ const FileFavorites = (props) => {
     const AddNewFile = () => {
         AddFileFavorite({ fileName: fileFavoriteName, fileFavoUserId: userId }).then(res => {
 
-            const newDateCreated ={
+            const newDateCreated = {
                 fileName: fileFavoriteName,
                 fileFavoUserId: userId
             }
@@ -64,8 +68,8 @@ const FileFavorites = (props) => {
         renderFiles()
         setShowModal(false)
         ToastAndroid.showWithGravity('تم اٍنشاء الملف بنجاح',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM
         )
     }
 
@@ -74,24 +78,32 @@ const FileFavorites = (props) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.txt}>قوائم الامنيات</Text>
+                <Pressable onPress={onPressHandler}>
+                    <AntDesign
+                        style={styles.iconBack}
+                        name={"left"}
+                        color={"black"}
+                        size={20} />
+                </Pressable>
+                <Text style={styles.txt}>مفضلاتي</Text>
+                <Pressable
+                    onPress={() => onPressModalHandler()}
+                >
+                    <Entypo
+                        style={styles.icon}
+                        name={"plus"}
+                        color={"black"}
+                        size={30} />
+                </Pressable>
             </View>
+
+
             <View style={styles.body}>
                 <ScrollView contentContainerStyle={styles.home}>
                     {renderFiles()}
                 </ScrollView>
-
-                <View style={styles.footer}>
-                    <Pressable
-                        onPress={() => onPressModalHandler()}
-                    >
-                        <Image
-                            source={require('../assets/photos/add.png')}
-                            style={styles.img}
-                        />
-                    </Pressable>
-                </View>
             </View>
+
             <Modal
                 transparent
                 visible={showModal}
@@ -130,31 +142,31 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     txt: {
-        fontSize: 25,
-        fontWeight: 'bold',
+        fontSize: 20,
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        //fontWeight: 'bold',
         color: 'black',
     },
     header: {
-        alignItems: 'flex-end',
+        flexDirection: 'row',
+        alignItems: 'center',
         marginTop: 20,
-        marginRight: 20,
+        justifyContent: 'space-around'
+    },
+    iconBack: {
+        marginRight: 40
+    },
+    icon: {
+        marginLeft: 40
     },
     body: {
         width: '100%',
         height: 565,
-        backgroundColor: 'white',
+        //backgroundColor: 'white',
         marginTop: 20,
     },
-    img: {
-        width: 65,
-        height: 60,
 
-    },
-    footer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'white',
-    },
+
     detailModal: {
         width: 320,
         height: 250,
