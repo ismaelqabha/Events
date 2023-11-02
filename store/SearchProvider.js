@@ -5,11 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 const SearchProvider = props => {
+
+  const [userId, setuserId] = useState(1);
+  const [userInfo, setUserInfo] = useState([]);
+  const [sType, setSType] = useState({});
+
   const [Service, setService] = useState({});
   const [city, setCity] = useState({});
   const [cat, setCat] = useState('');
-  const [userId, setuserId] = useState(1);
-  const [sType, setSType] = useState({});
   const [fId, setFId] = useState({});
   const [ServId, setServId] = useState('');
 
@@ -25,6 +28,8 @@ const SearchProvider = props => {
   const [datesforBooking, setDatesforBooking] = useState([])
   // campighin
   const [campInfo, setCampInfo] = useState([])
+  const [campiegnsAccordingServiceId, setCampiegnsAccordingServiceId] = useState([])
+  const [reachCampaignfrom, setReachCampaignfrom] = useState('fromHome')
  
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
@@ -54,13 +59,6 @@ const SearchProvider = props => {
 
   //Booking
  
-
-
-
-
- 
-
-
   const [UserState, setUserState] = useState(Users || [])
   const [userPayment, setUserPayment] = useState(Payment || [])
   const [serviceImg, setserviceImg] = useState([])
@@ -146,6 +144,12 @@ const SearchProvider = props => {
         setEventInfo,
         TimeText, 
         setTimeText,
+        campiegnsAccordingServiceId, 
+        setCampiegnsAccordingServiceId,
+        reachCampaignfrom, 
+        setReachCampaignfrom,
+        userInfo, 
+        setUserInfo
         
       }}>
       {props.children}

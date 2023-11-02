@@ -16,36 +16,21 @@ const EventsCard = (props) => {
     const navigation = useNavigation();
     const { eventName, eventDate, eventCost } = props;
     const [date, setDate] = useState(new Date())
-   
+
     const { TimeText, requestInfo, setRequestInfo, requestedDate, RequestIdState, userId, eventInfo, setEventInfo } = useContext(SearchContext);
 
-    console.log("requestedDate", props.eventDate);
+    // console.log("requestedDate", props.eventDate);
     const requestItemIndex = requestInfo?.findIndex(item => item.request_Id === RequestIdState && item.ReqUserId === userId);
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === props.EventId && item.userId === userId)
 
 
 
-    console.log("RequestIdState", RequestIdState);
-    const checkIfInEvent = () => {
-        //console.log("requestedDate", requestedDate, "TimeText", TimeText, "service_id", service_id);
-        const isinEvent = requestInfo.find(ResDate => {
-            const res1 = moment(ResDate.reservationDate).format('L') == moment(requestedDate).format('L')
-            const res2 = moment(ResDate.reservationTime).format('LT') == moment(TimeText).format('LT')
-            const res3 = ResDate.ReqServId == service_id
-            // console.log("ResDate.ReqServId", ResDate.ReqServId);
-            // console.log("res1", res1, "res2", res2, "res3", res3);
-            const result = res1 && res3
-            return result
-        });
-
-        return !!isinEvent;
-    }
 
     const UpdateRequest = () => {
         const newRequestInfo = {
             RequestId: RequestIdState,
             ReqEventId: props.EventId,
-            reservationTime: TimeText//moment(TimeText).format('LT')
+            reservationTime: TimeText
         }
         updateRequestAPI(newRequestInfo).then(res => {
             const req = requestInfo || [];
@@ -67,10 +52,10 @@ const EventsCard = (props) => {
             if (eventItemIndex > -1) {
                 ev[eventItemIndex] = newEventItem;
             }
-            setEventInfo([...ev])
+            setEventInfo([...ev, newEventItem])
         })
     }
-    //console.log( "isFromAddEventClick", isFromAddEventClick);
+
 
     const onCaardPress = () => {
 
@@ -85,17 +70,9 @@ const EventsCard = (props) => {
         UpdateEventInfo()
         navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
 
-        // if (checkIfInEvent()) {
-        //     console.log("already Added");
-        //     navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
-        // } else {
-        //     console.log("Update request");
-        //     UpdateRequest()
-
-        // }
     }
 
-    
+
     return (
         <View style={styles.container}>
             <Card style={styles.card1}>
@@ -106,7 +83,7 @@ const EventsCard = (props) => {
                         {eventDate}
                     </Text>
                     <Text style={{ marginBottom: 10, fontSize: 18, color: 'black' }}>
-                       {/* <CalculetRemaingTime targetDate={props.eventDate}/> */}
+                        {/* <CalculetRemaingTime targetDate={props.eventDate}/> */}
                     </Text>
                     <Text style={styles.text}>
                         {eventCost ? ("₪" + eventCost) : ''}

@@ -9,7 +9,7 @@ import { SliderBox } from 'react-native-image-slider-box';
 import AddNewDates from '../components/AddNewDates';
 
 const ClientHomeAds = (props) => {
-    const { cat, ServiceDataInfo, campInfo, userRegion } = useContext(SearchContext);
+    const { cat, ServiceDataInfo, campInfo, userRegion, setReachCampaignfrom, reachCampaignfrom } = useContext(SearchContext);
     const navigation = useNavigation();
 
     const queryCampaign = () => {
@@ -20,14 +20,18 @@ const ClientHomeAds = (props) => {
 
     const renderCampaigns = () => {
         //const x = AddNewDates()
-
+        console.log("reachCampaignfrom", reachCampaignfrom);
+        setReachCampaignfrom('fromHome')
         const CampData = queryCampaign();
         const campArray = CampData?.map(camp => {
             return < CampaignCard {...camp} />
         });
         return campArray;
     }
-   
+    useEffect(() => {
+        //setReachCampaignfrom('fromHome')
+    }, [])
+
 
     const photo = [
         require('../assets/photos/abofaneh.png'),
@@ -59,6 +63,12 @@ const ClientHomeAds = (props) => {
                         <Text style={styles.txt}>بحث خدمات المناسبات</Text>
                         <Text style={styles.txt}>حسب المكان / حسب الزمان</Text>
                     </View>
+                </Pressable>
+                <Pressable
+                    style={styles.search}
+                    onPress={() => navigation.navigate(ScreenNames.CreateUser)}
+                >
+                    <Text style={styles.txt}>انشاء حساب</Text>
                 </Pressable>
 
                 <View style={styles.campighn}>

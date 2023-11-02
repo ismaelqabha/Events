@@ -1,20 +1,20 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Pressable, Image, Modal, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
-import DateTPicker from '../components/DateTPicker'
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
-import { getServiceDetail, getbookingDates } from '../resources/API';
+import { getCampaignsByServiceId, getRequestbyUserId, getServiceDetail, getbookingDates } from '../resources/API';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
 import DetailComp from '../components/DetailComp';
+import CampaignCard from '../components/CampaignCard';
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
-    const { setServId, setServiceDatesforBooking, ServiceDatesforBooking,setDetailOfServ,
-        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, isDateAvailable, setRequestIdState } = useContext(SearchContext);
+    const { userId, setServiceDatesforBooking, ServiceDatesforBooking, setDetailOfServ, campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
+        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo,setReachCampaignfrom } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
 
@@ -28,15 +28,57 @@ const ServiceDescr = (props) => {
             setDetailOfServ(res)
         })
     }
+    const getRequestfromApi = () => {
+        getRequestbyUserId({ ReqUserId: userId }).then(res => {
+            setRequestInfo(res)
+        })
+    }
+    const getCampeignsfromApi = () => {
+        getCampaignsByServiceId({ serviceId: data?.service_id }).then(res => {
+            setCampiegnsAccordingServiceId(res)
+        })
+    }
 
     useEffect(() => {
         getDatesfromApi()
-        getDetailFromApi()
+        // getDetailFromApi()
+        getRequestfromApi()
+        getCampeignsfromApi()
+        setrequestedDate(0)
+
+        
     }, [])
 
+    const checkIfInEvent = () => {
+        const isinEvent = requestInfo?.find(ResDate => {
+            const reservDate = ResDate.reservationDate;
+            const bookdate = moment(requestedDate).format('L');
+            const res1 = reservDate === bookdate
+            const res2 = ResDate.ReqServId === data?.service_id
+            const res3 = ResDate.ReqUserId == userId
+            const result = res1 && res2 && res3
+            return result
+        });
+        return !!isinEvent;
+    }
 
     const onPressHandler = () => {
-        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
+        if (!checkIfInEvent()) {
+            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
+        } else {
+            Alert.alert(
+                'تنبية',
+                '  الرجاء اختيار تفاصيل حجز اخرى التفاصيل الحالية محجوزة مسبقا لديك',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
+
     }
 
     const SelectDatePressed = (dat) => {
@@ -111,14 +153,13 @@ const ServiceDescr = (props) => {
         } else {
             const firstAvilableDate = queryfirstDates()
             setrequestedDate(firstAvilableDate?.bookDate)
-            return <View style={{flexDirection: 'row'}}><Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
+            return <View style={{ flexDirection: 'row' }}><Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
                 <Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('LL')}`}</Text>
 
             </View>;
 
         }
     };
-
 
     const renderImg = () => {
         const imageArray = data.images.map(photos => {
@@ -138,17 +179,27 @@ const ServiceDescr = (props) => {
             </View>
         </View>
     }
-    const pricingPress = () => {
-        props.navigation.navigate(ScreenNames.ServiceDetail, { data: {...data} })
-    }
- 
+
     const renderServiceDetail = () => {
-        return <View style={styles.descView}>
-            <Text style={styles.desc1}>التفاصيل المرفقة لتحديد السعر</Text>
-            <View style={styles.HallView}>
-                <DetailComp service_id={data.service_id}/>
-            </View>
-        </View>
+        return (
+                <View style={styles.HallView}>
+                    <DetailComp service_id={data.service_id} />
+                </View>
+        )
+
+    }
+
+    const renderCampeigns = () => {
+        setReachCampaignfrom('fromServiceDescr')
+        const CampData = campiegnsAccordingServiceId;
+        if (CampData.message !== 'No Campaigns') {
+            const campArray = CampData?.map(camp => {
+                return <View style={styles.HallView}><Text style={styles.txt}>أو يمكنك اختيار احد العروض التالية</Text>
+                    < CampaignCard  {...camp} />
+                </View>
+            });
+            return campArray;
+        }
     }
     const renderSoialMedia = () => {
         return <View style={styles.icon}>
@@ -179,21 +230,15 @@ const ServiceDescr = (props) => {
                 </View>
 
                 <View style={styles.descView}>
-                    <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن الخدمة المعروضة </Text>
+                    <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن المزود </Text>
                 </View>
-                {/* <View style={styles.descView}>
-                    <Pressable style={styles.priceView} onPress={pricingPress}>
-                        <Text style={styles.descText}>رزم الأسعار</Text>
-                    </Pressable>
-                </View> */}
 
-                {renderServiceDetail()}
+                <View style={styles.descView}>
+                    <Text style={styles.desc1}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
+                    {renderServiceDetail()}
+                    {renderCampeigns()}
+                </View >
 
-                {/* <View style={styles.descView}>
-                    <Text style={styles.desc1}>تاريخ المناسبة</Text>
-                    <Text style={styles.desc1}>{requestedDate || '2023/9/15'}</Text>
-
-                </View> */}
                 <View style={styles.descView}>
                     <Image
                         style={styles.mapImage}
@@ -219,7 +264,7 @@ const ServiceDescr = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        
+
     },
     logo: {
         borderRadius: 50,
@@ -237,9 +282,9 @@ const styles = StyleSheet.create({
     },
     descView: {
         backgroundColor: '#fffaf0',
-        //borderWidth: 1,
         margin: 5,
         padding: 20,
+
     },
     mapImage: {
         alignSelf: 'center'
@@ -310,7 +355,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 10,
         marginRight: 20,
-        elevation:5
+        elevation: 5
     },
     viewselectdate: {
         flexDirection: 'row',
@@ -337,8 +382,16 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         elevation: 5
     },
-    HallView:{
-        marginTop :20
+    HallView: {
+        marginTop: 20,
+        // height: 100,
+    },
+    txt: {
+        fontSize: 15,
+        margin: 10,
+        fontWeight: 'bold',
+        color: 'black',
+        textAlign: 'right'
     }
 })
 

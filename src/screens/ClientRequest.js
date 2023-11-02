@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { addNewRequest, getServiceImages } from '../resources/API';
+import { addNewRequest, deleteRequestbyId, getServiceImages } from '../resources/API';
 import DetailComp from '../components/DetailComp';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,14 +14,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 const ClientRequest = (props) => {
     const { data } = props?.route.params
-    const { sType, userId, ServiceImages, setServiceImages, requestedDate,TimeText, setTimeText,
-        setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState,setRequestIdState } = useContext(SearchContext);
+    const { sType, userId, ServiceImages, setServiceImages, requestedDate, TimeText, setTimeText,
+        setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState, setRequestIdState } = useContext(SearchContext);
     const [textValue, setTextValue] = useState('');
+    const [selectTime, setSelectTime] = useState(false);
+    const [detailViewPressed, setDetailViewPressed] = useState(false);
+    const [campaignViewPressed, setCampaignViewPressed] = useState(false);
+    const idReq = uuidv4()
+
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('time');
     const [show, setShow] = useState(false);
-   
+
 
     const showMode = (currentMode) => {
         setShow(true);
@@ -44,38 +49,62 @@ const ClientRequest = (props) => {
 
     const onPressHandler = () => {
         setisFromRequestScreen(false)
+        removeRequest()
         props.navigation.goBack();
     }
-
+    const removeRequest = () => {
+        deleteRequestbyId({ RequestId: idReq }).then(res => {
+            setRequestInfo(res)
+            console.log("Request Deleted");
+        })
+    }
     const getImagesfromApi = () => {
         getServiceImages({ serviceID: data?.service_id }).then(res => {
             setServiceImages(res)
-            creatNewRequest()
+
         })
     }
-   
     const creatNewRequest = () => {
-        const idReq = uuidv4()
-       setRequestIdState(idReq)
+        setRequestIdState(idReq)
         const newRequestItem = {
-            RequestId: idReq ,
+            RequestId: idReq,
             ReqServId: data?.service_id,
             ReqUserId: userId,
             ReqStatus: 'بأنتظار الرد',
             ReqDate: moment(date).format('L'),
             reservationDate: moment(requestedDate).format('L')
         }
-        console.log("idReq",idReq);
         addNewRequest(newRequestItem).then(res => {
             const req = requestInfo || [];
             req.push(newRequestItem)
             setRequestInfo([...req])
+            console.log("Request Created");
         })
+    }
+
+    const checkavailblity = () => {
+        showMode('time')
+        if (TimeText != "00:00") {
+            setSelectTime(true)
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء اختيار الوقت الزمني للحجز',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
     }
 
     useEffect(() => {
         getImagesfromApi()
         setisFromRequestScreen(true)
+        creatNewRequest()
     }, [])
 
     const queryImg = () => {
@@ -114,7 +143,7 @@ const ClientRequest = (props) => {
                 <Text style={styles.t3}>{moment(requestedDate).format('LL')}</Text>
                 <Text style={styles.t3}>{moment(requestedDate).format('dddd')}</Text>
             </View>
-            <Pressable onPress={() => showMode('time')} >
+            <Pressable onPress={() => checkavailblity()} >
                 <View style={styles.viewDate}>
                     <Text style={styles.text}>{TimeText || "00:00"}</Text>
                     <Image
@@ -135,20 +164,73 @@ const ClientRequest = (props) => {
             )}
         </View>
     }
+    const detailPress = () => {
+        setDetailViewPressed(true)
+        setCampaignViewPressed(false)
+    }
+    const campaignPress = () => {
+        setDetailViewPressed(false)
+        setCampaignViewPressed(true)
+    }
+    const handleClosePress = () => {
+        setDetailViewPressed(false)
+        setCampaignViewPressed(false)
+    }
 
+    const renderDetail = () => {
+        return (
+            <View style={[styles.detailView, detailViewPressed ? styles.detailView : styles.pressDetailView]}>
+                <TouchableOpacity onPress={detailPress}>
+                    <Text style={styles.detailViewText}>تحديد التفاصيل</Text>
+                </TouchableOpacity>
+                {detailViewPressed &&
+                    <View style={{ flex: 1 }}>
+                        <View style={{ alignItems: 'center', marginTop: 30 }}>
+                            <ScrollView>
+                                <DetailComp service_id={data.service_id} />
+                            </ScrollView>
+                        </View>
+                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+            </View>
+        )
+    }
+    const renderCampaighn = () => {
+        return (
+            <View style={[styles.detailView, campaignViewPressed ? styles.detailView : styles.pressDetailView]}>
+                <TouchableOpacity onPress={campaignPress}>
+                    <Text style={styles.detailViewText}>اختيار احد العروض</Text>
+                </TouchableOpacity>
+                {campaignViewPressed &&
+                    <View style={{ flex: 1 }}>
+                        <View style={{ alignItems: 'center', marginTop: 30 }}>
+
+                        </View>
+                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+            </View>
+        )
+    }
     const renderServiceDetail = () => {
         return <View style={styles.HallView}>
-            <Text style={styles.desc1}>قائمة الخدمات </Text>
-            <View style={{ alignSelf: 'center' }}>
+            <Text style={styles.desc1}>تفاصيل الحجز</Text>
+            <View style={{}}>
                 {checkType()}
-                <DetailComp service_id={data.service_id} />
+                {renderDetail()}
+                {renderCampaighn()}
             </View>
         </View>
     }
     const CatOfService = {
         'قاعات': [{
             style: styles.input,
-            placeholder: 'ادخل عدد الضيوف',
+            placeholder: 'ادخل عدد المدعوين',
         }],
         'تصوير': [{
             style: styles.input,
@@ -241,7 +323,10 @@ const ClientRequest = (props) => {
                 </View>
             </ScrollView>
             <View style={styles.foter}>
-                <Pressable style={styles.btnview} onPress={() => onPressRequest()}>
+                <Pressable onPress={() => onPressRequest()}
+                    disabled={selectTime ? false : true}
+                    style={[styles.btnview, selectTime ? styles.btnview : styles.btnRequestApproved]}
+                >
                     <Text style={styles.btntext}>ارسال طلب</Text>
                 </Pressable>
             </View>
@@ -256,11 +341,12 @@ const styles = StyleSheet.create({
     },
     VHall: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignSelf: 'center',
+        marginBottom: 10,
     },
     HallView: {
         backgroundColor: 'white',
-        height: 430,
+        height: 730,
         borderRadius: 5,
         margin: 5,
 
@@ -276,6 +362,46 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         color: 'black',
+    },
+    detailViewText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        margin: 10,
+        position: 'absolute',
+        right: 0,
+        top: 0
+    },
+    detailView: {
+        width: '90%',
+        height: 500,
+        backgroundColor: 'snow',
+        elevation: 5,
+        borderRadius: 8,
+        margin: 10,
+        alignSelf: 'center',
+
+    },
+    pressDetailView: {
+        width: 350,
+        height: 60,
+        backgroundColor: 'snow',
+        elevation: 5,
+        borderRadius: 8,
+        margin: 10,
+        alignSelf: 'center',
+    },
+    closeView: {
+        height: 30,
+        width: 80,
+        borderRadius: 5,
+        backgroundColor: '#ffff',
+        elevation: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 10,
+        position: 'absolute',
+        bottom: 0,
+        right: 0
     },
 
     priceView: {
@@ -407,6 +533,17 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginRight: 20,
         elevation: 5
+    },
+    btnRequestApproved: {
+        backgroundColor: '#f0ffff',
+        width: 150,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+        marginRight: 20,
+        elevation: 5,
+        opacity: 0.3
     },
 })
 

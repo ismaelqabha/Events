@@ -1,6 +1,16 @@
 const baseUrl = 'https://ev-server.onrender.com/';
 // const baseUrl = "https://localhost:7000/"
 
+// Users
+export const getUserData = async (body) => {
+    const url = 'Users/getUserInfo'
+    return await AppFetch(url, 'POST', body)
+}
+export const addUser = async (body) => {
+    const url = 'Users/create'
+    return await AppFetch(url, 'POST', body)
+}
+
 // Service Data
 export const getHomePageData = async body => {
   const url = 'servicesData/getServiceAccordingCategory';
@@ -46,23 +56,37 @@ export const updateEvent = async body => {
   return await AppFetch(url, 'PATCH', body);
 };
 // Request
-export const getRequestInfoWithservice = async body => {
-  const url = 'Request/getRequestService';
-  return await AppFetch(url, 'POST', body);
-};
-export const addNewRequest = async body => {
-  const url = 'Request/addRequest';
-  return await AppFetch(url, 'POST', body);
-};
-export const updateRequest = async body => {
-  const url = 'Request/updateByid';
-  return await AppFetch(url, 'PATCH', body);
-};
+
+export const getRequestInfoWithservice = async (body) => {
+    const url = 'Request/getRequestService'
+    return await AppFetch(url, 'POST', body)
+}
+export const addNewRequest = async (body) => {
+    const url = 'Request/addRequest'
+    return await AppFetch(url, 'POST', body)
+}
+export const updateRequest = async (body) => {
+    const url = 'Request/updateByid'
+    return await AppFetch(url, 'PATCH', body)
+}
+export const getRequestbyUserId = async (body) => {
+    const url = 'Request/getRequest'
+    return await AppFetch(url, 'POST', body)
+}
+export const deleteRequestbyId = async (body) => {
+    const url = 'Request/deleteByid'
+    return await AppFetch(url, 'DELETE', body)
+}
 // Camaighns
-export const getCampaigns = async body => {
-  const url = 'Campaigns/getCampaigns';
-  return await AppFetch(url, 'POST', body);
-};
+export const getCampaigns = async (body) => {
+    const url = 'Campaigns/getCampaigns'
+    return await AppFetch(url, 'POST', body)
+}
+export const getCampaignsByServiceId = async (body) => {
+    const url = 'Campaigns/getCampByServiceId'
+    return await AppFetch(url, 'POST', body)
+}
+
 //Add New Dates According Service Id
 export const NewDatesAdding = async body => {
   const url = 'Dates/addDates';
