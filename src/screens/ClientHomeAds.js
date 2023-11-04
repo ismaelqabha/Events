@@ -21,8 +21,9 @@ const ClientHomeAds = (props) => {
 
     const renderCampaigns = () => {
         //const x = AddNewDates()
-        console.log("reachCampaignfrom", reachCampaignfrom);
+
         setReachCampaignfrom('fromHome')
+
         const CampData = queryCampaign();
         const campArray = CampData?.map(camp => {
             return < CampaignCard {...camp} />
@@ -30,7 +31,7 @@ const ClientHomeAds = (props) => {
         return campArray;
     }
     useEffect(() => {
-        //setReachCampaignfrom('fromHome')
+
     }, [])
 
 
@@ -44,6 +45,17 @@ const ClientHomeAds = (props) => {
 
     return (
         <View style={styles.bg}>
+            <View style={styles.header}>
+                <Text style={styles.headerTxt}>الرئيسية</Text>
+                <Pressable
+                    style={styles.drawer}
+                    onPress={() => navigation.openDrawer()}
+                >
+                    <Image source={require('../assets/photos/drwaer.png')} style={styles.drwaerImg} />
+                </Pressable>
+
+            </View>
+
             <ScrollView contentContainerStyle={styles.home}>
                 <Pressable
                     style={styles.search}
@@ -84,7 +96,7 @@ const ClientHomeAds = (props) => {
 
                 <View style={styles.campighn}>
                     <View style={styles.campBox}>
-                        <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scroll}>
                             {renderCampaigns()}
                         </ScrollView>
                     </View>
@@ -96,7 +108,7 @@ const ClientHomeAds = (props) => {
 
                 <View style={styles.campighn}>
                     <View style={styles.campBox}>
-                        <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scroll}>
                             {renderCampaigns()}
                         </ScrollView>
                     </View>
@@ -108,7 +120,10 @@ const ClientHomeAds = (props) => {
 
                 <View style={styles.campighn}>
                     <View style={styles.campBox}>
-                        <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
+                        <ScrollView horizontal={true}
+                            //contentContainerStyle={styles.home} 
+                            showsHorizontalScrollIndicator={false}
+                            style={styles.scroll}>
                             {renderCampaigns()}
                         </ScrollView>
                     </View>
@@ -125,11 +140,14 @@ const ClientHomeAds = (props) => {
 const styles = StyleSheet.create({
     home: {
         borderRadius: 40,
-        backgroundColor: 'snow',
+
+    },
+    scroll: {
+        flexDirection: 'row-reverse'
     },
     bg: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: 'snow',
 
     },
     campighn: {
@@ -179,8 +197,31 @@ const styles = StyleSheet.create({
         marginRight: 20,
         color: 'gray'
     },
+    headerTxt: {
+        fontSize: 18,
+        marginLeft: 20,
+        color: 'RGB 128% 165% 64%',
+        //color: '#2759ff',
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
+    },
     viewSeper: {
         marginTop: 30
+    },
+    header: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    drwaerImg: {
+        width: 30,
+        height: 30,
+    },
+    drawer: {
+        width: 60,
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 30,
     }
 
 })

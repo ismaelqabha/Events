@@ -1,25 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import React from "react";
+import { StyleSheet } from 'react-native';
 
-
-import ClientHomeAds from "../src/screens/ClientHomeAds";
-import ProviderServiceShow from '../src/screens/ProviderScreens/ProviderServiceShow';
-import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
-
-
-
-import { ScreenNames } from "./ScreenNames";
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-
-import AntDesign from 'react-native-vector-icons/AntDesign'
-import Ionicons from 'react-native-vector-icons/Ionicons'
-
-import TabNavigator from './tabNavigator';
-import TopTapNotificaNavig from './topTapNotificaNavig';
-import ProviderTapNav from './ProviderTapNav';
-import UserProfile from '../src/screens/UserProfile';
-
+import { createDrawerNavigator, DrawerToggleButton } from '@react-navigation/drawer';
+import CustomDrewer1 from './CustomDrewer1';
+import { ClientScreen, SharedScreen } from './ScreensArrayInfo';
 
 
 const DrawerNavigator = () => {
@@ -27,69 +12,82 @@ const DrawerNavigator = () => {
 
     return (
         <Drawer.Navigator
-            initialRouteName='Home'
-            drawerType="front"
-            drawerPoistion="Right"
-            edgewidth={100}
-            overlayColor='#ffffff'
-            drawerStyle={{
-                backgroundColor: '#f0f8ff',
-                width: 250,
-            }}
+            drawerContent={(props) => <CustomDrewer1 {...props} />}
+            initialRouteName='ClientHome'
+            //drawerType="front"
+            //drawerPoistion="Right"
+            //edgewidth={100}
+            //overlayColor='#ffffff'
+            // drawerStyle={{
+            //     //backgroundColor: '#f0f8ff',
+            //     width: 350,
+            // }}
+
             screenOptions={{
-                headerShown: true,
-                swipeEnabled: false,
+                headerShown: false,
+                swipeEnabled: true,
                 gestureEnapled: true,
                 headerTitleAlign: 'center',
+                drawerPosition: 'right',
+                headerLeft: false,
+                headerRight: () => <DrawerToggleButton />,
                 headerStyle: {
-                    //backgroundColor: '#fffaf0'
+                    backgroundColor: 'transparent'
                 },
                 headerTintColor: 'black',
                 headerTitleStyle: {
-                    fontSize: 25,
+                    fontSize: 15,
                     fontWeight: 'bold',
                 },
+
+                drawerStyle: styles.drwaerStyle,
             }}
         >
-            
-             <Drawer.Screen name="ClientHome" component={TabNavigator}
+            {SharedScreen.map((item, index) => (
+                <Drawer.Screen key={index} name={item.route} component={item.component}
+                    options={{
+                        item: item,
+                    }}
+                />
+            ))}
+            {ClientScreen.map((item, index) => (
+                <Drawer.Screen key={index} name={item.route} component={item.component}
+                    options={{
+                        item: item,
+                    }}
+                />
+            ))}
+
+
+            {/* <Drawer.Screen name={ScreenNames.LogOut} component={LogOut}
                 options={{
-                    title: 'استخدام التطبيق كزبون',
+                    title: 'تسجيل الخروج',
                     drawerIcon: () => (
-                        <FontAwesome5
-                            name='home'
-                            style={{ fontSize: 20, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', }}
-                        />
-                    ),
-                }}
-            />
-            <Drawer.Screen name={ScreenNames.UserProfile} component={UserProfile}
-                options={{
-                    title: 'بروفايل',
-                    drawerIcon: () => (
-                        <AntDesign
-                            name='profile'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
+                        <Entypo
+                            name='log-out'
+                            style={styles.drewerIcon}
                         />
                     )
                 }}
-            />
-
-           
-            <Drawer.Screen name="ProviderHome" component={ProviderTapNav}
-                options={{
-                    title: 'استخدام التطبيق كمزود خدمة',
-                    drawerIcon: () => (
-                        <FontAwesome5
-                            name='home'
-                            style={{ fontSize: 20, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', }}
-                        />
-                    ),
-                }}
-            />
+            /> */}
 
         </Drawer.Navigator>
     )
 }
 
 export default DrawerNavigator;
+const styles = StyleSheet.create({
+    drewerIcon: {
+        fontSize: 20,
+        color: '#1e90ff',
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        alignSelf: "center",
+        position: "absolute",
+        right: 5,
+    },
+    drwaerStyle: {
+        width: 280,
+        backgroundColor: 'transparent'
+    }
+
+})

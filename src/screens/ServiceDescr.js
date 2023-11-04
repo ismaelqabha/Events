@@ -463,6 +463,7 @@ const styles = StyleSheet.create({
     },
     HallView: {
         marginTop: 20,
+        //alignItems: 'center'
     },
     txt: {
         fontSize: 15,
