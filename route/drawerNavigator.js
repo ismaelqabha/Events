@@ -50,13 +50,13 @@ const DrawerNavigator = () => {
                     }}
                 />
             ))}
-            {ClientScreen.map((item, index) => (
+            {/* {ClientScreen.map((item, index) => (
                 <Drawer.Screen key={index} name={item.route} component={item.component}
                     options={{
                         item: item,
                     }}
                 />
-            ))}
+            ))} */}
 
 
             {/* <Drawer.Screen name={ScreenNames.LogOut} component={LogOut}

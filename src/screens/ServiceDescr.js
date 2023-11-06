@@ -11,7 +11,8 @@ import DetailComp from '../components/DetailComp';
 import CampaignCard from '../components/CampaignCard';
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import { colors } from "../assets/AppColors"
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
@@ -244,16 +245,29 @@ const ServiceDescr = (props) => {
             <View style={styles.seperaView}></View>
         )
     }
+    const onPressBack = () => {
+        props.navigation.goBack();
+    }
 
     return (
         <View style={styles.container}>
+            <View style={styles.head}>
+                <Pressable onPress={onPressBack}
+                >
+                    <Ionicons
+                        //style={styles.icon}
+                        name={"arrow-back"}
+                        color={"black"}
+                        size={25} />
+                </Pressable>
+            </View>
             <ScrollView contentContainerStyle={styles.home}>
                 <View style={styles.screenView}>
 
                     <SliderBox
                         sliderBoxHeight={300}
                         images={renderImg()}
-                        dotColor="blue"
+                        dotColor= {colors.puprble}
                         dotStyle={{ width: 8, height: 8, borderRadius: 50 }}
                         autoplay={true}
                     />
@@ -315,7 +329,7 @@ const ServiceDescr = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //backgroundColor: 'white'
+        backgroundColor: colors.BGScereen
     },
     screenView: {
 
@@ -338,7 +352,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 260,
         left: 50,
-        backgroundColor: 'blue',
+        backgroundColor: colors.puprble,
     },
     seperaView: {
         borderWidth: 0.5,
@@ -419,15 +433,15 @@ const styles = StyleSheet.create({
         height: 80,
         justifyContent: 'center',
         alignItems: 'flex-end',
-        backgroundColor: '#fffaf0',
+        backgroundColor: colors.BGScereen,
     },
     btntext: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'black',
+        color: colors.darkGold,
     },
     btnview: {
-        backgroundColor: 'white',
+        backgroundColor: colors.puprble,
         width: 150,
         height: 50,
         alignItems: 'center',
@@ -440,7 +454,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         margin: 2
-
     },
     viewselectdatepress: {
         flexDirection: 'row',

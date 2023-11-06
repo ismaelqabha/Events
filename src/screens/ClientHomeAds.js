@@ -1,12 +1,14 @@
 import { BackgroundImage } from '@rneui/base';
 import React, { useContext, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text, Pressable, Image } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, Pressable, Image, ImageBackground } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import CampaignCard from '../components/CampaignCard';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
 import { SliderBox } from 'react-native-image-slider-box';
+import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import { colors } from "../assets/AppColors"
 import AddNewDates from '../components/AddNewDates';
 
 const ClientHomeAds = (props) => {
@@ -44,14 +46,20 @@ const ClientHomeAds = (props) => {
 
 
     return (
-        <View style={styles.bg}>
+        <ImageBackground style={styles.bg} source={require('../assets/photos/backgroundMain.png')}>
             <View style={styles.header}>
-                <Text style={styles.headerTxt}>الرئيسية</Text>
+                {/* <Text style={styles.headerTxt}>الرئيسية</Text> */}
+                <Image source={require('../assets/photos/supLogoTitle.png')} style={styles.titleImg} />
+
                 <Pressable
                     style={styles.drawer}
                     onPress={() => navigation.openDrawer()}
                 >
-                    <Image source={require('../assets/photos/drwaer.png')} style={styles.drwaerImg} />
+                    <Entypo
+                        //style={styles.menu}
+                        name={"menu"}
+                        color={colors.gold}
+                        size={30} />
                 </Pressable>
 
             </View>
@@ -133,7 +141,7 @@ const ClientHomeAds = (props) => {
 
 
             </ScrollView>
-        </View>
+        </ImageBackground>
     );
 }
 
@@ -147,8 +155,7 @@ const styles = StyleSheet.create({
     },
     bg: {
         flex: 1,
-        backgroundColor: 'snow',
-
+        backgroundColor: colors.BGScereen,
     },
     campighn: {
         borderColor: 'black',
@@ -162,7 +169,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         fontSize: 15,
-        color: 'black',
+        color: colors.TitleFont,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
         marginRight: 20,
         marginTop: 40,
@@ -179,7 +186,7 @@ const styles = StyleSheet.create({
         height: 50,
         width: '90%',
         fontSize: 18,
-        borderRadius: 50,
+        borderRadius: 10,
         fontWeight: 'bold',
         marginTop: 30,
         justifyContent: 'flex-end',
@@ -198,30 +205,35 @@ const styles = StyleSheet.create({
         color: 'gray'
     },
     headerTxt: {
-        fontSize: 18,
+        fontSize: 20,
         marginLeft: 20,
-        color: 'RGB 128% 165% 64%',
-        //color: '#2759ff',
+        color: colors.TitleFont,
+
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
     viewSeper: {
         marginTop: 30
     },
     header: {
-        alignItems: 'center',
+        width: "100%",
+        height: 70,
         flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    drwaerImg: {
-        width: 30,
-        height: 30,
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        backgroundColor: colors.TitleFont
     },
     drawer: {
         width: 60,
         height: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 30,
+        marginTop: 15
+    },
+    titleImg: {
+        width: 250,
+        height: 60,
+        //justifyContent: 'center',
+        alignItems: 'center',
     }
 
 })

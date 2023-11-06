@@ -21,7 +21,7 @@ export const SharedScreen = [
     },
     {
         route: ScreenNames.UserProfile,
-        label: 'بروفايل',
+        label: 'المعلومات الشخصية',
         type: Icons.AntDesign,
         icon: 'profile',
         component: UserProfile,
@@ -48,18 +48,18 @@ export const SharedScreen = [
         component: Support,
     },
     {
-        route: ScreenNames.LogOut,
-        label: 'تسجيل الخروج',
-        type: Icons.Entypo,
-        icon: 'log-out',
-        component: LogOut,
-    },
-    {
         route: 'ProviderHome',
         label: 'خدماتي كمزود',
         type: Icons.Fontisto,
         icon: 'indent',
         component: ProviderTapNav,
+    },
+    {
+        route: ScreenNames.LogOut,
+        label: 'تسجيل الخروج',
+        type: Icons.Entypo,
+        icon: 'log-out',
+        component: LogOut,
     },
 ]
 

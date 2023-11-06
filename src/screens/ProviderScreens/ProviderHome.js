@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Pressable,Image } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Pressable, Image } from 'react-native'
 import React, { useContext, useEffect } from 'react'
 import SearchContext from '../../../store/SearchContext';
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -8,6 +8,8 @@ import CalenderServiceCard from '../../components/ProviderComponents/CalenderSer
 import { ScreenNames } from '../../../route/ScreenNames';
 import strings from '../../assets/res/strings';
 import { useNavigation } from '@react-navigation/native';
+import { colors } from '../../assets/AppColors';
+import Entypo from "react-native-vector-icons/Entypo";
 
 const ProviderHome = (props) => {
     const { userId } = useContext(SearchContext);
@@ -65,14 +67,16 @@ const ProviderHome = (props) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTxt}>الرئيسية</Text>
+                <Text style={styles.headerTxt}>خدماتي</Text>
                 <Pressable
                     style={styles.drawer}
                     onPress={() => navigation.openDrawer()}
                 >
-                    <Image source={require('../../assets/photos/drwaer.png')} style={styles.drwaerImg} />
+                    <Entypo
+                        name={"menu"}
+                        color={colors.puprble}
+                        size={30} />
                 </Pressable>
-
             </View>
             {headText()}
             <View style={styles.serviceView}>
@@ -153,7 +157,7 @@ const styles = StyleSheet.create({
     headerTxt: {
         fontSize: 18,
         marginLeft: 20,
-        color: '#637aff',
+        color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
 })

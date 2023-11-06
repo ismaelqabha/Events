@@ -4,6 +4,7 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icon, { Icons } from "../src/components/Icons"
+import { colors } from '../src/assets/AppColors'
 
 
 const DrawerItem = ({ label, onPress, tapBarTestID, type, name, color, activeItemColor }) => {
@@ -55,8 +56,8 @@ const CustomDrewer1 = (props) => {
                             }
                         }
 
-                        const color = isFocused ? 'white' : '#1e90ff';
-                        const activeItemColor = isFocused ? '#8f06e4' : null
+                        const color = isFocused ? 'white' : colors.puprble;
+                        const activeItemColor = isFocused ? colors.puprble : null
                         const drawerItem = options.item;
 
                         return (
@@ -85,28 +86,28 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     dreView: {
-        backgroundColor: 'white',
+        backgroundColor: '#f2f2f2',
         borderRadius: 10,
-        marginHorizontal: 10,
-        padding: 10
+        marginHorizontal: 5,
+        padding: 25
     },
     hederTxt: {
         textAlign: 'right',
         fontSize: 30,
         fontWeight: 'bold',
-        color: '#1e90ff',
+        color: colors.puprble,
     },
     marginTop: {
         marginTop: 10,
     },
     marginVertical: {
-        marginVertical: 5
+        marginVertical: 10
     },
     iconContainer: {
         alignItems: 'center'
     },
     userIcon: {
-        color: '#1e90ff',
+        color: colors.puprble,
     },
     drawerItem: {
         flexDirection: 'row',
@@ -116,9 +117,10 @@ const styles = StyleSheet.create({
         borderRadius: 8
     },
     label: {
-        fontSize: 16,
+        fontSize: 20,
         color: '#333',
-        paddingHorizontal: 12,
+        paddingHorizontal: 20,
+        alignSelf: 'center'
     },
     iconContainer: {
         alignItems: 'center'
