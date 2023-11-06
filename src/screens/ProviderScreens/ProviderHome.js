@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Pressable, Image } from 'react-native'
 import React, { useContext, useEffect } from 'react'
 import SearchContext from '../../../store/SearchContext';
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -7,11 +7,15 @@ import { getServiceInfoById } from '../../resources/API';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { ScreenNames } from '../../../route/ScreenNames';
 import strings from '../../assets/res/strings';
+import { useNavigation } from '@react-navigation/native';
+import { colors } from '../../assets/AppColors';
+import Entypo from "react-native-vector-icons/Entypo";
 
 const ProviderHome = (props) => {
     const { userId } = useContext(SearchContext);
     const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
+    const navigation = useNavigation();
 
     const getServiceInfofromApi = () => {
         getServiceInfoById({ userID: userId }).then(res => {
@@ -62,6 +66,18 @@ const ProviderHome = (props) => {
     }
     return (
         <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.headerTxt}>خدماتي</Text>
+                <Pressable
+                    style={styles.drawer}
+                    onPress={() => navigation.openDrawer()}
+                >
+                    <Entypo
+                        name={"menu"}
+                        color={colors.puprble}
+                        size={30} />
+                </Pressable>
+            </View>
             {headText()}
             <View style={styles.serviceView}>
                 <ScrollView >{renderMyService()}</ScrollView>
@@ -121,5 +137,27 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
         color: 'black',
-    }
+    },
+    header: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    drwaerImg: {
+        width: 30,
+        height: 30,
+    },
+    drawer: {
+        width: 60,
+        height: 60,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 30,
+    },
+    headerTxt: {
+        fontSize: 18,
+        marginLeft: 20,
+        color: colors.puprble,
+        fontFamily: 'Cairo-VariableFont_slnt,wght',
+    },
 })

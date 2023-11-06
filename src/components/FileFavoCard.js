@@ -168,8 +168,7 @@ const FileFavoCard = (props) => {
                     <Text style={styles.titleTxt}>{fileName}</Text>
                 </View>
                 <View style={styles.iconView}>
-                <Pressable
-                    //onPress={() => onPressModalHandler()}
+                <Pressable onPress={onCaardPress}
                 >
                     <Entypo
                         style={styles.icon}

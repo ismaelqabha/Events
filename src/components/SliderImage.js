@@ -7,9 +7,10 @@ import { ScreenNames } from '../../route/ScreenNames';
 import SIZES from '../resources/sizes';
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RemoveFavorite, getFavoritesforUser } from '../resources/API';
+import { colors } from '../assets/AppColors';
 
 const height = SIZES.screenWidth * 0.6;
-const width = SIZES.screenWidth - 40;
+const width = SIZES.screenWidth - 10;
 
 const SliderImage = (props) => {
     const navigation = useNavigation();
@@ -99,7 +100,7 @@ const SliderImage = (props) => {
                     <Icon
                         style={styles.icon}
                         name={(checkIfFavorate()) ? "heart" : "heart-o"}
-                        color={(checkIfFavorate()) ? "red" : "white"}
+                        color={(checkIfFavorate()) ? "red" : colors.puprble}
                         size={25} />
                 </View>
             </Pressable>
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 40,
-        backgroundColor: 'gray',
+        backgroundColor: 'white',
         elevation: 5,
         marginTop: 5,
         marginRight: 15,
@@ -133,7 +134,8 @@ const styles = StyleSheet.create({
         width,
         height,
         resizeMode: 'contain',
-        borderRadius: 15,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15
     },
     heartFavo: {
         position: 'absolute',

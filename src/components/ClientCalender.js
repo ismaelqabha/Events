@@ -4,6 +4,7 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { useState } from 'react';
 import SearchContext from '../../store/SearchContext';
+import { colors } from '../assets/AppColors';
 
 const ClientCalender = (props) => {
     const {selectDateforSearch, setselectDateforSearch} = useContext(SearchContext);
@@ -26,7 +27,7 @@ const ClientCalender = (props) => {
                     width: 300,
                     borderRadius: 20,
                     //padding: 10,
-                    backgroundColor: 'snow',
+                    backgroundColor: 'white',
                     // elevation: 5,
 
                 }}
@@ -34,14 +35,14 @@ const ClientCalender = (props) => {
                     backgroundColor: '#ffffff',
                     calendarBackground: '#ffffff',
                     textSectionTitleColor: '#b6c1cd',
-                    selectedDayBackgroundColor: '#00adf5',
+                    selectedDayBackgroundColor: colors.puprble,
                     selectedDayTextColor: '#ffffff',
                     todayTextColor: '#00adf5',
-                    dayTextColor: '#2d4150',
+                    dayTextColor: 'red',
                     textDisabledColor: '#d9e1e8',
                     dotColor: 'red',
                     selectedDotColor: '#ffffff',
-                    arrowColor: 'red',
+                    arrowColor: colors.puprble,
                     monthTextColor: 'black',
                     textDayFontFamily: 'monospace',
                     textMonthFontFamily: 'monospace',

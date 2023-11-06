@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const SearchProvider = props => {
 
-  const [userId, setuserId] = useState(1);
+  const [userId, setuserId] = useState('646ce3e29e7972dc37f3146d');
   const [userInfo, setUserInfo] = useState([]);
   const [sType, setSType] = useState({});
 

@@ -15,7 +15,7 @@ const CampaignCard = (props) => {
     }
 
     const renderCampaighn = () => {
-        if (reachCampaignfrom == 'fromHome') {
+        // if (reachCampaignfrom == 'fromHome') {
             return (<View style={styles.forHome}>
                 <TouchableOpacity style={styles.touch} onPress={onCaardPress}>
                     <View style={styles.image}>
@@ -28,24 +28,24 @@ const CampaignCard = (props) => {
 
                 </TouchableOpacity>
             </View>)
-        }
-        if (reachCampaignfrom == 'fromRequest') {
+        //}
+        // if (reachCampaignfrom == 'fromRequest') {
 
-        }
-        if (reachCampaignfrom == 'fromServiceDescr') {
-            return (<View style={styles.forDescr}>
-                <TouchableOpacity style={styles.touch} onPress={onCaardPress}>
-                    <View style={styles.img}>
-                        <Image style={{ flex: 1 }} source={{ uri: campImag }} />
-                    </View>
-                    <View>
-                        <Text style={styles.cardDesctxt}>{campTitle}</Text>
+        // }
+        // if (reachCampaignfrom == 'fromServiceDescr') {
+        //     return (<View style={styles.forDescr}>
+        //         <TouchableOpacity style={styles.touch} onPress={onCaardPress}>
+        //             <View style={styles.img}>
+        //                 <Image style={{ flex: 1 }} source={{ uri: campImag }} />
+        //             </View>
+        //             <View>
+        //                 <Text style={styles.cardDesctxt}>{campTitle}</Text>
 
-                    </View>
-                    <Text style={styles.detailText}>التفاصيل</Text>
-                </TouchableOpacity>
-            </View>)
-        }
+        //             </View>
+        //             <Text style={styles.detailText}>التفاصيل</Text>
+        //         </TouchableOpacity>
+        //     </View>)
+        // }
     }
 
     return (
@@ -66,7 +66,8 @@ const styles = StyleSheet.create({
         elevation: 3,
         margin: 5,
         width: 270,
-        height: 220
+        height: 220,
+        alignSelf: 'center'
     },
     forDescr: {
         alignSelf: 'center',

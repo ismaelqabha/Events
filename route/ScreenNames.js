@@ -15,6 +15,13 @@ export const ScreenNames = {
     ClientSearch: 'ClientSearch',
     UserProfile: 'UserProfile',
     CreateUser: 'CreateUser',
+    Security: 'Security',
+    Support: 'Support',
+    Settings: 'Settings',
+    ClientPayment: 'ClientPayment',
+    ClientNotification: 'ClientNotification',
+    LogOut: 'LogOut',
+    
 
     // Provider Screens
     ProviderCreateListing: 'ProviderCreateListing',
