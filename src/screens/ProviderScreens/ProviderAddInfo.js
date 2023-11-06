@@ -33,8 +33,8 @@ const ProviderAddInfo = props => {
     setDescription,
   } = useContext(ServiceProviderContext);
 
-  const [detailesHeight,setDetailesHeight]=useState(500)
-  let scrollOffsetY = useRef(new Animated.Value(0)).current;  
+  const [detailesHeight, setDetailesHeight] = useState(500)
+  let scrollOffsetY = useRef(new Animated.Value(0)).current;
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -49,17 +49,54 @@ const ProviderAddInfo = props => {
     ScrollView: {
       contentContainerStyle: { alignItems: 'center' },
       style: styles.ScrollView,
-      onScroll:Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollOffsetY}}}],
-        {useNativeDriver: false}
+      onScroll: Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollOffsetY } } }],
+        { useNativeDriver: false }
       )
     }
   };
 
   const onNextPress = () => {
-    props.navigation.navigate(ScreenNames.ProviderSetPhotos, { data: { ...props } });
-
+    checkRequestedData() ?
+      props.navigation.navigate(ScreenNames.ProviderSetPhotos, { data: { ...props } })
+      : missingData()
   };
+
+  const checkRequestedData = () => {
+    return checkStrings(title)
+      && checkStrings(SuTitle)
+      && checkStrings(description)
+      ? true : false
+  }
+
+  const checkStrings = (val) => {
+  
+    if (!val) {
+      return false;
+    }
+    else if (val.trim().length<= 0) {
+      return false;
+    }
+    return true;
+  }
+
+  const missingData = () => {
+    checkStrings(title) ? showMissingTitle() : null
+    checkStrings(SuTitle) ? showMissingSubTitle() : null
+    checkStrings(description) ? showMissingDescription() : null
+  }
+
+  const showMissingTitle=()=>{
+
+  }
+
+  const showMissingSubTitle=()=>{
+    
+  }
+
+  const showMissingDescription=()=>{
+    
+  }
 
   const onBackPress = () => {
     props.navigation.goBack();
@@ -69,8 +106,8 @@ const ProviderAddInfo = props => {
   const RenderHeader = () => {
     return (
       <View style={styles.header}>
-        <Pressable onPress={()=> onBackPress()}>
-        <IonIcons name='chevron-back-outline' color={"black"} size={25} />
+        <Pressable onPress={() => onBackPress()}>
+          <IonIcons name='chevron-back-outline' color={"black"} size={25} />
 
         </Pressable>
         <Text style={styles.headText}>{language.HeadText}</Text>
@@ -86,6 +123,7 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}>{language.title}</Text>
+        <Text style={styles.textRequired}>{language.titleRequired}</Text>
         <TextInput
           style={styles.titleInput}
           keyboardType="default"
@@ -103,6 +141,8 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}>{language.subTitle}</Text>
+        <Text style={styles.textRequired}>{language.titleRequired}</Text>
+
         <TextInput
           style={styles.subtitleInput}
           keyboardType="default"
@@ -121,6 +161,8 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}> {language.description}</Text>
+        <Text style={styles.textRequired}>{language.titleRequired}</Text>
+
         <TextInput
           style={styles.descInput}
           keyboardType="default"
@@ -167,7 +209,7 @@ const ProviderAddInfo = props => {
           placeholder={language.address}
           onChangeText={value => setserviceAddress(value)}
           value={serviceAddress || null}
-          selection={{start:0}}
+          selection={{ start: 0 }}
         />
       </View>
     );
@@ -182,7 +224,7 @@ const ProviderAddInfo = props => {
   };
   const RenderNextButton = () => {
     return (
-      <Pressable style={[styles.next,styles.shadow]} onPress={() => onNextPress()}>
+      <Pressable style={[styles.next, styles.shadow]} onPress={() => onNextPress()}>
         <Text style={styles.nextText}>{language.next}</Text>
       </Pressable>
     );
@@ -228,10 +270,10 @@ const styles = StyleSheet.create({
   body: {
     height: '75%',
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
   },
   borderTitleView: {
-    height:560,
+    height: 560,
     width: 340,
     borderWidth: 1,
     borderColor: '#dcdcdc',
@@ -266,7 +308,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginRight: 20,
     marginLeft: 20,
-    alignSelf:'flex-end'
+    alignSelf: 'flex-end'
   },
   next: {
     width: 70,
@@ -275,7 +317,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    
+
   },
   back: {
     justifyContent: 'center',
@@ -327,7 +369,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   titleInput: {
-    textAlign: 'right',
+    textAlign: 'auto',
     height: 50,
     width: 315,
     borderWidth: 2,
@@ -338,7 +380,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   subtitleInput: {
-    textAlign: 'right',
+    textAlign: 'auto',
     height: 100,
     width: 315,
     borderWidth: 2,
@@ -349,7 +391,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   descInput: {
-    textAlign: 'right',
+    textAlign: 'auto',
     height: 150,
     width: 315,
     borderWidth: 2,
@@ -359,7 +401,7 @@ const styles = StyleSheet.create({
     color: 'black',
     backgroundColor: 'white',
   },
-  textRequired:{
+  textRequired: {
     textAlign: 'auto',
     fontSize: 14,
     marginRight: 20,
