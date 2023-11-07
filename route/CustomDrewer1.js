@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
         borderRadius: 8
     },
     label: {
-        fontSize: 20,
+        fontSize: 15,
         color: '#333',
         paddingHorizontal: 20,
         alignSelf: 'center'

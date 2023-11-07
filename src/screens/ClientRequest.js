@@ -108,7 +108,7 @@ const ClientRequest = (props) => {
     }, [])
 
     const queryImg = () => {
-        return ServiceImages.filter(photo => {
+        return ServiceImages?.filter(photo => {
             return photo.coverPhoto == true
         });
     };
@@ -132,7 +132,7 @@ const ClientRequest = (props) => {
                 <Text style={styles.text}>{data?.address}</Text>
                 <Text style={{}}>5★</Text>
             </View>
-            {renderServiceImage()}
+            {/* {renderServiceImage()} */}
         </View></View>;
     }
 

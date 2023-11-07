@@ -1,5 +1,5 @@
 import { BackgroundImage } from '@rneui/base';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect,useState } from 'react';
 import { ScrollView, StyleSheet, View, Text, Pressable, Image, ImageBackground, FlatList } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import CampaignCard from '../components/CampaignCard';
@@ -14,18 +14,19 @@ import AddNewDates from '../components/AddNewDates';
 import ServiceCard from '../components/ServiceCard';
 
 const ClientHomeAds = (props) => {
-    const { cat, ServiceDataInfo, campInfo, userRegion, setReachCampaignfrom, reachCampaignfrom } = useContext(SearchContext);
+    const { cat,setCat, ServiceDataInfo, campInfo, userRegion, setReachCampaignfrom, reachCampaignfrom } = useContext(SearchContext);
+    const [selectServiceType, setSelectServiceType] = useState('');
     const navigation = useNavigation();
 
     const queryCampaign = () => {
+        
         return campInfo?.filter(res => {
-            return res.campRigon == userRegion;
+            return res.campRigon == userRegion && res.campCatType == cat;
         })
     }
-
+   
     const renderCampaigns = () => {
-        //const x = AddNewDates()
-
+    
         setReachCampaignfrom('fromHome')
 
         const CampData = queryCampaign();
@@ -40,11 +41,16 @@ const ClientHomeAds = (props) => {
     }
     const renderCat = ({ item }) => {
         return (
-            <ServiceCard {...item} />
+            <ServiceCard
+                {...item}
+                isChecked={item.titleCategory === selectServiceType}
+                onCatPress={(value) => setSelectServiceType(value)}
+            />
         )
     };
+    
     useEffect(() => {
-
+        setCat('قاعات')
     }, [])
 
 
@@ -59,7 +65,6 @@ const ClientHomeAds = (props) => {
     return (
         <ImageBackground style={styles.bg} source={require('../assets/photos/backgroundMain.png')}>
             <View style={styles.header}>
-                {/* <Text style={styles.headerTxt}>الرئيسية</Text> */}
                 <Image source={require('../assets/photos/supLogoTitle.png')} style={styles.titleImg} />
 
                 <Pressable
@@ -119,7 +124,7 @@ const ClientHomeAds = (props) => {
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>أفضل العروض</Text>
                     <View style={styles.campighn}>
-                        <Text style={styles.CatText}>قاعات</Text>
+                        <Text style={styles.CatText}>{cat}</Text>
                         <View style={styles.campBox}>
                             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scroll}>
                                 {renderCampaigns()}
@@ -130,17 +135,17 @@ const ClientHomeAds = (props) => {
 
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>الاكثر طلبا</Text>
-                    
+
                 </View>
 
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>نقترح عليك</Text>
-                    
+
                 </View>
 
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>الاقرب لي</Text>
-                    
+
                 </View>
 
 
@@ -203,7 +208,7 @@ const styles = StyleSheet.create({
 
     },
     titleText: {
-        textAlign:'center',
+        textAlign: 'center',
         fontSize: 17,
         color: colors.TitleFont,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
@@ -255,7 +260,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.3,
         borderColor: colors.darkGold,
         marginBottom: 50,
-       // height: 318
+        // height: 318
     },
     header: {
         width: "100%",

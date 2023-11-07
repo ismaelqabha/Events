@@ -131,7 +131,6 @@ const Results = (props) => {
             return nameItem.serviceData.servType == cat;
 
         })
-
     }
 
     const checkSelect = (nameItem) => {

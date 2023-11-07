@@ -64,9 +64,9 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         shadowRadius: 4,
         elevation: 3,
-        margin: 5,
-        width: 270,
-        height: 220,
+        margin: 10,
+        width: 200,
+        height: 180,
         alignSelf: 'center'
     },
     forDescr: {
