@@ -163,81 +163,84 @@ export const servicesCategory = [
         titleCategory: 'شيف',
         img: (require('../assets/photos/chefIcon.png')),
     },
+   
     {
-        cat_id: 6,
-        titleCategory: 'تصفيف شعر',
-        img: (require('../assets/photos/saloonIcon.png')),
-    },
-    {
-        cat_id: 7,
-        titleCategory: 'مركز تجميل',
-        img: (require('../assets/photos/care.png')),
-    },
-    {
-        cat_id: 8,
-        titleCategory: 'Makeup',
-        img: (require('../assets/photos/Makeup.png')),
-    },
-    // {
-    //     cat_id: 9,
-    //     titleCategory: 'خدمات افراح',
-    //     img: (require('../assets/photos/orgnaize.png')),
-    // },
-    {
-        cat_id: 10,
-        titleCategory: 'بطاقات دعوة',
-        img: (require('../assets/photos/card.png')),
-    },
-    {
-        cat_id: 11,
-        titleCategory: 'تصميم ازهار',
-        img: (require('../assets/photos/flower.png')),
-    },
-    {
-        cat_id: 12,
-        titleCategory: ' فساتين',
-        img: (require('../assets/photos/dress.png')),
-    },
-    {
-        cat_id: 13,
-        titleCategory: 'بدلات عرسان',
-        img: (require('../assets/photos/suit.png')),
-    },
-    {
-        cat_id: 14,
-        titleCategory: 'مجوهرات',
-        img: (require('../assets/photos/jewelry.png')),
-    },
-    {
-        cat_id: 15,
-        titleCategory: 'اكسسوارات',
-        img: (require('../assets/photos/accessories.png')),
+        cat_id: 9,
+        titleCategory: 'فرقة شعبية',
+        img: (require('../assets/photos/fleklorTeamsIcon.png')),
     },
     {
         cat_id: 16,
         titleCategory: 'حلويات',
         img: (require('../assets/photos/SweetIcon.png')),
     },
+    // {
+    //     cat_id: 10,
+    //     titleCategory: 'بطاقات دعوة',
+    //     img: (require('../assets/photos/card.png')),
+    // },
     {
-        cat_id: 17,
-        titleCategory: 'ألعاب نارية',
-        img: (require('../assets/photos/fireworks.png')),
+        cat_id: 11,
+        titleCategory: 'تصميم ازهار',
+        img: (require('../assets/photos/flowerIcon.png')),
     },
     {
+        cat_id: 6,
+        titleCategory: 'تصفيف شعر',
+        img: (require('../assets/photos/saloonIcon.png')),
+    },
+    {
+        cat_id: 8,
+        titleCategory: 'Makeup',
+        img: (require('../assets/photos/makeupIcon.png')),
+    },
+    {
+        cat_id: 7,
+        titleCategory: 'مركز تجميل',
+        img: (require('../assets/photos/beutyCentreIcon.png')),
+    },
+    
+    // {
+    //     cat_id: 12,
+    //     titleCategory: ' فساتين',
+    //     img: (require('../assets/photos/dress.png')),
+    // },
+    // {
+    //     cat_id: 13,
+    //     titleCategory: 'بدلات عرسان',
+    //     img: (require('../assets/photos/suit.png')),
+    // },
+    // {
+    //     cat_id: 14,
+    //     titleCategory: 'مجوهرات',
+    //     img: (require('../assets/photos/jewelry.png')),
+    // },
+    // {
+    //     cat_id: 15,
+    //     titleCategory: 'اكسسوارات',
+    //     img: (require('../assets/photos/accessories.png')),
+    // },
+   
+    // {
+    //     cat_id: 17,
+    //     titleCategory: 'ألعاب نارية',
+    //     img: (require('../assets/photos/fireworks.png')),
+    // },
+    {
         cat_id: 18,
-        titleCategory: 'سيارة زفاف',
-        img: (require('../assets/photos/car.png')),
+        titleCategory: 'مهرج',
+        img: (require('../assets/photos/jockerIcon.png')),
     },
     {
         cat_id: 19,
         titleCategory: 'أطفال',
-        img: (require('../assets/photos/kids.png')),
+        img: (require('../assets/photos/kidsIcon.png')),
     },
-    {
-        cat_id: 20,
-        titleCategory: 'اخرى',
-        img: (require('../assets/photos/other.png')),
-    },
+    // {
+    //     cat_id: 20,
+    //     titleCategory: 'اخرى',
+    //     img: (require('../assets/photos/other.png')),
+    // },
 
 
 ];

@@ -1,6 +1,6 @@
 import { BackgroundImage } from '@rneui/base';
 import React, { useContext, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text, Pressable, Image, ImageBackground } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, Pressable, Image, ImageBackground, FlatList } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import CampaignCard from '../components/CampaignCard';
 import { useNavigation } from '@react-navigation/native';
@@ -9,7 +9,9 @@ import { SliderBox } from 'react-native-image-slider-box';
 import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from "../assets/AppColors"
+import { servicesCategory } from '../resources/data';
 import AddNewDates from '../components/AddNewDates';
+import ServiceCard from '../components/ServiceCard';
 
 const ClientHomeAds = (props) => {
     const { cat, ServiceDataInfo, campInfo, userRegion, setReachCampaignfrom, reachCampaignfrom } = useContext(SearchContext);
@@ -32,6 +34,15 @@ const ClientHomeAds = (props) => {
         });
         return campArray;
     }
+
+    const Categoryquery = () => {
+        return servicesCategory || [];
+    }
+    const renderCat = ({ item }) => {
+        return (
+            <ServiceCard {...item} />
+        )
+    };
     useEffect(() => {
 
     }, [])
@@ -67,7 +78,8 @@ const ClientHomeAds = (props) => {
             <ScrollView contentContainerStyle={styles.home}>
                 <Pressable
                     style={styles.search}
-                    onPress={() => navigation.navigate(ScreenNames.ClientSearch)}>
+                    onPress={() => navigation.navigate(ScreenNames.ClientSearch, { isFromSearchServiceClick: true })}
+                >
                     <View>
                         <Text style={styles.txt}>بحث خدمات المناسبات</Text>
                     </View>
@@ -96,21 +108,44 @@ const ClientHomeAds = (props) => {
                     <Text style={styles.txt}>انشاء حساب</Text>
                 </Pressable> */}
 
-                <Text style={styles.titleText}>أفضل العروض</Text>
-
-                <View style={styles.viewSeper}>
-                    <Text style={styles.CatText}>قاعات</Text>
+                <View style={styles.CatView}>
+                    <FlatList
+                        data={Categoryquery()}
+                        renderItem={renderCat}
+                        horizontal={true}
+                    />
                 </View>
 
-                <View style={styles.campighn}>
-                    <View style={styles.campBox}>
-                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scroll}>
-                            {renderCampaigns()}
-                        </ScrollView>
+                <View style={styles.centents}>
+                    <Text style={styles.titleText}>أفضل العروض</Text>
+                    <View style={styles.campighn}>
+                        <Text style={styles.CatText}>قاعات</Text>
+                        <View style={styles.campBox}>
+                            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scroll}>
+                                {renderCampaigns()}
+                            </ScrollView>
+                        </View>
                     </View>
                 </View>
 
-                <View style={styles.viewSeper}>
+                <View style={styles.centents}>
+                    <Text style={styles.titleText}>الاكثر طلبا</Text>
+                    
+                </View>
+
+                <View style={styles.centents}>
+                    <Text style={styles.titleText}>نقترح عليك</Text>
+                    
+                </View>
+
+                <View style={styles.centents}>
+                    <Text style={styles.titleText}>الاقرب لي</Text>
+                    
+                </View>
+
+
+
+                {/* <View style={styles.viewSeper}>
                     <Text style={styles.CatText}>تصوير</Text>
                 </View>
 
@@ -120,9 +155,9 @@ const ClientHomeAds = (props) => {
                             {renderCampaigns()}
                         </ScrollView>
                     </View>
-                </View>
+                </View> */}
 
-                <View style={styles.viewSeper}>
+                {/* <View style={styles.viewSeper}>
                     <Text style={styles.CatText}>شيف</Text>
                 </View>
 
@@ -135,7 +170,7 @@ const ClientHomeAds = (props) => {
                             {renderCampaigns()}
                         </ScrollView>
                     </View>
-                </View>
+                </View> */}
 
 
 
@@ -151,15 +186,15 @@ const styles = StyleSheet.create({
 
     },
     scroll: {
-        flexDirection: 'row-reverse'
+        //flexDirection: 'row-reverse'
     },
     bg: {
         flex: 1,
         backgroundColor: colors.BGScereen,
     },
     campighn: {
-        borderColor: 'black',
-        //marginTop: 40,
+        marginTop: 20,
+        marginBottom: 20
     },
     campBox: {
         flexDirection: 'row',
@@ -168,17 +203,21 @@ const styles = StyleSheet.create({
 
     },
     titleText: {
-        fontSize: 15,
+        textAlign:'center',
+        fontSize: 17,
         color: colors.TitleFont,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
-        marginRight: 20,
-        marginTop: 40,
+        backgroundColor: colors.BGScereen,
+        width: 110,
+        position: 'absolute',
+        top: -18,
+        right: 10
     },
     CatText: {
-        fontSize: 14,
+        color: colors.TitleFont,
+        fontSize: 15,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
         marginRight: 20,
-        marginTop: 10,
     },
     search: {
         flexDirection: 'row',
@@ -211,8 +250,12 @@ const styles = StyleSheet.create({
 
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
-    viewSeper: {
-        marginTop: 30
+    centents: {
+        marginTop: 30,
+        borderWidth: 0.3,
+        borderColor: colors.darkGold,
+        marginBottom: 50,
+       // height: 318
     },
     header: {
         width: "100%",
@@ -234,6 +277,10 @@ const styles = StyleSheet.create({
         height: 60,
         //justifyContent: 'center',
         alignItems: 'center',
+    },
+    CatView: {
+        marginTop: 50,
+        marginBottom: 30
     }
 
 })

@@ -18,6 +18,7 @@ import { colors } from '../assets/AppColors';
 
 
 const ClientSearch = (props) => {
+    const {isFromSearchServiceClick} = props.route?.params || {};
     const { town, setTown, cityselected, setcityselected, regionselect, setregionselect, setselectMonthforSearch, selectMonthforSearch, setselectDateforSearch
         , selectDateforSearch, Categorychozen, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
@@ -114,6 +115,7 @@ const ClientSearch = (props) => {
                 {...item}
                 isChecked={item.titleCategory === selectServiceType}
                 onCatPress={(value) => setSelectServiceType(value)}
+                isFromSearchServiceClick={isFromSearchServiceClick}
             />
         )
     };

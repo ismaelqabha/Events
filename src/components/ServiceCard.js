@@ -8,7 +8,7 @@ import { colors } from '../assets/AppColors';
 
 
 const ServiceCard = (props) => {
-    const { isFromChooseServiceClick, isChecked } = props;
+    const { isFromChooseServiceClick, isFromSearchServiceClick, isChecked } = props;
     const { cat, setCat, ServiceDataInfo, setServiceDataInfo, ServId, userId, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
 
@@ -70,18 +70,36 @@ const ServiceCard = (props) => {
             </TouchableOpacity>;
 
         } else {
-            const ServiceCard = props;
-            const clicked = chickIfChecked(ServiceCard);
-            return <View>
-                <TouchableOpacity style={clicked ? styles.pressBody : styles.body} onPress={() => onCatPress()}>
-                    <Image
-                        source={props.img}
-                        style={styles.img}
-                    />
+            if (isFromSearchServiceClick === true) {
+                const ServiceCard = props;
+                const clicked = chickIfChecked(ServiceCard);
+                return <View>
+                    <TouchableOpacity style={clicked ? styles.pressBody : styles.body} onPress={() => onCatPress()}>
+                        <Image
+                            source={props.img}
+                            style={styles.img}
+                        />
 
-                </TouchableOpacity>
-                <Text style={styles.text}>{props.titleCategory}</Text>
-            </View>;
+                    </TouchableOpacity>
+                    <Text style={styles.text}>{props.titleCategory}</Text>
+                </View>;
+            } else {
+                const ServiceCard = props;
+                const clicked = chickIfChecked(ServiceCard);
+                return <View style={clicked ? styles.HomeScreenViewPress : styles.HomeScreenView}>
+                    <TouchableOpacity 
+                    //onPress={() => onCatPress()}
+                    >
+                        <Image
+                            source={props.img}
+                            style={styles.HomeScreenimg}
+                        />
+                        <Text style={styles.text}>{props.titleCategory}</Text>
+                    </TouchableOpacity>
+
+                </View>;
+            }
+
         }
     }
 
@@ -124,6 +142,26 @@ const styles = StyleSheet.create({
     img: {
         width: 100,
         height: 100,
+    },
+    HomeScreenView: {
+        //alignItems: 'center',
+        justifyContent:'center',
+        margin: 15,
+        height: 100,
+        width: 60,
+    },
+    HomeScreenViewPress:{
+        justifyContent:'center',
+        margin: 15,
+        height: 100,
+        width: 60,
+        backgroundColor: colors.darkGold,
+        borderRadius: 15,
+        elevation:5
+    },
+    HomeScreenimg: {
+        width: 60,
+        height: 60,
     },
     text: {
         textAlign: 'center',
