@@ -141,32 +141,32 @@ export const servicesCategory = [
     {
         cat_id: 1,
         titleCategory: 'قاعات',
-        img: (require('../assets/photos/hole.png')),
+        img: (require('../assets/photos/hallIcon.png')),
     },
     {
         cat_id: 2,
         titleCategory: 'تصوير',
-        img: (require('../assets/photos/cam.png')),
+        img: (require('../assets/photos/CamIcon.png')),
     },
     {
         cat_id: 3,
         titleCategory: 'مطربين',
-        img: (require('../assets/photos/micro.png')),
+        img: (require('../assets/photos/singerIcon.png')),
     },
     {
         cat_id: 4,
         titleCategory: 'DJ',
-        img: (require('../assets/photos/d-j.png')),
+        img: (require('../assets/photos/DJIcon.png')),
     },
     {
         cat_id: 5,
         titleCategory: 'شيف',
-        img: (require('../assets/photos/chef.png')),
+        img: (require('../assets/photos/chefIcon.png')),
     },
     {
         cat_id: 6,
         titleCategory: 'تصفيف شعر',
-        img: (require('../assets/photos/hair.png')),
+        img: (require('../assets/photos/saloonIcon.png')),
     },
     {
         cat_id: 7,
@@ -216,7 +216,7 @@ export const servicesCategory = [
     {
         cat_id: 16,
         titleCategory: 'حلويات',
-        img: (require('../assets/photos/cake.png')),
+        img: (require('../assets/photos/SweetIcon.png')),
     },
     {
         cat_id: 17,

@@ -10,10 +10,11 @@ import { FlatList } from 'react-native-gesture-handler';
 
 import MonthCom from '../components/MonthCom';
 import { SelectList } from 'react-native-dropdown-select-list'
-
+import AntDesign from "react-native-vector-icons/AntDesign";
 import { getCities } from '../resources/API';
 import ClientCalender from '../components/ClientCalender';
 import AddNewDates from '../components/AddNewDates';
+import { colors } from '../assets/AppColors';
 
 
 const ClientSearch = (props) => {
@@ -203,8 +204,14 @@ const ClientSearch = (props) => {
                             style={styles.search}
                             onPress={() => navigation.navigate(ScreenNames.SearchServcies)}
                         >
-                            <Image style={styles.img} source={require('../assets/photos//search1.png')} />
-                            <Text style={styles.txt}>بحث الخدمات</Text>
+                            <View>
+                                <Text style={styles.txt}>بحث </Text>
+                            </View>
+                            <AntDesign
+                                style={styles.icon}
+                                name={"search1"}
+                                color={"gray"}
+                                size={25} />
                         </Pressable>
                         <FlatList
                             data={Categoryquery()}
@@ -213,7 +220,7 @@ const ClientSearch = (props) => {
                         />
 
                         <TouchableOpacity onPress={handlePress} style={styles.nextView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>التالي</Text>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.gold }}>التالي</Text>
                         </TouchableOpacity>
                     </View>
                 }
@@ -251,7 +258,7 @@ const ClientSearch = (props) => {
                             </View>
                         }
                         <TouchableOpacity onPress={handlePress} style={styles.nextView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>التالي</Text>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.gold }}>التالي</Text>
                         </TouchableOpacity>
                     </View>
                 }
@@ -335,12 +342,12 @@ const ClientSearch = (props) => {
             {placeRender()}
 
 
-            <View style={{ backgroundColor: 'snow', width: '100%', height: 60, position: 'absolute', bottom: 0 }}>
+            <View style={{ backgroundColor: 'transparent', width: '100%', height: 60, position: 'absolute', bottom: 0 }}>
                 <TouchableOpacity onPress={onBtnSearchPress}
                     disabled={Categorychozen ? false : true}
                     style={[styles.searchbutton, Categorychozen ? styles.searchbutton : styles.searchbuttonWithoutSelect]}
                 >
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>أبحث</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.darkGold }}>أبحث</Text>
                 </TouchableOpacity>
             </View>
 
@@ -351,7 +358,7 @@ const ClientSearch = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: colors.BGScereen,
     },
     title: {
         flexDirection: 'row',
@@ -363,35 +370,33 @@ const styles = StyleSheet.create({
     header: {
         width: '90%',
         height: 350,
-        backgroundColor: 'snow',
+        backgroundColor: 'white',
         alignSelf: 'center',
         elevation: 5,
         borderRadius: 8,
-        alignSelf: 'center',
 
     },
     pressHeader: {
-        width: 350,
+        width: '90%',
         height: 60,
-        backgroundColor: 'snow',
+        backgroundColor: 'white',
         alignSelf: 'center',
         elevation: 5,
         borderRadius: 8,
-        alignSelf: 'center'
     },
     dateView: {
         width: '90%',
         height: 490,
-        backgroundColor: 'snow',
+        backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
         margin: 10,
         alignSelf: 'center',
     },
     pressDateView: {
-        width: 350,
+        width: '90%',
         height: 60,
-        backgroundColor: 'snow',
+        backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
         margin: 10,
@@ -407,7 +412,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     pressplaceView: {
-        width: 350,
+        width: '90%',
         height: 60,
         backgroundColor: 'snow',
         elevation: 5,
@@ -415,7 +420,9 @@ const styles = StyleSheet.create({
         margin: 10,
         alignSelf: 'center'
     },
-
+    icon: {
+        marginRight: 10
+    },
     headerText: {
 
     },
@@ -425,13 +432,14 @@ const styles = StyleSheet.create({
         margin: 10,
         position: 'absolute',
         right: 0,
-        top: 0
+        top: 0,
+        color: colors.TitleFont
     },
     headerTextL: {
         fontSize: 20,
         fontWeight: 'bold',
         margin: 10,
-        //borderWidth: 1,
+        color: colors.puprble,
         height: 25,
     },
 
@@ -441,34 +449,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignSelf: 'center',
         height: 50,
-        width: 310,
+        width: '90%',
         fontSize: 18,
         borderRadius: 10,
         fontWeight: 'bold',
         marginTop: 20,
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         backgroundColor: '#ffff',
         elevation: 5,
         marginBottom: 20,
-        marginRight: 15,
-
     },
-    img: {
-        width: 30,
-        height: 30,
-        marginLeft: 7,
-    },
+    // img: {
+    //     width: 30,
+    //     height: 30,
+    //     marginLeft: 7,
+    // },
     txt: {
         fontSize: 15,
         fontWeight: 'bold',
-        marginRight: 15,
+        marginRight: 20,
         color: 'gray'
     },
     nextView: {
         height: 30,
         width: 80,
         borderRadius: 5,
-        backgroundColor: '#ffff',
+        backgroundColor: colors.puprble,
         elevation: 5,
         alignItems: 'center',
         justifyContent: 'center',
@@ -481,7 +487,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 100,
         borderRadius: 5,
-        backgroundColor: '#ffff',
+        backgroundColor: colors.puprble,
         elevation: 5,
         alignItems: 'center',
         justifyContent: 'center',
@@ -494,7 +500,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 100,
         borderRadius: 5,
-        backgroundColor: '#ffff',
+        backgroundColor: colors.puprble,
         elevation: 5,
         alignItems: 'center',
         justifyContent: 'center',
@@ -507,7 +513,7 @@ const styles = StyleSheet.create({
     choicesView: {
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#d3d3d3',
+        backgroundColor: colors.puprble,
         width: 220,
         height: 60,
         alignItems: 'center',
@@ -517,7 +523,7 @@ const styles = StyleSheet.create({
     choicesPView: {
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#d3d3d3',
+        backgroundColor: colors.puprble,
         width: 210,
         height: 60,
         alignItems: 'center',
@@ -529,7 +535,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 90,
         height: 50,
-        backgroundColor: '#d3d3d3',
+        backgroundColor: colors.puprble,
         borderRadius: 35,
         //elevation: 5,
         margin: 5
@@ -539,7 +545,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 110,
         height: 50,
-        backgroundColor: 'white',
+        backgroundColor: colors.gold,
         borderRadius: 35,
         elevation: 5,
         margin: 5
@@ -549,7 +555,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 90,
         height: 50,
-        backgroundColor: 'white',
+        backgroundColor: colors.gold,
         borderRadius: 35,
         elevation: 5,
         margin: 5
@@ -557,14 +563,11 @@ const styles = StyleSheet.create({
     te: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: 'black'
+        color: 'white'
     },
     insideView: {
         justifyContent: 'center',
         alignItems: 'center',
-        //marginBottom: 50,
-        //borderWidth: 1,
-        //elevation : 5,
         padding: 10,
         borderRadius: 8,
         margin: 30,

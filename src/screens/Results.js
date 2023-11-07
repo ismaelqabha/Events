@@ -3,6 +3,7 @@ import { View, StyleSheet, Pressable, Text, Modal, Image, TextInput } from 'reac
 import SearchContext from '../../store/SearchContext';
 import HomeCards from '../components/HomeCards';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import { ScrollView } from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider'
@@ -12,6 +13,7 @@ import { getCities } from '../resources/API';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import moment from "moment";
+import { colors } from '../assets/AppColors';
 
 
 
@@ -114,7 +116,6 @@ const Results = (props) => {
     }
     const modalPress = () => {
         setShowModal(true);
-
     }
 
     const closeModal = () => {
@@ -176,7 +177,7 @@ const Results = (props) => {
     };
 
     const checkDateIsAvilable = (serviceDates) => {
-       
+
         const requestedDate = moment(new Date(objectResult.selectDateforSearch)).startOf('day')
         const isAvilable = serviceDates?.find(sevice => {
             const { bookDate, serviceStutes } = sevice;
@@ -193,8 +194,8 @@ const Results = (props) => {
             const { bookDate, serviceStutes } = sevice;
             const wholeDate = moment(bookDate);
             const gittingMonth = wholeDate.format('M')
-           // console.log("gittingMonth", gittingMonth, "requestedMonth", requestedMonth);
-            const isSameMonth = gittingMonth == requestedMonth 
+            // console.log("gittingMonth", gittingMonth, "requestedMonth", requestedMonth);
+            const isSameMonth = gittingMonth == requestedMonth
             return isSameMonth && serviceStutes == 'true'
         })
 
@@ -202,7 +203,7 @@ const Results = (props) => {
     }
     const comparingData = (dateAviable, monthAvailble, source) => {
         if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
-            return dateAviable || monthAvailble 
+            return dateAviable || monthAvailble
         } else {
             return findFirstDateAvailable(source)
         }
@@ -213,7 +214,7 @@ const Results = (props) => {
 
         const filtered = data?.filter(item => {
             const isAvilable = checkDateIsAvilable(item.serviceDates);
-            const AvilableMonth =  checkMonthAvailableDate(item.serviceDates);
+            const AvilableMonth = checkMonthAvailableDate(item.serviceDates);
             const result = comparingData(isAvilable, AvilableMonth, item.serviceDates)
 
             const isCitySelect = objectResult.cityselected == '' ? true : item.serviceData.address == objectResult.cityselected
@@ -256,37 +257,37 @@ const Results = (props) => {
         return (
             <View style={{ flex: 1 }}>
                 {/* Num Of Guest */}
-                <Text style={styles.bodyText}>كم عدد المدعوين المتوقع</Text>
+                <Text style={styles.bodyText}> عدد المدعوين </Text>
                 <View style={styles.insideView}>
                     <TextInput
                         style={styles.Capacityinput}
                         keyboardType="numeric"
-                        placeholder='عدد المدعوين'
+                        //placeholder='عدد المدعوين'
                         onChangeText={(value) =>
                             setGuestNum(parseInt(value))
                         }
                     />
                 </View>
                 {/* Hall Type */}
-                <Text style={styles.bodyText}>ما هو نوع القاعة التي تبحث عنها </Text>
+                <Text style={styles.bodyText}>نوع القاعة</Text>
                 <View style={styles.insideView}>
-                    <View style={{ flexDirection: 'row', }}>
+                    <View style={{ flexDirection: 'row' }}>
                         <Pressable
                             style={[styles.HallTypeView, typeClicked == 'قاعة خارجية' ? styles.HallTypeViewClicked : styles.HallTypeView]}
                             onPress={() => OutClicked()}>
-                            <Text style={styles.TypeText}>قاعه خارجية</Text>
+                            <Text style={[styles.TypeText, typeClicked == 'قاعة خارجية' ? styles.TypeTextPressed : styles.TypeText]}>قاعه خارجية</Text>
                         </Pressable>
                         <Pressable style={[styles.HallTypeView, typeClicked == 'قاعة داخلية' ? styles.HallTypeViewClicked : styles.HallTypeView]}
                             onPress={() => InClicked()}>
-                            <Text style={styles.TypeText}>قاعه داخلية</Text>
+                            <Text style={[styles.TypeText, typeClicked == 'قاعة داخلية' ? styles.TypeTextPressed : styles.TypeText]}>قاعه داخلية</Text>
                         </Pressable>
                         <Pressable style={[styles.HallTypeView, typeClicked == 'مطعم' ? styles.HallTypeViewClicked : styles.HallTypeView]}
                             onPress={() => RestClicked()}>
-                            <Text style={styles.TypeText}>مطعم</Text>
+                            <Text style={[styles.TypeText, typeClicked == 'مطعم' ? styles.TypeTextPressed : styles.TypeText]}>مطعم</Text>
                         </Pressable>
                         <Pressable style={[styles.HallTypeView, typeClicked == 'فندق' ? styles.HallTypeViewClicked : styles.HallTypeView]}
                             onPress={() => HotClicked()}>
-                            <Text style={styles.TypeText}>فندق</Text>
+                            <Text style={[styles.TypeText, typeClicked == 'فندق' ? styles.TypeTextPressed : styles.TypeText]}>فندق</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -362,18 +363,20 @@ const Results = (props) => {
     const datePicker = () => {
         return (
             <View style={{ flex: 1 }}>
-                <Text style={styles.bodyText}>ما هو تاريخ المناسبة المتوقع   </Text>
+                <Text style={styles.bodyText}>تاريخ المناسبة  </Text>
                 <View style={styles.insideView}>
                     <Pressable onPress={() => showMode('date')} >
                         <View style={styles.viewDate}>
-                            <Text style={styles.text}>{DateText || "dd/mm/yyyy"}</Text>
+                            <View style={styles.Date}>
+                                <Text style={styles.text}>{DateText || "dd/mm/yyyy"}</Text>
+                            </View>
                             <Fontisto
                                 name='date'
-                                style={{ fontSize: 30, color: 'black' }}
+                                style={{ fontSize: 30, color: colors.puprble, alignSelf: 'center' }}
                             />
                         </View>
                     </Pressable>
-                    <Pressable onPress={() => showMode('time')} >
+                    {/* <Pressable onPress={() => showMode('time')} >
                         <View style={styles.viewDate}>
                             <Text style={styles.text}>{TimeText || "00:00"}</Text>
 
@@ -382,7 +385,7 @@ const Results = (props) => {
                                 source={require('../assets/photos/time.png')}
                             />
                         </View>
-                    </Pressable>
+                    </Pressable> */}
                     {show && (
                         <DateTimePicker
                             testID='dateTimePicker'
@@ -414,7 +417,10 @@ const Results = (props) => {
                         size={25} />
                 </Pressable>
                 <Pressable onPress={() => modalPress()}>
-                    <Image source={require('../assets/photos/filter.png')} />
+                    <FontAwesome
+                        name={"sliders"}
+                        color={colors.puprble}
+                        size={25} />
                 </Pressable>
             </View>
             <ScrollView contentContainerStyle={styles.home}>
@@ -437,22 +443,23 @@ const Results = (props) => {
                             <ScrollView contentContainerStyle={styles.home}>
                                 {/* Date & Time */}
                                 {datePicker()}
-                                {/* Price */}
-                                {priceComp()}
-                                {/* Address */}
-                                {addressComp()}
-
                                 {/* Hall Type */}
                                 {object[cat]}
                                 {/* end pf hall type */}
-                                <View style={styles.insideView}>
 
-                                </View>
+                                {/* Address */}
+                                {addressComp()}
+                                {/* Price */}
+                                {priceComp()}
+
+                                {/* <View style={styles.insideView}>
+
+                                </View> */}
                             </ScrollView>
                         </View>
                         <View style={styles.searchButtonView}>
                             <Pressable onPress={() => closeModal()} style={styles.searchButton} >
-                                <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 18 }}>مشاهدة النتائج</Text>
+                                <Text style={{ color: colors.darkGold, fontWeight: 'bold', fontSize: 18 }}>مشاهدة النتائج</Text>
                             </Pressable>
                         </View>
 
@@ -483,13 +490,13 @@ const styles = StyleSheet.create({
     },
     bodyText: {
         fontSize: 18,
-        color: 'black',
-        marginBottom: 20
+        color: colors.puprble,
+        marginBottom: 5
     },
     dModal: {
         width: "100%",
         height: '100%',
-        backgroundColor: '#ffffff',
+        backgroundColor: colors.BGScereen,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },
@@ -514,10 +521,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 50,
-        //elevation: 5,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        borderWidth: 1,
+        //borderWidth: 1,
         padding: 10,
         borderRadius: 8
     },
@@ -541,35 +545,38 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         width: '100%',
-        height: 60,
-        borderTopWidth: 1,
-        borderColor: 'lightslategrey',
+        height: 70,
         alignItems: 'flex-end',
         justifyContent: 'center',
         paddingRight: 10,
-        backgroundColor: 'snow'
+        backgroundColor: colors.BGScereen
     },
     searchButton: {
         width: 150,
         height: 40,
-        borderRadius: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        elevation: 2,
+        borderRadius: 8,
+        elevation: 5,
+        backgroundColor: colors.puprble
     },
     viewDate: {
         flexDirection: 'row',
-        borderColor: '#808080',
-        width: 300,
+        width: '90%',
         height: 50,
-        borderRadius: 8,
-        alignItems: 'center',
-        backgroundColor: 'mintcream',
+        // borderRadius: 10,
+        // alignItems: 'center',
+        // backgroundColor: 'white',
         justifyContent: 'space-evenly',
-        marginBottom: 20,
+        alignSelf: 'center'
+    },
+    Date:{
+        width: '85%',
+        height: 50,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
     },
     text: {
         fontSize: 20,
@@ -577,39 +584,50 @@ const styles = StyleSheet.create({
     icoon: {
         width: 35,
         height: 35,
-        marginLeft: 50
+       // marginLeft: 50
     },
     Capacityinput: {
         alignContent: 'center',
         textAlign: 'center',
         height: 50,
-        width: 200,
-        fontSize: 17,
-        borderRadius: 8,
+        width: '90%',
+        fontSize: 18,
+        borderRadius: 10,
         fontWeight: 'bold',
-        borderWidth: 1,
+        backgroundColor: 'white',
     },
     HallTypeView: {
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 10,
-        borderRadius: 5
+        marginLeft: 25,
+        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: colors.puprble,
+        backgroundColor: 'white',
     },
     HallTypeViewClicked: {
-        width: 50,
-        height: 50,
-        backgroundColor: "gray",
+        width: 60,
+        height: 60,
+        backgroundColor: colors.puprble,
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 10,
-        borderRadius: 5
+        marginLeft: 25,
+        borderRadius: 5,
+        
     },
     TypeText: {
-        fontSize: 15,
+        fontSize: 18,
         fontWeight: 'bold',
-        textAlign: 'center'
+        textAlign: 'center',
+        color: colors.puprble
+    },
+    TypeTextPressed: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: colors.darkGold
     },
 })
 

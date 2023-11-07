@@ -4,6 +4,7 @@ import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import { colors } from '../assets/AppColors';
 
 
 const ServiceCard = (props) => {
@@ -97,11 +98,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     body: {
-        height: 95,
-        width: 95,
+        height: 100,
+        width: 100,
         borderRadius: 30,
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         margin: 10,
         paddingVertical: 20,
         backgroundColor: '#ffff',
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
         width: 100,
         borderRadius: 30,
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         margin: 10,
         paddingVertical: 20,
         backgroundColor: '#ffff',
@@ -121,15 +122,15 @@ const styles = StyleSheet.create({
         borderWidth: 2
     },
     img: {
-        width: 60,
-        height: 60,
+        width: 100,
+        height: 100,
     },
     text: {
         textAlign: 'center',
         fontSize: 17,
         fontWeight: 'bold',
-        //color: 'black',
-        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        color: colors.puprble,
+        //fontFamily: 'Cairo-VariableFont_slnt,wght',
         width: '100%'
     },
     otherbody: {

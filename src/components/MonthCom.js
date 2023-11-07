@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import SearchContext from '../../store/SearchContext';
+import { colors } from '../assets/AppColors';
 
 const MonthCom = (props) => {
     const { setselectMonthforSearch, selectMonthforSearch } = useContext(SearchContext);
@@ -234,7 +235,8 @@ const styles = StyleSheet.create({
     },
     monthViewPress: {
         alignItems: 'center',
-        borderWidth: 1,
+        borderWidth: 2,
+        borderColor: colors.darkGold,
         backgroundColor: 'white',
         width: 110,
         height: 110,
@@ -245,13 +247,13 @@ const styles = StyleSheet.create({
     monthText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'black',
+        color: colors.darkGold,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
     MView: {
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'lightskyblue',
+        backgroundColor: colors.puprble,
         width: '100%',
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
