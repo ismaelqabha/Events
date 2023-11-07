@@ -10,12 +10,12 @@ const UserProfile = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    console.log("userId", userId);
+    //console.log("userId", userId);
     
     const getUserfromApi = () => {
         getUserData({ USER_ID: userId }).then(res => {
             setUserInfo(res)
-            console.log("setUserInfo", res);
+            //console.log("setUserInfo", res);
         })
     }
     useEffect(() => {
