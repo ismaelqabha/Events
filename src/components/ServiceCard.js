@@ -153,10 +153,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         margin: 15,
         height: 100,
-        width: 60,
-        backgroundColor: colors.darkGold,
+        width: 65,
+        borderWidth: 3,
+        borderColor: colors.darkGold,
         borderRadius: 15,
-        elevation: 5
+        //elevation: 5
     },
     HomeScreenimg: {
         width: 60,
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.puprble,
         //fontFamily: 'Cairo-VariableFont_slnt,wght',
-        width: '100%'
+        //width: '100%'
     },
     otherbody: {
         height: 120,

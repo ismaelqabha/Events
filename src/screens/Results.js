@@ -227,7 +227,7 @@ const Results = (props) => {
     }
     const renderCard = () => {
         const data = dataSearchResult();
-        //console.log("data ", data);
+        
         const cardsArray = data?.map(card => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
