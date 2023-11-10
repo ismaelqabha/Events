@@ -4,7 +4,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import CalenderDayCard from '../../components/ProviderComponents/CalenderDayCard';
 
 const ProviderCalender = (props) => {
-    const { data } = props?.route.params;
+    // const { data } = props?.route.params;
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -21,7 +21,7 @@ const ProviderCalender = (props) => {
                         color={"black"}
                         size={25} />
                 </Pressable>
-                <Text style={styles.txt}>{data?.title}</Text>
+                {/* <Text style={styles.txt}>{data?.title}</Text> */}
             </View>
 
             <View style={styles.body}>

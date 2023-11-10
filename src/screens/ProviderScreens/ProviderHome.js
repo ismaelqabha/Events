@@ -28,7 +28,6 @@ const ProviderHome = (props) => {
 
     const renderMyService = () => {
         const data = serviceInfoAccorUser || [];
-        console.log("data", data);
 
         if (data.length > 0) {
             const cardsArray = data.map(card => {
@@ -50,20 +49,6 @@ const ProviderHome = (props) => {
         )
     }
 
-    const renderCreateCard = () => {
-        return (<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-            <Text style={styles.createCardtxt}>اٍنشاء خدمة جديدة</Text>
-            <AntDesign
-                style={styles.iconBack}
-                name={"right"}
-                color={"black"}
-                size={25} />
-        </View>)
-    }
-
-    const onCreatePress = () => {
-        props.navigation.navigate(ScreenNames.ProviderCreateListing)
-    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -78,13 +63,11 @@ const ProviderHome = (props) => {
                         size={30} />
                 </Pressable>
             </View>
-            {headText()}
+            
             <View style={styles.serviceView}>
-                <ScrollView >{renderMyService()}</ScrollView>
+                {/* <ScrollView >{renderMyService()}</ScrollView> */}
             </View>
-            <Pressable style={styles.createCard} onPress={() => onCreatePress()}>
-                {renderCreateCard()}
-            </Pressable>
+            
         </View>
     )
 }
@@ -123,21 +106,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginTop: 30
     },
-    createCard: {
-        width: '80%',
-        height: 80,
-        borderRadius: 35,
-        backgroundColor: 'snow',
-        elevation: 5,
-        alignSelf: 'center',
-        justifyContent: 'center',
-        marginTop: 50,
-    },
-    createCardtxt: {
-        fontSize: 15,
-        fontFamily: 'Cairo-VariableFont_slnt,wght',
-        color: 'black',
-    },
+    
+    
     header: {
         alignItems: 'center',
         flexDirection: 'row',

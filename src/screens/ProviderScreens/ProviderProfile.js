@@ -1,22 +1,47 @@
-import { StyleSheet, Text, View, Pressable,ScrollView } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native'
+import React, { useContext, useEffect } from 'react'
 import { colors } from "../../assets/AppColors"
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-const language = strings.arabic.ProviderScreens.ProviderCreateListing
 import strings from '../../assets/res/strings';
+import { ScreenNames } from '../../../route/ScreenNames';
+import SearchContext from '../../../store/SearchContext';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import { getServiceInfoById } from '../../resources/API';
+import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 
-const ProviderProfile = () => {
+const ProviderProfile = (props) => {
+    const language = strings.arabic.ProviderScreens.ProviderCreateListing
+    const { userId } = useContext(SearchContext);
+    const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
 
-   
+    const getServiceInfofromApi = () => {
+        getServiceInfoById({ userID: userId }).then(res => {
+            setServiceInfoAccorUser(res)
+        })
+    }
+    useEffect(() => {
+        getServiceInfofromApi()
+    }, [])
+
+    const renderMyService = () => {
+        const data = serviceInfoAccorUser || [];
+        const cardsArray = data.map(card => {
+            return <CalenderServiceCard {...card} />;
+        });
+        return cardsArray;
+    };
 
     const seprator = () => {
         return (
             <View style={styles.seprater}></View>
         )
+    }
+    const onCreatePress = () => {
+        props.navigation.navigate(ScreenNames.ProviderCreateListing)
     }
     const renderClients = () => {
         return (<View>
@@ -26,7 +51,6 @@ const ProviderProfile = () => {
                 </View>
                 <View style={styles.IconView}>
                     <FontAwesome5
-                        style={styles.icon}
                         name={"users"}
                         color={colors.puprble}
                         size={25} />
@@ -68,7 +92,7 @@ const ProviderProfile = () => {
     }
     const renderCreateService = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => onCreatePress()}>
                 <View>
                     <Text style={styles.basicInfo}>اٍنشاء خدمة جديدة</Text>
                 </View>
@@ -145,7 +169,7 @@ const ProviderProfile = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTxt}>البروفايل</Text>
+                <Text style={styles.headerTxt}>بروفايل</Text>
                 <Pressable
                     style={styles.drawer}
                     onPress={() => navigation.openDrawer()}
@@ -160,6 +184,11 @@ const ProviderProfile = () => {
                 <View style={styles.headView}>
                     <Text style={styles.headtext}>{language.HeadText + 'اسماعيل كبها '}</Text>
                 </View>
+                <View style={styles.content}>
+                    <Text style={styles.txt}>الخدمات المزودة</Text>
+                    {renderMyService()}
+                </View>
+                {seprator()}
                 <View style={styles.content}>
                     {renderPayments()}
                 </View>
@@ -193,11 +222,12 @@ const styles = StyleSheet.create({
         backgroundColor: colors.BGScereen,
         marginBottom: 70
     },
-   
-    
+
+
     headView: {
         marginTop: 20,
-        marginRight: 20
+        marginRight: 20,
+        marginBottom: 40
     },
     headtext: {
         fontSize: 20,

@@ -9,6 +9,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import ProviderHome from '../src/screens/ProviderScreens/ProviderHome';
 import { colors } from '../src/assets/AppColors';
 import ProviderProfile from '../src/screens/ProviderScreens/ProviderProfile';
+import ProviderCalender from '../src/screens/ProviderScreens/ProviderCalender';
 
 
 const ProviderTapNav = () => {
@@ -16,9 +17,9 @@ const ProviderTapNav = () => {
 
     return (
         <Tap.Navigator
-        // initialRouteName='ProviderHome'
-        activeColor={colors.puprble}
-        inactiveColor={colors.darkGold}
+            // initialRouteName='ProviderHome'
+            activeColor={colors.puprble}
+            inactiveColor={colors.darkGold}
             barStyle={{ backgroundColor: 'snow' }}>
 
             <Tap.Screen name={ScreenNames.ProviderProfile} component={ProviderProfile}
@@ -32,8 +33,18 @@ const ProviderTapNav = () => {
                     )
                 }}
             />
-
-            <Tap.Screen name={ScreenNames.ProviderServiceShow} component={ProviderServiceShow}
+            <Tap.Screen name={ScreenNames.ProviderHome} component={ProviderHome}
+                options={{
+                    title: 'خدماتي',
+                    drawerIcon: () => (
+                        <Ionicons
+                            name='create-outline'
+                            style={{ fontSize: 30, color: '#1e90ff' }}
+                        />
+                    )
+                }}
+            />
+            <Tap.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender}
                 options={{
                     title: 'التقويم',
                     drawerIcon: () => (
@@ -47,27 +58,17 @@ const ProviderTapNav = () => {
 
             <Tap.Screen name="Notification" component={TopTapNotificaNavig}
                 options={{
-                    title: 'الاشعارات',
+                    title: 'الحجوزات',
                     drawerIcon: () => (
                         <AntDesign
-                            name='notification'
+                            name='book'
                             style={{ fontSize: 30, color: '#1e90ff' }}
                         />
                     )
                 }}
             />
 
-            <Tap.Screen name={ScreenNames.ProviderHome} component={ProviderHome}
-                options={{
-                    title: 'خدماتي',
-                    drawerIcon: () => (
-                        <Ionicons
-                            name='create-outline'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
-                        />
-                    )
-                }}
-            />
+
 
         </Tap.Navigator>
 

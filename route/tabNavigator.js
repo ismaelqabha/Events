@@ -51,17 +51,18 @@ const TabNavigator = () => {
         //     }
         // })}
         >
-            <Tap.Screen name={ScreenNames.ClientProfile} component={ClientProfile}
+            <Tap.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds}
                 options={{
-                    title: 'بروفايل',
+                    title: 'الرئيسيه',
                     tapBarIcon: () => (
-                        <AntDesign
-                            name='profile'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
+                        <FontAwesome5
+                            name='home'
+                            style={{ fontSize: 25, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', fontWeight: 'bold' }}
                         />
-                    )
+                    ),
                 }}
             />
+
             <Tap.Screen name={ScreenNames.FileFavorites} component={FileFavorites}
                 options={{
                     title: 'المفضلة',
@@ -85,18 +86,18 @@ const TabNavigator = () => {
                     )
                 }}
             />
-
-            <Tap.Screen name={ScreenNames.ClientHomeAds} component={ClientHomeAds}
+            <Tap.Screen name={ScreenNames.ClientProfile} component={ClientProfile}
                 options={{
-                    title: 'الرئيسيه',
+                    title: 'بروفايل',
                     tapBarIcon: () => (
-                        <FontAwesome5
-                            name='home'
-                            style={{ fontSize: 25, color: '#1e90ff', fontFamily: 'Cairo-VariableFont_slnt,wght', fontWeight: 'bold' }}
+                        <AntDesign
+                            name='profile'
+                            style={{ fontSize: 30, color: '#1e90ff' }}
                         />
-                    ),
+                    )
                 }}
             />
+
 
         </Tap.Navigator>
 
