@@ -7,8 +7,8 @@ import ProviderServiceShow from '../src/screens/ProviderScreens/ProviderServiceS
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import ProviderHome from '../src/screens/ProviderScreens/ProviderHome';
-import UserProfile from '../src/screens/UserProfile';
 import { colors } from '../src/assets/AppColors';
+import ProviderProfile from '../src/screens/ProviderScreens/ProviderProfile';
 
 
 const ProviderTapNav = () => {
@@ -16,12 +16,12 @@ const ProviderTapNav = () => {
 
     return (
         <Tap.Navigator
-        initialRouteName='ProviderHome'
+        // initialRouteName='ProviderHome'
         activeColor={colors.puprble}
         inactiveColor={colors.darkGold}
             barStyle={{ backgroundColor: 'snow' }}>
 
-            <Tap.Screen name={ScreenNames.UserProfile} component={UserProfile}
+            <Tap.Screen name={ScreenNames.ProviderProfile} component={ProviderProfile}
                 options={{
                     title: 'بروفايل',
                     tapBarIcon: () => (

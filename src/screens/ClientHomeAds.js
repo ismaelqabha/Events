@@ -85,10 +85,6 @@ const ClientHomeAds = (props) => {
         ('https://i.ytimg.com/vi/8TE-BK89hHE/maxresdefault.jpg'),
         ('https://api.mzadqatar.com/uploads/images/2019/03/18/8158896-4022558486.jpg'),
         ("https://opensooq-images.os-cdn.com/previews/0x720/e9/48/e9485efd37c92c3002cadf210fe4b869a11432646d11a993195423b708d7f4f1.jpg.webp"),
-        // require('../assets/photos/abofaneh.png'),
-        // require('../assets/photos/djfarah.png'),
-        // require('../assets/photos/djWaseem.png'),
-        // require('../assets/photos/DJ.png'),
     ]
 
 
@@ -182,9 +178,6 @@ const ClientHomeAds = (props) => {
                     <Text style={styles.CatText}>{cat}</Text>
                     <ScrollView style={styles.scroll}>{renderServiceCard()}</ScrollView>
                 </View>
-
-
-
             </ScrollView>
         </ImageBackground>
     );
@@ -193,7 +186,6 @@ const ClientHomeAds = (props) => {
 const styles = StyleSheet.create({
     home: {
         borderRadius: 40,
-
     },
     scroll: {
         height: 360,
@@ -203,8 +195,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.BGScereen,
     },
     campighn: {
-        marginTop: 20,
-        //marginBottom: 20
+        marginTop: 20
     },
     campBox: {
         flexDirection: 'row',
@@ -241,7 +232,6 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginBottom: 30,
         alignSelf: 'center'
-
     },
     icon: {
         marginRight: 10

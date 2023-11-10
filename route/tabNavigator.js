@@ -9,8 +9,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { ScreenNames } from "./ScreenNames";
-import UserProfile from '../src/screens/UserProfile';
 import { colors } from '../src/assets/AppColors';
+import ClientProfile from '../src/screens/ClientProfile';
 
 
 const TabNavigator = () => {
@@ -51,7 +51,7 @@ const TabNavigator = () => {
         //     }
         // })}
         >
-            <Tap.Screen name={ScreenNames.UserProfile} component={UserProfile}
+            <Tap.Screen name={ScreenNames.ClientProfile} component={ClientProfile}
                 options={{
                     title: 'بروفايل',
                     tapBarIcon: () => (
