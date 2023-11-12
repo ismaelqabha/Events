@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,23 +6,22 @@ import {
   Text,
   TextInput,
   ScrollView,
-  Animated
+  Animated,
 } from 'react-native';
-import { SelectList } from 'react-native-dropdown-select-list';
-import { ScreenNames } from '../../../route/ScreenNames';
-import { regionData } from '../../resources/data';
+import {SelectList} from 'react-native-dropdown-select-list';
+import {ScreenNames} from '../../../route/ScreenNames';
+import {regionData} from '../../resources/data';
 import strings from '../../assets/res/strings';
-import IonIcons from "react-native-vector-icons/Ionicons"
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import DynamicHeader from '../../components/ProviderComponents/ScrollView/DynamicHeader';
+import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
 
-  
-  const [titleError,setTitleError]=useState(false)
-  const [subTitleError,setSubTitleError]=useState(false)
-  const [desError,setDesError]=useState(false)
+  const [titleError, setTitleError] = useState(false);
+  const [subTitleError, setSubTitleError] = useState(false);
+  const [desError, setDesError] = useState(false);
 
   //   service Data
   const {
@@ -38,14 +37,14 @@ const ProviderAddInfo = props => {
     setDescription,
   } = useContext(ServiceProviderContext);
 
-  const [detailesHeight, setDetailesHeight] = useState(500)
+  const [detailesHeight, setDetailesHeight] = useState(500);
   let scrollOffsetY = useRef(new Animated.Value(0)).current;
 
-  useEffect(()=>{
-    setSubTitleError(!checkStrings(SuTitle))
-    setTitleError(!checkStrings(title))
-    setDesError(!checkStrings(description))
-  },[title,SuTitle,description])
+  useEffect(() => {
+    setSubTitleError(!checkStrings(SuTitle));
+    setTitleError(!checkStrings(title));
+    setDesError(!checkStrings(description));
+  }, [title, SuTitle, description]);
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -58,73 +57,53 @@ const ProviderAddInfo = props => {
       isFromChooseServiceClick: true,
     },
     ScrollView: {
-      contentContainerStyle: { alignItems: 'center' },
+      contentContainerStyle: {alignItems: 'center'},
       style: styles.ScrollView,
       onScroll: Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollOffsetY } } }],
-        { useNativeDriver: false }
-      )
-    }
+        [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
+        {useNativeDriver: false},
+      ),
+    },
   };
 
   const onNextPress = () => {
-    checkRequestedData() ?
-      props.navigation.navigate(ScreenNames.ProviderSetPhotos, { data: { ...props } })
-      : missingData()
+    checkRequestedData()
+      ? props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
+          data: {...props},
+        })
+      : missingData();
   };
 
   const checkRequestedData = () => {
-    return checkStrings(title)
-      && checkStrings(SuTitle)
-      && checkStrings(description)
-      ? true : false
-  }
+    return checkStrings(title) &&
+      checkStrings(SuTitle) &&
+      checkStrings(description)
+      ? true
+      : false;
+  };
 
-  const checkStrings = (val) => {
-  
+  const checkStrings = val => {
     if (!val) {
       return false;
-    }
-    else if (val.trim().length<= 0) {
+    } else if (val.trim().length <= 0) {
       return false;
     }
     return true;
-  }
+  };
 
   const missingData = () => {
-    checkStrings(title) ? showMissingTitle() : null
-    checkStrings(SuTitle) ? showMissingSubTitle() : null
-    checkStrings(description) ? showMissingDescription() : null
-  }
-
-  const showMissingTitle=()=>{
-
-  }
-
-  const showMissingSubTitle=()=>{
-    
-  }
-
-  const showMissingDescription=()=>{
-    
-  }
-
-  const onBackPress = () => {
-    props.navigation.goBack();
+    checkStrings(title) ? showMissingTitle() : null;
+    checkStrings(SuTitle) ? showMissingSubTitle() : null;
+    checkStrings(description) ? showMissingDescription() : null;
   };
 
+  const showMissingTitle = () => {};
 
-  const RenderHeader = () => {
-    return (
-      <View style={styles.header}>
-        <Pressable onPress={() => onBackPress()}>
-          <IonIcons name='chevron-back-outline' color={"black"} size={25} />
+  const showMissingSubTitle = () => {};
 
-        </Pressable>
-        <Text style={styles.headText}>{language.HeadText}</Text>
-      </View>
-    );
-  };
+  const showMissingDescription = () => {};
+
+
 
   const RenderHeaderTitle = () => {
     return <Text style={styles.headText}>{language.SubHeader}</Text>;
@@ -134,7 +113,9 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}>{language.title}</Text>
-        {titleError && <Text style={styles.textRequired}>{language.titleRequired}</Text>}
+        {titleError && (
+          <Text style={styles.textRequired}>{language.titleRequired}</Text>
+        )}
         <TextInput
           style={styles.titleInput}
           keyboardType="default"
@@ -152,7 +133,9 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}>{language.subTitle}</Text>
-        {subTitleError && <Text style={styles.textRequired}>{language.titleRequired}</Text>}
+        {subTitleError && (
+          <Text style={styles.textRequired}>{language.titleRequired}</Text>
+        )}
 
         <TextInput
           style={styles.subtitleInput}
@@ -172,7 +155,9 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}> {language.description}</Text>
-       {desError && <Text style={styles.textRequired}>{language.titleRequired}</Text>}
+        {desError && (
+          <Text style={styles.textRequired}>{language.titleRequired}</Text>
+        )}
         <TextInput
           style={styles.descInput}
           keyboardType="default"
@@ -219,22 +204,20 @@ const ProviderAddInfo = props => {
           placeholder={language.address}
           onChangeText={value => setserviceAddress(value)}
           value={serviceAddress || null}
-          selection={{ start: 0 }}
+          selection={{start: 0}}
         />
       </View>
     );
   };
 
   const RenderFooter = () => {
-    return (
-      <View style={styles.footer}>
-        {RenderNextButton()}
-      </View>
-    );
+    return <View style={styles.footer}>{RenderNextButton()}</View>;
   };
   const RenderNextButton = () => {
     return (
-      <Pressable style={[styles.next, styles.shadow]} onPress={() => onNextPress()}>
+      <Pressable
+        style={[styles.next, styles.shadow]}
+        onPress={() => onNextPress()}>
         <Text style={styles.nextText}>{language.next}</Text>
       </Pressable>
     );
@@ -242,10 +225,14 @@ const ProviderAddInfo = props => {
 
   return (
     <View style={styles.container}>
-      {RenderHeader()}
+      <HeaderComp />
       <View style={styles.body}>
-        <DynamicHeader text={language.HeaderTitle} textStyle={styles.headText} value={scrollOffsetY} />
-        <ScrollView {...params.ScrollView} >
+        <DynamicHeader
+          text={language.HeaderTitle}
+          textStyle={styles.headText}
+          value={scrollOffsetY}
+        />
+        <ScrollView {...params.ScrollView}>
           {RenderMainDetails()}
           {RenderLocationDetails()}
         </ScrollView>
@@ -260,7 +247,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   ScrollView: {
-    width: "100%",
+    width: '100%',
   },
   header: {
     alignItems: 'flex-end',
@@ -292,11 +279,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     alignItems: 'center',
     backgroundColor: 'white',
-
   },
   shadow: {
     shadowColor: 'black',
-    shadowOffset: { width: -2, height: 4 },
+    shadowOffset: {width: -2, height: 4},
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 7,
@@ -310,7 +296,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     alignItems: 'center',
     backgroundColor: 'white',
-
   },
   footer: {
     marginTop: 20,
@@ -318,7 +303,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginRight: 20,
     marginLeft: 20,
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
   },
   next: {
     width: 70,
@@ -327,7 +312,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-
   },
   back: {
     justifyContent: 'center',
@@ -416,7 +400,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginRight: 20,
     color: 'red',
-  }
+  },
 });
 
 export default ProviderAddInfo;

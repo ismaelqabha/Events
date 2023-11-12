@@ -11,6 +11,7 @@ import { ToastAndroid } from 'react-native';
 import { Alert } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { colors } from '../../assets/AppColors';
+import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 
 const ProviderChooseService = props => {
   const { isFromChooseServiceClick } = props.route?.params || {};
@@ -152,6 +153,7 @@ const ProviderChooseService = props => {
   };
   return (
     <View style={styles.container}>
+      <HeaderComp />
       {RenderHeader()}
       {RenderServiceTypes()}
       {RenderFooter()}
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
   back: {
     width: 70,
     height: 40,
-    backgroundColor: colors.green,
+    backgroundColor: "black",
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
@@ -216,7 +218,7 @@ const styles = StyleSheet.create({
   nextText: {
     fontSize: 15,
     fontWeight: 'bold',
-    color: colors.gold
+    color: "white",
   },
   backText: {
     fontSize: 15,
