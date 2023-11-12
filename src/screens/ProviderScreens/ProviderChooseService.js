@@ -1,19 +1,20 @@
-import React, {useContext, useState} from 'react';
-import {View, StyleSheet, Pressable, Text} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {servicesCategory} from '../../resources/data';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import { servicesCategory } from '../../resources/data';
 import ServiceCard from '../../components/ServiceCard';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
 import strings from '../../assets/res/strings';
-import {Platform} from 'react-native';
-import {ToastAndroid} from 'react-native';
-import {Alert} from 'react-native';
+import { Platform } from 'react-native';
+import { ToastAndroid } from 'react-native';
+import { Alert } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import { colors } from '../../assets/AppColors';
 
 const ProviderChooseService = props => {
-  const {isFromChooseServiceClick} = props.route?.params || {};
-  const {ServId} = useContext(SearchContext);
+  const { isFromChooseServiceClick } = props.route?.params || {};
+  const { ServId } = useContext(SearchContext);
   const {
     selectServiceType,
     setSelectServiceType,
@@ -22,8 +23,12 @@ const ProviderChooseService = props => {
     setTitle,
     setSuTitle,
     setDescription,
+    setPhotoArray,
+    setWorkAreas,
+    setPrice,
+    setAdditionalServices,
   } = useContext(ServiceProviderContext);
-  const {saveData} = props;
+  const { saveData } = props;
 
   // TODO: change depending on user specifid language
   const language = strings.arabic.ProviderScreens.ProviderChooseService;
@@ -33,8 +38,8 @@ const ProviderChooseService = props => {
   const onNextPress = () => {
     selectServiceType
       ? props.navigation.navigate(ScreenNames.ProviderAddInfo, {
-          data: {...props},
-        })
+        data: { ...props },
+      })
       : showMessage();
   };
 
@@ -42,8 +47,8 @@ const ProviderChooseService = props => {
     selectServiceType
       ? RenderConfirmationBox()
       : props.navigation.navigate(ScreenNames.ProviderCreateListing, {
-          data: {...props},
-        });
+        data: { ...props },
+      });
   };
 
   //   confirmation popup for leaving with out saving the progress
@@ -57,10 +62,10 @@ const ProviderChooseService = props => {
         text: language.confirmButton,
         onPress: () => {
           props.navigation.navigate(ScreenNames.ProviderCreateListing, {
-            data: {...props},
+            data: { ...props },
           });
           //   cleans the service data
-        //   CleanData();
+          CleanData();
         },
       },
     ];
@@ -74,6 +79,10 @@ const ProviderChooseService = props => {
     setTitle(null);
     setSuTitle(null);
     setDescription(null);
+    setPhotoArray([])
+    setWorkAreas([])
+    setPrice(null)
+    setAdditionalServices([])
   };
 
   const showMessage = () => {
@@ -86,7 +95,7 @@ const ProviderChooseService = props => {
     return servicesCategory || [];
   };
 
-  const renderCard = ({item}) => {
+  const renderCard = ({ item }) => {
     return (
       <ServiceCard
         {...item}
@@ -100,7 +109,7 @@ const ProviderChooseService = props => {
   //   renders the Header text
   const RenderHeader = () => {
     return (
-      <View style={styles.header}>
+      <View style={[styles.header]}>
         <Text style={styles.headText}>{language.HeadText}</Text>
       </View>
     );
@@ -111,6 +120,7 @@ const ProviderChooseService = props => {
     return (
       <View style={styles.body}>
         <FlatList data={query()} renderItem={renderCard} numColumns={2} />
+
       </View>
     );
   };
@@ -127,7 +137,7 @@ const ProviderChooseService = props => {
 
   const RenderBackBotton = () => {
     return (
-      <Pressable style={styles.back} onPress={() => onBackPress()}>
+      <Pressable style={[styles.back, styles.shadow]} onPress={() => onBackPress()}>
         <Text style={styles.backText}>{language.back}</Text>
       </Pressable>
     );
@@ -135,7 +145,7 @@ const ProviderChooseService = props => {
 
   const RenderNextButton = () => {
     return (
-      <Pressable style={styles.next} onPress={() => onNextPress()}>
+      <Pressable style={[styles.next, styles.shadow]} onPress={() => onNextPress()}>
         <Text style={styles.nextText}>{language.next}</Text>
       </Pressable>
     );
@@ -152,6 +162,7 @@ const ProviderChooseService = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.BGScereen
   },
   header: {
     alignItems: 'flex-end',
@@ -161,12 +172,18 @@ const styles = StyleSheet.create({
   },
   headText: {
     fontSize: 20,
-    color: 'black',
+    color: colors.TitleFont,
     fontFamily: 'Cairo-VariableFont_slnt,wght',
+    fontWeight: 'bold'
   },
   body: {
-    height: '75%',
+    height: '60%',
+    width: '95%',
     marginTop: 20,
+    alignSelf: 'center',
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 0.5
     // marginLeft: '18%',
   },
   footer: {
@@ -174,28 +191,51 @@ const styles = StyleSheet.create({
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginRight: 20,
-    marginLeft: 20,
+    width: '100%',
+    // backgroundColor:'red',
+    height: 50,
+    paddingHorizontal: '10%'
   },
   next: {
     width: 70,
     height: 40,
-    backgroundColor: 'lightgray',
+    backgroundColor: colors.puprble,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    borderWidth: 2
+  },
+  back: {
+    width: 70,
+    height: 40,
+    backgroundColor: colors.green,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
   },
-  back: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   nextText: {
     fontSize: 15,
     fontWeight: 'bold',
+    color: colors.gold
   },
   backText: {
     fontSize: 15,
     fontWeight: 'bold',
+    color: colors.silver
+  },
+  shadow: {
+    shadowColor: 'black',
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 7,
+  },
+  Bodyshadow: {
+    shadowColor: 'black',
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 7,
   },
 });
 

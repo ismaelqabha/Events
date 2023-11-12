@@ -14,7 +14,6 @@ const ServiceCard = (props) => {
 
     const [pressed, setPressed] = useState(true)
 
-    //console.log("ServId", ServId);
     const chickIfChecked = () => {
         return isChecked
     }
@@ -60,7 +59,7 @@ const ServiceCard = (props) => {
         if (isFromChooseServiceClick === true) {
             const ServiceCard = props;
             const clicked = chickIfChecked(ServiceCard);
-            return <TouchableOpacity style={clicked ? styles.otherbodyActive : styles.otherbody} onPress={() => onCatPress(ServiceCard)}>
+            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody,styles.shadow]} onPress={() => onCatPress(ServiceCard)}>
                 <Image
                     source={ServiceCard.img}
 
@@ -86,7 +85,7 @@ const ServiceCard = (props) => {
             } else {
                 const ServiceCard = props;
                 const clicked = chickIfChecked(ServiceCard);
-                return <View style={clicked ? styles.HomeScreenViewPress : styles.HomeScreenView}>
+                return <View style={[clicked ? styles.HomeScreenViewPress : styles.HomeScreenView,styles.shadow]}>
                     <TouchableOpacity 
                     //onPress={() => onCatPress()}
                     >
@@ -209,6 +208,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#5f9ea0',
     },
+    // shadow: {
+    //     shadowColor: 'black',
+    //     shadowOffset: { width: -2, height: 4 },
+    //     shadowOpacity: 0.2,
+    //     shadowRadius: 3,
+    //     elevation: 7,
+    //   },
 })
 
 export default ServiceCard;
