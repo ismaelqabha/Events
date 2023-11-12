@@ -19,6 +19,11 @@ import DynamicHeader from '../../components/ProviderComponents/ScrollView/Dynami
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
 
+  
+  const [titleError,setTitleError]=useState(false)
+  const [subTitleError,setSubTitleError]=useState(false)
+  const [desError,setDesError]=useState(false)
+
   //   service Data
   const {
     serviceAddress,
@@ -35,6 +40,12 @@ const ProviderAddInfo = props => {
 
   const [detailesHeight, setDetailesHeight] = useState(500)
   let scrollOffsetY = useRef(new Animated.Value(0)).current;
+
+  useEffect(()=>{
+    setSubTitleError(!checkStrings(SuTitle))
+    setTitleError(!checkStrings(title))
+    setDesError(!checkStrings(description))
+  },[title,SuTitle,description])
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -123,7 +134,7 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}>{language.title}</Text>
-        <Text style={styles.textRequired}>{language.titleRequired}</Text>
+        {titleError && <Text style={styles.textRequired}>{language.titleRequired}</Text>}
         <TextInput
           style={styles.titleInput}
           keyboardType="default"
@@ -141,7 +152,7 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}>{language.subTitle}</Text>
-        <Text style={styles.textRequired}>{language.titleRequired}</Text>
+        {subTitleError && <Text style={styles.textRequired}>{language.titleRequired}</Text>}
 
         <TextInput
           style={styles.subtitleInput}
@@ -161,8 +172,7 @@ const ProviderAddInfo = props => {
     return (
       <View>
         <Text style={styles.text}> {language.description}</Text>
-        <Text style={styles.textRequired}>{language.titleRequired}</Text>
-
+       {desError && <Text style={styles.textRequired}>{language.titleRequired}</Text>}
         <TextInput
           style={styles.descInput}
           keyboardType="default"
