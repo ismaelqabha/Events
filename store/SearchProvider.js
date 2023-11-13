@@ -6,10 +6,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 const SearchProvider = props => {
 
-  const [userId, setuserId] = useState('646ce3e29e7972dc37f3146d');
+  const [userId, setuserId] = useState(1);
   const [userInfo, setUserInfo] = useState([]);
   const [cat, setCat] = useState('');
   const [HomeCardType, setHomeCardType] = useState('');
+  const [isFirst, setIsfirst] = useState ()
 
   //const [sType, setSType] = useState({});
   // const [Service, setService] = useState({});
@@ -79,6 +80,8 @@ const SearchProvider = props => {
         setuserId,
         cat,
         setCat,
+        isFirst, 
+        setIsfirst,
         // Service: Service,
         // setService,
         // city: city,

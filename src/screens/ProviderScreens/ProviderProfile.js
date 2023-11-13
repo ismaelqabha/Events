@@ -12,12 +12,13 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { getServiceInfoById } from '../../resources/API';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
+import { useNavigation } from '@react-navigation/native';
 
 const ProviderProfile = (props) => {
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
-    const { userId } = useContext(SearchContext);
+    const { userId,setIsfirst, isFirst } = useContext(SearchContext);
     const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
-
+    const navigation = useNavigation();
     const getServiceInfofromApi = () => {
         getServiceInfoById({ userID: userId }).then(res => {
             setServiceInfoAccorUser(res)
@@ -29,8 +30,11 @@ const ProviderProfile = (props) => {
 
     const renderMyService = () => {
         const data = serviceInfoAccorUser || [];
-        const cardsArray = data.map(card => {
-            return <CalenderServiceCard {...card} />;
+        const cardsArray = data.map((card,index) => {
+            if(index == 0 && !isFirst){
+                setIsfirst(card.service_id)
+            }
+            return <CalenderServiceCard {...card}/>;
         });
         return cardsArray;
     };
@@ -200,16 +204,17 @@ const ProviderProfile = (props) => {
                 </View>
                 {seprator()}
                 <View style={styles.content}>
+                    {renderSoialMedia()}
+                </View>
+                {seprator()}
+                <View style={styles.content}>
                     {renderCreateService()}
                 </View>
                 <View style={styles.content}>
                     {renderAddCampaign()}
                 </View>
                 {seprator()}
-                <View style={styles.content}>
-                    {renderSoialMedia()}
-                </View>
-                {seprator()}
+                
             </ScrollView>
         </View>
     )
