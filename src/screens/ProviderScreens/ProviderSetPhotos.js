@@ -168,7 +168,8 @@ const ProviderSetPhotos = props => {
         <FlatList
           data={photoArray}
           renderItem={renderServiceImg}
-          style={{flex: 1}}
+          style={{flex: 1, width:'90%' , alignSelf:'center',marginVertical:20}}
+          // contentContainerStyle={{alignItems:'center'}}
           numColumns={2}
           keyExtractor={item => `${item.imgId}`}
         />
@@ -200,7 +201,7 @@ const ProviderSetPhotos = props => {
         {RenderSelectedImages()}
       </View>
       <View style={styles.footer}>
-        {RenderBackButton()}
+        {/* {RenderBackButton()} */}
         {RenderNextButton()}
       </View>
     </View>

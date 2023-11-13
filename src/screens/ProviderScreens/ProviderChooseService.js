@@ -12,6 +12,8 @@ import { Alert } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { colors } from '../../assets/AppColors';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
+import { useNavigation } from '@react-navigation/native';
+import { styles } from '../../assets/res/styles';
 
 const ProviderChooseService = props => {
   const { isFromChooseServiceClick } = props.route?.params || {};
@@ -31,6 +33,10 @@ const ProviderChooseService = props => {
   } = useContext(ServiceProviderContext);
   const { saveData } = props;
 
+  const navigation = useNavigation()
+
+  const {ProviderChooseServiceStyles}=styles.ProviderScreensStyles
+
   // TODO: change depending on user specifid language
   const language = strings.arabic.ProviderScreens.ProviderChooseService;
 
@@ -38,7 +44,7 @@ const ProviderChooseService = props => {
 
   const onNextPress = () => {
     selectServiceType
-      ? props.navigation.navigate(ScreenNames.ProviderAddInfo, {
+      ? navigation.navigate(ScreenNames.ProviderAddInfo, {
         data: { ...props },
       })
       : showMessage();
@@ -110,8 +116,8 @@ const ProviderChooseService = props => {
   //   renders the Header text
   const RenderHeader = () => {
     return (
-      <View style={[styles.header]}>
-        <Text style={styles.headText}>{language.HeadText}</Text>
+      <View style={[ProviderChooseServiceStyles.header]}>
+        <Text style={ProviderChooseServiceStyles.headText}>{language.HeadText}</Text>
       </View>
     );
   };
@@ -119,7 +125,7 @@ const ProviderChooseService = props => {
   //   renders all the available service types in the app
   const RenderServiceTypes = () => {
     return (
-      <View style={styles.body}>
+      <View style={ProviderChooseServiceStyles.body}>
         <FlatList data={query()} renderItem={renderCard} numColumns={2} />
 
       </View>
@@ -129,7 +135,7 @@ const ProviderChooseService = props => {
   //   renders the back and next buttons
   const RenderFooter = () => {
     return (
-      <View style={styles.footer}>
+      <View style={ProviderChooseServiceStyles.footer}>
         {RenderBackBotton()}
         {RenderNextButton()}
       </View>
@@ -153,92 +159,12 @@ const ProviderChooseService = props => {
   };
   return (
     <View style={styles.container}>
-      <HeaderComp />
+      <HeaderComp  noBackArrow={true}/>
       {RenderHeader()}
       {RenderServiceTypes()}
       {RenderFooter()}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.BGScereen
-  },
-  header: {
-    alignItems: 'flex-end',
-    marginRight: 30,
-    marginTop: 40,
-    marginBottom: 10,
-  },
-  headText: {
-    fontSize: 20,
-    color: colors.TitleFont,
-    fontFamily: 'Cairo-VariableFont_slnt,wght',
-    fontWeight: 'bold'
-  },
-  body: {
-    height: '60%',
-    width: '95%',
-    marginTop: 20,
-    alignSelf: 'center',
-    padding: 10,
-    borderRadius: 12,
-    borderWidth: 0.5
-    // marginLeft: '18%',
-  },
-  footer: {
-    //alignSelf: 'flex-end',
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    // backgroundColor:'red',
-    height: 50,
-    paddingHorizontal: '10%'
-  },
-  next: {
-    width: 70,
-    height: 40,
-    backgroundColor: colors.puprble,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-    borderWidth: 2
-  },
-  back: {
-    width: 70,
-    height: 40,
-    backgroundColor: "black",
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  nextText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: "white",
-  },
-  backText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: colors.silver
-  },
-  shadow: {
-    shadowColor: 'black',
-    shadowOffset: { width: -2, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 7,
-  },
-  Bodyshadow: {
-    shadowColor: 'black',
-    shadowOffset: { width: -2, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 7,
-  },
-});
 
 export default ProviderChooseService;

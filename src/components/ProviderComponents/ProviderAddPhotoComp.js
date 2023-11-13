@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 5,
     borderWidth: 2,
+    alignSelf:'center'
   },
   image: {
     flex: 1,

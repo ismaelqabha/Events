@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,13 +8,14 @@ import {
   ScrollView,
   Animated,
 } from 'react-native';
-import {SelectList} from 'react-native-dropdown-select-list';
-import {ScreenNames} from '../../../route/ScreenNames';
-import {regionData} from '../../resources/data';
+import { SelectList } from 'react-native-dropdown-select-list';
+import { ScreenNames } from '../../../route/ScreenNames';
+import { regionData } from '../../resources/data';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import DynamicHeader from '../../components/ProviderComponents/ScrollView/DynamicHeader';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
+import { styles } from '../../assets/res/styles';
 
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
@@ -46,6 +47,8 @@ const ProviderAddInfo = props => {
     setDesError(!checkStrings(description));
   }, [title, SuTitle, description]);
 
+  const {ProviderAddInfoStyles} = styles.ProviderScreensStyles
+
   //   to save data on leaving, on return user can continue where he left off
   const params = {
     saveData: {
@@ -57,11 +60,11 @@ const ProviderAddInfo = props => {
       isFromChooseServiceClick: true,
     },
     ScrollView: {
-      contentContainerStyle: {alignItems: 'center'},
-      style: styles.ScrollView,
+      contentContainerStyle: { alignItems: 'center' },
+      style: ProviderAddInfoStyles.ScrollView,
       onScroll: Animated.event(
-        [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
-        {useNativeDriver: false},
+        [{ nativeEvent: { contentOffset: { y: scrollOffsetY } } }],
+        { useNativeDriver: false },
       ),
     },
   };
@@ -69,8 +72,8 @@ const ProviderAddInfo = props => {
   const onNextPress = () => {
     checkRequestedData()
       ? props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
-          data: {...props},
-        })
+        data: { ...props },
+      })
       : missingData();
   };
 
@@ -97,27 +100,27 @@ const ProviderAddInfo = props => {
     checkStrings(description) ? showMissingDescription() : null;
   };
 
-  const showMissingTitle = () => {};
+  const showMissingTitle = () => { };
 
-  const showMissingSubTitle = () => {};
+  const showMissingSubTitle = () => { };
 
-  const showMissingDescription = () => {};
+  const showMissingDescription = () => { };
 
 
 
   const RenderHeaderTitle = () => {
-    return <Text style={styles.headText}>{language.SubHeader}</Text>;
+    return <Text style={ProviderAddInfoStyles.headText}>{language.SubHeader}</Text>;
   };
 
   const RenderTitleBox = () => {
     return (
       <View>
-        <Text style={styles.text}>{language.title}</Text>
+        <Text style={ProviderAddInfoStyles.text}>{language.title}</Text>
         {titleError && (
-          <Text style={styles.textRequired}>{language.titleRequired}</Text>
+          <Text style={ProviderAddInfoStyles.textRequired}>{language.titleRequired}</Text>
         )}
         <TextInput
-          style={styles.titleInput}
+          style={ProviderAddInfoStyles.titleInput}
           keyboardType="default"
           maxLength={60}
           onChangeText={value => {
@@ -132,13 +135,13 @@ const ProviderAddInfo = props => {
   const RenderSubTitleBox = () => {
     return (
       <View>
-        <Text style={styles.text}>{language.subTitle}</Text>
+        <Text style={ProviderAddInfoStyles.text}>{language.subTitle}</Text>
         {subTitleError && (
-          <Text style={styles.textRequired}>{language.titleRequired}</Text>
+          <Text style={ProviderAddInfoStyles.textRequired}>{language.titleRequired}</Text>
         )}
 
         <TextInput
-          style={styles.subtitleInput}
+          style={ProviderAddInfoStyles.subtitleInput}
           keyboardType="default"
           maxLength={150}
           multiline
@@ -154,12 +157,12 @@ const ProviderAddInfo = props => {
   const RenderDescription = () => {
     return (
       <View>
-        <Text style={styles.text}> {language.description}</Text>
+        <Text style={ProviderAddInfoStyles.text}> {language.description}</Text>
         {desError && (
-          <Text style={styles.textRequired}>{language.titleRequired}</Text>
+          <Text style={ProviderAddInfoStyles.textRequired}>{language.titleRequired}</Text>
         )}
         <TextInput
-          style={styles.descInput}
+          style={ProviderAddInfoStyles.descInput}
           keyboardType="default"
           maxLength={300}
           multiline
@@ -174,7 +177,7 @@ const ProviderAddInfo = props => {
 
   const RenderMainDetails = () => {
     return (
-      <View style={[styles.borderTitleView, styles.shadow]}>
+      <View style={[ProviderAddInfoStyles.borderTitleView, styles.shadow]}>
         {RenderHeaderTitle()}
         {RenderTitleBox()}
         {RenderSubTitleBox()}
@@ -185,8 +188,8 @@ const ProviderAddInfo = props => {
 
   const RenderLocationDetails = () => {
     return (
-      <View style={[styles.borderAddressView, styles.shadow]}>
-        <Text style={styles.headText}>{language.LocationHeadText}</Text>
+      <View style={[ProviderAddInfoStyles.borderAddressView, styles.shadow]}>
+        <Text style={ProviderAddInfoStyles.headText}>{language.LocationHeadText}</Text>
         <SelectList
           data={regionData}
           setSelected={val => {
@@ -194,24 +197,25 @@ const ProviderAddInfo = props => {
             setserviceRegion(cityObj.value);
           }}
           placeholder={serviceRegion || language.chooseLocation}
-          boxStyles={styles.dropdown}
-          inputStyles={styles.droptext}
-          dropdownTextStyles={styles.dropstyle}
+          boxProviderAddInfoStyles={ProviderAddInfoStyles.dropdown}
+          inputProviderAddInfoStyles={ProviderAddInfoStyles.droptext}
+          dropdownTextProviderAddInfoStyles={ProviderAddInfoStyles.dropstyle}
         />
         <TextInput
-          style={styles.input}
+          style={ProviderAddInfoStyles.input}
           keyboardType="default"
           placeholder={language.address}
           onChangeText={value => setserviceAddress(value)}
           value={serviceAddress || null}
-          selection={{start: 0}}
+          editable={false}
+
         />
       </View>
     );
   };
 
   const RenderFooter = () => {
-    return <View style={styles.footer}>{RenderNextButton()}</View>;
+    return <View style={ProviderAddInfoStyles.footer}>{RenderNextButton()}</View>;
   };
   const RenderNextButton = () => {
     return (
@@ -226,10 +230,10 @@ const ProviderAddInfo = props => {
   return (
     <View style={styles.container}>
       <HeaderComp />
-      <View style={styles.body}>
+      <View style={ProviderAddInfoStyles.body}>
         <DynamicHeader
           text={language.HeaderTitle}
-          textStyle={styles.headText}
+          textStyle={ProviderAddInfoStyles.headText}
           value={scrollOffsetY}
         />
         <ScrollView {...params.ScrollView}>
@@ -242,165 +246,5 @@ const ProviderAddInfo = props => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  ScrollView: {
-    width: '100%',
-  },
-  header: {
-    alignItems: 'flex-end',
-    marginRight: 30,
-    marginTop: 20,
-    marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: '5%',
-  },
-  headText: {
-    fontSize: 20,
-    color: 'black',
-    fontFamily: 'Cairo-VariableFont_slnt,wght',
-  },
-  body: {
-    height: '75%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  borderTitleView: {
-    height: 560,
-    width: 340,
-    borderWidth: 1,
-    borderColor: '#dcdcdc',
-    borderRadius: 20,
-    marginBottom: 30,
-    marginTop: 5,
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  shadow: {
-    shadowColor: 'black',
-    shadowOffset: {width: -2, height: 4},
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 7,
-  },
-  borderAddressView: {
-    height: 250,
-    width: 340,
-    borderWidth: 1,
-    borderColor: '#dcdcdc',
-    borderRadius: 15,
-    marginBottom: 30,
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  footer: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginRight: 20,
-    marginLeft: 20,
-    alignSelf: 'flex-end',
-  },
-  next: {
-    width: 70,
-    height: 40,
-    backgroundColor: 'lightgray',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  back: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  nextText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  backText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  dropdown: {
-    height: 50,
-    width: 300,
-    fontSize: 17,
-    borderRadius: 10,
-    fontWeight: 'bold',
-    marginTop: 30,
-  },
-  dropstyle: {
-    textAlign: 'center',
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  droptext: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  input: {
-    textAlign: 'center',
-    height: 50,
-    width: '90%',
-    fontSize: 16,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#dcdcdc',
-    marginTop: 30,
-    marginBottom: 30,
-  },
-  text: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginTop: 20,
-    marginRight: 20,
-    color: 'black',
-  },
-  titleInput: {
-    textAlign: 'auto',
-    height: 50,
-    width: 315,
-    borderWidth: 2,
-    borderRadius: 15,
-    borderColor: '#dcdcdc',
-    fontSize: 18,
-    color: 'black',
-    backgroundColor: 'white',
-  },
-  subtitleInput: {
-    textAlign: 'auto',
-    height: 100,
-    width: 315,
-    borderWidth: 2,
-    borderRadius: 15,
-    borderColor: '#dcdcdc',
-    fontSize: 18,
-    color: 'black',
-    backgroundColor: 'white',
-  },
-  descInput: {
-    textAlign: 'auto',
-    height: 150,
-    width: 315,
-    borderWidth: 2,
-    borderRadius: 15,
-    borderColor: '#dcdcdc',
-    fontSize: 18,
-    color: 'black',
-    backgroundColor: 'white',
-  },
-  textRequired: {
-    textAlign: 'auto',
-    fontSize: 14,
-    marginRight: 20,
-    color: 'red',
-  },
-});
 
 export default ProviderAddInfo;

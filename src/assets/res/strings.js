@@ -33,7 +33,7 @@ const strings = {
         SubHeader: ' عنوان الخدمة خاصتك؟',
         HeaderTitle:'املئ التفاصيل التالية:',
         chooseLocation: 'أختر المنطقة',
-        address: 'العنوان',
+        address: 'المدينة',
         titleRequired:'* العنوان الزامي ',
         SuTitleRequired : '* العنوان الفرعي الزامي',
         descriptionRequired:'* الوصف  الزامي ',
