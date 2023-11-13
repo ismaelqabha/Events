@@ -1,36 +1,81 @@
 import { StyleSheet, Text, View, ScrollView, Pressable, Image } from 'react-native'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import SearchContext from '../../../store/SearchContext';
 import AntDesign from "react-native-vector-icons/AntDesign";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
-
-
 import { ScreenNames } from '../../../route/ScreenNames';
 import strings from '../../assets/res/strings';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
+import { getServiceImages } from '../../resources/API';
+import { BackgroundImage } from '@rneui/base';
 
 const ProviderHome = (props) => {
-    const { isFirst, userId } = useContext(SearchContext);
+    const { isFirst,setserviceTitle} = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+    const [servicePhotos, setservicePhotos] = useState()
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
     const navigation = useNavigation();
 
+    
     const seprator = () => {
         return (
             <View style={styles.seprater}></View>
         )
     }
+    const getImagesfromApi = () => {
+        getServiceImages({ serviceID: isFirst }).then(res => {
+            setservicePhotos(res)
+        })
+    }
+
+    const getLogoImg = () => {
+        return servicePhotos?.filter(photo => {
+            return photo.coverPhoto == true
+        });
+    };
+    const getServiceImgs = () => {
+        return servicePhotos?.filter(photo => {
+            return photo.coverPhoto == false
+        });
+    };
+
+    useEffect(() => {
+        getImagesfromApi()
+    }, [])
 
     const filterService = () => {
-        return data = serviceInfoAccorUser?.filter(item => {
+        return serviceInfoAccorUser?.filter(item => {
             return item.service_id === isFirst
         })
+    }
+    const renderServiceLogo = () => {
+        // const data = getLogoImg()
+        // const serviceLogo = data?.map(item => {
+        return (
+            <View>
+                <BackgroundImage style={styles.logoview} source={require('../../assets/photos/backgroundPart.png')}>
+                    <View style={styles.logoImg}>
+
+                    </View>
+                    <Pressable style={styles.editImg}>
+                        <Entypo
+                            name={"camera"}
+                            color={colors.puprble}
+                            size={25} />
+                    </Pressable>
+                </BackgroundImage>
+            </View>
+        )
+        // })
+        // return serviceLogo
     }
     const renderServiceType = () => {
         const data = filterService()
         const serviceType = data?.map(item => {
+            setserviceTitle(item.title)
             return (
                 <View>
                     <View style={styles.iconview}>
@@ -130,6 +175,152 @@ const ProviderHome = (props) => {
         })
         return serviceType
     }
+    const renderServicePhotos = () => {
+        const data = filterService()
+        const serviceType = data?.map(item => {
+            return (
+                <View>
+                    <View style={styles.iconview}>
+                        <View><Text style={styles.txt}>الصور (9)</Text></View>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                name={"images"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+        return serviceType
+    }
+    const renderServicePrice = () => {
+        const data = filterService()
+        const servicePrice = data?.map(item => {
+            return (
+                <View>
+                    <View style={styles.iconview}>
+                        <View><Text style={styles.txt}>السعر المبدئي</Text></View>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                name={"price-tag"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                    <View style={styles.serviceaddress}>
+                        <Text style={styles.basicInfoTitle}>السعر</Text>
+                        <View style={styles.mainTit}>
+                            <Text style={styles.basicInfo}>{item.servicePrice}</Text>
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+        return servicePrice
+    }
+    const renderHallInfo = () => {
+        const data = filterService()
+        const servicePrice = data?.map(item => {
+            return (
+                <View>
+                    <View style={styles.iconview}>
+                        <View><Text style={styles.txt}>معلومات</Text></View>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                name={"info"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                    <View style={styles.serviceaddress}>
+                        <Text style={styles.basicInfoTitle}>نوع القاعة</Text>
+                        <View style={styles.mainTit}>
+                            <Text style={styles.basicInfo}>{item.hallType}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.serviceaddress}>
+                        <Text style={styles.basicInfoTitle}>القدرة الاستيعابية</Text>
+                        <View style={styles.mainTit}>
+                            <Text style={styles.basicInfo}>{item.maxCapasity}</Text>
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+        return servicePrice
+    }
+    const renderworkingReigon = () => {
+        const data = filterService()
+        const serviceWorking = data?.map((item, i) => {
+            return (
+                <View>
+                    <View style={styles.iconview}>
+                        <View><Text style={styles.txt}>مناطق العمل</Text></View>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                name={"info"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                    <View style={styles.serviceaddress}>
+                        <View style={styles.regionTit}>
+                            <Text style={styles.basicInfo}>{item.workingRegion + '   '}</Text>
+                            <AntDesign
+                                style={{alignSelf: 'center'}}
+                                name={"check"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+        return serviceWorking
+    }
+    const renderDetail = () => {
+        const data = filterService()
+        const serviceDetail = data?.map((item, i) => {
+            return (
+                <View>
+                    <View style={styles.iconview}>
+                        <View><Text style={styles.txt}>تفاصيل الخدمات</Text></View>
+                        <View style={styles.IconView}>
+                            <MaterialIcons
+                                name={"details"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                    <View style={styles.serviceaddress}>
+                    <Text style={styles.basicInfoTitle}>الخدمات الاجبارية</Text>
+                        <View style={styles.regionTit}>
+                            <Text style={styles.basicInfo}>{item.additionalServices + '   '}</Text>
+                            <AntDesign
+                                style={{alignSelf: 'center'}}
+                                name={"check"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                    <View style={styles.serviceaddress}>
+                    <Text style={styles.basicInfoTitle}>الخدمات الاختيارية</Text>
+                        <View style={styles.regionTit}>
+                            <Text style={styles.basicInfo}>{item.additionalServices + '   '}</Text>
+                            <AntDesign
+                                style={{alignSelf: 'center'}}
+                                name={"check"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+        return serviceDetail
+    }
+
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -152,6 +343,9 @@ const ProviderHome = (props) => {
             </View>
             <ScrollView>
                 <View style={styles.content}>
+                    {renderServiceLogo()}
+                </View>
+                <View style={styles.content}>
                     {renderServiceType()}
                 </View>
                 {seprator()}
@@ -163,6 +357,26 @@ const ProviderHome = (props) => {
                     {renderServiceAddress()}
                 </View>
                 {seprator()}
+                <View style={styles.content}>
+                    {renderServicePhotos()}
+                </View>
+                {seprator()}
+                <View style={styles.content}>
+                    {renderServicePrice()}
+                </View>
+                {seprator()}
+                <View style={styles.content}>
+                    {renderDetail()}
+                </View>
+                {seprator()}
+                <View style={styles.content}>
+                    {renderHallInfo()}
+                </View>
+                {seprator()}
+                <View style={styles.content}>
+                    {renderworkingReigon()}
+                </View>
+
             </ScrollView>
         </View>
     )
@@ -173,9 +387,10 @@ export default ProviderHome
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: colors.BGScereen
     },
-    basicInfoTitle:{
-        fontSize: 16, 
+    basicInfoTitle: {
+        fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'right'
     },
@@ -216,6 +431,7 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontWeight: 'bold',
         margin: 7,
+        textAlign: 'right'
     },
 
     header: {
@@ -242,6 +458,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
         borderRadius: 5
     },
+    regionTit: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        width: "100%",
+        backgroundColor: 'lightgray',
+        borderRadius: 5
+    },
     serviceaddress: {
         alignSelf: 'center',
         width: '90%',
@@ -255,5 +478,30 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
         borderRadius: 30,
         marginLeft: 15
+    },
+    logoview: {
+        width: '100%',
+        height: 200,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    logoImg: {
+        width: '60%',
+        height: '80%',
+        backgroundColor: 'white',
+        borderRadius: 20
+    },
+    editImg: {
+        width: 40,
+        height: 40,
+        borderRadius: 50,
+        backgroundColor: 'lightgray',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: 'white',
+        position: 'absolute',
+        right: 65,
+        bottom: 10,
     },
 })

@@ -11,6 +11,7 @@ const SearchProvider = props => {
   const [cat, setCat] = useState('');
   const [HomeCardType, setHomeCardType] = useState('');
   const [isFirst, setIsfirst] = useState ()
+  const [serviceTitle, setserviceTitle] = useState ()
 
   //const [sType, setSType] = useState({});
   // const [Service, setService] = useState({});
@@ -82,6 +83,8 @@ const SearchProvider = props => {
         setCat,
         isFirst, 
         setIsfirst,
+        serviceTitle, 
+        setserviceTitle,
         // Service: Service,
         // setService,
         // city: city,

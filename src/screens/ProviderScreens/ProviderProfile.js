@@ -5,6 +5,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Entypo from "react-native-vector-icons/Entypo";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import strings from '../../assets/res/strings';
 import { ScreenNames } from '../../../route/ScreenNames';
@@ -16,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const ProviderProfile = (props) => {
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
-    const { userId,setIsfirst, isFirst } = useContext(SearchContext);
+    const { userId,setIsfirst, isFirst, setserviceTitle } = useContext(SearchContext);
     const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
     const navigation = useNavigation();
     const getServiceInfofromApi = () => {
@@ -33,6 +34,7 @@ const ProviderProfile = (props) => {
         const cardsArray = data.map((card,index) => {
             if(index == 0 && !isFirst){
                 setIsfirst(card.service_id)
+                setserviceTitle(card.title)
             }
             return <CalenderServiceCard {...card}/>;
         });
@@ -170,6 +172,37 @@ const ProviderProfile = (props) => {
             </View>
         </View>)
     }
+    const renderContactInfo = () => {
+        return (<View>
+            <Text style={styles.txt}>معلومات التواصل </Text>
+            <View style={styles.item}>
+                <View><Text style={styles.basicInfo}>0546126692</Text>
+                    <Text style={styles.basicInfoTitle}>الموبايل</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Ionicons
+                        style={styles.icon}
+                        name={"call"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+
+            </View>
+            <View style={styles.item}>
+                <View><Text style={styles.basicInfo}>exsample@gmail.com</Text>
+                    <Text style={styles.basicInfoTitle}>Email</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={styles.icon}
+                        name={"email"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+
+            </View>
+        </View>)
+    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -201,6 +234,10 @@ const ProviderProfile = (props) => {
                 </View>
                 <View style={styles.content}>
                     {renderClients()}
+                </View>
+                {seprator()}
+                <View style={styles.content}>
+                    {renderContactInfo()}
                 </View>
                 {seprator()}
                 <View style={styles.content}>
@@ -253,10 +290,10 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontWeight: 'bold'
     },
-    // basicInfoTitle: {
-    //     fontSize: 12,
-    //     textAlign: 'right'
-    // },
+    basicInfoTitle: {
+        fontSize: 12,
+        textAlign: 'right'
+    },
     IconView: {
         width: 50,
         height: 50,
