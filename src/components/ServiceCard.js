@@ -14,7 +14,6 @@ const ServiceCard = (props) => {
 
     const [pressed, setPressed] = useState(true)
 
-    //console.log("ServId", ServId);
     const chickIfChecked = () => {
         return isChecked
     }
@@ -59,7 +58,7 @@ const ServiceCard = (props) => {
         if (isFromChooseServiceClick === true) {
             const ServiceCard = props;
             const clicked = chickIfChecked(ServiceCard);
-            return <TouchableOpacity style={clicked ? styles.otherbodyActive : styles.otherbody} onPress={() => onCatPress(ServiceCard)}>
+            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody,styles.shadow]} onPress={() => onCatPress(ServiceCard)}>
                 <Image
                     source={ServiceCard.img}
 
@@ -85,9 +84,11 @@ const ServiceCard = (props) => {
             } else {
                 const ServiceCard = props;
                 const clicked = chickIfChecked(ServiceCard);
+
                 return <View style={clicked ? styles.HomeScreenViewPress : styles.HomeScreenView}>
                     <TouchableOpacity
                         onPress={() => onCatPress()}
+
                     >
                         <Image
                             source={props.img}
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         alignSelf: 'center',
         justifyContent: 'center',
-        borderColor: '#5f9ea0',
+        borderColor: colors.puprble,
     },
     otherimg: {
         width: 60,
@@ -201,14 +202,21 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'black',
+        color: colors.puprble,
     },
     othertextActive: {
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#5f9ea0',
+        color: colors.puprble,
     },
+    // shadow: {
+    //     shadowColor: 'black',
+    //     shadowOffset: { width: -2, height: 4 },
+    //     shadowOpacity: 0.2,
+    //     shadowRadius: 3,
+    //     elevation: 7,
+    //   },
 })
 
 export default ServiceCard;

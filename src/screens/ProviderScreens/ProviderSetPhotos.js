@@ -19,14 +19,14 @@ import {v4 as uuidv4} from 'uuid';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import strings from '../../assets/res/strings';
 import { PERMISSIONS, request} from 'react-native-permissions';
+import HeaderComp from '../../components/ProviderComponents/HeaderComp';
+import { AppStyles } from '../../assets/res/AppStyles';
+import { colors } from '../../assets/AppColors';
 
 const ProviderSetPhotos = props => {
   const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
-
-  const onBackPress = () => {
-    props.navigation.goBack();
-  };
+  const {styles} = styles.ProviderScreensStyles
   const onNextPress = () => {
     // photoArray.length <5 ? showMessage() :
     props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
@@ -138,12 +138,12 @@ const ProviderSetPhotos = props => {
 
   const RenderAddPhoto = () => {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, AppStyles.shadow]}>
         <TouchableOpacity style={styles.touch} onPress={onAddImgPress}>
-          <Card.Title style={{fontSize: 20, marginRight: 20}}>
+          <Card.Title style={styles.cardTitle}>
             {language.CardTitle}
           </Card.Title>
-          <AntDesign name="plus" style={{fontSize: 25}} />
+          <AntDesign name="plus" style={styles.icon} />
         </TouchableOpacity>
       </View>
     );
@@ -151,12 +151,12 @@ const ProviderSetPhotos = props => {
 
   const RenderCapturePhoto = () => {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, AppStyles.shadow]}>
         <TouchableOpacity style={styles.touch} onPress={onPickImgPress}>
-          <Card.Title style={{fontSize: 20, marginRight: 20}}>
+          <Card.Title style={styles.cardTitle}>
             {language.CapturePhoto}
           </Card.Title>
-          <Feather name="camera" style={{fontSize: 25}} />
+          <Feather name="camera" style={styles.icon} />
         </TouchableOpacity>
       </View>
     );
@@ -164,35 +164,29 @@ const ProviderSetPhotos = props => {
 
   const RenderSelectedImages = () => {
     return (
-      <View style={{flex: 1, width: '100%'}}>
+      <View style={[styles.flatListContainer,AppStyles.shadow]}>
         <FlatList
           data={photoArray}
           renderItem={renderServiceImg}
-          style={{flex: 1}}
+          style={styles.flatList}
           numColumns={2}
           keyExtractor={item => `${item.imgId}`}
+          showsVerticalScrollIndicator={false}
         />
       </View>
     );
   };
 
-  const RenderBackButton = () => {
-    return (
-      <Pressable style={styles.back} onPress={onBackPress}>
-        <Text style={styles.backText}>{language.Back}</Text>
-      </Pressable>
-    );
-  };
-
   const RenderNextButton = () => {
     return (
-      <Pressable style={styles.next} onPress={onNextPress}>
-        <Text style={styles.nextText}>{language.Next}</Text>
+      <Pressable style={AppStyles.next} onPress={onNextPress}>
+        <Text style={AppStyles.nextText}>{language.Next}</Text>
       </Pressable>
     );
   };
   return (
-    <View style={styles.container}>
+    <View style={AppStyles.container}>
+      <HeaderComp />
       {RenderMainHeader()}
       <View style={styles.body}>
         {RenderAddPhoto()}
@@ -200,7 +194,7 @@ const ProviderSetPhotos = props => {
         {RenderSelectedImages()}
       </View>
       <View style={styles.footer}>
-        {RenderBackButton()}
+        {/* {RenderBackButton()} */}
         {RenderNextButton()}
       </View>
     </View>
@@ -208,49 +202,35 @@ const ProviderSetPhotos = props => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
     alignItems: 'flex-end',
     marginRight: 30,
-    marginTop: 40,
+    marginTop: 10,
     marginBottom: 10,
   },
   headText: {
     fontSize: 20,
-    color: 'black',
+    color: colors.puprble,
     fontFamily: 'Cairo-VariableFont_slnt,wght',
   },
   subHeadText: {
     fontSize: 14,
+    color: colors.puprble,
+
   },
   body: {
-    height: '75%',
+    height: '70%',
     alignItems: 'center',
+    // borderWidth:1
   },
   footer: {
-    marginTop: 20,
+    marginTop: 15,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     marginRight: 20,
     marginLeft: 20,
-  },
-  next: {
-    width: 70,
-    height: 40,
-    backgroundColor: 'lightgray',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  back: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  nextText: {
-    fontSize: 15,
-    fontWeight: 'bold',
+    paddingVertical: 5,
+    paddingHorizontal: 5
   },
   backText: {
     fontSize: 15,
@@ -271,7 +251,34 @@ const styles = StyleSheet.create({
     height: 50,
     marginTop: 10,
     alignSelf: 'center',
+    borderColor: colors.darkGold,
+    borderWidth: 1
   },
-});
+  cardTitle: {
+    fontSize: 20,
+    marginRight: 20,
+    color: colors.puprble
+  },
+  icon: {
+    fontSize: 25, color: colors.puprble
+  },
+  flatList: {
+    flex: 1,
+    width: '100%',
+    alignSelf: 'center',
+    marginVertical: 5,
+    padding: 5
+  },
+  flatListContainer: {
+    flex: 1,
+    marginTop: 10,
+    width: '90%',
+    borderWidth: 1.5,
+    backgroundColor: colors.BGScereen,
+    borderColor: colors.darkGold,
+    borderRadius: 5
+  }
+})
+
 
 export default ProviderSetPhotos;

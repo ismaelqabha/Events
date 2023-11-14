@@ -42,6 +42,7 @@ import TopTapNotificaNavig from "./topTapNotificaNavig";
 import CreateUser from "../src/screens/CreateUser";
 import ProviderTapNav from "./ProviderTapNav";
 import ProviderCreateListing from "../src/screens/ProviderScreens/ProviderCreateListing";
+import ProviderSocialMediaScreen from "../src/screens/ProviderScreens/ProviderSocialMediaScreen";
 
 
 
@@ -106,6 +107,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderAddInfo} component={ProviderAddInfo} />
                 <Stack.Screen name={ScreenNames.ProviderSetPhotos} component={ProviderSetPhotos} />
                 <Stack.Screen name={ScreenNames.ProviderSetWorkingRegion} component={ProviderSetWorkingRegion} />
+                <Stack.Screen name={ScreenNames.ProviderSocialMediaScreen} component={ProviderSocialMediaScreen} />
                 <Stack.Screen name={ScreenNames.ProviderAddSubDetail} component={ProviderAddSubDetail} />
                 <Stack.Screen name={ScreenNames.ProviderAddServiceDetail} component={ProviderAddServiceDetail} />
                 <Stack.Screen name={ScreenNames.ProviderSetPrice} component={ProviderSetPrice} />
