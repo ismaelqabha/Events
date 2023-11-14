@@ -48,8 +48,6 @@ const ProviderAddInfo = props => {
     setDesError(!checkStrings(description));
   }, [title, SuTitle, description]);
 
-  const {styles} = styles.ProviderScreensStyles
-
   //   to save data on leaving, on return user can continue where he left off
   const params = {
     saveData: {
