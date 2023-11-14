@@ -13,7 +13,7 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { colors } from '../../assets/AppColors';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { useNavigation } from '@react-navigation/native';
-import { styles } from '../../assets/res/styles';
+import { AppStyles } from '../../assets/res/AppStyles';
 
 const ProviderChooseService = props => {
   const { isFromChooseServiceClick } = props.route?.params || {};
@@ -34,8 +34,6 @@ const ProviderChooseService = props => {
   const { saveData } = props;
 
   const navigation = useNavigation()
-
-  const {ProviderChooseServiceStyles}=styles.ProviderScreensStyles
 
   // TODO: change depending on user specifid language
   const language = strings.arabic.ProviderScreens.ProviderChooseService;
@@ -116,8 +114,8 @@ const ProviderChooseService = props => {
   //   renders the Header text
   const RenderHeader = () => {
     return (
-      <View style={[ProviderChooseServiceStyles.header]}>
-        <Text style={ProviderChooseServiceStyles.headText}>{language.HeadText}</Text>
+      <View style={[styles.header]}>
+        <Text style={styles.headText}>{language.HeadText}</Text>
       </View>
     );
   };
@@ -125,7 +123,7 @@ const ProviderChooseService = props => {
   //   renders all the available service types in the app
   const RenderServiceTypes = () => {
     return (
-      <View style={ProviderChooseServiceStyles.body}>
+      <View style={styles.body}>
         <FlatList data={query()} renderItem={renderCard} numColumns={2} />
 
       </View>
@@ -135,7 +133,7 @@ const ProviderChooseService = props => {
   //   renders the back and next buttons
   const RenderFooter = () => {
     return (
-      <View style={ProviderChooseServiceStyles.footer}>
+      <View style={styles.footer}>
         {RenderBackBotton()}
         {RenderNextButton()}
       </View>
@@ -144,27 +142,60 @@ const ProviderChooseService = props => {
 
   const RenderBackBotton = () => {
     return (
-      <Pressable style={[styles.back, styles.shadow]} onPress={() => onBackPress()}>
-        <Text style={styles.backText}>{language.back}</Text>
+      <Pressable style={[AppStyles.back]} onPress={() => onBackPress()}>
+        <Text style={AppStyles.backText}>{language.back}</Text>
       </Pressable>
     );
   };
 
   const RenderNextButton = () => {
     return (
-      <Pressable style={[styles.next, styles.shadow]} onPress={() => onNextPress()}>
-        <Text style={styles.nextText}>{language.next}</Text>
+      <Pressable style={[AppStyles.next]} onPress={() => onNextPress()}>
+        <Text style={AppStyles.nextText}>{language.next}</Text>
       </Pressable>
     );
   };
   return (
-    <View style={styles.container}>
-      <HeaderComp  noBackArrow={true}/>
+    <View style={AppStyles.container}>
+      <HeaderComp noBackArrow={true} />
       {RenderHeader()}
       {RenderServiceTypes()}
       {RenderFooter()}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  header: {
+    alignItems: 'flex-end',
+    marginRight: 30,
+    marginTop: 40,
+    marginBottom: 10,
+  },
+  headText: {
+    fontSize: 20,
+    color: colors.TitleFont,
+    fontFamily: 'Cairo-VariableFont_slnt,wght',
+    fontWeight: 'bold'
+  },
+  body: {
+    height: '60%',
+    width: '95%',
+    marginTop: 20,
+    alignSelf: 'center',
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 0.5
+  },
+  footer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    height: 50,
+    paddingHorizontal: '10%'
+  },
+
+})
 
 export default ProviderChooseService;

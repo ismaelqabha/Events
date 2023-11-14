@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         alignSelf: 'center',
         justifyContent: 'center',
-        borderColor: '#5f9ea0',
+        borderColor: colors.puprble,
     },
     otherimg: {
         width: 60,
@@ -200,13 +200,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'black',
+        color: colors.puprble,
     },
     othertextActive: {
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#5f9ea0',
+        color: colors.puprble,
     },
     // shadow: {
     //     shadowColor: 'black',

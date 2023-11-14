@@ -6,7 +6,7 @@ export const colors = {
         // 
         green: '#828a3a',
         // 
-        silver: 'CMYK(0,14,65,10)',
+        silver: '#f2f2f2',
         // buttons 
         puprble: '#543c82',
 

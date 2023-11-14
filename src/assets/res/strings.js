@@ -1,6 +1,11 @@
 const strings = {
   cardtxt1: 'على استعداد لتلبية جميع مناسباتكم',
   arabic: {
+    ProviderComps:{
+      ProviderSocialMediaScreen:{
+        Phone:"رقم الهاتف "
+      }
+    },
     ProviderScreens: {
       ProviderCreateListing: {
         HeadText: 'أهلا وسهلا, اسماعيل',
@@ -34,7 +39,7 @@ const strings = {
         HeaderTitle:'املئ التفاصيل التالية:',
         chooseLocation: 'أختر المنطقة',
         address: 'المدينة',
-        titleRequired:'* العنوان الزامي ',
+        titleRequired:'*',
         SuTitleRequired : '* العنوان الفرعي الزامي',
         descriptionRequired:'* الوصف  الزامي ',
       },
@@ -82,6 +87,10 @@ const strings = {
         Price: 'السعر المقترح',
         ModalHeader: 'أدخل تفاصيل الخدمة',
       },
+      ProviderSocialMediaScreen:{
+        Next: 'التالي',
+        Header: 'اضف معلومات الاتصال الخاصة بالخدمة'
+      }
     },
   },
 };

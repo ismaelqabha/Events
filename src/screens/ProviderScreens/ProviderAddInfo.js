@@ -15,7 +15,8 @@ import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import DynamicHeader from '../../components/ProviderComponents/ScrollView/DynamicHeader';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
-import { styles } from '../../assets/res/styles';
+import { AppStyles } from '../../assets/res/AppStyles';
+import { colors } from '../../assets/AppColors';
 
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
@@ -47,7 +48,7 @@ const ProviderAddInfo = props => {
     setDesError(!checkStrings(description));
   }, [title, SuTitle, description]);
 
-  const {ProviderAddInfoStyles} = styles.ProviderScreensStyles
+  const {styles} = styles.ProviderScreensStyles
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -61,7 +62,7 @@ const ProviderAddInfo = props => {
     },
     ScrollView: {
       contentContainerStyle: { alignItems: 'center' },
-      style: ProviderAddInfoStyles.ScrollView,
+      style: styles.ScrollView,
       onScroll: Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollOffsetY } } }],
         { useNativeDriver: false },
@@ -109,18 +110,20 @@ const ProviderAddInfo = props => {
 
 
   const RenderHeaderTitle = () => {
-    return <Text style={ProviderAddInfoStyles.headText}>{language.SubHeader}</Text>;
+    return <Text style={styles.headText}>{language.SubHeader}</Text>;
   };
 
   const RenderTitleBox = () => {
     return (
       <View>
-        <Text style={ProviderAddInfoStyles.text}>{language.title}</Text>
+        <View style={{flexDirection:'row' , alignItems:'center'  }}>
+        <Text style={styles.text}>{language.title}</Text>
         {titleError && (
-          <Text style={ProviderAddInfoStyles.textRequired}>{language.titleRequired}</Text>
+          <Text style={styles.textRequired}>{language.titleRequired}</Text>
         )}
+        </View>
         <TextInput
-          style={ProviderAddInfoStyles.titleInput}
+          style={styles.titleInput}
           keyboardType="default"
           maxLength={60}
           onChangeText={value => {
@@ -135,13 +138,13 @@ const ProviderAddInfo = props => {
   const RenderSubTitleBox = () => {
     return (
       <View>
-        <Text style={ProviderAddInfoStyles.text}>{language.subTitle}</Text>
+        <Text style={styles.text}>{language.subTitle}</Text>
         {subTitleError && (
-          <Text style={ProviderAddInfoStyles.textRequired}>{language.titleRequired}</Text>
+          <Text style={styles.textRequired}>{language.titleRequired}</Text>
         )}
 
         <TextInput
-          style={ProviderAddInfoStyles.subtitleInput}
+          style={styles.subtitleInput}
           keyboardType="default"
           maxLength={150}
           multiline
@@ -157,12 +160,12 @@ const ProviderAddInfo = props => {
   const RenderDescription = () => {
     return (
       <View>
-        <Text style={ProviderAddInfoStyles.text}> {language.description}</Text>
+        <Text style={styles.text}> {language.description}</Text>
         {desError && (
-          <Text style={ProviderAddInfoStyles.textRequired}>{language.titleRequired}</Text>
+          <Text style={styles.textRequired}>{language.titleRequired}</Text>
         )}
         <TextInput
-          style={ProviderAddInfoStyles.descInput}
+          style={styles.descInput}
           keyboardType="default"
           maxLength={300}
           multiline
@@ -177,7 +180,7 @@ const ProviderAddInfo = props => {
 
   const RenderMainDetails = () => {
     return (
-      <View style={[ProviderAddInfoStyles.borderTitleView, styles.shadow]}>
+      <View style={[styles.borderTitleView, AppStyles.shadow]}>
         {RenderHeaderTitle()}
         {RenderTitleBox()}
         {RenderSubTitleBox()}
@@ -188,8 +191,8 @@ const ProviderAddInfo = props => {
 
   const RenderLocationDetails = () => {
     return (
-      <View style={[ProviderAddInfoStyles.borderAddressView, styles.shadow]}>
-        <Text style={ProviderAddInfoStyles.headText}>{language.LocationHeadText}</Text>
+      <View style={[styles.borderAddressView, AppStyles.shadow]}>
+        <Text style={styles.headText}>{language.LocationHeadText}</Text>
         <SelectList
           data={regionData}
           setSelected={val => {
@@ -197,12 +200,12 @@ const ProviderAddInfo = props => {
             setserviceRegion(cityObj.value);
           }}
           placeholder={serviceRegion || language.chooseLocation}
-          boxProviderAddInfoStyles={ProviderAddInfoStyles.dropdown}
-          inputProviderAddInfoStyles={ProviderAddInfoStyles.droptext}
-          dropdownTextProviderAddInfoStyles={ProviderAddInfoStyles.dropstyle}
+          boxstyles={styles.dropdown}
+          inputstyles={styles.droptext}
+          dropdownTextstyles={styles.dropstyle}
         />
         <TextInput
-          style={ProviderAddInfoStyles.input}
+          style={styles.input}
           keyboardType="default"
           placeholder={language.address}
           onChangeText={value => setserviceAddress(value)}
@@ -215,25 +218,25 @@ const ProviderAddInfo = props => {
   };
 
   const RenderFooter = () => {
-    return <View style={ProviderAddInfoStyles.footer}>{RenderNextButton()}</View>;
+    return <View style={styles.footer}>{RenderNextButton()}</View>;
   };
   const RenderNextButton = () => {
     return (
       <Pressable
-        style={[styles.next, styles.shadow]}
+        style={[AppStyles.next, AppStyles.shadow]}
         onPress={() => onNextPress()}>
-        <Text style={styles.nextText}>{language.next}</Text>
+        <Text style={AppStyles.nextText}>{language.next}</Text>
       </Pressable>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={AppStyles.container}>
       <HeaderComp />
-      <View style={ProviderAddInfoStyles.body}>
+      <View style={styles.body}>
         <DynamicHeader
           text={language.HeaderTitle}
-          textStyle={ProviderAddInfoStyles.headText}
+          textStyle={styles.headText}
           value={scrollOffsetY}
         />
         <ScrollView {...params.ScrollView}>
@@ -246,5 +249,138 @@ const ProviderAddInfo = props => {
   );
 };
 
+
+const styles= StyleSheet.create({
+  ScrollView: {
+    width: '100%',
+  },
+  header: {
+    alignItems: 'flex-end',
+    marginRight: 30,
+    marginTop: 20,
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: '5%',
+  },
+  headText: {
+    fontSize: 20,
+    color: colors.puprble,
+    fontFamily: 'Cairo-VariableFont_slnt,wght',
+  },
+  body: {
+    height: '75%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  borderTitleView: {
+    height: 560,
+    width: 340,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 20,
+    marginBottom: 30,
+    marginTop: 5,
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  borderAddressView: {
+    height: 250,
+    width: 340,
+    borderWidth: 1,
+    borderColor: colors.darkGold,
+    borderRadius: 15,
+    marginBottom: 30,
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  footer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginRight: 20,
+    marginLeft: 20,
+    alignSelf: 'flex-end',
+  },
+
+  dropdown: {
+    height: 50,
+    width: 300,
+    fontSize: 17,
+    borderRadius: 10,
+    fontWeight: 'bold',
+    marginTop: 30,
+  },
+  dropstyle: {
+    textAlign: 'center',
+    color: colors.darkGold,
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  droptext: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: colors.darkGold,
+  },
+  input: {
+    textAlign: 'center',
+    height: 50,
+    width: '90%',
+    fontSize: 16,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#dcdcdc',
+    marginTop: 30,
+    marginBottom: 30,
+  },
+  text: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginTop: 20,
+    marginRight: 20,
+    color: colors.darkGold,
+    fontWeight: '500'
+  },
+  titleInput: {
+    textAlign: 'auto',
+    height: 50,
+    width: 315,
+    borderWidth: 1.5,
+    borderRadius: 15,
+    borderColor: "darkgray",
+    fontSize: 18,
+    color: 'black',
+    backgroundColor: 'white',
+  },
+  subtitleInput: {
+    textAlign: 'auto',
+    height: 100,
+    width: 315,
+    borderWidth: 1.5,
+    borderRadius: 15,
+    borderColor: "darkgray",
+    fontSize: 18,
+    color: 'black',
+    backgroundColor: 'white',
+  },
+  descInput: {
+    textAlign: 'auto',
+    height: 150,
+    width: 315,
+    borderWidth: 1.5,
+    borderRadius: 15,
+    borderColor: "darkgray",
+    fontSize: 18,
+    color: 'black',
+    backgroundColor: 'white',
+  },
+  textRequired: {
+    textAlign: 'auto',
+    fontSize: 14,
+    marginRight: 20,
+    color: 'red',
+  },
+})
 
 export default ProviderAddInfo;
