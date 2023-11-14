@@ -33,7 +33,7 @@ const LocationComp = props => {
 };
 
 
-const styles=StyleSheet({
+const styles=StyleSheet.create({
   text: {
     textAlign: 'center',
     fontSize: 20,

@@ -26,7 +26,6 @@ import { colors } from '../../assets/AppColors';
 const ProviderSetPhotos = props => {
   const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
-  const {styles} = styles.ProviderScreensStyles
   const onNextPress = () => {
     // photoArray.length <5 ? showMessage() :
     props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
