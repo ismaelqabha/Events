@@ -1,5 +1,5 @@
 import { BackgroundImage } from '@rneui/base';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, Text, Pressable, Image, ImageBackground, FlatList } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import CampaignCard from '../components/CampaignCard';
@@ -12,22 +12,29 @@ import { colors } from "../assets/AppColors"
 import { servicesCategory } from '../resources/data';
 import AddNewDates from '../components/AddNewDates';
 import ServiceCard from '../components/ServiceCard';
+import HomeServiceCard from '../components/HomeServiceCard';
 
 const ClientHomeAds = (props) => {
-    const { cat, ServiceDataInfo, campInfo, userRegion, setReachCampaignfrom, reachCampaignfrom } = useContext(SearchContext);
+    const { cat, setCat,
+        ServiceDataInfo,
+        campInfo,
+        userRegion,
+        setReachCampaignfrom,
+        reachCampaignfrom,
+        setHomeCardType } = useContext(SearchContext);
+
+    const [selectServiceType, setSelectServiceType] = useState('');
     const navigation = useNavigation();
 
     const queryCampaign = () => {
+
         return campInfo?.filter(res => {
-            return res.campRigon == userRegion;
+            return res.campRigon == userRegion && res.campCatType == cat;
         })
     }
 
     const renderCampaigns = () => {
-        //const x = AddNewDates()
-
         setReachCampaignfrom('fromHome')
-
         const CampData = queryCampaign();
         const campArray = CampData?.map(camp => {
             return < CampaignCard {...camp} />
@@ -40,26 +47,50 @@ const ClientHomeAds = (props) => {
     }
     const renderCat = ({ item }) => {
         return (
-            <ServiceCard {...item} />
+            <ServiceCard
+                {...item}
+                isChecked={item.titleCategory === selectServiceType}
+                onCatPress={(value) => setSelectServiceType(value)}
+            />
         )
     };
-    useEffect(() => {
 
+    const getHallServices = () => {
+        return ServiceDataInfo?.filter(item => {
+            return item.serviceData.servType == cat
+        })
+    }
+    const renderServiceCard = () => {
+
+        const data = getHallServices()
+        const ServiceArray = data.map(card => {
+            return <HomeServiceCard {...card.serviceData}
+                images={card?.serviceImages}
+            />;
+        })
+        return ServiceArray
+    }
+
+    useEffect(() => {
+        setCat('قاعات')
     }, [])
 
 
     const photo = [
-        require('../assets/photos/abofaneh.png'),
-        require('../assets/photos/djfarah.png'),
-        require('../assets/photos/djWaseem.png'),
-        require('../assets/photos/DJ.png'),
+        ("https://annlifestyle.com/wp-content/uploads/2018/11/mvpdecoration_43914656_692834574424375_5213177054772732757_n.jpg"),
+        ('https://i.ytimg.com/vi/o21N8hYhgpA/maxresdefault.jpg'),
+        ('https://i1.sndcdn.com/artworks-S0TyHTUkz9UGdPeB-ce8Cpg-t500x500.jpg'),
+        ('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSidf4Cc6xHlFYGAzdeR9MZw6_yVIUcSSaJzQ&usqp=CAU'),
+        ('https://htouches.com/wp-content/uploads/2021/10/r.png'),
+        ('https://i.ytimg.com/vi/8TE-BK89hHE/maxresdefault.jpg'),
+        ('https://api.mzadqatar.com/uploads/images/2019/03/18/8158896-4022558486.jpg'),
+        ("https://opensooq-images.os-cdn.com/previews/0x720/e9/48/e9485efd37c92c3002cadf210fe4b869a11432646d11a993195423b708d7f4f1.jpg.webp"),
     ]
 
 
     return (
         <ImageBackground style={styles.bg} source={require('../assets/photos/backgroundMain.png')}>
             <View style={styles.header}>
-                {/* <Text style={styles.headerTxt}>الرئيسية</Text> */}
                 <Image source={require('../assets/photos/supLogoTitle.png')} style={styles.titleImg} />
 
                 <Pressable
@@ -119,9 +150,10 @@ const ClientHomeAds = (props) => {
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>أفضل العروض</Text>
                     <View style={styles.campighn}>
-                        <Text style={styles.CatText}>قاعات</Text>
+                        <Text style={styles.CatText}>{cat}</Text>
                         <View style={styles.campBox}>
-                            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scroll}>
+                            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} >
+
                                 {renderCampaigns()}
                             </ScrollView>
                         </View>
@@ -130,51 +162,22 @@ const ClientHomeAds = (props) => {
 
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>الاكثر طلبا</Text>
-                    
+                    <Text style={styles.CatText}>{cat}</Text>
+                    {setHomeCardType('top')}
+                    <ScrollView style={styles.scroll}>{renderServiceCard()}</ScrollView>
                 </View>
 
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>نقترح عليك</Text>
-                    
+                    <Text style={styles.CatText}>{cat}</Text>
+                    <ScrollView style={styles.scroll}>{renderServiceCard()}</ScrollView>
                 </View>
 
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>الاقرب لي</Text>
-                    
+                    <Text style={styles.CatText}>{cat}</Text>
+                    <ScrollView style={styles.scroll}>{renderServiceCard()}</ScrollView>
                 </View>
-
-
-
-                {/* <View style={styles.viewSeper}>
-                    <Text style={styles.CatText}>تصوير</Text>
-                </View>
-
-                <View style={styles.campighn}>
-                    <View style={styles.campBox}>
-                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.scroll}>
-                            {renderCampaigns()}
-                        </ScrollView>
-                    </View>
-                </View> */}
-
-                {/* <View style={styles.viewSeper}>
-                    <Text style={styles.CatText}>شيف</Text>
-                </View>
-
-                <View style={styles.campighn}>
-                    <View style={styles.campBox}>
-                        <ScrollView horizontal={true}
-                            //contentContainerStyle={styles.home} 
-                            showsHorizontalScrollIndicator={false}
-                            style={styles.scroll}>
-                            {renderCampaigns()}
-                        </ScrollView>
-                    </View>
-                </View> */}
-
-
-
-
             </ScrollView>
         </ImageBackground>
     );
@@ -183,27 +186,23 @@ const ClientHomeAds = (props) => {
 const styles = StyleSheet.create({
     home: {
         borderRadius: 40,
-
     },
     scroll: {
-        //flexDirection: 'row-reverse'
+        height: 360,
     },
     bg: {
         flex: 1,
         backgroundColor: colors.BGScereen,
     },
     campighn: {
-        marginTop: 20,
-        marginBottom: 20
+        marginTop: 20
     },
     campBox: {
         flexDirection: 'row',
         justifyContent: 'center',
-        padding: 10,
-
     },
     titleText: {
-        textAlign:'center',
+        textAlign: 'center',
         fontSize: 17,
         color: colors.TitleFont,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
@@ -233,7 +232,6 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginBottom: 30,
         alignSelf: 'center'
-
     },
     icon: {
         marginRight: 10
@@ -247,15 +245,15 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginLeft: 20,
         color: colors.TitleFont,
-
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
     centents: {
         marginTop: 30,
-        borderWidth: 0.3,
+        borderWidth: 0.5,
         borderColor: colors.darkGold,
         marginBottom: 50,
-       // height: 318
+        paddingBottom: 10,
+        paddingTop: 10
     },
     header: {
         width: "100%",

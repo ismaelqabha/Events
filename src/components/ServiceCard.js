@@ -49,7 +49,6 @@ const ServiceCard = (props) => {
                 }
                 setServiceDataInfo([...ServiceArr])
             }
-            //navigation.navigate(ScreenNames.Results, { data: { ...props } });
         }
 
     }
@@ -85,9 +84,11 @@ const ServiceCard = (props) => {
             } else {
                 const ServiceCard = props;
                 const clicked = chickIfChecked(ServiceCard);
-                return <View style={[clicked ? styles.HomeScreenViewPress : styles.HomeScreenView,styles.shadow]}>
-                    <TouchableOpacity 
-                    //onPress={() => onCatPress()}
+
+                return <View style={clicked ? styles.HomeScreenViewPress : styles.HomeScreenView}>
+                    <TouchableOpacity
+                        onPress={() => onCatPress()}
+
                     >
                         <Image
                             source={props.img}
@@ -144,19 +145,20 @@ const styles = StyleSheet.create({
     },
     HomeScreenView: {
         //alignItems: 'center',
-        justifyContent:'center',
+        justifyContent: 'center',
         margin: 15,
         height: 100,
         width: 60,
     },
-    HomeScreenViewPress:{
-        justifyContent:'center',
+    HomeScreenViewPress: {
+        justifyContent: 'center',
         margin: 15,
         height: 100,
-        width: 60,
-        backgroundColor: colors.darkGold,
+        width: 65,
+        borderWidth: 3,
+        borderColor: colors.darkGold,
         borderRadius: 15,
-        elevation:5
+        //elevation: 5
     },
     HomeScreenimg: {
         width: 60,
@@ -168,7 +170,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.puprble,
         //fontFamily: 'Cairo-VariableFont_slnt,wght',
-        width: '100%'
+        //width: '100%'
     },
     otherbody: {
         height: 120,

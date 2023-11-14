@@ -13,6 +13,7 @@ export const ScreenNames = {
     SubDetailPrices: 'SubDetailPrices',
     Campaigns: 'Campaigns',
     ClientSearch: 'ClientSearch',
+    PersonalInfo: 'PersonalInfo',
     UserProfile: 'UserProfile',
     CreateUser: 'CreateUser',
     Security: 'Security',
@@ -21,6 +22,7 @@ export const ScreenNames = {
     ClientPayment: 'ClientPayment',
     ClientNotification: 'ClientNotification',
     LogOut: 'LogOut',
+    ClientProfile: 'ClientProfile',
     
 
     // Provider Screens
@@ -39,7 +41,10 @@ export const ScreenNames = {
     ProviderWaitingPay: 'ProviderWaitingPay',
     ProviderWaitingReply: 'ProviderWaitingReply',
     ProviderHome: 'ProviderHome',
+
+    ProviderProfile: 'ProviderProfile',
     ProviderSocialMediaScreen : 'ProviderSocialMedia',
+
 
 
     Splash: 'Splash',

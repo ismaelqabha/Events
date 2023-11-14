@@ -4,11 +4,11 @@ import LogOut from "../src/screens/LogOut";
 import Security from "../src/screens/Security";
 import Settings from "../src/screens/Settings";
 import Support from "../src/screens/Support";
-import UserProfile from "../src/screens/UserProfile";
 import ProviderTapNav from "./ProviderTapNav";
 import { ScreenNames } from "./ScreenNames";
 import TabNavigator from "./tabNavigator";
 import { Icons } from "../src/components/Icons"
+import PersonalInfo from "../src/screens/PersonalInfo";
 
 
 export const SharedScreen = [
@@ -20,11 +20,11 @@ export const SharedScreen = [
         component: TabNavigator,
     },
     {
-        route: ScreenNames.UserProfile,
+        route: ScreenNames.PersonalInfo,
         label: 'المعلومات الشخصية',
         type: Icons.AntDesign,
         icon: 'profile',
-        component: UserProfile,
+        component: PersonalInfo,
     },
     {
         route: ScreenNames.Security,
