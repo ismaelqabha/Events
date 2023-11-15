@@ -92,7 +92,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: 'gray'
+        borderColor: 'gray',
+        backgroundColor: 'white'
     },
     TextInput: {
         flex: 1,
