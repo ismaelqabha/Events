@@ -17,6 +17,8 @@ import DynamicHeader from '../../components/ProviderComponents/ScrollView/Dynami
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
+import Entypo from "react-native-vector-icons/Entypo";
+import AntDesign from "react-native-vector-icons/AntDesign";
 
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
@@ -114,11 +116,19 @@ const ProviderAddInfo = props => {
   const RenderTitleBox = () => {
     return (
       <View>
-        <View style={{flexDirection:'row' , alignItems:'center'  }}>
-        <Text style={styles.text}>{language.title}</Text>
-        {titleError && (
-          <Text style={styles.textRequired}>{language.titleRequired}</Text>
-        )}
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
+              color={colors.puprble}
+              size={20} />
+          </View>
+          <View style={styles.itemView}>
+            {titleError && (
+              <Text style={styles.textRequired}>{language.titleRequired}</Text>
+            )}
+            <Text style={styles.text}>{language.title}</Text>
+          </View>
         </View>
         <TextInput
           style={styles.titleInput}
@@ -134,34 +144,52 @@ const ProviderAddInfo = props => {
   };
 
   const RenderSubTitleBox = () => {
-    return (
-      <View>
-        <Text style={styles.text}>{language.subTitle}</Text>
-        {subTitleError && (
-          <Text style={styles.textRequired}>{language.titleRequired}</Text>
-        )}
-
-        <TextInput
-          style={styles.subtitleInput}
-          keyboardType="default"
-          maxLength={150}
-          multiline
-          onChangeText={value => {
-            setSuTitle(value);
-          }}
-          value={SuTitle}
-        />
+    return (<View>
+      <View style={styles.viewwholeInput}>
+        <View>
+          <AntDesign
+            name={"question"}
+            color={colors.puprble}
+            size={20} />
+        </View>
+        <View style={styles.itemView}>
+          {subTitleError && (
+            <Text style={styles.textRequired}>{language.titleRequired}</Text>
+          )}
+          <Text style={styles.text}>{language.subTitle}</Text>
+        </View>
       </View>
+      <TextInput
+        style={styles.subtitleInput}
+        keyboardType="default"
+        maxLength={150}
+        multiline
+        onChangeText={value => {
+          setSuTitle(value);
+        }}
+        value={SuTitle}
+      />
+    </View>
     );
   };
 
   const RenderDescription = () => {
     return (
       <View>
-        <Text style={styles.text}> {language.description}</Text>
-        {desError && (
-          <Text style={styles.textRequired}>{language.titleRequired}</Text>
-        )}
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
+              color={colors.puprble}
+              size={20} />
+          </View>
+          <View style={styles.itemView}>
+            {desError && (
+              <Text style={styles.textRequired}>{language.titleRequired}</Text>
+            )}
+            <Text style={styles.text}> {language.description}</Text>
+          </View>
+        </View>
         <TextInput
           style={styles.descInput}
           keyboardType="default"
@@ -191,6 +219,21 @@ const ProviderAddInfo = props => {
     return (
       <View style={[styles.borderAddressView, AppStyles.shadow]}>
         <Text style={styles.headText}>{language.LocationHeadText}</Text>
+        <View style={styles.region}>
+          <Text>{language.address}</Text>
+        </View>
+
+        {/* <TextInput
+          style={styles.input}
+          keyboardType="default"
+          placeholder={language.address}
+          onChangeText={value => setserviceAddress(value)}
+          value={serviceAddress || null}
+          editable={false}
+        /> */}
+        {titleError && (
+          <Text style={{color: 'red',marginLeft: 100}}>{language.titleRequired}</Text>
+        )}
         <SelectList
           data={regionData}
           setSelected={val => {
@@ -202,15 +245,16 @@ const ProviderAddInfo = props => {
           inputstyles={styles.droptext}
           dropdownTextstyles={styles.dropstyle}
         />
-        <TextInput
-          style={styles.input}
-          keyboardType="default"
-          placeholder={language.address}
-          onChangeText={value => setserviceAddress(value)}
-          value={serviceAddress || null}
-          editable={false}
-
-        />
+        
+        <Pressable style={styles.location}>
+          <Text style={styles.locationTitle}>أضف موقع</Text>
+          <View style={styles.IconView}>
+            <Entypo
+              name={"location-pin"}
+              color={colors.puprble}
+              size={25} />
+          </View>
+        </Pressable>
       </View>
     );
   };
@@ -248,7 +292,7 @@ const ProviderAddInfo = props => {
 };
 
 
-const styles= StyleSheet.create({
+const styles = StyleSheet.create({
   ScrollView: {
     width: '100%',
   },
@@ -266,28 +310,37 @@ const styles= StyleSheet.create({
     fontSize: 20,
     color: colors.puprble,
     fontFamily: 'Cairo-VariableFont_slnt,wght',
+    textAlign: 'center'
+  },
+  itemView: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end'
+  },
+  viewwholeInput: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between'
   },
   body: {
     height: '75%',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   borderTitleView: {
-    height: 560,
-    width: 340,
-    borderWidth: 1,
-    borderColor: 'gray',
+    height: 500,
+    width: "90%",
     borderRadius: 20,
     marginBottom: 30,
     marginTop: 5,
     alignItems: 'center',
     backgroundColor: 'white',
+    elevation: 5
   },
   borderAddressView: {
-    height: 250,
-    width: 340,
-    borderWidth: 1,
-    borderColor: colors.darkGold,
+    //height: 350,
+    width: "90%",
     borderRadius: 15,
     marginBottom: 30,
     alignItems: 'center',
@@ -304,80 +357,102 @@ const styles= StyleSheet.create({
 
   dropdown: {
     height: 50,
-    width: 300,
+    width: 100,
     fontSize: 17,
-    borderRadius: 10,
-    fontWeight: 'bold',
-    marginTop: 30,
+    //borderRadius: 10,
+    // fontWeight: 'bold',
+    //marginTop: 30,
   },
   dropstyle: {
-    textAlign: 'center',
-    color: colors.darkGold,
+    textAlign: 'left',
+    //color: colors.darkGold,
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: 20,
   },
   droptext: {
     fontSize: 15,
     fontWeight: 'bold',
     color: colors.darkGold,
+    textAlign: 'right'
   },
-  input: {
-    textAlign: 'center',
+  region: {
+    textAlign: 'right',
     height: 50,
-    width: '90%',
+    width: '60%',
     fontSize: 16,
     borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#dcdcdc',
-    marginTop: 30,
-    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: 'darkgray',
+    alignSelf: 'center',
+    marginVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   text: {
-    textAlign: 'center',
     fontSize: 16,
     marginTop: 20,
-    marginRight: 20,
-    color: colors.darkGold,
-    fontWeight: '500'
+    color: colors.puprble,
+    fontWeight: '500',
+   
   },
   titleInput: {
-    textAlign: 'auto',
-    height: 50,
+    textAlign: 'right',
+    height: 40,
     width: 315,
     borderWidth: 1.5,
-    borderRadius: 15,
+    borderRadius: 10,
     borderColor: "darkgray",
     fontSize: 18,
     color: 'black',
     backgroundColor: 'white',
   },
   subtitleInput: {
-    textAlign: 'auto',
-    height: 100,
+    textAlign: 'right',
+    height: 60,
     width: 315,
     borderWidth: 1.5,
-    borderRadius: 15,
+    borderRadius: 10,
     borderColor: "darkgray",
     fontSize: 18,
     color: 'black',
     backgroundColor: 'white',
   },
   descInput: {
-    textAlign: 'auto',
-    height: 150,
+    textAlign: 'right',
+    height: 200,
     width: 315,
     borderWidth: 1.5,
-    borderRadius: 15,
+    borderRadius: 10,
     borderColor: "darkgray",
     fontSize: 18,
     color: 'black',
     backgroundColor: 'white',
   },
   textRequired: {
-    textAlign: 'auto',
     fontSize: 14,
-    marginRight: 20,
+    marginRight: 5,
     color: 'red',
+  },
+  location: {
+    flexDirection: 'row',
+    marginVertical: 20,
+    alignSelf: 'center',
+
+    alignItems: 'center'
+  },
+  locationTitle: {
+    fontSize: 15,
+    textAlign: 'right',
+    color: colors.puprble
+  },
+  IconView: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'lightgray',
+    borderRadius: 30,
+    marginLeft: 15
   },
 })
 

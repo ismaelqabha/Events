@@ -70,7 +70,6 @@ const styles = StyleSheet.create({
       body: {
         height: '70%',
         marginTop: 10,
-        // marginLeft: '18%',
       },
 })
 

@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,29 +7,29 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {Card} from 'react-native-elements';
+import { FlatList } from 'react-native-gesture-handler';
+import { Card } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import ProviderAddPhotoComp from '../../components/ProviderComponents/ProviderAddPhotoComp';
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import strings from '../../assets/res/strings';
-import { PERMISSIONS, request} from 'react-native-permissions';
+import { PERMISSIONS, request } from 'react-native-permissions';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
 
 const ProviderSetPhotos = props => {
-  const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
+  const { photoArray, setPhotoArray } = useContext(ServiceProviderContext);
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
   const onNextPress = () => {
     // photoArray.length <5 ? showMessage() :
     props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
-      data: {...props},
+      data: { ...props },
     });
   };
 
@@ -122,7 +122,7 @@ const ProviderSetPhotos = props => {
     }
   };
 
-  const renderServiceImg = ({item}) => {
+  const renderServiceImg = ({ item }) => {
     return <ProviderAddPhotoComp uri={item?.image} />;
   };
 
@@ -137,12 +137,14 @@ const ProviderSetPhotos = props => {
 
   const RenderAddPhoto = () => {
     return (
-      <View style={[styles.card, AppStyles.shadow]}>
+      <View style={[styles.card]}>
         <TouchableOpacity style={styles.touch} onPress={onAddImgPress}>
-          <Card.Title style={styles.cardTitle}>
-            {language.CardTitle}
-          </Card.Title>
-          <AntDesign name="plus" style={styles.icon} />
+          <View>
+            <Text style={styles.cardTitle}> {language.CardTitle}</Text>
+          </View>
+          <View style={styles.IconView}>
+            <AntDesign name="plus" style={styles.icon} />
+          </View>
         </TouchableOpacity>
       </View>
     );
@@ -150,12 +152,16 @@ const ProviderSetPhotos = props => {
 
   const RenderCapturePhoto = () => {
     return (
-      <View style={[styles.card, AppStyles.shadow]}>
+      <View style={[styles.card]}>
         <TouchableOpacity style={styles.touch} onPress={onPickImgPress}>
-          <Card.Title style={styles.cardTitle}>
-            {language.CapturePhoto}
-          </Card.Title>
-          <Feather name="camera" style={styles.icon} />
+          <View>
+            <Text style={styles.cardTitle}>
+              {language.CapturePhoto}
+            </Text>
+          </View>
+          <View style={styles.IconView}>
+            <Feather name="camera" style={styles.icon} />
+          </View>
         </TouchableOpacity>
       </View>
     );
@@ -163,7 +169,7 @@ const ProviderSetPhotos = props => {
 
   const RenderSelectedImages = () => {
     return (
-      <View style={[styles.flatListContainer,AppStyles.shadow]}>
+      <View style={[styles.flatListContainer]}>
         <FlatList
           data={photoArray}
           renderItem={renderServiceImg}
@@ -238,28 +244,29 @@ const styles = StyleSheet.create({
   touch: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    width: 300,
-    height: 40,
-    borderRadius: 15,
-    marginTop: 10,
+    alignItems: 'center'
   },
   card: {
-    backgroundColor: 'white',
-    borderRadius: 20,
     width: '80%',
     height: 50,
-    marginTop: 10,
-    alignSelf: 'center',
-    borderColor: colors.darkGold,
-    borderWidth: 1
+    marginTop: 5,
+  },
+  IconView: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'lightgray',
+    borderRadius: 30,
+    marginLeft: 15
   },
   cardTitle: {
     fontSize: 20,
-    marginRight: 20,
-    color: colors.puprble
+    color: colors.puprble,
   },
   icon: {
-    fontSize: 25, color: colors.puprble
+    fontSize: 25,
+    color: colors.puprble
   },
   flatList: {
     flex: 1,
@@ -272,9 +279,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 10,
     width: '90%',
-    borderWidth: 1.5,
-    backgroundColor: colors.BGScereen,
-    borderColor: colors.darkGold,
+   // borderWidth: 0.3,
+    //backgroundColor: colors.BGScereen,
+    // borderColor: colors.darkGold,
     borderRadius: 5
   }
 })

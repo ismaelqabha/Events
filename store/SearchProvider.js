@@ -13,11 +13,11 @@ const SearchProvider = props => {
   const [isFirst, setIsfirst] = useState ()
   const [serviceTitle, setserviceTitle] = useState ()
 
-  //const [sType, setSType] = useState({});
+  const [sType, setSType] = useState({});
   // const [Service, setService] = useState({});
   // const [city, setCity] = useState({});
   // const [fId, setFId] = useState({});
-  //const [ServId, setServId] = useState('');
+  const [ServId, setServId] = useState('');
 
 
 
@@ -81,20 +81,20 @@ const SearchProvider = props => {
         setuserId,
         cat,
         setCat,
-        isFirst, 
+        isFirst,
         setIsfirst,
-        serviceTitle, 
+        serviceTitle,
         setserviceTitle,
+        sType,
+        setSType,
         // Service: Service,
         // setService,
         // city: city,
         // setCity,
-        // sType,
-        // setSType,
         // fId,
         // setFId,
-        // ServId,
-        // setServId,
+         ServId,
+         setServId,
         userFavorates,
         setUserFavorates,
         fileFavoriteState,
