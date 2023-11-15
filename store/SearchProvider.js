@@ -6,15 +6,18 @@ import { v4 as uuidv4 } from 'uuid';
 
 const SearchProvider = props => {
 
-  const [userId, setuserId] = useState('646ce3e29e7972dc37f3146d');
+  const [userId, setuserId] = useState(1);
   const [userInfo, setUserInfo] = useState([]);
-  const [sType, setSType] = useState({});
-
-  const [Service, setService] = useState({});
-  const [city, setCity] = useState({});
   const [cat, setCat] = useState('');
-  const [fId, setFId] = useState({});
-  const [ServId, setServId] = useState('');
+  const [HomeCardType, setHomeCardType] = useState('');
+  const [isFirst, setIsfirst] = useState ()
+  const [serviceTitle, setserviceTitle] = useState ()
+
+  //const [sType, setSType] = useState({});
+  // const [Service, setService] = useState({});
+  // const [city, setCity] = useState({});
+  // const [fId, setFId] = useState({});
+  //const [ServId, setServId] = useState('');
 
 
 
@@ -30,7 +33,7 @@ const SearchProvider = props => {
   const [campInfo, setCampInfo] = useState([])
   const [campiegnsAccordingServiceId, setCampiegnsAccordingServiceId] = useState([])
   const [reachCampaignfrom, setReachCampaignfrom] = useState('fromHome')
- 
+
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
   const [town, setTown] = useState([])
@@ -38,14 +41,14 @@ const SearchProvider = props => {
   const [detailIdState, setdetailIdState] = useState();
 
   // Request
-  const [requestInfo, setRequestInfo] = useState( [])
+  const [requestInfo, setRequestInfo] = useState([])
   const [orderSubdetail, setOrderSubdetail] = useState([])
   const [isFromRequestScreen, setisFromRequestScreen] = useState()
   const [RequestIdState, setRequestIdState] = useState();
   const [TimeText, setTimeText] = useState()
 
- // Event 
- const [eventInfo, setEventInfo] = useState([])
+  // Event 
+  const [eventInfo, setEventInfo] = useState([])
 
   // ClientSearch
   const [cityselected, setcityselected] = useState("");
@@ -58,13 +61,13 @@ const SearchProvider = props => {
 
 
   //Booking
- 
+
   const [UserState, setUserState] = useState(Users || [])
   const [userPayment, setUserPayment] = useState(Payment || [])
   const [serviceImg, setserviceImg] = useState([])
   const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
- 
+
 
 
 
@@ -72,25 +75,31 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
-        Service: Service,
-        setService,
-        city: city,
-        setCity,
+        HomeCardType,
+        setHomeCardType,
         userId,
         setuserId,
         cat,
         setCat,
-        sType,
-        setSType,
-        fId,
-        setFId,
-        ServId,
-        setServId,
+        isFirst, 
+        setIsfirst,
+        serviceTitle, 
+        setserviceTitle,
+        // Service: Service,
+        // setService,
+        // city: city,
+        // setCity,
+        // sType,
+        // setSType,
+        // fId,
+        // setFId,
+        // ServId,
+        // setServId,
         userFavorates,
         setUserFavorates,
         fileFavoriteState,
         setFileFavoriteState,
-        requestInfo, 
+        requestInfo,
         setRequestInfo,
         ImgOfServeice,
         setImgOfServeice,
@@ -136,21 +145,21 @@ const SearchProvider = props => {
         setrequestedDate,
         Categorychozen,
         setCategorychozen,
-        isFromRequestScreen, 
+        isFromRequestScreen,
         setisFromRequestScreen,
-        orderSubdetail, 
+        orderSubdetail,
         setOrderSubdetail,
-        eventInfo, 
+        eventInfo,
         setEventInfo,
-        TimeText, 
+        TimeText,
         setTimeText,
-        campiegnsAccordingServiceId, 
+        campiegnsAccordingServiceId,
         setCampiegnsAccordingServiceId,
-        reachCampaignfrom, 
+        reachCampaignfrom,
         setReachCampaignfrom,
-        userInfo, 
+        userInfo,
         setUserInfo
-        
+
       }}>
       {props.children}
     </SearchContext.Provider>

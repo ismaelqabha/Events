@@ -8,7 +8,7 @@ const strings = {
     },
     ProviderScreens: {
       ProviderCreateListing: {
-        HeadText: 'أهلا وسهلا, اسماعيل',
+        HeadText: 'أهلا وسهلا, ',
         StartService: 'ابدأ بخدمة جديده',
         NewService: 'انشاء خدمة جديده',
       },

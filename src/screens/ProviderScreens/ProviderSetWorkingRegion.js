@@ -8,6 +8,7 @@ import strings from '../../assets/res/strings';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { AppStyles } from '../../assets/res/AppStyles';
+import { colors } from '../../assets/AppColors';
 
 const ProviderSetWorkingRegion = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderWorkingRegion;

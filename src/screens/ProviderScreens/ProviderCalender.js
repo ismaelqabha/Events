@@ -1,15 +1,16 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import CalenderDayCard from '../../components/ProviderComponents/CalenderDayCard';
+import SearchContext from '../../../store/SearchContext';
 
 const ProviderCalender = (props) => {
-    const { data } = props?.route.params;
+    const { serviceTitle } = useContext(SearchContext);
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-
+    console.log("serviceTitle", serviceTitle);
     return (
         <View style={styles.container}>
             <View style={styles.title}>
@@ -21,11 +22,11 @@ const ProviderCalender = (props) => {
                         color={"black"}
                         size={25} />
                 </Pressable>
-                <Text style={styles.txt}>{data?.title}</Text>
+                <Text style={styles.txt}>{serviceTitle}</Text>
             </View>
 
             <View style={styles.body}>
-                
+
                 <CalenderDayCard />
             </View>
         </View>

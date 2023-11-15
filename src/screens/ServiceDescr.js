@@ -67,21 +67,21 @@ const ServiceDescr = (props) => {
     }
 
     const onPressHandler = () => {
-        if (!checkIfInEvent()) {
+        // if (!checkIfInEvent()) {
             props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
-        } else {
-            Alert.alert(
-                'تنبية',
-                '  الرجاء اختيار تفاصيل حجز اخرى التفاصيل الحالية محجوزة مسبقا لديك',
-                [
-                    {
-                        text: 'Ok',
-                        style: 'cancel',
-                    },
-                ],
-                { cancelable: false } // Prevent closing the alert by tapping outside
-            );
-        }
+        // } else {
+        //     Alert.alert(
+        //         'تنبية',
+        //         '  الرجاء اختيار تفاصيل حجز اخرى التفاصيل الحالية محجوزة مسبقا لديك',
+        //         [
+        //             {
+        //                 text: 'Ok',
+        //                 style: 'cancel',
+        //             },
+        //         ],
+        //         { cancelable: false } // Prevent closing the alert by tapping outside
+        //     );
+        // }
 
     }
 
@@ -267,7 +267,7 @@ const ServiceDescr = (props) => {
                     <SliderBox
                         sliderBoxHeight={300}
                         images={renderImg()}
-                        dotColor= {colors.puprble}
+                        dotColor={colors.puprble}
                         dotStyle={{ width: 8, height: 8, borderRadius: 50 }}
                         autoplay={true}
                     />
@@ -282,7 +282,7 @@ const ServiceDescr = (props) => {
                         {renderDates()}
                         <Pressable
                             style={{ position: 'absolute', bottom: 0, justifyContent: 'center' }}
-                            //onPress={}
+                        //onPress={}
                         >
                             <Text style={styles.changDatetext}>تغيير التاريح</Text>
                         </Pressable>
@@ -317,7 +317,9 @@ const ServiceDescr = (props) => {
             </ScrollView>
 
             <View style={styles.foter}>
-                <Pressable style={styles.btnview} onPress={() => onPressHandler()}>
+                <Pressable style={styles.btnview}
+                    onPress={() => onPressHandler()}
+                >
                     <Text style={styles.btntext}>طلب حجز</Text>
                 </Pressable>
             </View>
