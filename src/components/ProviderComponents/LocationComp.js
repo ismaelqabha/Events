@@ -1,31 +1,52 @@
-import React, {useContext, useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {Text, TouchableOpacity} from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
 
 const LocationComp = props => {
   const [pressed, setPressed] = useState(false);
-  const {workAreas, setWorkAreas} = useContext(ServiceProviderContext);
+  const { workAreas, setWorkAreas } = useContext(ServiceProviderContext);
 
+  useEffect(() => {
+    checkPressed()
+  }, [])
+
+  const checkPressed = () => {
+    workAreas.includes(props.value) ? setPressed(true) : null
+  }
 
   const onLocationPress = () => {
     setPressed(!pressed);
-    addToSelected();
+    checkExists()
+
   };
+
+  const checkExists = () => {
+    workAreas.includes(props.value) ? removeFromList()
+      : addToSelected();
+  }
 
   const addToSelected = () => {
     var list = workAreas;
     list.push(props.value);
+    setPressed(true)
     setWorkAreas(list);
   };
 
+  const removeFromList = () => {
+    const newList = workAreas.filter((area) => area !== props.value)
+    setPressed(false)
+    setWorkAreas(newList)
+
+  }
+
   return (
     <TouchableOpacity
-      style={pressed ? [styles.bodyActive,AppStyles.shadow] : [styles.body,AppStyles.shadow]}
+      style={pressed ? [styles.bodyActive, AppStyles.shadow] : [styles.body, AppStyles.shadow]}
       onPress={() => onLocationPress()}>
-      <Text style={pressed ? [styles.textActive,AppStyles.shadow] : [styles.text,,AppStyles.shadow]}>
+      <Text style={pressed ? [styles.textActive, AppStyles.shadow] : [styles.text, , AppStyles.shadow]}>
         {props.value}
       </Text>
     </TouchableOpacity>
@@ -33,7 +54,7 @@ const LocationComp = props => {
 };
 
 
-const styles=StyleSheet({
+const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
     fontSize: 20,
@@ -44,7 +65,7 @@ const styles=StyleSheet({
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#5f9ea0',
+    color: colors.puprble
   },
   body: {
     height: 70,
@@ -52,10 +73,8 @@ const styles=StyleSheet({
     borderRadius: 15,
     alignItems: 'center',
     marginTop: 10,
-    borderWidth: 1.5,
     alignSelf: 'center',
     justifyContent: 'center',
-    borderColor: colors.darkGold,
     backgroundColor: colors.BGScereen
   },
   bodyActive: {
@@ -67,7 +86,7 @@ const styles=StyleSheet({
     borderWidth: 3,
     alignSelf: 'center',
     justifyContent: 'center',
-    borderColor: '#5f9ea0',
+    borderColor: colors.puprble,
     backgroundColor: colors.BGScereen
 
   },

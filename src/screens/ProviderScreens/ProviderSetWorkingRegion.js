@@ -8,6 +8,7 @@ import strings from '../../assets/res/strings';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { AppStyles } from '../../assets/res/AppStyles';
+import { colors } from '../../assets/AppColors';
 
 const ProviderSetWorkingRegion = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderWorkingRegion;
@@ -73,13 +74,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   body: {
-    height: '70%',
-    marginTop: 10,
-    // marginLeft: '18%',
+    marginTop: 20,
   },
   footer: {
     //alignSelf: 'flex-end',
-    marginTop: 10,
+    marginTop: 30,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginRight: 20,

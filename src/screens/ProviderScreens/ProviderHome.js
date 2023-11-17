@@ -9,17 +9,18 @@ import strings from '../../assets/res/strings';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
+import Feather from "react-native-vector-icons/Feather";
 import { getServiceImages } from '../../resources/API';
 import { BackgroundImage } from '@rneui/base';
 
 const ProviderHome = (props) => {
-    const { isFirst,setserviceTitle} = useContext(SearchContext);
+    const { isFirst, setserviceTitle } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const [servicePhotos, setservicePhotos] = useState()
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
     const navigation = useNavigation();
 
-    
+
     const seprator = () => {
         return (
             <View style={styles.seprater}></View>
@@ -265,14 +266,19 @@ const ProviderHome = (props) => {
                         </View>
                     </View>
                     <View style={styles.serviceaddress}>
-                        <View style={styles.regionTit}>
-                            <Text style={styles.basicInfo}>{item.workingRegion + '   '}</Text>
-                            <AntDesign
-                                style={{alignSelf: 'center'}}
-                                name={"check"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
+                        {item.workingRegion.map(itemRegion => {
+                            return (
+                                <View style={styles.regionTit}>
+                                    <Text style={styles.basicInfo}>{itemRegion}</Text>
+                                    <AntDesign
+                                        style={{ alignSelf: 'center' }}
+                                        name={"check"}
+                                        color={colors.puprble}
+                                        size={25} />
+                                </View>
+                            )
+                        })}
+
                     </View>
                 </View>
             )
@@ -294,22 +300,40 @@ const ProviderHome = (props) => {
                         </View>
                     </View>
                     <View style={styles.serviceaddress}>
-                    <Text style={styles.basicInfoTitle}>الخدمات الاجبارية</Text>
-                        <View style={styles.regionTit}>
-                            <Text style={styles.basicInfo}>{item.additionalServices + '   '}</Text>
-                            <AntDesign
-                                style={{alignSelf: 'center'}}
-                                name={"check"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
+                        <Text style={styles.basicInfoTitle}>الخدمات الاجبارية</Text>
+                        {item.additionalServices.map(itemDetail => {
+                            return (<View>
+                                <View style={styles.regionTit}>
+                                    <Text style={styles.basicInfo}>{itemDetail.detailTitle}</Text>
+                                    <AntDesign
+                                        style={{ alignSelf: 'center' }}
+                                        name={"check"}
+                                        color={colors.puprble}
+                                        size={25} />
+                                </View>
+                                {itemDetail.subDetailArray.map(subDItem => {
+                                    return (
+                                        <View style={styles.detailView}>
+                                            <Text style={styles.basicInfo}>{subDItem.detailSubtitle}</Text>
+                                            <Feather
+                                                style={{ alignSelf: 'center' }}
+                                                name={"corner-down-left"}
+                                                color={colors.puprble}
+                                                size={25} />
+                                        </View>
+                                    )
+                                })}
+                            </View>
+                            )
+                        })}
+
                     </View>
                     <View style={styles.serviceaddress}>
-                    <Text style={styles.basicInfoTitle}>الخدمات الاختيارية</Text>
+                        <Text style={styles.basicInfoTitle}>الخدمات الاختيارية</Text>
                         <View style={styles.regionTit}>
                             <Text style={styles.basicInfo}>{item.additionalServices + '   '}</Text>
                             <AntDesign
-                                style={{alignSelf: 'center'}}
+                                style={{ alignSelf: 'center' }}
                                 name={"check"}
                                 color={colors.puprble}
                                 size={25} />
@@ -463,7 +487,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         width: "100%",
         backgroundColor: 'lightgray',
-        borderRadius: 5
+        borderRadius: 5,
+        margin: 5
     },
     serviceaddress: {
         alignSelf: 'center',
@@ -504,4 +529,10 @@ const styles = StyleSheet.create({
         right: 65,
         bottom: 10,
     },
+    detailView: {
+        width: '80%',
+        alignSelf: 'center',
+        flexDirection: 'row',
+        justifyContent: 'flex-end'
+    }
 })

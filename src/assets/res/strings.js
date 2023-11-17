@@ -3,7 +3,9 @@ const strings = {
   arabic: {
     ProviderComps:{
       ProviderSocialMediaScreen:{
-        Phone:"رقم الهاتف "
+        Phone:"رقم الهاتف ",
+        mail: "Example@gmail.com",
+        socialType: 'نوع الشبكة الاجتماعية'
       }
     },
     ProviderScreens: {
@@ -13,7 +15,7 @@ const strings = {
         NewService: 'انشاء خدمة جديده',
       },
       ProviderChooseService: {
-        HeadText: 'ما هو تصنيف الخدمة التي توفرها للزبائن؟',
+        HeadText: 'ما هو تصنيف الخدمة التي  ستقدمها؟',
         back: 'رجوع',
         next: 'التالي',
         showMessage: 'الرجاء اختيار التصنيف قبل الاستمرار',
@@ -24,8 +26,8 @@ const strings = {
       },
       ProviderAddInfo: {
         HeadText: ' إنشاء خدمة جديدة',
-        title: 'العنوان',
-        subTitle: 'العنوان الفرعي',
+        title: 'أسم الخدمة',
+        subTitle: 'العنوان الترويجي',
         description: 'الوصف ',
         LocationHeadText: 'قم بأضافة تفاصيل الموقع :',
         back: 'رجوع',
@@ -37,8 +39,8 @@ const strings = {
         confirmButton: 'الخروج',
         SubHeader: ' عنوان الخدمة خاصتك؟',
         HeaderTitle:'املئ التفاصيل التالية:',
-        chooseLocation: 'أختر المنطقة',
-        address: 'المدينة',
+        chooseLocation: 'أختر المدينة',
+        address: 'المنطقة',
         titleRequired:'*',
         SuTitleRequired : '* العنوان الفرعي الزامي',
         descriptionRequired:'* الوصف  الزامي ',
@@ -55,6 +57,9 @@ const strings = {
         confirmButton: 'نعم، إزالة',
         cancelButton: 'كلا، لا تزل  ',
         showMessage: 'يجب اضافة 5 صور على الاقل ',
+        showDeleteMessage: 'يجب أختيار صورة واحدة على الأقل  ',
+        ConfirmDelete: 'حذف',
+        cancel: 'الغاء'
       },
       ProviderWorkingRegion: {
         Header: 'ما هي المناطق التي تود العمل فيها؟',
@@ -87,7 +92,7 @@ const strings = {
         Price: 'السعر المقترح',
         ModalHeader: 'أدخل تفاصيل الخدمة',
       },
-      ProviderSocialMediaScreen:{
+      ProviderSocialMediaScreen: {
         Next: 'التالي',
         Header: 'اضف معلومات الاتصال الخاصة بالخدمة'
       }
