@@ -233,7 +233,7 @@ const ProviderAddInfo = props => {
           editable={false}
         /> */}
         {titleError && (
-          <Text style={{color: 'red',marginLeft: 100}}>{language.titleRequired}</Text>
+          <Text style={{ color: 'red', marginLeft: 100 }}>{language.titleRequired}</Text>
         )}
         <SelectList
           data={regionData}
@@ -242,11 +242,11 @@ const ProviderAddInfo = props => {
             setserviceRegion(cityObj.value);
           }}
           placeholder={serviceRegion || language.chooseLocation}
-          boxstyles={styles.dropdown}
+          boxStyles={styles.dropdown}
           inputstyles={styles.droptext}
           dropdownTextstyles={styles.dropstyle}
         />
-        
+
         <Pressable style={styles.location}>
           <Text style={styles.locationTitle}>أضف موقع</Text>
           <View style={styles.IconView}>
@@ -358,11 +358,10 @@ const styles = StyleSheet.create({
 
   dropdown: {
     height: 50,
-    width: 100,
+    maxWidth: '60%',
+    minWidth:'60%',
     fontSize: 17,
-    //borderRadius: 10,
-    // fontWeight: 'bold',
-    //marginTop: 30,
+
   },
   dropstyle: {
     textAlign: 'left',
@@ -394,7 +393,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: colors.puprble,
     fontWeight: '500',
-   
+
   },
   titleInput: {
     textAlign: 'right',

@@ -9,7 +9,6 @@ import {
   Linking
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import { Card } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
