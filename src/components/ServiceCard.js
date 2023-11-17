@@ -178,10 +178,12 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignItems: 'center',
         marginTop: 10,
-        borderWidth: 3,
+        //borderWidth: 3,
         alignSelf: 'center',
         justifyContent: 'center',
-        borderColor: 'white',
+        //borderColor: 'red',
+        backgroundColor: 'white',
+        elevation: 5
     },
     otherbodyActive: {
         height: 120,
@@ -189,10 +191,11 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignItems: 'center',
         marginTop: 10,
-        borderWidth: 3,
+        borderWidth: 5,
         alignSelf: 'center',
         justifyContent: 'center',
         borderColor: colors.puprble,
+        backgroundColor: 'white'
     },
     otherimg: {
         width: 60,

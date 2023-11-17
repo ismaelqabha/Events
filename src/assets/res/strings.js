@@ -1,9 +1,11 @@
 const strings = {
   cardtxt1: 'على استعداد لتلبية جميع مناسباتكم',
   arabic: {
-    ProviderComps: {
-      ProviderSocialMediaScreen: {
-        Phone: "رقم الهاتف "
+    ProviderComps:{
+      ProviderSocialMediaScreen:{
+        Phone:"رقم الهاتف ",
+        mail: "Example@gmail.com",
+        socialType: 'نوع الشبكة الاجتماعية'
       }
     },
     ProviderScreens: {
@@ -13,7 +15,7 @@ const strings = {
         NewService: 'انشاء خدمة جديده',
       },
       ProviderChooseService: {
-        HeadText: 'ما هو تصنيف الخدمة التي توفرها للزبائن؟',
+        HeadText: 'ما هو تصنيف الخدمة التي  ستقدمها؟',
         back: 'رجوع',
         next: 'التالي',
         showMessage: 'الرجاء اختيار التصنيف قبل الاستمرار',
@@ -24,8 +26,8 @@ const strings = {
       },
       ProviderAddInfo: {
         HeadText: ' إنشاء خدمة جديدة',
-        title: 'العنوان',
-        subTitle: 'العنوان الفرعي',
+        title: 'أسم الخدمة',
+        subTitle: 'العنوان الترويجي',
         description: 'الوصف ',
         LocationHeadText: 'قم بأضافة تفاصيل الموقع :',
         back: 'رجوع',
@@ -36,12 +38,12 @@ const strings = {
         cancelButton: 'البقاء',
         confirmButton: 'الخروج',
         SubHeader: ' عنوان الخدمة خاصتك؟',
-        HeaderTitle: 'املئ التفاصيل التالية:',
-        chooseLocation: 'أختر المنطقة',
-        address: 'المدينة',
-        titleRequired: '*',
-        SuTitleRequired: '* العنوان الفرعي الزامي',
-        descriptionRequired: '* الوصف  الزامي ',
+        HeaderTitle:'املئ التفاصيل التالية:',
+        chooseLocation: 'أختر المدينة',
+        address: 'المنطقة',
+        titleRequired:'*',
+        SuTitleRequired : '* العنوان الفرعي الزامي',
+        descriptionRequired:'* الوصف  الزامي ',
       },
       ProviderSetPhotos: {
         Header: 'قم بأضافة الصور الخاصة في القاعة:',

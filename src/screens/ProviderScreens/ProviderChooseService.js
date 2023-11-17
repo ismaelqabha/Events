@@ -179,13 +179,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   body: {
-    height: '60%',
-    width: '95%',
+    height: '61%',
+    width: '80%',
     marginTop: 20,
     alignSelf: 'center',
     padding: 10,
     borderRadius: 12,
-    borderWidth: 0.5
+    // borderWidth: 0.5,
+    // backgroundColor: 'white'
   },
   footer: {
     marginTop: 20,

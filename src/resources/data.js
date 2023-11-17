@@ -46,6 +46,14 @@ export const regionData = [
     { key: '1', value: 'المثلث الجنوبي' },
     { key: '4', value: 'الضفة الغربية' },
 ];
+export const socialMediaList = [
+    { key: '2', value: 'Facebook' },
+    { key: '3', value: 'Instegram' },
+    { key: '5', value: 'TikTok' },
+    { key: '0', value: 'YouTube' },
+    { key: '1', value: 'X'},
+   
+];
 // export const ServiceImages = [
 //     {
 //         imgId: 1,

@@ -74,13 +74,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   body: {
-    height: '70%',
-    marginTop: 10,
-    // marginLeft: '18%',
+    marginTop: 20,
   },
   footer: {
     //alignSelf: 'flex-end',
-    marginTop: 10,
+    marginTop: 30,
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginRight: 20,

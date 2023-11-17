@@ -5,8 +5,8 @@ import { colors } from "../AppColors";
 export const AppStyles = StyleSheet.create({
   
   back: {
-    width: 80,
-    height: 40,
+    width: 120,
+    height: 35,
     backgroundColor: colors.silver,
     justifyContent: 'center',
     alignItems: 'center',
@@ -20,8 +20,8 @@ export const AppStyles = StyleSheet.create({
     color: "black"
   },
   next: {
-    width: 100,
-    height: 40,
+    width: 120,
+    height: 35,
     backgroundColor: colors.puprble,
     justifyContent: 'center',
     alignItems: 'center',

@@ -44,7 +44,7 @@ const styles=StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#5f9ea0',
+    color: colors.puprble
   },
   body: {
     height: 70,
@@ -52,10 +52,8 @@ const styles=StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     marginTop: 10,
-    borderWidth: 1.5,
     alignSelf: 'center',
     justifyContent: 'center',
-    borderColor: colors.darkGold,
     backgroundColor: colors.BGScereen
   },
   bodyActive: {
@@ -67,7 +65,7 @@ const styles=StyleSheet.create({
     borderWidth: 3,
     alignSelf: 'center',
     justifyContent: 'center',
-    borderColor: '#5f9ea0',
+    borderColor: colors.puprble,
     backgroundColor: colors.BGScereen
 
   },
