@@ -24,19 +24,29 @@ import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
 import { ToastAndroid } from 'react-native';
 import { Alert } from 'react-native';
+import { servicesCategory } from '../../resources/data';
 
 const ProviderSetPhotos = props => {
-  const { photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
+  const { selectServiceType,photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
   const [selectedPhotos, setSelectedPhotos] = useState([])
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
   const onNextPress = () => {
     // photoArray.length <5 ? showMessage() :
+    checkServiceType()
+  };
+
+  const checkServiceType=()=>{
+    selectServiceType === servicesCategory[0].titleCategory ? 
+    props.navigation.navigate(ScreenNames.ProviderSocialMediaScreen, {
+      data: { ...props },
+      data: { ...props },
+    })
+    :
     props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
       data: { ...props },
       data: { ...props },
     });
-  };
-
+  }
   const openAppSettings = () => {
     Platform.OS === 'ios' ?
       Linking.openURL('app-settings:') :
@@ -219,7 +229,6 @@ const ProviderSetPhotos = props => {
 
   const deletePhotos = () => {
     try {
-      console.log("deleting");
       const newArray = photoArray.filter((photo) => {
         return !selectedPhotos.includes(photo.image)
       })

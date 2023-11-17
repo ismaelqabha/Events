@@ -24,8 +24,7 @@ const ProviderAddPhotoComp = props => {
   };
 
   useEffect(() => {
-    console.log("is selected ",isSelected);
-    isSelected ? tickRef.current?.play(0,50) : tickRef.current?.play(0, 0)
+    isSelected ? tickRef.current?.play(10,50) : tickRef.current?.play(50, 10)
   }, [isSelected])
 
   const setCoverPhoto = () => {
