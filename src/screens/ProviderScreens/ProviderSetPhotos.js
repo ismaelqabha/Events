@@ -6,19 +6,20 @@ import {
   Text,
   TouchableOpacity,
   Platform,
+  Linking
 } from 'react-native';
-import {  FlatList  } from 'react-native-gesture-handler';
-import {  Card  } from 'react-native-elements';
+import { FlatList } from 'react-native-gesture-handler';
+import { Card } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {  launchCamera, launchImageLibrary  } from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
-import {  ScreenNames  } from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import ProviderAddPhotoComp from '../../components/ProviderComponents/ProviderAddPhotoComp';
 import 'react-native-get-random-values';
-import {  v4 as uuidv4  } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import strings from '../../assets/res/strings';
-import { PERMISSIONS, request  } from 'react-native-permissions';
+import { PERMISSIONS, request } from 'react-native-permissions';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
@@ -37,6 +38,24 @@ const ProviderSetPhotos = props => {
     });
   };
 
+  const openAppSettings = () => {
+    Platform.OS === 'ios' ?
+      Linking.openURL('app-settings:') :
+      Linking.openSettings()
+  }
+
+  const showRequestDeniedAlert = () => {
+    Alert.alert(
+      'Permission Denied',
+      'To use this feature, please enable READ_EXTERNAL_STORAGE access in app settings.',
+      [
+        { text: 'Go to Settings', onPress: () => openAppSettings() },
+        { text: 'Cancel', style: 'cancel' },
+      ],
+      { cancelable: false }
+    );
+  }
+
   const onAddImgPress = async () => {
     try {
       const result = await request(
@@ -52,11 +71,13 @@ const ProviderSetPhotos = props => {
 
         launchImageLibrary(options, response => GalleryImageResponse(response));
       } else {
+        showRequestDeniedAlert()
       }
     } catch (error) {
       console.error(error);
     }
   };
+
 
   const GalleryImageResponse = response => {
     if (response.didCancel) {
@@ -94,6 +115,7 @@ const ProviderSetPhotos = props => {
       if (result === 'granted') {
         LaunchCamera();
       } else {
+        showRequestDeniedAlert()
       }
     } catch (error) {
       console.error(error);
@@ -196,7 +218,7 @@ const ProviderSetPhotos = props => {
     selectedPhotos.length < 1 ? showMessage() : deletePhotos()
   }
 
-  const deletePhotos=()=>{
+  const deletePhotos = () => {
     try {
       console.log("deleting");
       const newArray = photoArray.filter((photo) => {
@@ -323,7 +345,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 10,
     width: '90%',
-   // borderWidth: 0.3,
+    // borderWidth: 0.3,
     //backgroundColor: colors.BGScereen,
     // borderColor: colors.darkGold,
     borderRadius: 5

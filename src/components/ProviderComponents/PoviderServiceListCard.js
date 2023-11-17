@@ -46,7 +46,6 @@ const PoviderServiceListCard = (props) => {
         setID();
         navigation.navigate(ScreenNames.ProviderChooseService, { data: { ...props }, isFromChooseServiceClick: true });
     }
-    console.log("workingareas" ,workingAreas );
 
     const setData = () => {
         setSelectServiceType(servType);

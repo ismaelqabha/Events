@@ -71,7 +71,8 @@ const ProviderAddInfo = props => {
   };
 
   const onNextPress = () => {
-    checkRequestedData()
+    // checkRequestedData() 
+    true
       ? props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
         data: { ...props },
       })
