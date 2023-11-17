@@ -57,6 +57,9 @@ const strings = {
         confirmButton: 'نعم، إزالة',
         cancelButton: 'كلا، لا تزل  ',
         showMessage: 'يجب اضافة 5 صور على الاقل ',
+        showDeleteMessage: 'يجب أختيار صورة واحدة على الأقل  ',
+        ConfirmDelete: 'حذف',
+        cancel: 'الغاء'
       },
       ProviderWorkingRegion: {
         Header: 'ما هي المناطق التي تود العمل فيها؟',
@@ -89,7 +92,7 @@ const strings = {
         Price: 'السعر المقترح',
         ModalHeader: 'أدخل تفاصيل الخدمة',
       },
-      ProviderSocialMediaScreen:{
+      ProviderSocialMediaScreen: {
         Next: 'التالي',
         Header: 'اضف معلومات الاتصال الخاصة بالخدمة'
       }
