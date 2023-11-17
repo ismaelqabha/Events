@@ -1,17 +1,18 @@
-import React, {useContext} from 'react';
-import {TouchableOpacity, StyleSheet, Image} from 'react-native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { TouchableOpacity, StyleSheet, Image, View } from 'react-native';
 import strings from '../../assets/res/strings'
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
+import LottieView from 'lottie-react-native';
 
 const ProviderAddPhotoComp = props => {
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
-
-  const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
-
-
+  const [isSelected, setIsSelected] = useState(false)
+  const { photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext)
+  const tickRef = useRef(null)
+  const { selectedPhotos, setSelectedPhotos } = props
   const removeSelectedPhoto = () => {
     let newArray = photoArray.filter(Imageobj => Imageobj.image !== props.uri);
     setPhotoArray(newArray);
@@ -19,6 +20,15 @@ const ProviderAddPhotoComp = props => {
 
   //   confirmation popup for removing the selected photo
   const ShowImagePopUp = () => {
+    setIsDeleteMode(true)
+  };
+
+  useEffect(() => {
+    console.log("is selected ",isSelected);
+    isSelected ? tickRef.current?.play(0,50) : tickRef.current?.play(0, 0)
+  }, [isSelected])
+
+  const setCoverPhoto = () => {
     let warningButtons = [
       {
         text: language.cancelButton,
@@ -29,19 +39,58 @@ const ProviderAddPhotoComp = props => {
         onPress: () => removeSelectedPhoto(),
       },
     ];
-    return Alert.alert(language.warning, language.backWarning, warningButtons);
-  };
 
+    return Alert.alert(language.warning, language.backWarning, warningButtons);
+  }
+  const setSelected = () => {
+    selectedPhotos.includes(props.uri) ? removeFromSelected() : addToSelected();
+  }
+
+  const removeFromSelected = () => {
+    const newSelected = selectedPhotos.filter((selected) => {
+      return selected.image === props.uri
+    })
+    setSelectedPhotos(newSelected)
+    setIsSelected(false)
+  }
+  const addToSelected = () => {
+    selectedPhotos.length < 1 ?
+      setSelectedPhotos([props.uri]) :
+      setSelectedPhotos([...selectedPhotos, props.uri])
+    setIsSelected(true)
+
+  }
   try {
     return (
       <TouchableOpacity
-        onPress={() => ShowImagePopUp()}
-        style={[styles.container,AppStyles.shadow]}>
-        <Image
-          resizeMode="cover"
-          style={styles.image}
-          source={{uri: props.uri}}
-        />
+        onPress={() => setCoverPhoto()}
+        onLongPress={() => ShowImagePopUp()}
+        style={[styles.container, AppStyles.shadow]}
+        disabled={isDeleteMode}
+      >
+
+        {isDeleteMode ? <TouchableOpacity style={{ flex: 1 }} onPress={() => setSelected()}>
+
+          <Image
+            resizeMode="cover"
+            style={styles.image}
+            source={{ uri: props.uri }}
+          />
+          <View style={styles.circule}>
+            <LottieView
+              speed={1.5}
+              ref={tickRef}
+              loop={false}
+              style={styles.tick} source={require('../../LottieFiles/tick.json')} />
+          </View>
+        </TouchableOpacity>
+          :
+          <Image
+            resizeMode="cover"
+            style={styles.image}
+            source={{ uri: props.uri }}
+          />
+        }
       </TouchableOpacity>
     );
   } catch (error) {
@@ -65,6 +114,24 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
   },
+  circule: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    // borderWidth: 2,
+    height: 20,
+    width: 20,
+    // backgroundColor: 'red',
+    borderRadius: 50,
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    backgroundColor: colors.BGScereen
+  },
+  tick: {
+    width: 25,
+    height: 25,
+    alignSelf: 'center'
+  }
 })
 
 

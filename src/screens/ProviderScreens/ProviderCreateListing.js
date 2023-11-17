@@ -29,7 +29,7 @@ const ProviderCreateListing = props => {
   };
 
   const onStartPress = () => {
-    setServId(SId);
+    // setServId(SId);
     const AddNewService = {
       service_id: SId,
       UserId: userId,

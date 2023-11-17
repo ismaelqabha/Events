@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,29 +7,32 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {Card} from 'react-native-elements';
+import { FlatList } from 'react-native-gesture-handler';
+import { Card } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import ProviderAddPhotoComp from '../../components/ProviderComponents/ProviderAddPhotoComp';
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import strings from '../../assets/res/strings';
-import { PERMISSIONS, request} from 'react-native-permissions';
+import { PERMISSIONS, request } from 'react-native-permissions';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
+import { ToastAndroid } from 'react-native';
+import { Alert } from 'react-native';
 
 const ProviderSetPhotos = props => {
-  const {photoArray, setPhotoArray} = useContext(ServiceProviderContext);
+  const { photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
+  const [selectedPhotos, setSelectedPhotos] = useState([])
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
   const onNextPress = () => {
     // photoArray.length <5 ? showMessage() :
     props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
-      data: {...props},
+      data: { ...props },
     });
   };
 
@@ -122,8 +125,8 @@ const ProviderSetPhotos = props => {
     }
   };
 
-  const renderServiceImg = ({item}) => {
-    return <ProviderAddPhotoComp uri={item?.image} />;
+  const renderServiceImg = ({ item }) => {
+    return <ProviderAddPhotoComp uri={item?.image} selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} />;
   };
 
   const RenderMainHeader = () => {
@@ -163,7 +166,7 @@ const ProviderSetPhotos = props => {
 
   const RenderSelectedImages = () => {
     return (
-      <View style={[styles.flatListContainer,AppStyles.shadow]}>
+      <View style={[styles.flatListContainer, AppStyles.shadow]}>
         <FlatList
           data={photoArray}
           renderItem={renderServiceImg}
@@ -176,11 +179,49 @@ const ProviderSetPhotos = props => {
     );
   };
 
+  const showMessage = () => {
+    Platform.OS === 'android'
+      ? ToastAndroid.show(language.showDeleteMessage, ToastAndroid.SHORT)
+      : Alert.IOS.alert(language.showDeleteMessage);
+  };
+
+  const onConfirmDelete = () => {
+    selectedPhotos.length < 1 ? showMessage() : deletePhotos()
+  }
+
+  const deletePhotos=()=>{
+    try {
+      console.log("deleting");
+      const newArray = photoArray.filter((photo) => {
+        return !selectedPhotos.includes(photo.image)
+      })
+      setPhotoArray(newArray);
+      setIsDeleteMode(false)
+    } catch (error) {
+      console.log("delete phtots error ->", error);
+    }
+  }
+  const cancelDeleteMode = () => {
+    setIsDeleteMode(false)
+    setSelectedPhotos([])
+  }
+
+  const renderCancelButton = () => {
+    return (
+      <Pressable style={AppStyles.next} onPress={cancelDeleteMode}>
+        <Text style={AppStyles.nextText}>{language.cancel}</Text>
+      </Pressable>
+    )
+  }
+
   const RenderNextButton = () => {
     return (
-      <Pressable style={AppStyles.next} onPress={onNextPress}>
+      !isDeleteMode ? <Pressable style={AppStyles.next} onPress={onNextPress}>
         <Text style={AppStyles.nextText}>{language.Next}</Text>
-      </Pressable>
+      </Pressable> :
+        <Pressable style={AppStyles.next} onPress={onConfirmDelete}>
+          <Text style={AppStyles.nextText}>{language.ConfirmDelete}</Text>
+        </Pressable>
     );
   };
   return (
@@ -192,8 +233,10 @@ const ProviderSetPhotos = props => {
         {RenderCapturePhoto()}
         {RenderSelectedImages()}
       </View>
-      <View style={styles.footer}>
-        {/* {RenderBackButton()} */}
+      <View style={[styles.footer, isDeleteMode ?
+        { justifyContent: 'space-between' } :
+        { justifyContent: 'flex-end' }]}>
+        {isDeleteMode && renderCancelButton()}
         {RenderNextButton()}
       </View>
     </View>
@@ -225,7 +268,7 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 15,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+
     marginRight: 20,
     marginLeft: 20,
     paddingVertical: 5,

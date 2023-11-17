@@ -14,6 +14,11 @@ const ProviderProvider = props => {
   const [price, setPrice] = useState(null);
   const [additionalServices, setAdditionalServices] = useState([]);
 
+
+  // Photo delete mode 
+  const [isDeleteMode, setIsDeleteMode] = useState(false)
+
+
   // Calender Scrren
   const [serviceInfoAccorUser, setServiceInfoAccorUser] = useState([]);
 
@@ -42,6 +47,9 @@ const ProviderProvider = props => {
         setAdditionalServices,
         serviceInfoAccorUser, 
         setServiceInfoAccorUser,
+        // Photo delete mode 
+        isDeleteMode,
+        setIsDeleteMode
       }}>
       {props.children}
     </ServiceProviderContext.Provider>

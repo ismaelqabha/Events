@@ -1,9 +1,9 @@
 const strings = {
   cardtxt1: 'على استعداد لتلبية جميع مناسباتكم',
   arabic: {
-    ProviderComps:{
-      ProviderSocialMediaScreen:{
-        Phone:"رقم الهاتف "
+    ProviderComps: {
+      ProviderSocialMediaScreen: {
+        Phone: "رقم الهاتف "
       }
     },
     ProviderScreens: {
@@ -36,12 +36,12 @@ const strings = {
         cancelButton: 'البقاء',
         confirmButton: 'الخروج',
         SubHeader: ' عنوان الخدمة خاصتك؟',
-        HeaderTitle:'املئ التفاصيل التالية:',
+        HeaderTitle: 'املئ التفاصيل التالية:',
         chooseLocation: 'أختر المنطقة',
         address: 'المدينة',
-        titleRequired:'*',
-        SuTitleRequired : '* العنوان الفرعي الزامي',
-        descriptionRequired:'* الوصف  الزامي ',
+        titleRequired: '*',
+        SuTitleRequired: '* العنوان الفرعي الزامي',
+        descriptionRequired: '* الوصف  الزامي ',
       },
       ProviderSetPhotos: {
         Header: 'قم بأضافة الصور الخاصة في القاعة:',
@@ -55,6 +55,9 @@ const strings = {
         confirmButton: 'نعم، إزالة',
         cancelButton: 'كلا، لا تزل  ',
         showMessage: 'يجب اضافة 5 صور على الاقل ',
+        showDeleteMessage: 'يجب أختيار صورة واحدة على الأقل  ',
+        ConfirmDelete: 'حذف',
+        cancel: 'الغاء'
       },
       ProviderWorkingRegion: {
         Header: 'ما هي المناطق التي تود العمل فيها؟',
@@ -87,7 +90,7 @@ const strings = {
         Price: 'السعر المقترح',
         ModalHeader: 'أدخل تفاصيل الخدمة',
       },
-      ProviderSocialMediaScreen:{
+      ProviderSocialMediaScreen: {
         Next: 'التالي',
         Header: 'اضف معلومات الاتصال الخاصة بالخدمة'
       }
