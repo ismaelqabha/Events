@@ -12,20 +12,34 @@ const ContactComp = () => {
 
     const language = strings.arabic.ProviderComps.ProviderSocialMediaScreen
     const [contactVal, setContactVal] = useState(null)
+    const [socialFields,setSocialFields]=useState(0)
 
-    const addSoialMediaContact = () => {
-        return (
+    const addSoialMediaContact=()=>{
+        console.log("adding number");
+        setSocialFields(socialFields+1)
+    }
+
+    const renderSoialMediaContacts = () => {
+        const fiedls = []
+        for (let index = 0; index < socialFields; index++) {
+            fiedls.push(socialMediaComp())
+        }
+        return fiedls
+    }
+
+    const socialMediaComp=()=>{
+        return(
             <View style={styles.mediaItem}>
-                 <View style={styles.mediaList}>
-                <SelectList
-                    data={socialMediaList}
-                    setSelected={val => {}}
+                <View style={styles.mediaList}>
+                    <SelectList
+                        data={socialMediaList}
+                        setSelected={val => { }}
 
-                    placeholder={language.socialType}
-                    boxstyles={styles.dropdown}
-                    inputstyles={styles.droptext}
-                    dropdownTextstyles={styles.dropstyle}
-                />
+                        placeholder={language.socialType}
+                        boxstyles={styles.dropdown}
+                        inputstyles={styles.droptext}
+                        dropdownTextstyles={styles.dropstyle}
+                    />
                 </View>
                 <TextInput style={styles.socialInput}
                     keyboardType={'phone-pad'}
@@ -37,8 +51,8 @@ const ContactComp = () => {
         )
     }
 
-    return (
-        <View>
+    const renderPhoneField = () => {
+        return (
             <View style={styles.contactItem}>
                 <FontAwesome name="phone" size={25} color={colors.puprble} />
                 <TextInput style={styles.TextInput}
@@ -48,6 +62,10 @@ const ContactComp = () => {
                     onChangeText={(val) => setContactVal(val)}
                 />
             </View>
+        )
+    }
+    const renderEmailField = () => {
+        return (
             <View style={styles.contactItem}>
                 <Entypo
                     style={styles.icon}
@@ -61,22 +79,34 @@ const ContactComp = () => {
                     onChangeText={(val) => setContactVal(val)}
                 />
             </View>
+        )
+    }
+
+    const renderAddButton = () => {
+        return (
+            <Pressable style={styles.item} onPress={addSoialMediaContact}>
+                <Text style={styles.basicInfo}>اضافة</Text>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={styles.icon}
+                        name={"plus"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
+        )
+    }
+    return (
+        <View>
+            {renderPhoneField()}
+            {renderEmailField()}
 
             <View style={styles.addMedia}>
                 <Text style={styles.txt}>الشبكات الاجتماعية</Text>
-                <Pressable style={styles.item} onPress={() => addSoialMediaContact()}>
-                    <Text style={styles.basicInfo}>اضافة</Text>
-                    <View style={styles.IconView}>
-                        <Entypo
-                            style={styles.icon}
-                            name={"plus"}
-                            color={colors.puprble}
-                            size={25} />
-                    </View>
-                </Pressable>
+                {renderAddButton()}
 
             </View>
-            {addSoialMediaContact()}
+            {renderSoialMediaContacts()}
         </View>
     )
 }
@@ -138,7 +168,7 @@ const styles = StyleSheet.create({
         elevation: 5,
         margin: 5
     },
-    mediaList:{
+    mediaList: {
         width: "70%",
         marginTop: 20
     },
@@ -146,22 +176,22 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         color: colors.darkGold,
-      },
-      dropdown: {
+    },
+    dropdown: {
         height: 50,
         width: 100,
         fontSize: 17,
         borderRadius: 10,
         fontWeight: 'bold',
         marginTop: 30,
-      },
-      dropstyle: {
+    },
+    dropstyle: {
         textAlign: 'left',
         color: colors.darkGold,
         fontWeight: 'bold',
         fontSize: 20,
-      },
-      socialInput:{
+    },
+    socialInput: {
         borderWidth: 1,
         width: "95%",
         textAlign: 'right',
@@ -170,6 +200,6 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         fontSize: 18,
         marginVertical: 20
-      }
+    }
 })
 export default ContactComp

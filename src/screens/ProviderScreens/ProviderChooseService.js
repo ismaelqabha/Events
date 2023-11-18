@@ -14,6 +14,8 @@ import { colors } from '../../assets/AppColors';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { useNavigation } from '@react-navigation/native';
 import { AppStyles } from '../../assets/res/AppStyles';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const ProviderChooseService = props => {
   const { isFromChooseServiceClick } = props.route?.params || {};
@@ -30,7 +32,21 @@ const ProviderChooseService = props => {
     setWorkAreas,
     setPrice,
     setAdditionalServices,
+    SuTitle,
+    title,
+    description,
+    serviceRegion,
+    serviceAddress,
+    workAreas,
+    price,
+    photoArray,
+    additionalServices,
+    draftServices,
+    setDraftServices,
+    draftID
   } = useContext(ServiceProviderContext);
+  const { userId } = useContext(SearchContext);
+
   const { saveData } = props;
 
   const navigation = useNavigation()
@@ -70,6 +86,8 @@ const ProviderChooseService = props => {
             data: { ...props },
           });
           //   cleans the service data
+          // makes a draft service 
+          !draftID ? createDraft() : null
           CleanData();
         },
       },
@@ -89,6 +107,26 @@ const ProviderChooseService = props => {
     setPrice(null)
     setAdditionalServices([])
   };
+
+  const createDraft = () => {
+    var draftID = uuidv4()
+    const draft = {
+      userID: userId,
+      servType: selectServiceType,
+      title: title,
+      subTitle: SuTitle,
+      desc: description,
+      region: serviceRegion,
+      address: serviceAddress,
+      servicePrice: price,
+      workingAreas: workAreas,
+      photoArray:photoArray,
+      additionalServices: additionalServices,
+      ID:draftID
+    };
+    setDraftServices([...draftServices,draft])
+  }
+
 
   const showMessage = () => {
     Platform.OS === 'android'

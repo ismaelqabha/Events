@@ -1,31 +1,54 @@
-import React, {useContext, useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {Text, TouchableOpacity} from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
 
 const LocationComp = props => {
   const [pressed, setPressed] = useState(false);
-  const {workAreas, setWorkAreas} = useContext(ServiceProviderContext);
+  const { workAreas, setWorkAreas } = useContext(ServiceProviderContext);
 
+  useEffect(() => {
+    checkPressed()
+  }, [])
+
+  const checkPressed = () => {
+    workAreas.includes(props.value) ? setPressed(true) : null
+  }
 
   const onLocationPress = () => {
     setPressed(!pressed);
-    addToSelected();
+    checkExists()
+
   };
+
+  const checkExists = () => {
+    workAreas.includes(props.value) ? removeFromList()
+      : addToSelected();
+  }
 
   const addToSelected = () => {
     var list = workAreas;
     list.push(props.value);
+    setPressed(true)
     setWorkAreas(list);
   };
 
+  const removeFromList = () => {
+    const newList = workAreas.filter((area) => area !== props.value)
+    setPressed(false)
+    setWorkAreas(newList)
+
+  }
+
   return (
     <TouchableOpacity
-      style={pressed ? [styles.bodyActive,AppStyles.shadow] : [styles.body,AppStyles.shadow]}
+      style={pressed ? [styles.bodyActive, AppStyles.shadow] : [styles.body, AppStyles.shadow]}
       onPress={() => onLocationPress()}>
+
       <Text style={pressed ? [styles.textActive,AppStyles.shadow] : [styles.text,AppStyles.shadow]}>
+
         {props.value}
       </Text>
     </TouchableOpacity>
@@ -33,7 +56,7 @@ const LocationComp = props => {
 };
 
 
-const styles=StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
     fontSize: 20,

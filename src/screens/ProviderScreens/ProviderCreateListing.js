@@ -1,49 +1,25 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, Text, TouchableHighlight, Pressable } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { TouchableOpacity } from 'react-native';
-import SearchContext from '../../../store/SearchContext';
 import PoviderServiceListCard from '../../components/ProviderComponents/PoviderServiceListCard';
 import { ScreenNames } from '../../../route/ScreenNames';
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 import strings from '../../assets/res/strings';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const ProviderCreateListing = props => {
-  const [supmeted, setSupmeted] = useState(false);
-  const { userId, ServiceDataInfo, setServiceDataInfo, setServId, ServId } =
-    useContext(SearchContext);
 
+
+  const { draftServices, setDraftID } = useContext(ServiceProviderContext)
   const language = strings.arabic.ProviderScreens.ProviderCreateListing
 
-  let SId = uuidv4();
 
-  const onPressHandler = () => {
-    setSupmeted(!supmeted);
-  };
-  const chickIfChecked = () => {
-    const isChecked = ServiceDataInfo.find(item => item.service_id === SId);
-    return !isChecked;
-  };
 
   const onStartPress = () => {
-    setServId(SId);
-    const AddNewService = {
-      service_id: SId,
-      UserId: userId,
-      workingRegion: [],
-    };
 
-    let ServiceArr = ServiceDataInfo;
-    if (!chickIfChecked()) {
-      ServiceArr.push(AddNewService);
-      setServiceDataInfo([...ServiceArr]);
-    } else {
-      ServiceArr = ServiceArr.filter(ser => ser.service_id != SId);
-      setServiceDataInfo([...ServiceArr]);
-    }
+    setDraftID(null)
 
     props.navigation.navigate(ScreenNames.ProviderChooseService, {
       data: { ...props },
@@ -51,18 +27,24 @@ const ProviderCreateListing = props => {
     });
   };
 
-  const query = () => {
-    return ServiceDataInfo.filter(id => {
-      return id.UserId == userId;
-    });
-  };
+
   const renderService = () => {
-    const data = query();
-    const cardsArray = data.map(card => {
-      return <PoviderServiceListCard {...card} />;
+    const data = draftServices
+    const cardsArray = data.map(draft => {
+      return <PoviderServiceListCard body={draft} />;
     });
-    return cardsArray;
+    return cardsArray.length < 1 ? noDrafts() : cardsArray
   };
+
+  const noDrafts = () => {
+    return (
+      <View>
+        <Text style={{ color: 'black', alignSelf: 'center', fontSize: 20 }}>
+          there is no drafts currently
+        </Text>
+      </View>
+    )
+  }
 
   //   the head text
   const HeadText = () => {
@@ -112,8 +94,8 @@ const ProviderCreateListing = props => {
         </Pressable>
         <TouchableOpacity
           onPress={() => onStartPress()}
-          //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
-          >
+        //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
+        >
           <AntDesign name="plussquareo" style={styles.plusSquare} />
         </TouchableOpacity>
       </View>
@@ -152,7 +134,7 @@ const styles = StyleSheet.create({
     //alignItems: 'flex-end',
     marginTop: 20,
   },
-  
+
   headText: {
     fontSize: 25,
     color: 'black',

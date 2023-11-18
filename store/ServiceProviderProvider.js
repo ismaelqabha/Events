@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import ServiceProviderContext from '../store/ServiceProviderContext';
 
 const ProviderProvider = props => {
@@ -13,6 +13,14 @@ const ProviderProvider = props => {
   const [workAreas, setWorkAreas] = useState([]);
   const [price, setPrice] = useState(null);
   const [additionalServices, setAdditionalServices] = useState([]);
+  const [socialMediaArray, setSocialMediaArray] = useState([])
+
+  // Photo delete mode 
+  const [isDeleteMode, setIsDeleteMode] = useState(false)
+
+  // drafts 
+  const [draftServices, setDraftServices] = useState([]);
+  const [draftID, setDraftID] = useState(null)
 
   // Calender Scrren
   const [serviceInfoAccorUser, setServiceInfoAccorUser] = useState([]);
@@ -40,8 +48,20 @@ const ProviderProvider = props => {
         setPrice,
         additionalServices,
         setAdditionalServices,
-        serviceInfoAccorUser, 
+        serviceInfoAccorUser,
         setServiceInfoAccorUser,
+        // socail data
+        socialMediaArray,
+        setSocialMediaArray,
+
+        // Photo delete mode 
+        isDeleteMode,
+        setIsDeleteMode,
+        // Draft documents 
+        draftServices,
+        setDraftServices,
+        draftID,
+        setDraftID,
       }}>
       {props.children}
     </ServiceProviderContext.Provider>
