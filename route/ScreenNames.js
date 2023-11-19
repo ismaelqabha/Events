@@ -44,6 +44,8 @@ export const ScreenNames = {
 
     ProviderProfile: 'ProviderProfile',
     ProviderSocialMediaScreen : 'ProviderSocialMedia',
+    ProviderInitialWithDetailPrice : 'ProviderInitialWithDetailPrice',
+    ProviderContantPrice: 'ProviderContantPrice',
 
 
 

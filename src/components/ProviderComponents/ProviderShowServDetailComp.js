@@ -2,6 +2,7 @@ import React from 'react';
 import {View, StyleSheet,TouchableOpacity,Text} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames';
+import { colors } from '../../assets/AppColors';
 
 const ProviderShowServDetailComp = (props) => {
     const navigation = useNavigation();
@@ -24,22 +25,23 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     cardHeader: {
-        height: 80,
-        elevation: 3,
+        height: 50,
+        elevation: 5,
         shadowOffset: { width: 1, height: 1 },
         shadowOpacity: 0.1,
-        marginBottom: 20,
+        // marginBottom: 20,
         backgroundColor: 'white',
-        width: 300,
-        borderRadius: 25,
+        width: '80%',
+        borderRadius: 10,
         justifyContent:'center',
-        alignItems: 'center'
-        
+        alignItems: 'center',
+        margin:5 ,
+        alignSelf:'center'
     },
     textTitle:{
         fontSize:25,
         fontWeight: 'bold',
-        color:'#483d8b'
+        color:colors.puprble
     },
 })
 

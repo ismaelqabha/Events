@@ -43,6 +43,8 @@ import CreateUser from "../src/screens/CreateUser";
 import ProviderTapNav from "./ProviderTapNav";
 import ProviderCreateListing from "../src/screens/ProviderScreens/ProviderCreateListing";
 import ProviderSocialMediaScreen from "../src/screens/ProviderScreens/ProviderSocialMediaScreen";
+import ProviderInitialWithDetailPrice from "../src/screens/ProviderScreens/ProviderInitialWithDetailPrice";
+import ProviderContantPrice from "../src/screens/ProviderScreens/ProviderContantPrice";
 
 
 
@@ -114,7 +116,8 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender} />
                 <Stack.Screen name={ScreenNames.ProviderBookingRequest} component={ProviderBookingRequest} />
                 <Stack.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}/>
-
+                <Stack.Screen name={ScreenNames.ProviderInitialWithDetailPrice} component={ProviderInitialWithDetailPrice} />
+                <Stack.Screen name={ScreenNames.ProviderContantPrice} component={ProviderContantPrice} />
             </Stack.Navigator>
         </NavigationContainer>
     )
