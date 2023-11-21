@@ -9,7 +9,6 @@ const SearchProvider = props => {
   const [userId, setuserId] = useState(1);
   const [userInfo, setUserInfo] = useState([]);
   const [cat, setCat] = useState('');
-  const [HomeCardType, setHomeCardType] = useState('');
   const [isFirst, setIsfirst] = useState ()
   const [serviceTitle, setserviceTitle] = useState ()
 
@@ -75,8 +74,6 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
-        HomeCardType,
-        setHomeCardType,
         userId,
         setuserId,
         cat,

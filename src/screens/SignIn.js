@@ -1,10 +1,10 @@
-import React,{useContext,useState} from 'react';
+import React, { useContext, useState } from 'react';
 import { View, StyleSheet, Text, Image, TextInput, Pressable, ImageBackground } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
 
 const SignIn = (props) => {
-    const { userId, setuserId,UserState, setUserState } = useContext(SearchContext);
+    const { userId, setuserId, UserState, setUserState } = useContext(SearchContext);
     const [userName, setuserName] = useState()
     const [Password, setPassword] = useState()
 
@@ -25,7 +25,7 @@ const SignIn = (props) => {
         })
     }
 
-    const renderUserId = () => { 
+    const renderUserId = () => {
         const data = query();
         const UserArray = data.map(id => {
             return setuserId(id.USER_ID)
@@ -35,9 +35,9 @@ const SignIn = (props) => {
 
     return (
 
-       
-            <View style={styles.container} >
- {/* 
+
+        <View style={styles.container} >
+            {/* 
         <ImageBackground style={styles.container} source={""
              require('../assets/photos/bg.png')
             }>*/}
@@ -73,28 +73,28 @@ const SignIn = (props) => {
                 <Text style={styles.txtُEnter}>دخول</Text>
             </Pressable>
 
-            </View>
-      
+        </View>
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        
+
     },
     image: {
         width: 150,
         height: 150,
         marginHorizontal: 120,
         marginVertical: 80,
-        
+
     },
     text: {
         fontSize: 20,
         textAlign: 'center',
         fontWeight: 'bold',
-        color:'#1e90ff'
+        color: '#1e90ff'
 
     },
     input: {
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         fontWeight: 'bold',
         borderWidth: 1,
-        borderColor:'#1e90ff',
+        borderColor: '#1e90ff',
         shadowOffset: { width: 1, height: 1 },
         shadowOpacity: 0.3,
         marginTop: 10,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
-        color:'white',
+        color: 'white',
     },
     btnEnter: {
         width: 200,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1e90ff'
 
     },
-    textIn:{
+    textIn: {
         alignItems: 'center',
     },
 

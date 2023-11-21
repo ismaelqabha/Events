@@ -204,6 +204,55 @@ const ProviderAddInfo = props => {
       </View>
     );
   };
+  const renderHallType = () => {
+    return (
+      <View>
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
+              color={colors.puprble}
+              size={20} />
+          </View>
+          <View style={styles.itemView}>
+            {desError && (
+              <Text style={styles.textRequired}>{language.titleRequired}</Text>
+            )}
+            <Text style={styles.text}> {language.hallType}</Text>
+          </View>
+        </View>
+        <View style={styles.hallType}></View>
+      </View>
+    )
+  }
+  const renderHallCapacity = () => {
+    return (
+      <View>
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
+              color={colors.puprble}
+              size={20} />
+          </View>
+          <View style={styles.itemView}>
+            {desError && (
+              <Text style={styles.textRequired}>{language.titleRequired}</Text>
+            )}
+            <Text style={styles.text}> {language.hallCapsity}</Text>
+          </View>
+        </View>
+        <TextInput
+          style={styles.capsityInput}
+          keyboardType='number-pad'
+          maxLength={300}
+          onChangeText={value => {}}
+          //value={}
+        />
+      </View>
+    )
+  }
+
 
   const RenderMainDetails = () => {
     return (
@@ -212,6 +261,8 @@ const ProviderAddInfo = props => {
         {RenderTitleBox()}
         {RenderSubTitleBox()}
         {RenderDescription()}
+        {renderHallType()}
+        {renderHallCapacity()}
       </View>
     );
   };
@@ -316,8 +367,9 @@ const styles = StyleSheet.create({
   itemView: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
+ 
   viewwholeInput: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -330,7 +382,7 @@ const styles = StyleSheet.create({
   },
 
   borderTitleView: {
-    height: 500,
+    height: 720,
     width: "90%",
     borderRadius: 20,
     marginBottom: 30,
@@ -359,7 +411,7 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 50,
     maxWidth: '60%',
-    minWidth:'60%',
+    minWidth: '60%',
     fontSize: 17,
 
   },
@@ -417,9 +469,27 @@ const styles = StyleSheet.create({
     color: 'black',
     backgroundColor: 'white',
   },
+  hallType: {
+    height: 100,
+    width: 315,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    borderColor: "darkgray",
+  },
   descInput: {
     textAlign: 'right',
     height: 200,
+    width: 315,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    borderColor: "darkgray",
+    fontSize: 18,
+    color: 'black',
+    backgroundColor: 'white',
+  },
+  capsityInput:{
+    textAlign: 'right',
+    height: 40,
     width: 315,
     borderWidth: 1.5,
     borderRadius: 10,

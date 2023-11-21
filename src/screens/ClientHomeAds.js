@@ -20,8 +20,7 @@ const ClientHomeAds = (props) => {
         campInfo,
         userRegion,
         setReachCampaignfrom,
-        reachCampaignfrom,
-        setHomeCardType } = useContext(SearchContext);
+        reachCampaignfrom } = useContext(SearchContext);
 
     const [selectServiceType, setSelectServiceType] = useState('');
     const navigation = useNavigation();
@@ -60,12 +59,32 @@ const ClientHomeAds = (props) => {
             return item.serviceData.servType == cat
         })
     }
-    const renderServiceCard = () => {
-
+    const renderTopServices = () => {
         const data = getHallServices()
         const ServiceArray = data.map(card => {
             return <HomeServiceCard {...card.serviceData}
                 images={card?.serviceImages}
+                isFromTopServicesClick={true}
+            />;
+        })
+        return ServiceArray
+    }
+    const renderNearestServices = () => {
+        const data = getHallServices()
+        const ServiceArray = data.map(card => {
+            return <HomeServiceCard {...card.serviceData}
+                images={card?.serviceImages}
+                isFromNearestServicesClick={true}
+            />;
+        })
+        return ServiceArray
+    }
+    const renderSuggestionServices = () => {
+        const data = getHallServices()
+        const ServiceArray = data.map(card => {
+            return <HomeServiceCard {...card.serviceData}
+                images={card?.serviceImages}
+                isFromSuggestionServicesClick={true}
             />;
         })
         return ServiceArray
@@ -153,7 +172,6 @@ const ClientHomeAds = (props) => {
                         <Text style={styles.CatText}>{cat}</Text>
                         <View style={styles.campBox}>
                             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} >
-
                                 {renderCampaigns()}
                             </ScrollView>
                         </View>
@@ -163,21 +181,34 @@ const ClientHomeAds = (props) => {
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>الاكثر طلبا</Text>
                     <Text style={styles.CatText}>{cat}</Text>
-                    {setHomeCardType('top')}
-                    <ScrollView style={styles.scroll}>{renderServiceCard()}</ScrollView>
-                </View>
 
-                <View style={styles.centents}>
-                    <Text style={styles.titleText}>نقترح عليك</Text>
-                    <Text style={styles.CatText}>{cat}</Text>
-                    <ScrollView style={styles.scroll}>{renderServiceCard()}</ScrollView>
+                    <ScrollView
+                        // contentContainerStyle={styles.home1}
+                        // horizontal={true}
+                        // showsHorizontalScrollIndicator={false}
+                    >{renderTopServices()}</ScrollView>
+
                 </View>
 
                 <View style={styles.centents}>
                     <Text style={styles.titleText}>الاقرب لي</Text>
                     <Text style={styles.CatText}>{cat}</Text>
-                    <ScrollView style={styles.scroll}>{renderServiceCard()}</ScrollView>
+
+                    <ScrollView
+                    // horizontal={true} showsHorizontalScrollIndicator={false}
+                    >
+                        {renderNearestServices()}
+                    </ScrollView>
                 </View>
+
+
+                <View style={styles.centents}>
+                    <Text style={styles.titleText}>نقترح عليك</Text>
+                    <Text style={styles.CatText}>{cat}</Text>
+                    <ScrollView style={styles.scroll}>{renderSuggestionServices()}</ScrollView>
+                </View>
+
+
             </ScrollView>
         </ImageBackground>
     );
@@ -248,12 +279,10 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
     centents: {
-        marginTop: 30,
         borderWidth: 0.5,
         borderColor: colors.darkGold,
         marginBottom: 50,
-        paddingBottom: 10,
-        paddingTop: 10
+        paddingTop : 10
     },
     header: {
         width: "100%",
@@ -273,12 +302,15 @@ const styles = StyleSheet.create({
     titleImg: {
         width: 250,
         height: 60,
-        //justifyContent: 'center',
         alignItems: 'center',
     },
     CatView: {
         marginTop: 50,
         marginBottom: 30
+    },
+    home1: {
+        flex: 1,
+        backgroundColor: 'red'
     }
 
 })
