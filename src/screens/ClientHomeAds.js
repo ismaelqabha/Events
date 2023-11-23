@@ -151,12 +151,12 @@ const ClientHomeAds = (props) => {
                 </View>
 
 
-                {/* <Pressable
-                    style={styles.search}
-                    onPress={() => navigation.navigate(ScreenNames.CreateUser)}
+                <Pressable
+                    // style={styles.search}
+                    onPress={() => navigation.navigate(ScreenNames.SignIn)}
                 >
-                    <Text style={styles.txt}>انشاء حساب</Text>
-                </Pressable> */}
+                    <Text style={styles.txt}>Login</Text>
+                </Pressable>
 
                 <View style={styles.CatView}>
                     <FlatList

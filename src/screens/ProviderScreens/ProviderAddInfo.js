@@ -71,7 +71,6 @@ const ProviderAddInfo = props => {
   };
 
   const onNextPress = () => {
-    // checkRequestedData() 
     true
       ? props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
         data: { ...props },
@@ -507,7 +506,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 20,
     alignSelf: 'center',
-
     alignItems: 'center'
   },
   locationTitle: {
