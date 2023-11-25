@@ -21,7 +21,7 @@ export const getServiceInfoById = async body => {
   return await AppFetch(url, 'POST', body);
 };
 export const addService = async body => {
-  const url = 'servicesData/create';
+  const url = 'servicesDa/tacreate';
   return await AppFetch(url, 'POST', body);
 };
 //Service Detail
@@ -151,7 +151,7 @@ export const RemoveFavorite = async body => {
   return await AppFetch(url, 'DELETE', body);
 };
 
-const AppFetch = async (url, method, body) => {
+const AppFetch = async (url, method, body ) => {
   const fullUrl = baseUrl + url;
   const bodyStr = JSON.stringify(body) || '';
 

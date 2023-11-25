@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,14 +9,15 @@ import {
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
 import strings from '../../assets/res/strings';
 import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import SearchContext from '../../../store/SearchContext';
-import {addService} from '../../resources/API';
+import { addService } from '../../resources/API';
+import ImgToBase64 from 'react-native-image-base64';
 
 const ProviderSetPrice = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderSetPrice;
@@ -33,7 +34,7 @@ const ProviderSetPrice = props => {
     workAreas,
     additionalServices,
   } = useContext(ServiceProviderContext);
-  const {userId} = useContext(SearchContext);
+  const { userId } = useContext(SearchContext);
 
   const params = {
     ScreenHeader: {
@@ -54,27 +55,29 @@ const ProviderSetPrice = props => {
       onPress: () => onPublishPress(),
     },
   };
-
   const onPublishPress = async () => {
-    const body = {
-      userID: userId,
-      servType: selectServiceType,
-      title: title,
-      subTitle: SuTitle,
-      desc: description,
-      region: serviceRegion,
-      address: serviceAddress,
-      servicePrice: price,
-      workingRegion: workAreas,
-      additionalServices: additionalServices,
-    };
-    await addService(body)
-      .then(res => {
-        console.log('res ->', res);
-      })
-      .catch(e => {
-        console.log('create new event error : ', e);
-      });
+    // const body = {
+    //   userID: userId,
+    //   servType: selectServiceType,
+    //   title: title,
+    //   subTitle: SuTitle,
+    //   desc: description,
+    //   region: serviceRegion,
+    //   address: serviceAddress,
+    //   servicePrice: price,
+    //   workingRegion: workAreas,
+    //   additionalServices: additionalServices,
+    // };
+    // await addService(body)
+    //   .then(res => {
+    //     console.log('res ->', res);
+    //     addServiceImages()
+    //   })
+    //   .catch(e => {
+
+    //     console.log('create new event error : ', e);
+    //   });
+    addServiceImages()
     // console.log('--------------------------------------');
     // console.log('Service detailes -> ');
     // console.log('User ID -> ', userId);
@@ -91,9 +94,17 @@ const ProviderSetPrice = props => {
     // console.log('--------------------------------------');
   };
 
+  const addServiceImages = () => {
+    console.log("photo array ", photoArray);
+    const base64Array = photoArray.map( (image) => {
+      return ImgToBase64.getBase64String(image.image)
+    })
+    console.log("base64Array ", base64Array);
+  }
+
   const onAddSerPress = () => {
     props.navigation.navigate(ScreenNames.ProviderAddServiceDetail, {
-      data: {...props},
+      data: { ...props },
     });
   };
   const onBackPress = () => {
@@ -124,16 +135,16 @@ const ProviderSetPrice = props => {
           <TouchableOpacity
             style={styles.AddButton}
             onPress={onAddSerPress}
-            //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
+          //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
           >
             <AntDesign
               name="plussquareo"
-              style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
+              style={{ fontSize: 30, alignSelf: 'center', marginRight: 30 }}
             />
             <Text style={styles.footText}>{langauge.addServDetailes}</Text>
             <FontAwesome5
               name="less-than"
-              style={{fontSize: 20, alignSelf: 'center', marginLeft: 30}}
+              style={{ fontSize: 20, alignSelf: 'center', marginLeft: 30 }}
             />
           </TouchableOpacity>
         </View>

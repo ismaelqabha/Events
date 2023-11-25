@@ -15,8 +15,9 @@ const ContactComp = () => {
     const [socialFields,setSocialFields]=useState(0)
 
     const addSoialMediaContact=()=>{
-        console.log("adding number");
-        setSocialFields(socialFields+1)
+        socialFields <3 ?
+        setSocialFields(socialFields+1) :
+        null
     }
 
     const renderSoialMediaContacts = () => {
@@ -36,9 +37,9 @@ const ContactComp = () => {
                         setSelected={val => { }}
 
                         placeholder={language.socialType}
-                        boxstyles={styles.dropdown}
-                        inputstyles={styles.droptext}
-                        dropdownTextstyles={styles.dropstyle}
+                        boxStyles={styles.dropdown}
+                        inputStyles={styles.droptext}
+                        dropdownTextStyles={styles.dropstyle}
                     />
                 </View>
                 <TextInput style={styles.socialInput}
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         height: 50,
-        width: 100,
+        width: '100%',
         fontSize: 17,
         borderRadius: 10,
         fontWeight: 'bold',
@@ -190,6 +191,8 @@ const styles = StyleSheet.create({
         color: colors.darkGold,
         fontWeight: 'bold',
         fontSize: 20,
+        color:'black'
+        
     },
     socialInput: {
         borderWidth: 1,
