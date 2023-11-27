@@ -1,3 +1,5 @@
+import { base64regex } from "./Regex";
+
 const baseUrl = 'https://ev-server.onrender.com/';
 // const baseUrl = "https://localhost:7000/"
 
@@ -119,8 +121,25 @@ export const getCities = async body => {
 //Service Images
 export const getServiceImages = async body => {
   const url = 'ServiceImags/getImg';
-  return await AppFetch(url, 'POST', body);
+  const res =  await AppFetch(url, 'POST', body);
+  const {images} = res
+  if (images && Array.isArray(images)) {
+    var {base64} = images
+    if (base64) {
+    images = images?.map((image)=>{
+      return {image:`data:image/png;base64,${image.base64}`,coverPhoto:image.coverPhoto}
+    })
+    return images
+    }
+  }else{
+    return res
+  }
 };
+
+export const PostImagesToApi = async body =>{
+  const url = 'ServiceImags/addImg';
+  return await AppFetch(url, 'POST', body);
+}
 
 // Service Booking Dates
 export const getbookingDates = async body => {
@@ -151,7 +170,7 @@ export const RemoveFavorite = async body => {
   return await AppFetch(url, 'DELETE', body);
 };
 
-const AppFetch = async (url, method, body) => {
+const AppFetch = async (url, method, body ) => {
   const fullUrl = baseUrl + url;
   const bodyStr = JSON.stringify(body) || '';
 

@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,14 +9,14 @@ import {
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
 import strings from '../../assets/res/strings';
 import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import SearchContext from '../../../store/SearchContext';
-import {addService} from '../../resources/API';
+import { PostImagesToApi, addService } from '../../resources/API';
 
 const ProviderSetPrice = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderSetPrice;
@@ -33,7 +33,7 @@ const ProviderSetPrice = props => {
     workAreas,
     additionalServices,
   } = useContext(ServiceProviderContext);
-  const {userId} = useContext(SearchContext);
+  const { userId } = useContext(SearchContext);
 
   const params = {
     ScreenHeader: {
@@ -54,7 +54,6 @@ const ProviderSetPrice = props => {
       onPress: () => onPublishPress(),
     },
   };
-
   const onPublishPress = async () => {
     const body = {
       userID: userId,
@@ -69,10 +68,13 @@ const ProviderSetPrice = props => {
       additionalServices: additionalServices,
     };
     await addService(body)
-      .then(res => {
-        console.log('res ->', res);
+      .then(async res => {
+        res.message === "Service Created" ?
+        await addServiceImages(res.serviceID) :
+        console.log("there was a problem with creating the service");
       })
       .catch(e => {
+
         console.log('create new event error : ', e);
       });
     // console.log('--------------------------------------');
@@ -91,9 +93,25 @@ const ProviderSetPrice = props => {
     // console.log('--------------------------------------');
   };
 
+  const addServiceImages = async (ID) => {
+    var base64Images = photoArray?.map((image, index) => {
+      return {base64:image.base64,coverPhoto:image.coverPhoto}
+    })
+    const body = {
+      images: base64Images,
+      serviceID: ID
+    }
+    await PostImagesToApi(body).then((res)=>{
+      console.log("res ->",res);
+    }).catch(e=>{
+      console.log("posting service images error -> ",e);
+    })
+  }
+
+
   const onAddSerPress = () => {
     props.navigation.navigate(ScreenNames.ProviderAddServiceDetail, {
-      data: {...props},
+      data: { ...props },
     });
   };
   const onBackPress = () => {
@@ -124,16 +142,16 @@ const ProviderSetPrice = props => {
           <TouchableOpacity
             style={styles.AddButton}
             onPress={onAddSerPress}
-            //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
+          //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
           >
             <AntDesign
               name="plussquareo"
-              style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
+              style={{ fontSize: 30, alignSelf: 'center', marginRight: 30 }}
             />
             <Text style={styles.footText}>{langauge.addServDetailes}</Text>
             <FontAwesome5
               name="less-than"
-              style={{fontSize: 20, alignSelf: 'center', marginLeft: 30}}
+              style={{ fontSize: 20, alignSelf: 'center', marginLeft: 30 }}
             />
           </TouchableOpacity>
         </View>
