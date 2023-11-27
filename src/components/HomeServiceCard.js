@@ -11,7 +11,7 @@ import { Pressable } from 'react-native';
 const HomeServiceCard = (props) => {
     const { isFromNearestServicesClick, isFromTopServicesClick, subTitle, title } = props;
     const navigation = useNavigation();
-    const {  } = useContext(SearchContext);
+    const { } = useContext(SearchContext);
 
     const queryImg = () => {
         return props.images?.filter(photo => {
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center'
     },
-    
+
     topInfoView: {
         width: '40%',
         height: 45,
@@ -209,6 +209,14 @@ const styles = StyleSheet.create({
         color: colors.darkGold,
         fontWeight: 'bold'
     },
-
+    forHome: {
+        borderRadius: 30,
+        //shadowRadius: 4,
+        elevation: 3,
+        margin: 10,
+        width: 200,
+        height: 180,
+        alignSelf: 'center'
+    },
 
 })

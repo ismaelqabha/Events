@@ -1,31 +1,70 @@
 import { StyleSheet, Text, View, Pressable, TextInput, ToastAndroid, ScrollView, Image } from 'react-native'
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { addUser } from '../../resources/API';
 import { colors } from '../../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { SelectList } from 'react-native-dropdown-select-list';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScreenNames } from '../../../route/ScreenNames';
-import { regionData } from '../../resources/data';
+
 import SearchContext from '../../../store/SearchContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 
-//import Entypo from "react-native-vector-icons/Entypo";
 
 const CreateUpersonalInfo = (props) => {
-    const { userId, setuserId, userInfo, setUserInfo } = useContext(SearchContext);
-    const [titleError, setTitleError] = useState(false);
+    const {
+        userId,
+        setuserId,
+        userInfo,
+        setUserInfo,
+        userName,
+        setUserName,
+        userEmail,
+        setUserEmail,
+        userPhone,
+        setUserPhone,
+        userBD,
+        setUserBD,
+        userGender,
+        setUserGender,
+        userStatus,
+        setUserStatus
+    } = useContext(SearchContext);
 
-    const [userName, setUserName] = useState()
-    const [email, setEmail] = useState()
-    const [userPhone, setUserPhone] = useState()
-    // const [userAddress, setUserAddress] = useState()
-    // const [firstPassword, setFirstPassword] = useState()
-    // const [secondPassword, setSecondPassword] = useState()
+    const [userNameError, setUserNameError] = useState(false)
+    const [emailError, setEmailError] = useState(false)
+    const [userPhoneError, setUserPhoneError] = useState(false)
+    const [userBDError, setUserBDError] = useState(false)
+
+    const [femalePress, setFemalePress] = useState(false)
+    const [malePress, setMalePress] = useState(false)
+
+    const [singlePress, setSinglePress] = useState(false)
+    const [engagedPress, setEngagedPress] = useState(false)
+    const [marridPress, setMarridPress] = useState(false)
+
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+    const [date, setDate] = useState(new Date());
+    
 
     const onPressHandler = () => {
         props.navigation.goBack();
+    }
+    const onChange = (event,selectedDate) => {
+        setShow(false)
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+
+        setUserBD(fDate);
+    }
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
     }
     // const chickIfExist = () => {
     //     const isChecked = userInfo.find(item => item.Email === email)
@@ -63,6 +102,7 @@ const CreateUpersonalInfo = (props) => {
 
     const RenderFooter = () => {
         return <View style={styles.footer}>
+            {renderDots()}
             {RenderNextButton()}
         </View>;
     };
@@ -76,11 +116,23 @@ const CreateUpersonalInfo = (props) => {
         );
     };
 
+    const renderDots = () => {
+        return (
+            <View style={AppStyles.createuserDots}>
+                <View style={AppStyles.pressDot}></View>
+                <View style={AppStyles.dots}></View>
+                <View style={AppStyles.dots}></View>
+                <View style={AppStyles.dots}></View>
+            </View>
+        )
+    }
+
     const onNextPress = () => {
         true
             ? props.navigation.navigate(ScreenNames.SetUserAddress
-                , {data: { ...props },
-            })
+                , {
+                    data: { ...props },
+                })
             : missingData();
     };
 
@@ -94,129 +146,151 @@ const CreateUpersonalInfo = (props) => {
     };
 
     const missingData = () => {
-        checkStrings() ? showMissingTitle() : null;
-        checkStrings() ? showMissingSubTitle() : null;
-        checkStrings() ? showMissingDescription() : null;
+        checkStrings(userName) ? showMissingUserName() : null;
+        checkStrings(userEmail) ? showMissingMail() : null;
+        checkStrings(userPhone) ? showMissingPhone() : null;
+        checkStrings(userBD) ? showMissingBirthDate() : null;
     };
 
-    const showMissingTitle = () => { };
+    const showMissingUserName = () => { };
 
-    const showMissingSubTitle = () => { };
+    const showMissingMail = () => { };
 
-    const showMissingDescription = () => { };
+    const showMissingPhone = () => { };
+
+    const showMissingBirthDate = () => { };
+
+    useEffect(() => {
+        setUserNameError(!checkStrings(userName));
+        setEmailError(!checkStrings(userEmail));
+        setUserPhoneError(!checkStrings(userPhone));
+        setUserBDError(!checkStrings(userBD));
+    }, [userName, userEmail, userPhone, userBD]);
+
+    const onMalePress = () => {
+        setMalePress(true)
+        setFemalePress(false)
+        setUserGender('ذكر')
+    }
+    const onFemalePress = () => {
+        setMalePress(false)
+        setFemalePress(true)
+        setUserGender('أنثى')
+    }
+    const onSinglePress = () => {
+        setSinglePress(true)
+        setEngagedPress(false)
+        setMarridPress(false)
+        setUserStatus('أعزب')
+    }
+    const onEngagedPress = () => {
+        setSinglePress(false)
+        setEngagedPress(true)
+        setMarridPress(false)
+        setUserStatus('خاطب')
+    }
+    const onMarridPress = () => {
+        setSinglePress(false)
+        setEngagedPress(false)
+        setMarridPress(true)
+        setUserStatus('متزوج')
+    }
 
     const renderPersonalInfo = () => {
         return (<View>
-            <TextInput
-                style={styles.input}
-                keyboardType='default'
-                placeholder='الاسم'
-                onChangeText={setUserName}
-            />
-            <TextInput
-                style={styles.input}
-                keyboardType='default'
-                placeholder='البريد الألكتروني'
-                onChangeText={setEmail}
-            />
-            <TextInput
-                style={styles.input}
-                keyboardType='default'
-                placeholder='الموبايل'
-                onChangeText={setUserPhone}
-            />
-            <View style={styles.Bdate}>
-                <Text>DD/MM/YYYY</Text>
-                <Pressable>
-                    <Entypo
-                        style={styles.logoDate}
-                        name={"calendar"}
-                        color={"black"}
-                        size={30} />
+            <View style={styles.inputView}>
+                {userNameError && (
+                    <Text style={styles.textRequired}>*</Text>
+                )}
+                <TextInput
+                    style={styles.input}
+                    keyboardType='default'
+                    placeholder='الاسم'
+                    onChangeText={setUserName}
+                />
+            </View>
+            <View style={styles.inputView}>
+                {emailError && (
+                    <Text style={styles.textRequired}>*</Text>
+                )}
+                <TextInput
+                    style={styles.input}
+                    keyboardType='default'
+                    placeholder='البريد الألكتروني'
+                    onChangeText={setUserEmail}
+                />
+            </View>
+            <View style={styles.inputView}>
+                {userPhoneError && (
+                    <Text style={styles.textRequired}>*</Text>
+                )}
+                <TextInput
+                    style={styles.input}
+                    keyboardType='default'
+                    placeholder='الموبايل'
+                    onChangeText={setUserPhone}
+                />
+            </View>
+            <View style={styles.inputView}>
+                {userBDError && (
+                    <Text style={styles.textRequired}>*</Text>
+                )}
+                <Pressable onPress={() => showMode('date')} >
+                    <View style={styles.Bdate}>
+                        <Text>{userBD}</Text>
+                        <Entypo
+                            style={styles.logoDate}
+                            name={"calendar"}
+                            color={"black"}
+                            size={30} />
+                    </View>
+                    {show && (
+                        <DateTimePicker
+                            testID='dateTimePicker'
+                            value={date}
+                            mode={mode}
+                            is24Hour={true}
+                            display='spinner'
+                            onChange={onChange}
+                        />
+                    )}
                 </Pressable>
             </View>
+            <Text style={{ fontSize: 20, marginRight: 20 }}>الجنس</Text>
             <View style={styles.gender}>
-                <Pressable style={styles.genderPress}>
+                <Pressable style={[malePress ? styles.genderPress : styles.genderNotPres]}
+                    onPress={() => onMalePress()}>
                     <FontAwesome
                         name={"male"}
                         color={colors.puprble}
                         size={50} />
                 </Pressable>
-                <Pressable style={styles.genderPress}>
+                <Pressable style={[femalePress ? styles.genderPress : styles.genderNotPres]}
+                    onPress={() => onFemalePress()}>
                     <FontAwesome
                         name={"female"}
                         color={colors.puprble}
                         size={50} />
                 </Pressable>
             </View>
-            <Text style={{fontSize: 20, marginRight: 20}}>الحالة الاجتماعية</Text>
+            <Text style={{ fontSize: 20, marginRight: 20 }}>الحالة الاجتماعية</Text>
             <View style={styles.status}>
-                <Pressable style={styles.statusPress}>
+                <Pressable style={[singlePress ? styles.statusPress : styles.statusNotPres]}
+                    onPress={() => onSinglePress()}>
                     <Text style={styles.statustxt}>أعزب</Text>
                 </Pressable>
-                <Pressable style={styles.statusPress}>
+                <Pressable style={[engagedPress ? styles.statusPress : styles.statusNotPres]}
+                    onPress={() => onEngagedPress()}>
                     <Text style={styles.statustxt}>خاطب</Text>
                 </Pressable>
-                <Pressable style={styles.statusPress}>
+                <Pressable style={[marridPress ? styles.statusPress : styles.statusNotPres]}
+                    onPress={() => onMarridPress()}>
                     <Text style={styles.statustxt}>متزوج</Text>
                 </Pressable>
             </View>
         </View>)
 
     }
-    // const renderPassword = () => {
-    //     return (<View>
-    //         <TextInput
-    //             style={styles.input}
-    //             keyboardType='default'
-    //             placeholder='كلمة المرور'
-    //             onChangeText={setFirstPassword}
-    //         />
-    //         <TextInput
-    //             style={styles.input}
-    //             keyboardType='default'
-    //             placeholder='تأكيد كلمة المرور'
-    //             onChangeText={setSecondPassword}
-    //         />
-
-    //     </View>)
-
-    // }
-    // const RenderLocationDetails = () => {
-    //     return (
-    //         <View>
-    //             <View style={styles.region}>
-    //                 <Text>المنطقة</Text>
-    //             </View>
-
-    //             {titleError && (
-    //                 <Text style={{ color: 'red', marginLeft: 100 }}>*</Text>
-    //             )}
-    //             <SelectList
-    //                 data={regionData}
-    //                 setSelected={val => {
-    //                     let cityObj = regionData.find(city => city.key == val);
-    //                     //setserviceRegion(cityObj.value);
-    //                 }}
-    //                 placeholder={'المدينة'}
-    //                 boxStyles={styles.dropdown}
-    //                 inputStyles={styles.droptext}
-    //                 dropdownTextStyles={styles.dropstyle}
-    //             />
-
-    //             <Pressable style={styles.location}>
-    //                 <Text style={styles.locationTitle}>أضف موقع</Text>
-    //                 <View style={styles.IconView}>
-    //                     <Entypo
-    //                         name={"location-pin"}
-    //                         color={colors.puprble}
-    //                         size={25} />
-    //                 </View>
-    //             </Pressable>
-    //         </View>
-    //     );
-    // };
-
 
     return (
         <View style={styles.container}>
@@ -246,27 +320,7 @@ const CreateUpersonalInfo = (props) => {
                     <Text style={styles.titleText}>المعلومات الشخصية</Text>
                     {renderPersonalInfo()}
                 </View>
-
-                {/* <View style={styles.body}>
-                    <Text style={styles.titleText}>العنوان</Text>
-                    {RenderLocationDetails()}
-                </View> */}
-
-                {/* <View style={styles.body}>
-                    <Text style={styles.titleText}>الحالة الاجتماعية</Text>
-                    {renderPersonalInfo()}
-                </View> */}
-
-                {/* <View style={styles.body}>
-                    <Text style={styles.titleText}>كلمة المرور</Text>
-                    {renderPassword()}
-                </View> */}
-
-                {/* <Pressable style={styles.btnEnter}
-                    onPress={() => onCreateUser()}
-                >
-                    <Text style={styles.txtُEnter}>انشاء ودخول</Text>
-                </Pressable> */}
+                <Text>Hi</Text>
             </ScrollView>
             {RenderFooter()}
         </View>
@@ -298,8 +352,6 @@ const styles = StyleSheet.create({
     titleText: {
         textAlign: 'center',
         fontSize: 17,
-        //color: colors.TitleFont,
-        // fontFamily: 'Cairo-VariableFont_slnt,wght',
         backgroundColor: colors.BGScereen,
         width: 123,
         position: 'absolute',
@@ -309,12 +361,8 @@ const styles = StyleSheet.create({
     footer: {
         width: '100%',
         marginVertical: 20,
-        //flexDirection: 'row',
-        // justifyContent: 'space-between',
         marginRight: 20,
-        //marginLeft: 20,
-        //alignSelf: 'center',
-      },
+    },
     profilImg: {
         width: 170,
         height: 170,
@@ -337,7 +385,7 @@ const styles = StyleSheet.create({
         right: 115,
         bottom: 30,
     },
-   
+
     logoDate: {
         marginHorizontal: 30,
         marginLeft: 20
@@ -352,8 +400,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    
-    
     body: {
         marginVertical: 30,
         borderWidth: 1,
@@ -361,7 +407,11 @@ const styles = StyleSheet.create({
         width: '95%',
         alignSelf: 'center',
         paddingVertical: 20,
-
+        height: 850
+    },
+    inputView: {
+        alignItems: 'flex-end',
+        marginVertical: 20,
     },
     input: {
         alignSelf: 'center',
@@ -372,7 +422,6 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         fontSize: 15,
         fontWeight: 'bold',
-        marginVertical: 20,
         color: 'black',
         backgroundColor: 'lightgray',
     },
@@ -388,29 +437,11 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         fontSize: 15,
         fontWeight: 'bold',
-        marginVertical: 10,
         color: 'black',
         backgroundColor: 'lightgray',
+        marginRight: 20
     },
-   
-    txtُEnter: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: 'white',
-    },
-    btnEnter: {
-        width: '80%',
-        height: 50,
-        borderRadius: 25,
-        //marginVertical: 40,
-        justifyContent: 'center',
-        textAlign: 'center',
-        backgroundColor: colors.puprble,
-        alignSelf: 'center',
-        elevation: 5,
-        marginBottom: 100
-    },
+
     gender: {
         width: '90%',
         alignSelf: 'center',
@@ -437,6 +468,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         elevation: 5
     },
+    genderNotPres: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        marginHorizontal: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        elevation: 5
+    },
     statusPress: {
         width: 100,
         height: 100,
@@ -449,63 +490,24 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         elevation: 5
     },
+    statusNotPres: {
+        width: 100,
+        height: 100,
+        borderRadius: 30,
+        marginHorizontal: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        elevation: 5
+    },
     statustxt: {
         fontSize: 25,
         color: colors.puprble
     },
-    region: {
-        textAlign: 'right',
-        height: 50,
-        width: '80%',
-        fontSize: 16,
-        borderRadius: 25,
-        // borderWidth: 1,
-        // borderColor: 'darkgray',
-        alignSelf: 'center',
-        marginVertical: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'lightgray'
-    },
-    dropdown: {
-        height: 50,
-        maxWidth: '70%',
-        minWidth: '70%',
-        fontSize: 17,
-        alignSelf: 'center',
-        backgroundColor: 'lightgray',
-        borderRadius: 25,
-    },
-    dropstyle: {
-        textAlign: 'right',
-        color: 'black',
-        fontSize: 15,
-    },
-    droptext: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: 'black',
-        textAlign: 'right'
-    },
-    location: {
-        flexDirection: 'row',
-        marginVertical: 20,
-        alignSelf: 'center',
-        alignItems: 'center'
-    },
-    locationTitle: {
-        fontSize: 15,
-        textAlign: 'right',
-        color: colors.puprble
-    },
-    IconView: {
-        width: 30,
-        height: 30,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'lightgray',
-        borderRadius: 30,
-        marginLeft: 15
+    textRequired: {
+        fontSize: 14,
+        marginRight: 40,
+        color: 'red',
     },
 
 })

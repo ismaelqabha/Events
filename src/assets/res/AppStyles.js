@@ -44,14 +44,19 @@ export const AppStyles = StyleSheet.create({
     backgroundColor: colors.BGScereen
   },
   createUserfooter: {
-    width: '100%',
-    marginVertical: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    paddingVertical: 30,
     marginRight: 20,
     alignItems: 'center',
     position: 'absolute',
-    bottom: 10
+    bottom: -300,
+    borderWidth: 1
+  },
+  footerPart:{
+    width: '94%',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'center'
   },
   createUserBack: {
     width: 100,
@@ -78,6 +83,27 @@ export const AppStyles = StyleSheet.create({
     fontSize: 18,
     color: colors.darkGold
   },
-
+  createuserDots: {
+    flexDirection:'row',
+     alignItems: 'center',
+     justifyContent: 'center',
+     marginBottom: 20
+  },
+  dots:{
+    width: 7,
+    height: 7,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: colors.gold,
+    elevation: 5
+  },
+  pressDot:{
+    width: 7,
+    height: 7,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: colors.puprble,
+    elevation: 5
+  },
 
 });

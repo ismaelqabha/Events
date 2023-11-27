@@ -15,7 +15,6 @@ const ContactComp = () => {
     const [socialFields,setSocialFields]=useState(0)
 
     const addSoialMediaContact=()=>{
-        console.log("adding number");
         setSocialFields(socialFields+1)
     }
 

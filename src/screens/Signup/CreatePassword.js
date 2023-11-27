@@ -1,27 +1,53 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native'
+import React, { useState, useContext, useEffect } from 'react'
 import { colors } from '../../assets/AppColors'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
+import SearchContext from '../../../store/SearchContext';
+
 
 const CreatePassword = (props) => {
-  
+
+  const { password,
+    setPassword,
+    confirmPassword,
+    setconfirmPassword } = useContext(SearchContext);
+
+  const [firstPasswordError, setFirstPasswordError] = useState()
+  const [secondPasswordError, setSecondPasswordError] = useState()
+
   const onPressBack = () => {
     props.navigation.goBack();
   }
 
   const RenderFooter = () => {
-    return <View style={AppStyles.createUserfooter}>
-      {RenderBackButton()}
-      {RenderNextButton()}
+    return <View>
+      <View style={styles.footer}>
+        {renderDots()}
+        <View style={AppStyles.footerPart}>
+          {RenderBackButton()}
+          {RenderNextButton()}
+        </View>
+
+      </View>
     </View>;
   };
+  const renderDots = () => {
+    return (
+      <View style={AppStyles.createuserDots}>
+        <View style={AppStyles.dots}></View>
+        <View style={AppStyles.dots}></View>
+        <View style={AppStyles.dots}></View>
+        <View style={AppStyles.pressDot}></View>
+      </View>
+    )
+  }
   const RenderNextButton = () => {
     return (
       <Pressable
         style={AppStyles.createUserNext}
-        onPress={() => onNextPress()}
+      //onPress={() => onNextPress()}
       >
         <Text style={AppStyles.createUserNextTxt}>التالي</Text>
       </Pressable>
@@ -57,21 +83,56 @@ const CreatePassword = (props) => {
   };
 
   const missingData = () => {
-    checkStrings() ? showMissingTitle() : null;
-    checkStrings() ? showMissingSubTitle() : null;
-    checkStrings() ? showMissingDescription() : null;
+    checkStrings(password) ? showMissingPasswrd() : null;
+    checkStrings(confirmPassword) ? showMissingConfirmPassword() : null;
   };
 
-  const showMissingTitle = () => { };
+  const showMissingPasswrd = () => { };
+  const showMissingConfirmPassword = () => { };
 
-  const showMissingSubTitle = () => { };
+  useEffect(() => {
+    setFirstPasswordError(!checkStrings(password));
+    setSecondPasswordError(!checkStrings(confirmPassword));
 
-  const showMissingDescription = () => { };
+  }, [password, confirmPassword]);
+
+  const renderPassword = () => {
+    return (<View>
+      <View style={styles.inputView}>
+        {firstPasswordError && (
+          <Text style={styles.textRequired}>*</Text>
+        )}
+        <TextInput
+          style={styles.input}
+          keyboardType='visible-password'
+          placeholder='كلمة المرور'
+          onChangeText={setPassword}
+        />
+      </View>
+      <View style={styles.inputView}>
+        {secondPasswordError && (
+          <Text style={styles.textRequired}>*</Text>
+        )}
+        <TextInput
+          style={styles.input}
+          keyboardType='visible-password'
+          placeholder='تأكيد كلمة المرور'
+          onChangeText={setconfirmPassword}
+        />
+      </View>
+    </View>)
+
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
+      </View>
+
+      <View style={styles.body}>
+        <Text style={styles.titleText}>تعيين كلمة المرور</Text>
+        {renderPassword()}
       </View>
 
       {RenderFooter()}
@@ -94,5 +155,50 @@ const styles = StyleSheet.create({
     color: colors.puprble,
     fontWeight: 'bold',
     marginRight: 20
+  },
+  body: {
+    marginVertical: 50,
+    borderWidth: 1,
+    borderColor: 'lightgray',
+    width: '95%',
+    alignSelf: 'center',
+    paddingVertical: 20,
+  },
+  titleText: {
+    textAlign: 'center',
+    fontSize: 17,
+    backgroundColor: colors.BGScereen,
+    width: 123,
+    position: 'absolute',
+    top: -13,
+    right: 10
+  },
+  input: {
+    alignSelf: 'center',
+    textAlign: 'center',
+    height: 50,
+    width: '90%',
+    borderRadius: 30,
+    borderColor: 'black',
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: 'black',
+    backgroundColor: 'lightgray',
+  },
+  footer: {
+    paddingVertical: 30,
+    marginRight: 40,
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: -250,
+  },
+  inputView: {
+    alignItems: 'flex-end',
+    marginVertical: 20,
+  },
+  textRequired: {
+    fontSize: 14,
+    marginRight: 40,
+    color: 'red',
   },
 })

@@ -71,8 +71,8 @@ const ClientHomeAds = (props) => {
     }
     const renderNearestServices = () => {
         const data = getHallServices()
-        const ServiceArray = data.map(card => {
-            return <HomeServiceCard {...card.serviceData}
+        const ServiceArray = data.map((card , i) => {
+            return  <HomeServiceCard {...card.serviceData}
                 images={card?.serviceImages}
                 isFromNearestServicesClick={true}
             />;
@@ -183,10 +183,13 @@ const ClientHomeAds = (props) => {
                     <Text style={styles.CatText}>{cat}</Text>
 
                     <ScrollView
-                        // contentContainerStyle={styles.home1}
-                        // horizontal={true}
-                        // showsHorizontalScrollIndicator={false}
-                    >{renderTopServices()}</ScrollView>
+                    
+                    // contentContainerStyle={styles.home1}
+                    // horizontal={true}
+                    // showsHorizontalScrollIndicator={false}
+                    >
+                        {renderTopServices()}
+                    </ScrollView>
 
                 </View>
 
@@ -195,7 +198,7 @@ const ClientHomeAds = (props) => {
                     <Text style={styles.CatText}>{cat}</Text>
 
                     <ScrollView
-                    // horizontal={true} showsHorizontalScrollIndicator={false}
+                   // horizontal={true} showsHorizontalScrollIndicator={false}
                     >
                         {renderNearestServices()}
                     </ScrollView>
@@ -282,7 +285,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: colors.darkGold,
         marginBottom: 50,
-        paddingTop : 10
+        paddingTop: 10
     },
     header: {
         width: "100%",
