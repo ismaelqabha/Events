@@ -119,7 +119,16 @@ export const getCities = async body => {
 //Service Images
 export const getServiceImages = async body => {
   const url = 'ServiceImags/getImg';
-  return await AppFetch(url, 'POST', body);
+  const res =  await AppFetch(url, 'POST', body);
+  const {images} = res
+  if (images && Array.isArray(images)) {
+    images = images?.map((image)=>{
+      return {image:`data:image/png;base64,${image.base64}`,coverPhoto:image.coverPhoto}
+    })
+    return images
+  }else{
+    return res
+  }
 };
 
 export const PostImagesToApi = async body =>{
