@@ -16,9 +16,7 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import SearchContext from '../../../store/SearchContext';
-import { addService } from '../../resources/API';
-import { colors } from '../../assets/AppColors';
-import HeaderComp from '../../components/ProviderComponents/HeaderComp';
+import { PostImagesToApi, addService } from '../../resources/API';
 
 const ProviderSetPrice = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderSetPrice;
@@ -44,7 +42,6 @@ const ProviderSetPrice = props => {
       Text: langauge.Header,
     },
   };
-
   const onPublishPress = async () => {
     const body = {
       userID: userId,
@@ -59,13 +56,46 @@ const ProviderSetPrice = props => {
       additionalServices: additionalServices,
     };
     await addService(body)
-      .then(res => {
-        console.log('res ->', res);
+      .then(async res => {
+        res.message === "Service Created" ?
+        await addServiceImages(res.serviceID) :
+        console.log("there was a problem with creating the service");
       })
       .catch(e => {
+
         console.log('create new event error : ', e);
       });
+    // console.log('--------------------------------------');
+    // console.log('Service detailes -> ');
+    // console.log('User ID -> ', userId);
+    // console.log('Price -> ', price);
+    // console.log('address -> ', serviceAddress);
+    // console.log('Region -> ', serviceRegion);
+    // console.log('title -> ', title);
+    // console.log('subTitle -> ', SuTitle);
+    // console.log('description -> ', description);
+    // console.log('selectServiceType -> ', selectServiceType);
+    // console.log('photoArray -> ', photoArray);
+    // console.log('workAreas -> ', workAreas);
+    // console.log('additional services  -> ', additionalServices);
+    // console.log('--------------------------------------');
   };
+
+  const addServiceImages = async (ID) => {
+    var base64Images = photoArray?.map((image, index) => {
+      return {base64:image.base64,coverPhoto:image.coverPhoto}
+    })
+    const body = {
+      images: base64Images,
+      serviceID: ID
+    }
+    await PostImagesToApi(body).then((res)=>{
+      console.log("res ->",res);
+    }).catch(e=>{
+      console.log("posting service images error -> ",e);
+    })
+  }
+
 
   const onAddSerPress = () => {
     props.navigation.navigate(ScreenNames.ProviderAddServiceDetail, {
@@ -79,7 +109,7 @@ const ProviderSetPrice = props => {
   };
   const onContantPricePress = () => {
     props.navigation.navigate(ScreenNames.ProviderContantPrice, {
-      data: { ...props },
+      data: {  ...props  },
     });
   };
   const onBackPress = () => {
@@ -138,16 +168,16 @@ const ProviderSetPrice = props => {
           <TouchableOpacity
             style={styles.AddButton}
             onPress={onAddSerPress}
-            //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
+          //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
           >
             <AntDesign
               name="plussquareo"
-              style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
+              style={{ fontSize: 30, alignSelf: 'center', marginRight: 30 }}
             />
             <Text style={styles.footText}>{langauge.addServDetailes}</Text>
             <FontAwesome5
               name="less-than"
-              style={{fontSize: 20, alignSelf: 'center', marginLeft: 30}}
+              style={{ fontSize: 20, alignSelf: 'center', marginLeft: 30 }}
             />
           </TouchableOpacity>
         </View> */}
