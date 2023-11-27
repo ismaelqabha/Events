@@ -18,6 +18,7 @@ const ContactComp = () => {
         socialFields <3 ?
         setSocialFields(socialFields+1) :
         null
+        setSocialFields(socialFields+1)
     }
 
     const renderSoialMediaContacts = () => {

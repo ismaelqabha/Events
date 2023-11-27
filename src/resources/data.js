@@ -52,7 +52,10 @@ export const socialMediaList = [
     { key: '5', value: 'TikTok' },
     { key: '0', value: 'YouTube' },
     { key: '1', value: 'X'},
-   
+];
+export const mandoteryOptions = [
+    { key: '1', value: 'اجباري' },
+    { key: '2', value: 'اختياري' }
 ];
 // export const ServiceImages = [
 //     {
