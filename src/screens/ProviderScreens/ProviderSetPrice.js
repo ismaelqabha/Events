@@ -97,10 +97,11 @@ const ProviderSetPrice = props => {
     var base64Images = photoArray?.map((image, index) => {
       return {base64:image.base64,coverPhoto:image.coverPhoto}
     })
-    const body = {
+    const body = JSON.stringify({
       images: base64Images,
       serviceID: ID
-    }
+    })
+  
     await PostImagesToApi(body).then((res)=>{
       console.log("res ->",res);
     }).catch(e=>{
