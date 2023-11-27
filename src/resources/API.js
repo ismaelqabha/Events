@@ -1,3 +1,5 @@
+import { base64regex } from "./Regex";
+
 const baseUrl = 'https://ev-server.onrender.com/';
 // const baseUrl = "https://localhost:7000/"
 
@@ -122,10 +124,13 @@ export const getServiceImages = async body => {
   const res =  await AppFetch(url, 'POST', body);
   const {images} = res
   if (images && Array.isArray(images)) {
+    var {base64} = images
+    if (base64) {
     images = images?.map((image)=>{
       return {image:`data:image/png;base64,${image.base64}`,coverPhoto:image.coverPhoto}
     })
     return images
+    }
   }else{
     return res
   }
