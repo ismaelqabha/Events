@@ -47,15 +47,12 @@ const Results = (props) => {
         typeClicked,
         selectedCity
     }
-
     const objectResult = {
         cityselected,
         regionselect,
         selectDateforSearch,
         selectMonthforSearch
     }
-
-
     const regionData = [
         { key: '2', value: 'الجليل' },
         { key: '3', value: 'النقب ' },
