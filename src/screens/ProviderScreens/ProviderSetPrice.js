@@ -16,8 +16,7 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import SearchContext from '../../../store/SearchContext';
-import { addService } from '../../resources/API';
-import ImgToBase64 from 'react-native-image-base64';
+import { PostImagesToApi, addService } from '../../resources/API';
 
 const ProviderSetPrice = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderSetPrice;
@@ -56,28 +55,28 @@ const ProviderSetPrice = props => {
     },
   };
   const onPublishPress = async () => {
-    // const body = {
-    //   userID: userId,
-    //   servType: selectServiceType,
-    //   title: title,
-    //   subTitle: SuTitle,
-    //   desc: description,
-    //   region: serviceRegion,
-    //   address: serviceAddress,
-    //   servicePrice: price,
-    //   workingRegion: workAreas,
-    //   additionalServices: additionalServices,
-    // };
-    // await addService(body)
-    //   .then(res => {
-    //     console.log('res ->', res);
-    //     addServiceImages()
-    //   })
-    //   .catch(e => {
+    const body = {
+      userID: userId,
+      servType: selectServiceType,
+      title: title,
+      subTitle: SuTitle,
+      desc: description,
+      region: serviceRegion,
+      address: serviceAddress,
+      servicePrice: price,
+      workingRegion: workAreas,
+      additionalServices: additionalServices,
+    };
+    await addService(body)
+      .then(async res => {
+        res.message === "Service Created" ?
+        await addServiceImages(res.serviceID) :
+        console.log("there was a problem with creating the service");
+      })
+      .catch(e => {
 
-    //     console.log('create new event error : ', e);
-    //   });
-    addServiceImages()
+        console.log('create new event error : ', e);
+      });
     // console.log('--------------------------------------');
     // console.log('Service detailes -> ');
     // console.log('User ID -> ', userId);
@@ -94,13 +93,21 @@ const ProviderSetPrice = props => {
     // console.log('--------------------------------------');
   };
 
-  const addServiceImages = () => {
-    console.log("photo array ", photoArray);
-    const base64Array = photoArray.map( (image) => {
-      return ImgToBase64.getBase64String(image.image)
+  const addServiceImages = async (ID) => {
+    var base64Images = photoArray?.map((image, index) => {
+      return {base64:image.base64,coverPhoto:image.coverPhoto}
     })
-    console.log("base64Array ", base64Array);
+    const body = {
+      images: base64Images,
+      serviceID: ID
+    }
+    await PostImagesToApi(body).then((res)=>{
+      console.log("res ->",res);
+    }).catch(e=>{
+      console.log("posting service images error -> ",e);
+    })
   }
+
 
   const onAddSerPress = () => {
     props.navigation.navigate(ScreenNames.ProviderAddServiceDetail, {

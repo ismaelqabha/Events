@@ -21,7 +21,7 @@ export const getServiceInfoById = async body => {
   return await AppFetch(url, 'POST', body);
 };
 export const addService = async body => {
-  const url = 'servicesDa/tacreate';
+  const url = 'servicesData/create';
   return await AppFetch(url, 'POST', body);
 };
 //Service Detail
@@ -121,6 +121,11 @@ export const getServiceImages = async body => {
   const url = 'ServiceImags/getImg';
   return await AppFetch(url, 'POST', body);
 };
+
+export const PostImagesToApi = async body =>{
+  const url = 'ServiceImags/addImg';
+  return await AppFetch(url, 'POST', body);
+}
 
 // Service Booking Dates
 export const getbookingDates = async body => {
