@@ -10,6 +10,10 @@ export const addUser = async (body) => {
     const url = 'Users/create'
     return await AppFetch(url, 'POST', body)
 }
+export const signIn = async (body) => {
+  const url = 'Users/login'
+  return await AppFetch(url, 'POST', body)
+}
 
 // Service Data
 export const getHomePageData = async body => {

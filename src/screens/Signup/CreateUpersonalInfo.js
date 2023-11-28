@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View, Pressable, TextInput, ToastAndroid, ScrollView, Image } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, Image } from 'react-native'
 import React, { useState, useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { addUser } from '../../resources/API';
+
 import { colors } from '../../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -16,8 +16,6 @@ const CreateUpersonalInfo = (props) => {
     const {
         userId,
         setuserId,
-        userInfo,
-        setUserInfo,
         userName,
         setUserName,
         userEmail,
@@ -66,40 +64,7 @@ const CreateUpersonalInfo = (props) => {
         setShow(true);
         setMode(currentMode);
     }
-    // const chickIfExist = () => {
-    //     const isChecked = userInfo.find(item => item.Email === email)
-    //     return !!isChecked;
-    // }
-    // const addNewUser = () => {
-    //     const AddNewUser = {
-    //         User_name: userName,
-    //         Email: email,
-    //         UserAdress: userAddress,
-    //         UserPhone: userPhone,
-    //         Password: firstPassword,
-    //         UserType: 'client'
-    //     }
-    //     addUser(AddNewUser).then(res => {
-    //         let UsersArr = userInfo || [];
-    //         UsersArr.push(AddNewUser);
-    //         setUserInfo([...UsersArr])
-    //     })
-    // }
-    // const onCreateUser = () => {
-    //     if (!chickIfExist()) {
-    //         addNewUser()
-    //         ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',
-    //             ToastAndroid.SHORT,
-    //             ToastAndroid.BOTTOM
-    //         )
-    //     } else {
-    //         ToastAndroid.showWithGravity('لديك حساب مسبقا',
-    //             ToastAndroid.SHORT,
-    //             ToastAndroid.BOTTOM
-    //         )
-    //     }
-    // }
-
+   
     const RenderFooter = () => {
         return <View style={styles.footer}>
             {renderDots()}

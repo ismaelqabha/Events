@@ -6,12 +6,13 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { colors } from "../assets/AppColors"
-import { getUserData } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 
 const PersonalInfo = (props) => {
     const { userId, userInfo, setUserInfo } = useContext(SearchContext);
 
+    console.log(" userInfo", userInfo);
+    console.log(" userId", userId);
     const backPress = () => {
         props.navigation.goBack();
     }
@@ -21,13 +22,9 @@ const PersonalInfo = (props) => {
             <View style={styles.seprater}></View>
         )
     }
-    const getUserfromApi = () => {
-        getUserData({ USER_ID: userId }).then(res => {
-            setUserInfo(res)
-        })
-    }
+   
     useEffect(() => {
-        getUserfromApi()
+    
     }, [])
     const renderContactInfo = () => {
         const data = userInfo
@@ -173,7 +170,9 @@ const PersonalInfo = (props) => {
         const userData = data?.map(user => {
             return (
                 <View style={styles.imgView}>
-                    <Image style={styles.profilImg} source={user.UserPhoto ? {uri: user.UserPhoto} : require('../assets/photos/user.png')} />
+                    <Image style={styles.profilImg} source={
+                       // user.UserPhoto ? {uri: user.UserPhoto} : 
+                        require('../assets/photos/user.png')} />
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Pressable style={styles.editName}>
                             <AntDesign

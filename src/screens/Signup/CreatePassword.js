@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput, ToastAndroid } from 'react-native'
 import React, { useState, useContext, useEffect } from 'react'
 import { colors } from '../../assets/AppColors'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
+import { addUser } from '../../resources/API';
 
 
 const CreatePassword = (props) => {
@@ -12,7 +13,20 @@ const CreatePassword = (props) => {
   const { password,
     setPassword,
     confirmPassword,
-    setconfirmPassword } = useContext(SearchContext);
+    setconfirmPassword,
+    userId,
+    setuserId,
+    userInfo,
+    setUserInfo,
+    userName,
+    userEmail,
+    userPhone,
+    userBD,
+    userGender,
+    userStatus,
+    userCity,
+    createUserRegion,
+    userSpecialDate } = useContext(SearchContext);
 
   const [firstPasswordError, setFirstPasswordError] = useState()
   const [secondPasswordError, setSecondPasswordError] = useState()
@@ -20,6 +34,67 @@ const CreatePassword = (props) => {
   const onPressBack = () => {
     props.navigation.goBack();
   }
+
+  const checkPassword = () => {
+    if (password === confirmPassword) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  const chickIfExist = () => {
+    const isChecked = userInfo.find(item => item.Email === userEmail)
+    return !!isChecked;
+  }
+  const addNewUser = () => {
+    const AddNewUser = {
+      Email: userEmail,
+      Password: password,
+      PasswordConfirmation: confirmPassword,
+      User_name: userName,
+      UserPhone: userPhone,
+      UserType: 'client',
+      Usergender: userGender,
+      UserbirthDate: userBD,
+      UserRegion: createUserRegion,
+      UserCity: userCity,
+      //UserLocation: req.body.UserLocation,
+      Userstatus: userStatus,
+      // UserPhoto: '',
+      // SpecialDates: userSpecialDate,
+      // UserRelations: ''
+    }
+    addUser(AddNewUser).then(res => {
+      let UsersArr = userInfo || [];
+      UsersArr.push(AddNewUser);
+      setUserInfo([...UsersArr])
+    })
+  }
+
+  const onCreateUser = () => {
+    if(checkPassword()){
+      if (!chickIfExist()) {
+        addNewUser()
+        ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+        )
+      } else {
+        ToastAndroid.showWithGravity('لديك حساب مسبقا',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+        )
+      }
+    }else{
+      ToastAndroid.showWithGravity('لا يوجد تطابق بين كلمات المرور المكتوبة',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+      )
+    }
+   
+  }
+
 
   const RenderFooter = () => {
     return <View>
@@ -47,9 +122,9 @@ const CreatePassword = (props) => {
     return (
       <Pressable
         style={AppStyles.createUserNext}
-      //onPress={() => onNextPress()}
+        onPress={() => onNextPress()}
       >
-        <Text style={AppStyles.createUserNextTxt}>التالي</Text>
+        <Text style={AppStyles.createUserNextTxt}>تم</Text>
       </Pressable>
     );
   };
@@ -64,12 +139,7 @@ const CreatePassword = (props) => {
   };
 
   const onNextPress = () => {
-    true
-      ? props.navigation.navigate(ScreenNames.SetUserAddress
-        , {
-          data: { ...props },
-        })
-      : missingData();
+    true ? onCreateUser() : missingData();
   };
 
 
@@ -190,7 +260,7 @@ const styles = StyleSheet.create({
     marginRight: 40,
     alignItems: 'center',
     position: 'absolute',
-    bottom: -250,
+    bottom: -360,
   },
   inputView: {
     alignItems: 'flex-end',

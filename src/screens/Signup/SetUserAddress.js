@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     marginRight: 40,
     alignItems: 'center',
     position: 'absolute',
-    bottom: -160,
+    bottom: -250,
   },
   cityView: {
     marginVertical: 30,

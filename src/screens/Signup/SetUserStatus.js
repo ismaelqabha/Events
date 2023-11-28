@@ -285,6 +285,6 @@ const styles = StyleSheet.create({
     marginRight: 40,
     alignItems: 'center',
     position: 'absolute',
-    bottom: -110,
+    bottom: -190,
   },
 })

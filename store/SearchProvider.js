@@ -22,8 +22,6 @@ const SearchProvider = props => {
   const [confirmPassword, setconfirmPassword] = useState(null);
 
 
-
-
   const [cat, setCat] = useState('');
   const [isFirst, setIsfirst] = useState ()
   const [serviceTitle, setserviceTitle] = useState ()
@@ -73,7 +71,6 @@ const SearchProvider = props => {
 
   //Booking
 
-  const [UserState, setUserState] = useState(Users || [])
   const [userPayment, setUserPayment] = useState(Payment || [])
   const [serviceImg, setserviceImg] = useState([])
   const [ImgOfServeice, setImgOfServeice] = useState()
@@ -152,8 +149,6 @@ const SearchProvider = props => {
         setRequestIdState,
         serviceImg,
         setserviceImg,
-        UserState,
-        setUserState,
         campInfo,
         setCampInfo,
         userRegion,
