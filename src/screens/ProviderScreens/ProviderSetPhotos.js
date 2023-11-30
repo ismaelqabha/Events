@@ -27,7 +27,7 @@ import { Alert } from 'react-native';
 import { servicesCategory } from '../../resources/data';
 
 const ProviderSetPhotos = props => {
-  const { selectServiceType, photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
+  const { selectServiceType,photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
   const [selectedPhotos, setSelectedPhotos] = useState([])
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
   const onNextPress = () => {
@@ -35,17 +35,17 @@ const ProviderSetPhotos = props => {
     checkServiceType()
   };
 
-  const checkServiceType = () => {
-    selectServiceType === servicesCategory[0].titleCategory ?
-      props.navigation.navigate(ScreenNames.ProviderSocialMediaScreen, {
-        data: { ...props },
-        data: { ...props },
-      })
-      :
-      props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
-        data: { ...props },
-        data: { ...props },
-      });
+  const checkServiceType=()=>{
+    selectServiceType === servicesCategory[0].titleCategory ? 
+    props.navigation.navigate(ScreenNames.ProviderSocialMediaScreen, {
+      data: { ...props },
+      data: { ...props },
+    })
+    :
+    props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
+      data: { ...props },
+      data: { ...props },
+    });
   }
   const openAppSettings = () => {
     Platform.OS === 'ios' ?
@@ -75,7 +75,7 @@ const ProviderSetPhotos = props => {
       if (result === 'granted') {
         let options = {
           mediaType: 'photo',
-          includeBase64: true,
+          includeBase64: false,
         };
 
         launchImageLibrary(options, response => GalleryImageResponse(response));
@@ -97,21 +97,20 @@ const ProviderSetPhotos = props => {
       console.log('User tapped custom Button ', response.customButton);
     } else {
       let imageUri = response.uri || response.assets?.[0]?.uri;
-      let image64 = response.base64 || response.assets?.[0]?.base64;
-      SaveImg(imageUri, image64);
+      SaveImg(imageUri);
     }
   };
 
-  const SaveImg = (uri, base64) => {
-    if (uri && base64) {
+  const SaveImg = source => {
+    if (source) {
       const AddNewImg = {
         imgId: uuidv4(),
-        image: uri,
-        base64: base64
+        image: source,
+        coverPhoto: true,
       };
       setPhotoArray([AddNewImg, ...photoArray]);
     } else {
-      console.log('error source isnt legable, source is :', uri);
+      console.log('error source isnt legable, source is :', source);
     }
   };
 
@@ -136,7 +135,7 @@ const ProviderSetPhotos = props => {
     try {
       let options = {
         mediaType: 'photo',
-        includeBase64: true,
+        includeBase64: false,
         saveToPhotos: true,
       };
       launchCamera(options, response => CameraImageResponse(response));
@@ -154,8 +153,7 @@ const ProviderSetPhotos = props => {
       console.log('Usser tapped custom Button ', response.customButton);
     } else {
       let imageUri = response.uri || response.assets?.[0]?.uri;
-      let image64 = response.base64 || response.assets?.[0]?.base64;
-      SaveImg(imageUri, image64);
+      SaveImg(imageUri);
     }
   };
 

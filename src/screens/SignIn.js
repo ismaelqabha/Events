@@ -1,52 +1,80 @@
-import React,{useContext,useState} from 'react';
-import { View, StyleSheet, Text, Image, TextInput, Pressable, ImageBackground } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, Text, Image, TextInput, Pressable, ImageBackground, ToastAndroid } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
+import { colors } from '../assets/AppColors';
+import EvilIcons from "react-native-vector-icons/EvilIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { getUserData, signIn } from '../resources/API';
+
 
 const SignIn = (props) => {
-    const { userId, setuserId,UserState, setUserState } = useContext(SearchContext);
-    const [userName, setuserName] = useState()
-    const [Password, setPassword] = useState()
+    const { userId,
+        setuserId,
+        userEmail,
+        password,
+        setPassword,
+        setUserEmail,
+        userInfo,
+        setUserInfo, } = useContext(SearchContext);
 
-    const CheckUser = () => {
-        const isUser = UserState.find(item => item.User_name === userName && item.Password === Password)
-        return !!isUser;
-    }
-    const onEnterPress = () => {
-        // if(!CheckUser()){
-        //     renderUserId();
-        //     props.navigation.navigate(ScreenNames.ClientHomeAds);
-        // }
-        // console.log('LogIn',userId);
-    }
-    const query = () => {
-        return UserState.filter(use => {
-            return use.Password === Password;
+    const [verifyUser, setVerifyUser] = useState()
+
+    const logUser = () => {
+        signIn({ Email: userEmail, Password: password }).then(res => {
+            if (res.message === 'Authentecatin successed') {
+                //setVerifyUser(res)
+                ToastAndroid.showWithGravity('تم التسجيل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+                )
+                getUserInfo()
+                props.navigation.navigate(ScreenNames.Splash);
+                console.log("id" ,userId);
+            } else {
+                if (res.message === 'not found') {
+                    ToastAndroid.showWithGravity('عذرا لا يوجد حساب لهذة البيانات المدخلة',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM
+                    )
+                } else {
+                    ToastAndroid.showWithGravity('',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM
+                    )
+                }
+            }
         })
     }
 
-    const renderUserId = () => { 
-        const data = query();
-        const UserArray = data.map(id => {
+    const getUserInfo = () => {
+        getUserData({ Email: userEmail }).then(res => {
+            setUserInfo(res)
+            console.log("user data", res);
+            renderUserId()
+        })
+    }
+
+    const onEnterPress = () => {
+        logUser()
+    }
+    const onSignupPress = () => {
+        props.navigation.navigate(ScreenNames.CreateUpersonalInfo);
+    }
+
+    const renderUserId = () => {
+        const UserArray = userInfo.map(id => {
             return setuserId(id.USER_ID)
         });
         return UserArray;
     };
 
     return (
-
-       
-            <View style={styles.container} >
- {/* 
-        <ImageBackground style={styles.container} source={""
-             require('../assets/photos/bg.png')
-            }>*/}
-
-            {/* <View style={styles.container}> */}
-            {/* <Text onPress={() => props.navigation.navigate(ScreenNames.SignUp)}>In</Text> */}
-            {/* <Text onPress={()=> props.navigation.navigate('Tabs' , {screen:ScreenNames.ClientInfo}) }>In</Text> */}
-            {/* <Image
-                source={require('../assets/photos/signIn.png')}
+        <ImageBackground style={styles.container}
+            source={require('../assets/photos/backgroundMain.png')}
+        >
+            <Image
+                source={require('../assets/photos/logoIcon.png')}
                 style={styles.image}
             /> */}
 
@@ -56,7 +84,7 @@ const SignIn = (props) => {
                     style={styles.input}
                     keyboardType="email-address"
                     placeholder='البريد الالكتروني'
-                    onChangeText={(value) => setuserName(value)}
+                    onChangeText={(value) => setUserEmail(value)}
                 />
                 <TextInput
                     style={styles.input}
@@ -118,7 +146,9 @@ const styles = StyleSheet.create({
         marginTop: 10,
         paddingRight: 45,
     },
-
+    or: {
+        marginVertical: 10
+    },
     txtُEnter: {
         fontSize: 20,
         fontWeight: 'bold',

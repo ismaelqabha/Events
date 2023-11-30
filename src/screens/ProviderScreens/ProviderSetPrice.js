@@ -16,7 +16,9 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import SearchContext from '../../../store/SearchContext';
-import { PostImagesToApi, addService } from '../../resources/API';
+import { addService } from '../../resources/API';
+import { colors } from '../../assets/AppColors';
+import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 
 const ProviderSetPrice = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderSetPrice;
@@ -54,6 +56,7 @@ const ProviderSetPrice = props => {
       onPress: () => onPublishPress(),
     },
   };
+
   const onPublishPress = async () => {
     const body = {
       userID: userId,
@@ -68,13 +71,10 @@ const ProviderSetPrice = props => {
       additionalServices: additionalServices,
     };
     await addService(body)
-      .then(async res => {
-        res.message === "Service Created" ?
-        await addServiceImages(res.serviceID) :
-        console.log("there was a problem with creating the service");
+      .then(res => {
+        console.log('res ->', res);
       })
       .catch(e => {
-
         console.log('create new event error : ', e);
       });
     // console.log('--------------------------------------');
@@ -143,16 +143,16 @@ const ProviderSetPrice = props => {
           <TouchableOpacity
             style={styles.AddButton}
             onPress={onAddSerPress}
-          //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
+            //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
           >
             <AntDesign
               name="plussquareo"
-              style={{ fontSize: 30, alignSelf: 'center', marginRight: 30 }}
+              style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
             />
             <Text style={styles.footText}>{langauge.addServDetailes}</Text>
             <FontAwesome5
               name="less-than"
-              style={{ fontSize: 20, alignSelf: 'center', marginLeft: 30 }}
+              style={{fontSize: 20, alignSelf: 'center', marginLeft: 30}}
             />
           </TouchableOpacity>
         </View>

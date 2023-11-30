@@ -6,9 +6,12 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { colors } from "../assets/AppColors"
+import SearchContext from '../../store/SearchContext';
 
 const PersonalInfo = (props) => {
 
+    console.log(" userInfo", userInfo);
+    console.log(" userId", userId);
     const backPress = () => {
         props.navigation.goBack();
     }
@@ -18,6 +21,14 @@ const PersonalInfo = (props) => {
             <View style={styles.seprater}></View>
         )
     }
+    const getUserfromApi = () => {
+        getUserData({ USER_ID: userId }).then(res => {
+            setUserInfo(res)
+        })
+    }
+    useEffect(() => {
+        getUserfromApi()
+    }, [])
     const renderContactInfo = () => {
         return (<View>
             <Text style={styles.txt}>معلومات التواصل </Text>
@@ -125,21 +136,53 @@ const PersonalInfo = (props) => {
         </View>)
     }
     const renderSoialDetail = () => {
-        return (<View>
-            <Text style={styles.txt}>التفاصيل الاجتماعية</Text>
-            <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>أعزب</Text>
-                    <Text style={styles.basicInfoTitle}>الحالة الاجتماعية</Text>
+        const data = userInfo
+        const userData = data?.map(user => {
+            return (<View>
+                <Text style={styles.txt}>التفاصيل الاجتماعية</Text>
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{user.Userstatus}</Text>
+                        <Text style={styles.basicInfoTitle}>الحالة الاجتماعية</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={styles.icon}
+                            name={"v-card"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
                 </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"v-card"}
-                        color={colors.puprble}
-                        size={25} />
+            </View>)
+        })
+        return userData;
+    }
+    const renderUserName = () => {
+        const data = userInfo
+        const userData = data?.map(user => {
+            return (
+                <View style={styles.imgView}>
+                    <Image style={styles.profilImg} source={
+                       // user.UserPhoto ? {uri: user.UserPhoto} : 
+                        require('../assets/photos/user.png')} />
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Pressable style={styles.editName}>
+                            <AntDesign
+                                name={"edit"}
+                                color={'white'}
+                                size={20} />
+                        </Pressable>
+                        <Text style={styles.userName}>{user.User_name}</Text>
+                    </View>
+                    <Pressable style={styles.editImg}>
+                        <Entypo
+                            name={"camera"}
+                            color={colors.puprble}
+                            size={25} />
+                    </Pressable>
                 </View>
-            </View>
-        </View>)
+            )
+        })
+        return userData;
     }
 
     return (

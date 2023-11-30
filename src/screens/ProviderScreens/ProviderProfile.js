@@ -31,7 +31,7 @@ const ProviderProfile = (props) => {
 
     const renderMyService = () => {
         const data = serviceInfoAccorUser || [];
-        const cardsArray = data.map((card,index) => {
+        const cardsArray = data?.map((card,index) => {
             if(index == 0 && !isFirst){
                 setIsfirst(card.service_id)
                 setserviceTitle(card.title)

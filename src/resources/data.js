@@ -62,51 +62,7 @@ export const socialMediaList = [
     
    
 ];
-// export const ServiceImages = [
-//     {
-//         imgId: 1,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: true,
-//     },
-//     {
-//         imgId: 2,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 3,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 1,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: true,
-//     },
-//     {
-//         imgId: 2,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 3,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 1,
-//         serviceID: 3,
-//         image: (require('../../src/assets/photos/talmarah.png')),
-//         coverPhoto: true,
-//     },
-    
-// ];
+
 export const subDetailData = [
     {
         orderItems: [
@@ -190,11 +146,6 @@ export const servicesCategory = [
         titleCategory: 'حلويات',
         img: (require('../assets/photos/SweetIcon.png')),
     },
-    // {
-    //     cat_id: 10,
-    //     titleCategory: 'بطاقات دعوة',
-    //     img: (require('../assets/photos/card.png')),
-    // },
     {
         cat_id: 11,
         titleCategory: 'تصميم ازهار',
@@ -252,11 +203,6 @@ export const servicesCategory = [
         titleCategory: 'أطفال',
         img: (require('../assets/photos/kidsIcon.png')),
     },
-    // {
-    //     cat_id: 20,
-    //     titleCategory: 'اخرى',
-    //     img: (require('../assets/photos/other.png')),
-    // },
 
 
 ];

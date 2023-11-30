@@ -8,6 +8,21 @@ const SearchProvider = props => {
 
   const [userId, setuserId] = useState(1);
   const [userInfo, setUserInfo] = useState([]);
+  const [userName, setUserName] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
+  const [userPhone, setUserPhone] = useState(null);
+  const [userBD, setUserBD] = useState(null);
+  const [userGender, setUserGender] = useState(null);
+  const [userStatus, setUserStatus] = useState(null);
+  const [userCity, setUserCity] = useState(null);
+  const [createUserRegion, setCreateUserRegion] = useState(null);
+  const [userSpecialDate, setUserSpecialDate] = useState([]);
+  const [password, setPassword] = useState(null);
+  const [confirmPassword, setconfirmPassword] = useState(null);
+
+
+
+
   const [cat, setCat] = useState('');
   const [HomeCardType, setHomeCardType] = useState('');
   const [isFirst, setIsfirst] = useState ()
@@ -62,7 +77,6 @@ const SearchProvider = props => {
 
   //Booking
 
-  const [UserState, setUserState] = useState(Users || [])
   const [userPayment, setUserPayment] = useState(Payment || [])
   const [serviceImg, setserviceImg] = useState([])
   const [ImgOfServeice, setImgOfServeice] = useState()
@@ -119,8 +133,6 @@ const SearchProvider = props => {
         setRequestIdState,
         serviceImg,
         setserviceImg,
-        UserState,
-        setUserState,
         campInfo,
         setCampInfo,
         userRegion,

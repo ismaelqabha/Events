@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         height: 50,
-        width: '100%',
+        width: 100,
         fontSize: 17,
         borderRadius: 10,
         fontWeight: 'bold',
