@@ -1,58 +1,105 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet } from "react-native";
 import { TextInput } from "react-native";
 import { View, Text, Pressable } from "react-native";
 import Entypo from 'react-native-vector-icons/Entypo'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
 import strings from "../../assets/res/strings";
 import { colors } from "../../assets/AppColors"
 import { SelectList } from 'react-native-dropdown-select-list';
 import { socialMediaList } from "../../resources/data";
+import { emailVerification } from "../../resources/Regex";
+import ServiceProviderContext from "../../../store/ServiceProviderContext";
 const ContactComp = () => {
 
     const language = strings.arabic.ProviderComps.ProviderSocialMediaScreen
-    const [contactVal, setContactVal] = useState(null)
-    const [socialFields,setSocialFields]=useState(0)
+    const { socialMediaArray,
+        setSocialMediaArray } = useContext(ServiceProviderContext)
 
-    const addSoialMediaContact=()=>{
-        socialFields <3 ?
-        setSocialFields(socialFields+1) :
-        null
-    }
-
-    const renderSoialMediaContacts = () => {
-        const fiedls = []
-        for (let index = 0; index < socialFields; index++) {
-            fiedls.push(socialMediaComp())
+    const updateArray = (data) => {
+        var i = socialMediaArray.find((val) => val.social === data.social || val.link === data.link)
+        if (i == -1) {
+            var temp = socialMediaArray.find((val) => val.empty === "empty")
+            var newArr = socialMediaArray
+            newArr[temp] = data
+            setSocialMediaArray(newArr)
+        } else {
+            var current = socialMediaArray
+            current[i] = data
+            setSocialMediaArray(current)
         }
-        return fiedls
+
     }
 
-    const socialMediaComp=()=>{
-        return(
+
+    const addSoialMediaContact = () => {
+        if (socialMediaArray.length < 3) {
+            setSocialMediaArray([...socialMediaArray, { empty: "empty" }])
+        }
+    }
+
+    const renderSocialFeilds = () => {
+        const fields = socialMediaArray?.map((val, index) =>
+            <SocialMediaComp index={index} />
+        )
+        return fields
+    }
+
+    const iconColors = {
+        facebook: "blue",
+        instagram: 'purple',
+        tiktok: 'black',
+        youtube: 'red'
+    }
+
+    const SocialMediaComp = (props) => {
+        const [contactVal, setContactVal] = useState(null)
+        const [contactType, setContactType] = useState(null)
+        console.log("contactType", contactType);
+        return (
             <View style={styles.mediaItem}>
                 <View style={styles.mediaList}>
                     <SelectList
                         data={socialMediaList}
-                        setSelected={val => { }}
+                        setSelected={val => {
+                            setContactType(socialMediaList[val].value)
+                            const data = {
+                                social: contactType,
+                                link: contactVal,
+                            }
+                            updateArray(data)
+                        }}
 
-                        placeholder={language.socialType}
+                        placeholder={contactType || language.socialType}
                         boxStyles={styles.dropdown}
                         inputStyles={styles.droptext}
                         dropdownTextStyles={styles.dropstyle}
                     />
                 </View>
-                <TextInput style={styles.socialInput}
-                    keyboardType={'phone-pad'}
-                    placeholder={'حمل رابط الشبكة'}
-                    value={contactVal}
-                    onChangeText={(val) => setContactVal(val)}
-                />
+                <View style={styles.socialInput}>
+                    <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                    <TextInput style={styles.TextInput}
+                        keyboardType={'phone-pad'}
+                        placeholder={'حمل رابط الشبكة'}
+                        value={contactVal}
+                        onChangeText={(val) => setContactVal(val)}
+                        onSubmitEditing={(val) => {
+                            const data = {
+                                social: contactType,
+                                link: contactVal,
+                            }
+                            updateArray(data)
+                        }}
+                    />
+                </View>
             </View>
         )
     }
 
     const renderPhoneField = () => {
+        const [contactVal, setContactVal] = useState(null)
+
         return (
             <View style={styles.contactItem}>
                 <FontAwesome name="phone" size={25} color={colors.puprble} />
@@ -66,20 +113,52 @@ const ContactComp = () => {
         )
     }
     const renderEmailField = () => {
+        const [contactVal, setContactVal] = useState(null)
+        const [isWrong, setIsWrong] = useState(false)
+
+        const verifyEmail = () => {
+            if (contactVal?.trim()?.length < 1) {
+                setIsWrong(false)
+            }
+            else
+                if (emailVerification.test(contactVal)) {
+                    setIsWrong(false)
+                    const data = {
+                        social: "email",
+                        link: contactVal
+                    }
+                    updateArray(data)
+                } else {
+                    setIsWrong(true);
+                }
+        }
+
         return (
-            <View style={styles.contactItem}>
-                <Entypo
-                    style={styles.icon}
-                    name={"email"}
-                    color={colors.puprble}
-                    size={25} />
-                <TextInput style={styles.TextInput}
-                    keyboardType={'phone-pad'}
-                    placeholder={language.mail}
-                    value={contactVal}
-                    onChangeText={(val) => setContactVal(val)}
-                />
+            <View>
+                <View>
+                    {isWrong &&
+                        <Text style={styles.textRequired}>
+                            {language.wrongEmail}
+                        </Text>
+                    }
+                </View>
+                <View style={styles.contactItem}>
+
+                    <Entypo
+                        style={styles.icon}
+                        name={"email"}
+                        color={colors.puprble}
+                        size={25} />
+                    <TextInput style={styles.TextInput}
+                        keyboardType={'email-address'}
+                        placeholder={language.mail}
+                        value={contactVal}
+                        onChangeText={(val) => setContactVal(val)}
+                        onSubmitEditing={(val) => verifyEmail()}
+                    />
+                </View>
             </View>
+
         )
     }
 
@@ -107,7 +186,7 @@ const ContactComp = () => {
                 {renderAddButton()}
 
             </View>
-            {renderSoialMediaContacts()}
+            {renderSocialFeilds()}
         </View>
     )
 }
@@ -191,8 +270,8 @@ const styles = StyleSheet.create({
         color: colors.darkGold,
         fontWeight: 'bold',
         fontSize: 20,
-        color:'black'
-        
+        color: 'black'
+
     },
     socialInput: {
         borderWidth: 1,
@@ -202,7 +281,17 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderColor: 'gray',
         fontSize: 18,
-        marginVertical: 20
-    }
+        marginVertical: 20,
+        flexDirection: 'row'
+    },
+    textRequired: {
+        fontSize: 14,
+        marginRight: 5,
+        color: 'red',
+    },
+    socialIcon: {
+        alignSelf: 'center',
+        marginLeft: 10
+    },
 })
 export default ContactComp
