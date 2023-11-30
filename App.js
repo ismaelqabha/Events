@@ -7,7 +7,7 @@ import MainNavigation from '../Events/route/nav';
 import SearchProvider from '../Events/store/SearchProvider';
 import ServiceProviderProvider from './store/ServiceProviderProvider';
 
-const App: () => Node = () => {
+const App = () => {
   LogBox.ignoreLogs([
     'source.uri should not be an empty string',
     'Warning: Each child in a list should have a unique "key" prop.',

@@ -101,6 +101,7 @@ const ProviderSetPrice = props => {
       images: base64Images,
       serviceID: ID
     }
+  
     await PostImagesToApi(body).then((res)=>{
       console.log("res ->",res);
     }).catch(e=>{

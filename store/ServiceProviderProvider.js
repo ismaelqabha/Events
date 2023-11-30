@@ -13,6 +13,8 @@ const ProviderProvider = props => {
   const [workAreas, setWorkAreas] = useState([]);
   const [price, setPrice] = useState(null);
   const [additionalServices, setAdditionalServices] = useState([]);
+  const [hallCapacity, setHallCapacity] = useState(null);
+  const [hallType, setHallType] = useState(null);
   const [socialMediaArray, setSocialMediaArray] = useState([])
 
   // Photo delete mode 
@@ -50,6 +52,11 @@ const ProviderProvider = props => {
         setAdditionalServices,
         serviceInfoAccorUser,
         setServiceInfoAccorUser,
+        hallCapacity,
+        setHallCapacity,
+        hallType,
+        setHallType,
+
         // socail data
         socialMediaArray,
         setSocialMediaArray,

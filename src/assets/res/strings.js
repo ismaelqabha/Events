@@ -5,7 +5,8 @@ const strings = {
       ProviderSocialMediaScreen:{
         Phone:"رقم الهاتف ",
         mail: "Example@gmail.com",
-        socialType: 'نوع الشبكة الاجتماعية'
+        socialType: 'نوع الشبكة الاجتماعية',
+        wrongEmail:"بريد إلكتروني خاطئ"
       }
     },
     ProviderScreens: {
@@ -42,8 +43,12 @@ const strings = {
         chooseLocation: 'أختر المدينة',
         address: 'المنطقة',
         titleRequired:'*',
+        titleLengthError:' تم وصول الحد الاقصى* ',
         SuTitleRequired : '* العنوان الفرعي الزامي',
         descriptionRequired:'* الوصف  الزامي ',
+        HallHeadText:'قم باضافة تفاصيل القاعة :',
+        HallCapacity:'سعة القاعة',
+        HallType:"نوع القاعة",
       },
       ProviderSetPhotos: {
         Header: 'قم بأضافة الصور الخاصة في القاعة:',

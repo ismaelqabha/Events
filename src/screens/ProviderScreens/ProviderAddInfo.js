@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { ScreenNames } from '../../../route/ScreenNames';
-import { regionData } from '../../resources/data';
+import { hallData, regionData } from '../../resources/data';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import DynamicHeader from '../../components/ProviderComponents/ScrollView/DynamicHeader';
@@ -23,9 +23,12 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
 
-  const [titleError, setTitleError] = useState(false);
-  const [subTitleError, setSubTitleError] = useState(false);
-  const [desError, setDesError] = useState(false);
+  const [titleError, setTitleError] = useState(null);
+  const [subTitleError, setSubTitleError] = useState(null);
+  const [desError, setDesError] = useState(null);
+  const [titleLengthError, setTitleLengthError] = useState(null);
+  const [subTitleLengthError, setSubTitleLengthError] = useState(null);
+  const [desLengthError, setDesLengthError] = useState(null);
 
   //   service Data
   const {
@@ -39,6 +42,11 @@ const ProviderAddInfo = props => {
     setSuTitle,
     description,
     setDescription,
+    selectServiceType,
+    hallCapacity,
+    setHallCapacity,
+    hallType,
+    setHallType,
   } = useContext(ServiceProviderContext);
 
   const [detailesHeight, setDetailesHeight] = useState(500);
@@ -48,6 +56,10 @@ const ProviderAddInfo = props => {
     setSubTitleError(!checkStrings(SuTitle));
     setTitleError(!checkStrings(title));
     setDesError(!checkStrings(description));
+    setSubTitleLengthError(!checkLength(SuTitle, 50));
+    setTitleLengthError(!checkLength(title, 30));
+    setDesLengthError(!checkLength(description, 300));
+
   }, [title, SuTitle, description]);
 
   //   to save data on leaving, on return user can continue where he left off
@@ -70,6 +82,14 @@ const ProviderAddInfo = props => {
     },
   };
 
+  const checkLength = (text, length) => {
+    if (text) {
+      return text.trim().length <= length
+    } else {
+      return true
+    }
+  }
+
   const onNextPress = () => {
     // checkRequestedData() 
     true
@@ -82,7 +102,10 @@ const ProviderAddInfo = props => {
   const checkRequestedData = () => {
     return checkStrings(title) &&
       checkStrings(SuTitle) &&
-      checkStrings(description)
+      checkStrings(description) &&
+      checkLength(title, 30) &&
+      checkLength(SuTitle, 50) &&
+      checkLength(description, 300)
       ? true
       : false;
   };
@@ -100,13 +123,18 @@ const ProviderAddInfo = props => {
     checkStrings(title) ? showMissingTitle() : null;
     checkStrings(SuTitle) ? showMissingSubTitle() : null;
     checkStrings(description) ? showMissingDescription() : null;
+    checkLength(title, 30) ? null : showMissingTitle("length")
+    checkLength(SuTitle, 50) ? null : showMissingSubTitle("length")
+    checkLength(description, 300) ? null : showMissingTitle("length")
   };
 
-  const showMissingTitle = () => { };
+  const showMissingTitle = (val) => {
 
-  const showMissingSubTitle = () => { };
+  };
 
-  const showMissingDescription = () => { };
+  const showMissingSubTitle = (val) => { };
+
+  const showMissingDescription = (val) => { };
 
 
 
@@ -125,8 +153,10 @@ const ProviderAddInfo = props => {
               size={20} />
           </View>
           <View style={styles.itemView}>
-            {titleError && (
-              <Text style={styles.textRequired}>{language.titleRequired}</Text>
+            {(titleError || titleLengthError) && (
+              <Text style={styles.textRequired}>
+                {titleError ? language.titleRequired : language.titleLengthError}
+              </Text>
             )}
             <Text style={styles.text}>{language.title}</Text>
           </View>
@@ -134,9 +164,13 @@ const ProviderAddInfo = props => {
         <TextInput
           style={styles.titleInput}
           keyboardType="default"
-          maxLength={60}
+          maxLength={30}
           onChangeText={value => {
-            setTitle(value);
+            value.trim().length < 30 ?
+              setTitle(value) &&
+              setTitleLengthError(false)
+              :
+              setTitleLengthError(true)
           }}
           value={title}
         />
@@ -154,8 +188,10 @@ const ProviderAddInfo = props => {
             size={20} />
         </View>
         <View style={styles.itemView}>
-          {subTitleError && (
-            <Text style={styles.textRequired}>{language.titleRequired}</Text>
+          {(subTitleError || subTitleLengthError) && (
+            <Text style={styles.textRequired}>
+              {subTitleError ? language.titleRequired : language.titleLengthError}
+            </Text>
           )}
           <Text style={styles.text}>{language.subTitle}</Text>
         </View>
@@ -163,10 +199,14 @@ const ProviderAddInfo = props => {
       <TextInput
         style={styles.subtitleInput}
         keyboardType="default"
-        maxLength={150}
+        maxLength={50}
         multiline
         onChangeText={value => {
-          setSuTitle(value);
+          value.trim().length < 50 ?
+            setSuTitle(value) &&
+            setSubTitleLengthError(false)
+            :
+            setSubTitleLengthError(true)
         }}
         value={SuTitle}
       />
@@ -185,8 +225,10 @@ const ProviderAddInfo = props => {
               size={20} />
           </View>
           <View style={styles.itemView}>
-            {desError && (
-              <Text style={styles.textRequired}>{language.titleRequired}</Text>
+            {(desError || desLengthError) && (
+              <Text style={styles.textRequired}>
+                {desError ? language.titleRequired : language.titleLengthError}
+              </Text>
             )}
             <Text style={styles.text}> {language.description}</Text>
           </View>
@@ -197,7 +239,11 @@ const ProviderAddInfo = props => {
           maxLength={300}
           multiline
           onChangeText={value => {
-            setDescription(value);
+            value.trim().length < 300 ?
+              setDescription(value) &&
+              setDesLengthError(false)
+              :
+              setDesLengthError(true)
           }}
           value={description}
         />
@@ -216,6 +262,52 @@ const ProviderAddInfo = props => {
     );
   };
 
+  const RenderHallDetails = () => {
+    return (
+      <View style={[styles.borderAddressView, AppStyles.shadow]}>
+        <Text style={styles.headText}>{language.HallHeadText}</Text>
+        <View style={{marginBottom:30}}>
+          <View style={styles.viewwholeInput}>
+            <View>
+              <AntDesign
+                name={"question"}
+                color={colors.puprble}
+                size={20} />
+            </View>
+            <View style={styles.itemView}>
+              {(titleError || titleLengthError) && (
+                <Text style={styles.textRequired}>
+                  {titleError ? language.titleRequired : language.titleLengthError}
+                </Text>
+              )}
+              <Text style={styles.text}>{language.HallCapacity}</Text>
+            </View>
+          </View>
+          <TextInput
+            style={styles.titleInput}
+            keyboardType="numeric"
+            maxLength={7}
+            onChangeText={value => {
+              setHallCapacity(value)
+            }}
+            value={hallCapacity}
+          />
+        </View>
+        <SelectList
+          data={hallData}
+          setSelected={val => {
+            let HallType = hallData.find(type => type.key == val);
+            setHallType(HallType.value);
+          }}
+          placeholder={hallType || language.HallType}
+          boxStyles={[styles.dropdown , {marginBottom:25}]}
+          inputstyles={styles.droptext}
+          dropdownTextstyles={styles.dropstyle}
+        />
+      </View>
+    )
+  }
+
   const RenderLocationDetails = () => {
     return (
       <View style={[styles.borderAddressView, AppStyles.shadow]}>
@@ -232,9 +324,11 @@ const ProviderAddInfo = props => {
           value={serviceAddress || null}
           editable={false}
         /> */}
-        {titleError && (
-          <Text style={{ color: 'red', marginLeft: 100 }}>{language.titleRequired}</Text>
-        )}
+        {/* {(titleError || titleLengthError) && (
+          <Text style={{ color: 'red', marginLeft: 100 }}>
+            {titleError ? language.titleRequired : language.titleLengthError}
+            </Text>
+        )} */}
         <SelectList
           data={regionData}
           setSelected={val => {
@@ -284,6 +378,7 @@ const ProviderAddInfo = props => {
         />
         <ScrollView {...params.ScrollView}>
           {RenderMainDetails()}
+          {selectServiceType == 'قاعات' ? RenderHallDetails() : null}
           {RenderLocationDetails()}
         </ScrollView>
       </View>
@@ -359,7 +454,7 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 50,
     maxWidth: '60%',
-    minWidth:'60%',
+    minWidth: '60%',
     fontSize: 17,
 
   },
