@@ -15,6 +15,7 @@ export const ScreenNames = {
     ClientSearch: 'ClientSearch',
     PersonalInfo: 'PersonalInfo',
     UserProfile: 'UserProfile',
+    CreateUser: 'CreateUser',
     Security: 'Security',
     Support: 'Support',
     Settings: 'Settings',
@@ -22,12 +23,6 @@ export const ScreenNames = {
     ClientNotification: 'ClientNotification',
     LogOut: 'LogOut',
     ClientProfile: 'ClientProfile',
-
-    // Create User
-    CreateUpersonalInfo: 'CreateUpersonalInfo',
-    CreatePassword: 'CreatePassword',
-    SetUserAddress: 'SetUserAddress',
-    SetUserStatus: 'SetUserStatus',
     
 
     // Provider Screens
@@ -49,8 +44,6 @@ export const ScreenNames = {
 
     ProviderProfile: 'ProviderProfile',
     ProviderSocialMediaScreen : 'ProviderSocialMedia',
-    ProviderInitialWithDetailPrice : 'ProviderInitialWithDetailPrice',
-    ProviderContantPrice: 'ProviderContantPrice',
 
 
 

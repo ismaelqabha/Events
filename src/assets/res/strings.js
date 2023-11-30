@@ -44,8 +44,6 @@ const strings = {
         titleRequired:'*',
         SuTitleRequired : '* العنوان الفرعي الزامي',
         descriptionRequired:'* الوصف  الزامي ',
-        hallType: 'نوع القاعة',
-        hallCapsity: 'القدرة الاستيعابية'
       },
       ProviderSetPhotos: {
         Header: 'قم بأضافة الصور الخاصة في القاعة:',
@@ -69,18 +67,12 @@ const strings = {
         Next: 'التالي',
       },
       ProviderSetPrice: {
-        Header: 'ما هي طريقة صياغة السعر في مصلحتك؟',
-        Answer1: 'سعر ثابت',
-        Answer2: 'سعر مبدئي بالاضافة الى اسعار خدمات مضافة',
-        Answer3: 'حسب  تفاصيل الخدمات المقدمة',
-        what: 'ما هذا ؟'
-      },
-      ProviderInitialWithDetailPrice:{
-        Header: 'تحديد الاسعار ',
+        Header: 'ما هو السعر المبدئي؟',
         Back: 'رجوع',
+        Next: 'حفظ ونشر',
+        description:
+          'اذا كان لديك عدة خدمات يتم تزويدها للزبائن واعتمادا عليها يتم تحديد السعر يمكنك اضافة هذة الخدمات والتفاصيل التي تحتويها كل خدمة تزودها',
         addServDetailes: 'أضافة تفاصيل الخدمات',
-        setPrice: 'السعر المبدئي',
-        setDetailPrice: 'اسعار تفاصيل الخدمات'
       },
       ProviderAddServiceDetail: {
         Header: 'ما هي الخدمات التي تقدمها ؟',
@@ -88,11 +80,7 @@ const strings = {
         Cancel: 'الغاء',
         Save: 'حفظ',
         Title: 'أدخل اسم الخدمة',
-        Next: 'معاينة ثم حفظ ونشر',
         Back: 'رجوع',
-        mandotryText: 'الخدمات الاجبارية',
-        optionalText: 'الخدمات الاختيارية',
-        dropdownText: 'خدمة اجبارية'
       },
       ProviderSubDetail: {
         Header: 'ما هي تفاصيل الخدمات التي تقدمها ؟',
@@ -107,12 +95,6 @@ const strings = {
       ProviderSocialMediaScreen: {
         Next: 'التالي',
         Header: 'اضف معلومات الاتصال الخاصة بالخدمة'
-      },
-      ProviderContantPrice:{
-        Header: 'ما هو السعر الثابت مقابل الخدمة',
-        setPrice: 'تحديد السعر',
-        Next: 'معاينة ثم حفظ ونشر',
-        Back: 'رجوع',
       }
     },
   },

@@ -46,9 +46,7 @@ const LocationComp = props => {
     <TouchableOpacity
       style={pressed ? [styles.bodyActive, AppStyles.shadow] : [styles.body, AppStyles.shadow]}
       onPress={() => onLocationPress()}>
-
-      <Text style={pressed ? [styles.textActive,AppStyles.shadow] : [styles.text,AppStyles.shadow]}>
-
+      <Text style={pressed ? [styles.textActive, AppStyles.shadow] : [styles.text, , AppStyles.shadow]}>
         {props.value}
       </Text>
     </TouchableOpacity>
