@@ -18,9 +18,10 @@ const ContactComp = () => {
         setSocialMediaArray } = useContext(ServiceProviderContext)
 
     const updateArray = (data) => {
-        var i = socialMediaArray.find((val) => val.social === data.social || val.link === data.link)
+        var i = socialMediaArray.findIndex((val) => val.social === data.social || val.link === data.link)
+        console.log("i ",i);
         if (i == -1) {
-            var temp = socialMediaArray.find((val) => val.empty === "empty")
+            var temp = socialMediaArray.findIndex((val) => val.empty === "empty")
             var newArr = socialMediaArray
             newArr[temp] = data
             setSocialMediaArray(newArr)
@@ -29,6 +30,7 @@ const ContactComp = () => {
             current[i] = data
             setSocialMediaArray(current)
         }
+        console.log("updated -> ",socialMediaArray);
 
     }
 
@@ -41,7 +43,7 @@ const ContactComp = () => {
 
     const renderSocialFeilds = () => {
         const fields = socialMediaArray?.map((val, index) =>
-            <SocialMediaComp index={index} />
+            <SocialMediaComp val={val} index={index} />
         )
         return fields
     }
@@ -56,7 +58,10 @@ const ContactComp = () => {
     const SocialMediaComp = (props) => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
-        console.log("contactType", contactType);
+        // if (!props.val.empty) {
+        //     setContactType(props.val?.social)
+        //     setContactVal(props.val?.link)
+        // }
         return (
             <View style={styles.mediaItem}>
                 <View style={styles.mediaList}>

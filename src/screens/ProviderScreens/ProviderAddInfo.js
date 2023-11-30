@@ -419,9 +419,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   body: {
-    height: '75%',
+    height: '80%',
     alignItems: 'center',
-    justifyContent: 'center',
+
   },
 
   borderTitleView: {
@@ -445,10 +445,13 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 20,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginRight: 20,
-    marginLeft: 20,
-    alignSelf: 'flex-end',
+    justifyContent: 'flex-end',
+    width: '100%',
+    height: 50,
+    paddingHorizontal: '10%',
+    position:'absolute',
+    bottom:0
+
   },
 
   dropdown: {
