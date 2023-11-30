@@ -45,13 +45,13 @@ export const hallData = [
     { key: '0', value: 'فندق' },
 ];
 export const regionData = [
-    { key: '2', value: 'الجليل' },
-    { key: '3', value: 'النقب ' },
-    { key: '5', value: 'الساحل' },
-    { key: '0', value: 'المثلث الشمالي' },
-    { key: '1', value: 'المثلث الجنوبي' },
-    { key: '4', value: 'الضفة الغربية' },
-];
+    { key: '0', value: 'الجليل' },
+    { key: '1', value: 'النقب '  },
+    { key: '2', value: 'الساحل'  },
+    { key: '3', value: 'المثلث الشمالي'  },
+    { key: '4', value: 'المثلث الجنوبي'  },
+    { key: '5', value: 'الضفة الغربية'  },
+]
 export const socialMediaList = [
     
     { key: '0', value: 'facebook' },
