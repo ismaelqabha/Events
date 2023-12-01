@@ -45,7 +45,7 @@ const ProviderSetWorkingRegion = props => {
 
 
   return (
-    <View style={styles.container}>
+    <View style={AppStyles.container}>
       <HeaderComp />
       <ScreenHeader ScreenHeader={params.ScreenHeader} />
       <View style={styles.body}>
@@ -74,15 +74,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   body: {
-    marginTop: 20,
+    height: '80%',
+    alignItems: 'center',
   },
   footer: {
-    //alignSelf: 'flex-end',
-    marginTop: 30,
+    marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginRight: 20,
-    marginLeft: 20,
+    width: '100%',
+    height: 50,
+    paddingHorizontal: '10%',
+    position:'absolute',
+    bottom:0,
+    backgroundColor:'red'
+
   },
 })
 

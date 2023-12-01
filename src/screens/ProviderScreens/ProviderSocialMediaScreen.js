@@ -48,12 +48,14 @@ const ProviderSocialMediaScreen = (props) => {
 
 const styles = StyleSheet.create({
     footer: {
-        //alignSelf: 'flex-end',
-        marginTop: 10,
+        marginTop: 20,
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        marginRight: 20,
-        marginLeft: 20,
+        width: '100%',
+        height: 50,
+        paddingHorizontal: '10%',
+        position:'absolute',
+        bottom:0
       },
       header: {
         alignItems: 'flex-end',
@@ -70,7 +72,6 @@ const styles = StyleSheet.create({
       body: {
         height: '70%',
         marginTop: 10,
-        // marginLeft: '18%',
       },
 })
 

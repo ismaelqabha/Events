@@ -10,13 +10,12 @@ import {
   TextInput,
 } from 'react-native';
 import SearchContext from '../../../store/SearchContext';
-import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import ProviderSubDetailComp from '../../components/ProviderComponents/ProviderSubDetailComp';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
-import { colors } from '../../assets/AppColors';
 
 const ProviderAddSubDetail = props => {
   const {data} = props?.route.params;
@@ -85,24 +84,12 @@ const ProviderAddSubDetail = props => {
   const RenderCreateNew = () => {
     return (
       <TouchableOpacity style={styles.AddButton} onPress={onStartPress}>
-      <View style={styles.textView}>
-        <Text style={styles.footText}>{langauge.CreateNew}</Text>
-      </View>
-      <View style={styles.iconView}>
-        <Entypo
-          name="plus"
-          color={colors.puprble}
-          size={30}
+        <AntDesign
+          name="plussquareo"
+          style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
         />
-      </View>
-    </TouchableOpacity>
-      // <TouchableOpacity style={styles.AddButton} onPress={onStartPress}>
-      //   <AntDesign
-      //     name="plussquareo"
-      //     style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
-      //   />
-      //   <Text style={styles.footText}>{langauge.CreateNew}</Text>
-      // </TouchableOpacity>
+        <Text style={styles.footText}>{langauge.CreateNew}</Text>
+      </TouchableOpacity>
     );
   };
 
@@ -219,34 +206,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   AddButton: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     height: 60,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
     width: '90%',
     borderRadius: 25,
     marginBottom: 20,
-    alignSelf: 'center'
-  },
-  iconView: {
-    borderRadius: 10,
-    elevation: 5,
-    margin: 3,
-    backgroundColor: 'white',
-    width: '18%',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  textView: {
-    borderRadius: 10,
-    elevation: 5,
-    margin: 3,
-    backgroundColor: 'white',
-    width: '80%',
-    justifyContent: 'center'
   },
   footText: {
     fontSize: 18,
-    color: colors.puprble,
+    color: 'black',
     alignSelf: 'center',
     marginLeft: 130,
   },

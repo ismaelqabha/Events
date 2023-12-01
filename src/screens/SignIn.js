@@ -76,10 +76,10 @@ const SignIn = (props) => {
             <Image
                 source={require('../assets/photos/logoIcon.png')}
                 style={styles.image}
-            />
-            <Text style={styles.TitleTxt}>تسجيل الدخول</Text>
+            /> */}
+
             <Text style={styles.text}>مرحبا بك</Text>
-            <View style={styles.logInView}>
+            <View style={styles.textIn}>
                 <TextInput
                     style={styles.input}
                     keyboardType="email-address"
@@ -92,123 +92,83 @@ const SignIn = (props) => {
                     placeholder='كلمة المرور'
                     onChangeText={(value) => setPassword(value)}
                 />
-                <Pressable style={styles.btnEnter} onPress={() => onEnterPress()}>
-                    <Text style={styles.txtُEnter}>تسجيل الدخول</Text>
-                </Pressable>
             </View>
-
             <Pressable>
-                <Text>هل نسيت كلمة المرور؟</Text>
+                <Text style={styles.txt}>نسيت كلمةالمرور?</Text>
             </Pressable>
-            <Text style={styles.or}>أو</Text>
-            <Text style={styles.txt}>سجل من خلال</Text>
 
-            <View style={styles.logInView}>
-                <Pressable style={styles.facebookbtn} onPress={() => onEnterPress()}>
-                    <AntDesign
-                        name={"google"}
-                        color={"white"}
-                        size={15} />
-                    <Text style={styles.facetxtُ}>Google</Text>
-                </Pressable>
-                <Pressable style={styles.facebookbtn}>
-                    <EvilIcons
-                        name={"sc-facebook"}
-                        color={"white"}
-                        size={25} />
-                    <Text style={styles.facetxtُ}>Facebook</Text>
-                </Pressable>
+            <Pressable style={styles.btnEnter} onPress={() => onEnterPress()}>
+                <Text style={styles.txtُEnter}>دخول</Text>
+            </Pressable>
 
             </View>
-            <Pressable style={styles.signup} onPress={() => onSignupPress()}>
-                <Text style={styles.text}>ليس لديك حساب؟ سجل الان</Text>
-            </Pressable>
-
-        </ImageBackground>
-
+      
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center'
+        
     },
     image: {
-        width: 170,
-        height: 170,
-        alignSelf: 'center',
+        width: 150,
+        height: 150,
+        marginHorizontal: 120,
+        marginVertical: 80,
+        
     },
     text: {
-        fontSize: 15,
+        fontSize: 20,
         textAlign: 'center',
-        color: colors.puprble,
-        marginBottom: 10
-    },
-    TitleTxt: {
-        fontSize: 25,
-        textAlign: 'center',
-        color: colors.puprble,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color:'#1e90ff'
+
     },
     input: {
+        alignContent: 'center',
         textAlign: 'center',
         height: 40,
-        width: '90%',
-        fontSize: 15,
-        borderRadius: 25,
-        backgroundColor: 'lightgray',
-        elevation: 5,
-        marginBottom: 15,
+        width: 300,
+        fontSize: 17,
+        borderRadius: 15,
+        fontWeight: 'bold',
+        borderWidth: 1,
+        borderColor:'#1e90ff',
+        shadowOffset: { width: 1, height: 1 },
+        shadowOpacity: 0.3,
+        marginTop: 10,
+        Color: '#1e90ff'
     },
     txt: {
+        color: 'black',
         fontSize: 15,
-        marginVertical: 10,
+        marginTop: 10,
+        paddingRight: 45,
     },
     or: {
         marginVertical: 10
     },
     txtُEnter: {
-        fontSize: 15,
-        //fontWeight: 'bold',
+        fontSize: 20,
+        fontWeight: 'bold',
         textAlign: 'center',
-        color: 'white',
+        color:'white',
     },
     btnEnter: {
-        width: '90%',
-        height: 50,
-        borderRadius: 25,
-        marginTop: 10,
+        width: 200,
+        height: 40,
+        borderRadius: 20,
+        marginTop: 100,
+        marginLeft: 90,
         justifyContent: 'center',
         textAlign: 'center',
-        backgroundColor: colors.puprble
-    },
-    logInView: {
-        alignItems: 'center',
-        width: 400,
-        //paddingVertical: 20
-    },
-    signup: {
-        position: 'absolute',
-        bottom: 20
-    },
-    facebookbtn: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '90%',
-        height: 50,
-        borderRadius: 25,
-        marginBottom: 10,
-        backgroundColor: colors.gold
-    },
-    facetxtُ: {
-        fontSize: 15,
-        textAlign: 'center',
-        color: 'white',
-        marginLeft: 20
-    },
+        backgroundColor: '#1e90ff'
 
+    },
+    textIn:{
+        alignItems: 'center',
+    },
 
 })
 

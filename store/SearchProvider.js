@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const SearchProvider = props => {
 
-  //user
   const [userId, setuserId] = useState(1);
   const [userInfo, setUserInfo] = useState([]);
   const [userName, setUserName] = useState(null);
@@ -22,10 +21,17 @@ const SearchProvider = props => {
   const [confirmPassword, setconfirmPassword] = useState(null);
 
 
+
+
   const [cat, setCat] = useState('');
+  const [HomeCardType, setHomeCardType] = useState('');
   const [isFirst, setIsfirst] = useState ()
   const [serviceTitle, setserviceTitle] = useState ()
+
   const [sType, setSType] = useState({});
+  // const [Service, setService] = useState({});
+  // const [city, setCity] = useState({});
+  // const [fId, setFId] = useState({});
   const [ServId, setServId] = useState('');
 
 
@@ -83,32 +89,10 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
+        HomeCardType,
+        setHomeCardType,
         userId,
         setuserId,
-        userName, 
-        setUserName,
-        userEmail, 
-        setUserEmail,
-        userPhone, 
-        setUserPhone,
-        userBD, 
-        setUserBD,
-        userInfo,
-        setUserInfo,
-        userGender, 
-        setUserGender,
-        userStatus, 
-        setUserStatus,
-        userCity, 
-        setUserCity,
-        createUserRegion, 
-        setCreateUserRegion,
-        userSpecialDate, 
-        setUserSpecialDate,
-        password, 
-        setPassword,
-        confirmPassword, 
-        setconfirmPassword,
         cat,
         setCat,
         isFirst,
@@ -185,7 +169,8 @@ const SearchProvider = props => {
         setCampiegnsAccordingServiceId,
         reachCampaignfrom,
         setReachCampaignfrom,
-       
+        userInfo,
+        setUserInfo
 
       }}>
       {props.children}

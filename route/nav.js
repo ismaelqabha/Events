@@ -39,15 +39,10 @@ import Campaigns from "../src/screens/Campaigns";
 import ProviderCalender from "../src/screens/ProviderScreens/ProviderCalender";
 import ProviderBookingRequest from "../src/screens/ProviderScreens/ProviderBookingRequest";
 import TopTapNotificaNavig from "./topTapNotificaNavig";
+import CreateUser from "../src/screens/CreateUser";
 import ProviderTapNav from "./ProviderTapNav";
 import ProviderCreateListing from "../src/screens/ProviderScreens/ProviderCreateListing";
 import ProviderSocialMediaScreen from "../src/screens/ProviderScreens/ProviderSocialMediaScreen";
-import ProviderInitialWithDetailPrice from "../src/screens/ProviderScreens/ProviderInitialWithDetailPrice";
-import ProviderContantPrice from "../src/screens/ProviderScreens/ProviderContantPrice";
-import CreateUpersonalInfo from "../src/screens/Signup/CreateUpersonalInfo";
-import CreatePassword from "../src/screens/Signup/CreatePassword";
-import SetUserAddress from "../src/screens/Signup/SetUserAddress";
-import SetUserStatus from "../src/screens/Signup/SetUserStatus";
 
 
 
@@ -91,8 +86,6 @@ const MainNavigation = (props) => {
                 <Stack.Screen name="TapNoti" component={TopTapNotificaNavig} />
                 <Stack.Screen name="TapProvider" component={ProviderTapNav} />
                 <Stack.Screen name={ScreenNames.Splash} component={Splash} />
-                <Stack.Screen name={ScreenNames.SignIn} component={SignIn} />
-
 
                
 
@@ -106,7 +99,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ServiceDetail} component={ServiceDetail} />
                 <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
                 <Stack.Screen name={ScreenNames.Campaigns} component={Campaigns} />
-                
+                <Stack.Screen name={ScreenNames.CreateUser} component={CreateUser} />
                 
 
                
@@ -121,13 +114,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender} />
                 <Stack.Screen name={ScreenNames.ProviderBookingRequest} component={ProviderBookingRequest} />
                 <Stack.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}/>
-                <Stack.Screen name={ScreenNames.ProviderInitialWithDetailPrice} component={ProviderInitialWithDetailPrice} />
-                <Stack.Screen name={ScreenNames.ProviderContantPrice} component={ProviderContantPrice} />
-                
-                <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />
-                <Stack.Screen name={ScreenNames.CreatePassword} component={CreatePassword} />
-                <Stack.Screen name={ScreenNames.SetUserAddress} component={SetUserAddress} />
-                <Stack.Screen name={ScreenNames.SetUserStatus} component={SetUserStatus} />
+
             </Stack.Navigator>
         </NavigationContainer>
     )

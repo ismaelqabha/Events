@@ -232,7 +232,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     height: 50,
-    paddingHorizontal: '10%'
+    paddingHorizontal: '10%',
+    position:'absolute',
+    bottom:0
   },
 
 })

@@ -38,24 +38,29 @@ export const servicesData = [
     },
     
 ];
+export const hallData = [
+    { key: '1', value: 'قاعة داخلية' },
+    { key: '2', value: 'قاعة خارجية' },
+    { key: '3', value: 'مطعم' },
+    { key: '0', value: 'فندق' },
+];
 export const regionData = [
-    { key: '2', value: 'الجليل' },
-    { key: '3', value: 'النقب ' },
-    { key: '5', value: 'الساحل' },
-    { key: '0', value: 'المثلث الشمالي' },
-    { key: '1', value: 'المثلث الجنوبي' },
-    { key: '4', value: 'الضفة الغربية' },
-];
+    { key: '0', value: 'الجليل' },
+    { key: '1', value: 'النقب '  },
+    { key: '2', value: 'الساحل'  },
+    { key: '3', value: 'المثلث الشمالي'  },
+    { key: '4', value: 'المثلث الجنوبي'  },
+    { key: '5', value: 'الضفة الغربية'  },
+]
 export const socialMediaList = [
-    { key: '2', value: 'Facebook' },
-    { key: '3', value: 'Instegram' },
-    { key: '5', value: 'TikTok' },
-    { key: '0', value: 'YouTube' },
-    { key: '1', value: 'X'},
-];
-export const mandoteryOptions = [
-    { key: '1', value: 'اجباري' },
-    { key: '2', value: 'اختياري' }
+    
+    { key: '0', value: 'facebook' },
+    { key: '1', value: 'instagram' },
+    { key: '2', value: 'tiktok' },
+    { key: '3', value: 'youtube' },
+    { key: '4', value: 'X'},
+    
+   
 ];
 
 export const subDetailData = [

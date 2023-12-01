@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, Pressable, ScrollView, Image } from 'react-native'
 import React from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo"
+import Entypo from "react-native-vector-icons/Entypo";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { colors } from "../assets/AppColors"
@@ -26,6 +27,7 @@ const ClientProfile = (props) => {
                 </Pressable>
                 <View style={styles.IconView}>
                     <Entypo
+                        style={styles.icon}
                         name={"add-to-list"}
                         color={colors.puprble}
                         size={25} />
@@ -38,6 +40,7 @@ const ClientProfile = (props) => {
                 </View>
                 <View style={styles.IconView}>
                     <MaterialIcons
+                        style={styles.icon}
                         name={"event-note"}
                         color={colors.puprble}
                         size={25} />

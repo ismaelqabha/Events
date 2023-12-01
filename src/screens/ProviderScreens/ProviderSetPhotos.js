@@ -298,18 +298,21 @@ const styles = StyleSheet.create({
 
   },
   body: {
-    height: '70%',
+    height: '80%',
     alignItems: 'center',
+
     // borderWidth:1
   },
   footer: {
-    marginTop: 15,
+    marginTop: 20,
     flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: '100%',
+    height: 50,
+    paddingHorizontal: '10%',
+    position:'absolute',
+    bottom:0
 
-    marginRight: 20,
-    marginLeft: 20,
-    paddingVertical: 5,
-    paddingHorizontal: 5
   },
   backText: {
     fontSize: 15,
