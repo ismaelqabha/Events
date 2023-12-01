@@ -60,8 +60,9 @@ const ClientHomeAds = (props) => {
         })
     }
     const renderTopServices = () => {
+        console.log("data", data);
         const data = getHallServices()
-        const ServiceArray = data.map(card => {
+        const ServiceArray = data?.map(card => {
             return <HomeServiceCard {...card.serviceData}
                 images={card?.serviceImages}
                 isFromTopServicesClick={true}
@@ -71,7 +72,7 @@ const ClientHomeAds = (props) => {
     }
     const renderNearestServices = () => {
         const data = getHallServices()
-        const ServiceArray = data.map((card , i) => {
+        const ServiceArray = data?.map((card , i) => {
             return  <HomeServiceCard {...card.serviceData}
                 images={card?.serviceImages}
                 isFromNearestServicesClick={true}
@@ -81,7 +82,7 @@ const ClientHomeAds = (props) => {
     }
     const renderSuggestionServices = () => {
         const data = getHallServices()
-        const ServiceArray = data.map(card => {
+        const ServiceArray = data?.map(card => {
             return <HomeServiceCard {...card.serviceData}
                 images={card?.serviceImages}
                 isFromSuggestionServicesClick={true}
