@@ -60,7 +60,6 @@ const ClientHomeAds = (props) => {
         })
     }
     const renderTopServices = () => {
-        console.log("data", data);
         const data = getHallServices()
         const ServiceArray = data?.map(card => {
             return <HomeServiceCard {...card.serviceData}
