@@ -7,17 +7,66 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { regionData } from '../../resources/data';
 import SearchContext from '../../../store/SearchContext';
+import { getCities } from '../../resources/API';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const SetUserAddress = (props) => {
   const { userCity,
     setUserCity,
     createUserRegion,
-    setCreateUserRegion } = useContext(SearchContext);
+    setCreateUserRegion,
+    town, setTown } = useContext(SearchContext);
   const [addressError, setAddressError] = useState(false);
 
   const onPressBack = () => {
     props.navigation.goBack();
   }
+
+  const getCityFromApi = () => {
+    getCities().then(res => {
+      setTown(res)
+    })
+  }
+
+  const renderAddress = () => {
+    const data = town;
+    const address = data.map(Cname => {
+      return (
+        <View>
+          <View style={styles.region}>
+            <Text>{Cname.region}</Text>
+          </View>
+          <View style={styles.cityView}>
+            {addressError && (
+              <Text style={{ color: 'red', marginLeft: 300 }}>*</Text>
+            )}
+            <SelectList
+              data={Cname.citiesOfRegion}
+              setSelected={val => {
+                let cityObj = regionData.find(city => city.key == val);
+                setUserCity(cityObj.value);
+              }}
+              placeholder={'المدينة'}
+              boxStyles={styles.dropdown}
+              inputStyles={styles.droptext}
+              dropdownTextStyles={styles.dropstyle}
+            />
+          </View>
+          <Pressable style={styles.location}>
+            <Text style={styles.locationTitle}>أضف موقع</Text>
+            <View style={styles.IconView}>
+              <Entypo
+                name={"location-pin"}
+                color={colors.puprble}
+                size={25} />
+            </View>
+          </Pressable>
+        </View>
+      )
+    });
+    return address;
+  };
+
 
   const RenderFooter = () => {
     return <View>
@@ -87,6 +136,7 @@ const SetUserAddress = (props) => {
   const showMissingCity = () => { };
 
   useEffect(() => {
+    getCityFromApi()
     setAddressError(!checkStrings(userCity));
   }, [userCity]);
 

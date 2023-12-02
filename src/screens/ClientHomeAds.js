@@ -63,9 +63,31 @@ const ClientHomeAds = (props) => {
     const renderServiceCard = () => {
 
         const data = getHallServices()
-        const ServiceArray = data.map(card => {
+        const ServiceArray = data?.map(card => {
             return <HomeServiceCard {...card.serviceData}
                 images={card?.serviceImages}
+
+                isFromTopServicesClick={true}
+            />;
+        })
+        return ServiceArray
+    }
+    const renderNearestServices = () => {
+        const data = getHallServices()
+        const ServiceArray = data?.map((card , i) => {
+            return  <HomeServiceCard {...card.serviceData}
+                images={card?.serviceImages}
+                isFromNearestServicesClick={true}
+            />;
+        })
+        return ServiceArray
+    }
+    const renderSuggestionServices = () => {
+        const data = getHallServices()
+        const ServiceArray = data?.map(card => {
+            return <HomeServiceCard {...card.serviceData}
+                images={card?.serviceImages}
+                isFromSuggestionServicesClick={true}
             />;
         })
         return ServiceArray

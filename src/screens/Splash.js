@@ -20,6 +20,7 @@ export default function Splash(props) {
     const getDataFromApi = () => {
         getHomePageData({ servType: servType }).then(res => {
             setServiceDataInfo(res)
+            //console.log("setServiceDataInfo", res);
             getFavoritesFromApi()
             getCampaignfromApi()
         })
