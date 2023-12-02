@@ -15,6 +15,7 @@ import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { useNavigation } from '@react-navigation/native';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { v4 as uuidv4 } from 'uuid';
+import { addDraftToAPI } from '../../resources/API';
 
 
 const ProviderChooseService = props => {
@@ -43,7 +44,8 @@ const ProviderChooseService = props => {
     additionalServices,
     draftServices,
     setDraftServices,
-    draftID
+    draftID,
+    socialMediaArray
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(SearchContext);
 
@@ -61,7 +63,7 @@ const ProviderChooseService = props => {
       ? navigation.navigate(ScreenNames.ProviderAddInfo, {
         data: { ...props },
       })
-      : showMessage();
+      : showMessage(language.showMessage);
   };
 
   const onBackPress = () => {
@@ -108,7 +110,7 @@ const ProviderChooseService = props => {
     setAdditionalServices([])
   };
 
-  const createDraft = () => {
+  const createDraft = async () => {
     var draftID = uuidv4()
     const draft = {
       userID: userId,
@@ -122,16 +124,20 @@ const ProviderChooseService = props => {
       workingAreas: workAreas,
       photoArray:photoArray,
       additionalServices: additionalServices,
+      socialMedia:socialMediaArray,
       ID:draftID
     };
     setDraftServices([...draftServices,draft])
+    await addDraftToAPI(draft) .then((res)=>{
+      showMessage(res?.message);
+    }).catch(e => console.log("add draft error ->",e))
   }
 
 
-  const showMessage = () => {
+  const showMessage = (msg) => {
     Platform.OS === 'android'
-      ? ToastAndroid.show(language.showMessage, ToastAndroid.SHORT)
-      : Alert.IOS.alert(language.showMessage);
+      ? ToastAndroid.show(msg, ToastAndroid.SHORT)
+      : Alert.IOS.alert(msg);
   };
 
   const query = () => {

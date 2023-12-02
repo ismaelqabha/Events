@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,28 +10,100 @@ import {
   TextInput,
 } from 'react-native';
 import ProviderShowServDetailComp from '../../components/ProviderComponents/ProviderShowServDetailComp';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import ScreenBack from '../../components/ProviderComponents/ScreenBack';
+import ScreenNext from '../../components/ProviderComponents/ScreenNext';
+import { colors } from '../../assets/AppColors';
+import SearchContext from '../../../store/SearchContext';
+import { mandoteryOptions } from '../../resources/data';
+import { SelectList } from 'react-native-dropdown-select-list';
 
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
   const [Dtitle, setDTitle] = useState('');
-  const {additionalServices, setAdditionalServices} = useContext(
-    ServiceProviderContext,
-  );
+  const {
+    serviceAddress,
+    price,
+    serviceRegion,
+    title,
+    SuTitle,
+    description,
+    selectServiceType,
+    workAreas,
+    additionalServices,
+    setAdditionalServices
+  } = useContext(ServiceProviderContext);
+  const { userId } = useContext(SearchContext);
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
 
   let Did = uuidv4();
+
+  const params = {
+    ScreenHeader: {
+      HeaderStyle: styles.header,
+      HeaderTextStyle: styles.headText,
+      Text: language.Header,
+    },
+    ScreenBack: {
+      backStyle: styles.back,
+      backTextStyle: styles.backText,
+      Text: language.Back,
+      onPress: () => onBackPress(),
+    },
+    ScreenNext: {
+      nextStyle: styles.next,
+      nextTextStyle: styles.nextText,
+      Text: language.Next,
+      onPress: () => onPublishPress(),
+    },
+  };
+
+  const onPublishPress = async () => {
+    const body = {
+      userID: userId,
+      servType: selectServiceType,
+      title: title,
+      subTitle: SuTitle,
+      desc: description,
+      region: serviceRegion,
+      address: serviceAddress,
+      servicePrice: price,
+      workingRegion: workAreas,
+      additionalServices: additionalServices,
+    };
+    await addService(body)
+      .then(res => {
+        console.log('res ->', res);
+      })
+      .catch(e => {
+        console.log('create new event error : ', e);
+      });
+    // console.log('--------------------------------------');
+    // console.log('Service detailes -> ');
+    // console.log('User ID -> ', userId);
+    // console.log('Price -> ', price);
+    // console.log('address -> ', serviceAddress);
+    // console.log('Region -> ', serviceRegion);
+    // console.log('title -> ', title);
+    // console.log('subTitle -> ', SuTitle);
+    // console.log('description -> ', description);
+    // console.log('selectServiceType -> ', selectServiceType);
+    // console.log('photoArray -> ', photoArray);
+    // console.log('workAreas -> ', workAreas);
+    // console.log('additional services  -> ', additionalServices);
+    // console.log('--------------------------------------');
+  };
 
   const modalSavePress = () => {
     if (Dtitle.trim().length > 0 && doesntExists()) {
       const AddNewDetail = {
         detail_Id: Did,
         detailTitle: Dtitle,
-        subDetailArray:[]
+        subDetailArray: []
       };
       setAdditionalServices([...additionalServices, AddNewDetail]);
       setDTitle('');
@@ -54,7 +126,13 @@ const ProviderAddServiceDetail = props => {
     props.navigation.goBack();
   };
 
-  const renderService = () => {
+  const renderMandatoryServices = () => {
+    const cardsArray = additionalServices.map(card => {
+      return <ProviderShowServDetailComp {...card} />;
+    });
+    return cardsArray;
+  };
+  const renderOptionalServices = () => {
     const cardsArray = additionalServices.map(card => {
       return <ProviderShowServDetailComp {...card} />;
     });
@@ -64,11 +142,16 @@ const ProviderAddServiceDetail = props => {
   const RenderCreateButton = () => {
     return (
       <TouchableOpacity style={styles.AddButton} onPress={onStartPress}>
-        <AntDesign
-          name="plussquareo"
-          style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
-        />
-        <Text style={styles.footText}>{language.CreateButton}</Text>
+        <View style={styles.textView}>
+          <Text style={styles.footText}>{language.CreateButton}</Text>
+        </View>
+        <View style={styles.iconView}>
+          <Entypo
+            name="plus"
+            color={colors.puprble}
+            size={30}
+          />
+        </View>
       </TouchableOpacity>
     );
   };
@@ -99,7 +182,7 @@ const ProviderAddServiceDetail = props => {
   };
   const RenderTitleBox = () => {
     return (
-      <View style={styles.body}>
+      <View style={styles.listView}>
         <TextInput
           style={styles.titleInput}
           keyboardType="default"
@@ -108,6 +191,16 @@ const ProviderAddServiceDetail = props => {
             setDTitle(value);
           }}
         />
+        <View style={styles.list}>
+          <SelectList
+            data={mandoteryOptions}
+            setSelected={val => { }}
+            placeholder={language.dropdownText}
+            boxStyles={styles.dropdown}
+            inputStyles={styles.droptext}
+            dropdownTextStyles={styles.dropstyle}
+          />
+        </View>
       </View>
     );
   };
@@ -141,15 +234,22 @@ const ProviderAddServiceDetail = props => {
       <View style={styles.Mbody}>
         {RenderCreateButton()}
         <ScrollView contentContainerStyle={styles.home}>
-          {renderService()}
+          <View style={styles.MandatoryView}>
+            <Text style={styles.mandotryText}>{language.mandotryText}</Text>
+            {renderMandatoryServices()}
+          </View>
+          <View style={styles.MandatoryView}>
+            <Text style={styles.mandotryText}>{language.optionalText}</Text>
+            {renderOptionalServices()}
+          </View>
+
         </ScrollView>
       </View>
-
       <View style={styles.footer}>
-        <Pressable style={styles.back} onPress={onBackPress}>
-          <Text style={styles.backText}>{language.Back}</Text>
-        </Pressable>
+        <ScreenBack ScreenBack={params.ScreenBack} />
+        <ScreenNext ScreenNext={params.ScreenNext} />
       </View>
+
       {RenderModal()}
     </View>
   );
@@ -158,6 +258,7 @@ const ProviderAddServiceDetail = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.BGScereen
   },
   header: {
     alignItems: 'flex-end',
@@ -170,34 +271,84 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'Cairo-VariableFont_slnt,wght',
   },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  next: {
+    width: 130,
+    height: 40,
+    backgroundColor: colors.puprble,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginLeft: 80
+  },
+  back: {
+    justifyContent: 'center',
+    alignItems: 'center',
+
+  },
+  nextText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: colors.darkGold
+  },
+  backText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
   Mbody: {
     height: '75%',
-    marginTop: 20,
-    alignItems: 'center',
+    marginTop: 30,
+    //alignItems: 'stretch',
   },
 
   AddButton: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     height: 60,
-    justifyContent: 'space-between',
-    backgroundColor: 'white',
+    justifyContent: 'center',
     width: '90%',
     borderRadius: 25,
     marginBottom: 20,
+    alignSelf: 'center'
   },
   footText: {
     fontSize: 18,
-    color: 'black',
+    color: colors.puprble,
+    fontWeight: 'bold',
     alignSelf: 'center',
-    marginLeft: 130,
   },
-  footer: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginRight: 20,
-    marginLeft: 20,
+  mandotryText: {
+    fontSize: 18,
+    color: colors.puprble,
+    fontWeight: 'bold',
+    marginRight: 20
   },
+  iconView: {
+    borderRadius: 10,
+    elevation: 5,
+    margin: 3,
+    backgroundColor: 'white',
+    width: '18%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  textView: {
+    borderRadius: 10,
+    elevation: 5,
+    margin: 3,
+    backgroundColor: 'white',
+    width: '80%',
+    justifyContent: 'center'
+  },
+  // footer: {
+  //   marginTop: 20,
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   marginRight: 20,
+  //   marginLeft: 20,
+  // },
   back: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -208,7 +359,7 @@ const styles = StyleSheet.create({
   },
   detailModal: {
     width: '100%',
-    height: 200,
+    height: 300,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -233,7 +384,7 @@ const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
     fontSize: 20,
-    color: 'black',
+    color: colors.puprble,
   },
   Modalbtn: {
     flexDirection: 'row',
@@ -245,12 +396,43 @@ const styles = StyleSheet.create({
     height: 50,
     width: 315,
     borderWidth: 2,
-    borderRadius: 15,
+    borderRadius: 10,
     borderColor: '#dcdcdc',
     fontSize: 18,
-    color: 'black',
+    // color: 'black',
     backgroundColor: 'white',
   },
+  MandatoryView: {
+
+  },
+  dropdown: {
+    height: 50,
+    // maxWidth: '60%',
+    minWidth: '60%',
+    fontSize: 17,
+    borderColor: '#dcdcdc',
+    borderWidth:2,
+    borderRadius: 10
+  },
+  dropstyle: {
+    textAlign: 'center',
+    color: colors.puprble,
+    // fontWeight: 'bold',
+    fontSize: 20,
+  },
+  droptext: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: colors.puprble,
+    textAlign: 'right'
+  },
+  listView: {
+    alignItems: 'center'
+  },
+  list: {
+    width: '70%',
+    marginTop: 5
+  }
 });
 
 export default ProviderAddServiceDetail;

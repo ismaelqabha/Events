@@ -55,15 +55,61 @@ export const regionData = [
     { key: '5', value: 'الضفة الغربية'  },
 ]
 export const socialMediaList = [
-    
-    { key: '0', value: 'facebook' },
-    { key: '1', value: 'instagram' },
-    { key: '2', value: 'tiktok' },
-    { key: '3', value: 'youtube' },
-    { key: '4', value: 'X'}, 
+    { key: '2', value: 'Facebook' },
+    { key: '3', value: 'Instegram' },
+    { key: '5', value: 'TikTok' },
+    { key: '0', value: 'YouTube' },
+    { key: '1', value: 'X'},
 ];
-
-
+export const mandoteryOptions = [
+    { key: '1', value: 'اجباري' },
+    { key: '2', value: 'اختياري' }
+];
+// export const ServiceImages = [
+//     {
+//         imgId: 1,
+//         serviceID: 1,
+//         image: (require('../../src/assets/photos/ameer.png')),
+//         coverPhoto: true,
+//     },
+//     {
+//         imgId: 2,
+//         serviceID: 1,
+//         image: (require('../../src/assets/photos/ameer.png')),
+//         coverPhoto: false,
+//     },
+//     {
+//         imgId: 3,
+//         serviceID: 1,
+//         image: (require('../../src/assets/photos/ameer.png')),
+//         coverPhoto: false,
+//     },
+//     {
+//         imgId: 1,
+//         serviceID: 2,
+//         image: (require('../../src/assets/photos/MaisAlrem.png')),
+//         coverPhoto: true,
+//     },
+//     {
+//         imgId: 2,
+//         serviceID: 2,
+//         image: (require('../../src/assets/photos/MaisAlrem.png')),
+//         coverPhoto: false,
+//     },
+//     {
+//         imgId: 3,
+//         serviceID: 2,
+//         image: (require('../../src/assets/photos/MaisAlrem.png')),
+//         coverPhoto: false,
+//     },
+//     {
+//         imgId: 1,
+//         serviceID: 3,
+//         image: (require('../../src/assets/photos/talmarah.png')),
+//         coverPhoto: true,
+//     },
+    
+// ];
 export const subDetailData = [
     {
         orderItems: [

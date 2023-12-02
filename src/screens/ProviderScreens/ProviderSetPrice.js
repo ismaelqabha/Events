@@ -7,7 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { ScreenNames } from '../../../route/ScreenNames';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
@@ -42,18 +42,6 @@ const ProviderSetPrice = props => {
       HeaderStyle: styles.header,
       HeaderTextStyle: styles.headText,
       Text: langauge.Header,
-    },
-    ScreenBack: {
-      backStyle: styles.back,
-      backTextStyle: styles.backText,
-      Text: langauge.Back,
-      onPress: () => onBackPress(),
-    },
-    ScreenNext: {
-      nextStyle: styles.next,
-      nextTextStyle: styles.nextText,
-      Text: langauge.Next,
-      onPress: () => onPublishPress(),
     },
   };
 
@@ -115,13 +103,51 @@ const ProviderSetPrice = props => {
       data: { ...props },
     });
   };
+  const onPricingBothPress = () => {
+    props.navigation.navigate(ScreenNames.ProviderInitialWithDetailPrice, {
+      data: { ...props },
+    });
+  };
+  const onContantPricePress = () => {
+    props.navigation.navigate(ScreenNames.ProviderContantPrice, {
+      data: {  ...props  },
+    });
+  };
   const onBackPress = () => {
     props.navigation.goBack();
   };
   return (
     <View style={styles.container}>
+      <HeaderComp />
       <ScreenHeader ScreenHeader={params.ScreenHeader} />
       <View style={styles.body}>
+        <Pressable style={styles.answer} onPress={onContantPricePress}>
+          <Text style={styles.descText}>{langauge.Answer1}</Text>
+          <Feather
+            name="minus"
+            style={{ fontSize: 20, alignSelf: 'center', color: colors.puprble }}
+          />
+        </Pressable>
+        <Pressable style={styles.answer} onPress={onAddSerPress}>
+          <Text style={styles.descText}>{langauge.Answer3}</Text>
+          <Feather
+            name="minus"
+            style={{ fontSize: 20, alignSelf: 'center', color: colors.puprble }}
+          />
+        </Pressable>
+        <Pressable style={styles.answer} onPress={onPricingBothPress}>
+          <Text style={styles.descText}>{langauge.Answer2}</Text>
+          <Feather
+            name="minus"
+            style={{ fontSize: 20, alignSelf: 'center', color: colors.puprble }}
+          />
+        </Pressable>
+
+      </View>
+      <Pressable style={styles.footer}>
+        <Text style={styles.descText}>{langauge.what}</Text>
+      </Pressable>
+      {/* <View style={styles.body}>
         <TextInput
           style={styles.titleInput}
           keyboardType="numeric"
@@ -129,8 +155,8 @@ const ProviderSetPrice = props => {
           onChangeText={value => {
             setPrice(value);
           }}
-        />
-        <View
+        /> */}
+      {/* <View
           style={{
             borderWidth: 2,
             borderColor: '#dcdcdc',
@@ -155,13 +181,14 @@ const ProviderSetPrice = props => {
               style={{fontSize: 20, alignSelf: 'center', marginLeft: 30}}
             />
           </TouchableOpacity>
-        </View>
-      </View>
+        </View> */}
+      {/* </View> */}
 
-      <View style={styles.footer}>
+      {/* <View style={styles.footer}>
         <ScreenBack ScreenBack={params.ScreenBack} />
         <ScreenNext ScreenNext={params.ScreenNext} />
-      </View>
+      </View> */}
+
     </View>
   );
 };
@@ -169,22 +196,30 @@ const ProviderSetPrice = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.BGScereen
   },
   header: {
     alignItems: 'flex-end',
-    marginRight: 30,
-    marginTop: 40,
-    marginBottom: 10,
+    marginRight: 20,
+    marginVertical: 40
   },
   headText: {
     fontSize: 20,
-    color: 'black',
-    fontFamily: 'Cairo-VariableFont_slnt,wght',
+    color: colors.puprble,
+    fontWeight: 'bold'
   },
   body: {
-    height: '75%',
-    marginTop: 20,
+    //height: '50%',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  answer: {
+    width: "90%",
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginVertical: 20,
     alignItems: 'center',
+    marginHorizontal: 20
   },
   footer: {
     marginTop: 20,
@@ -242,10 +277,9 @@ const styles = StyleSheet.create({
     marginLeft: 60,
   },
   descText: {
-    marginTop: 10,
     fontSize: 20,
-    color: 'black',
-    marginLeft: 20,
+    color: colors.puprble,
+    //marginLeft: 20,
     marginRight: 20,
   },
 });

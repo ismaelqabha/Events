@@ -22,7 +22,8 @@ const PoviderServiceListCard = (props) => {
         setWorkAreas,
         setPrice,
         setAdditionalServices,
-        setDraftID
+        setDraftID,
+        setSocialMediaArray
     } = useContext(ServiceProviderContext);
 
 
@@ -38,7 +39,8 @@ const PoviderServiceListCard = (props) => {
         workingAreas,
         servicePrice,
         additionalServices,
-        ID
+        ID,
+        socialMedia
     } = props.body
 
     const onCaardPress = () => {
@@ -58,6 +60,7 @@ const PoviderServiceListCard = (props) => {
         setWorkAreas(workingAreas)
         setPrice(servicePrice)
         setAdditionalServices(additionalServices)
+        setSocialMediaArray(socialMedia)
     }
     const setID = () => {
         setDraftID(ID)

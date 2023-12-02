@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableHighlight, Pressable } from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -8,15 +8,28 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import 'react-native-get-random-values';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import { getDraftFromAPI } from '../../resources/API';
+import SearchContext from '../../../store/SearchContext';
 
 const ProviderCreateListing = props => {
 
 
-  const { draftServices, setDraftID } = useContext(ServiceProviderContext)
+  const { draftServices, setDraftID , setDraftServices } = useContext(ServiceProviderContext)
+  const {userId} = useContext(SearchContext)
   const language = strings.arabic.ProviderScreens.ProviderCreateListing
 
+  useEffect(()=>{
+    updateDraftServices()
+  },[])
 
-
+  const updateDraftServices=async ()=>{
+    await getDraftFromAPI(userId).then((res)=>{
+      if(res?.drafts){
+        console.log("res ->",res);
+        setDraftServices(res.drafts)
+      }
+    }).catch(e=> console.log("error fetching draft services -> ",e))
+  }
   const onStartPress = () => {
 
     setDraftID(null)
