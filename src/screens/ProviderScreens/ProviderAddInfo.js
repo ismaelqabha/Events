@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
     marginRight: 15
   },
   hallType: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
 
   borderTitleView: {
@@ -591,13 +591,7 @@ const styles = StyleSheet.create({
     color: 'black',
     backgroundColor: 'white',
   },
-  hallType: {
-    height: 100,
-    width: 315,
-    borderWidth: 1.5,
-    borderRadius: 10,
-    borderColor: "darkgray",
-  },
+  
   descInput: {
     textAlign: 'right',
     height: 200,

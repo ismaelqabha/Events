@@ -47,10 +47,9 @@ const strings = {
         SuTitleRequired : '* العنوان الفرعي الزامي',
         descriptionRequired:'* الوصف  الزامي ',
         HallHeadText:'قم باضافة تفاصيل القاعة :',
-
         HallType:"نوع القاعة",
+        HallCapacity: 'القدرة الاستيعابية'
 
-        hallCapsity: 'القدرة الاستيعابية'
       },
       ProviderSetPhotos: {
         Header: 'قم بأضافة الصور الخاصة في القاعة:',
