@@ -30,7 +30,7 @@ const SignIn = (props) => {
                 )
                 getUserInfo()
                 props.navigation.navigate(ScreenNames.Splash);
-                console.log("id" ,userId);
+                console.log("id", userId);
             } else {
                 if (res.message === 'not found') {
                     ToastAndroid.showWithGravity('عذرا لا يوجد حساب لهذة البيانات المدخلة',
@@ -73,10 +73,10 @@ const SignIn = (props) => {
         <ImageBackground style={styles.container}
             source={require('../assets/photos/backgroundMain.png')}
         >
-            <Image
+            {/* <Image
                 source={require('../assets/photos/logoIcon.png')}
                 style={styles.image}
-            /> */}
+            />  */}
 
             <Text style={styles.text}>مرحبا بك</Text>
             <View style={styles.textIn}>
@@ -101,28 +101,28 @@ const SignIn = (props) => {
                 <Text style={styles.txtُEnter}>دخول</Text>
             </Pressable>
 
-            </View>
-      
+        </ImageBackground>
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        
+
     },
     image: {
         width: 150,
         height: 150,
         marginHorizontal: 120,
         marginVertical: 80,
-        
+
     },
     text: {
         fontSize: 20,
         textAlign: 'center',
         fontWeight: 'bold',
-        color:'#1e90ff'
+        color: '#1e90ff'
 
     },
     input: {
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         fontWeight: 'bold',
         borderWidth: 1,
-        borderColor:'#1e90ff',
+        borderColor: '#1e90ff',
         shadowOffset: { width: 1, height: 1 },
         shadowOpacity: 0.3,
         marginTop: 10,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
-        color:'white',
+        color: 'white',
     },
     btnEnter: {
         width: 200,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1e90ff'
 
     },
-    textIn:{
+    textIn: {
         alignItems: 'center',
     },
 

@@ -19,6 +19,7 @@ import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import HallTypeCard from '../../components/HallTypeCard';
 
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
@@ -261,12 +262,27 @@ const ProviderAddInfo = props => {
       </View>
     );
   };
-
+  const renderHallTyes = () => {
+    return hallData?.map((item) => {
+      return <HallTypeCard {...item} />
+    })
+  }
   const RenderHallDetails = () => {
     return (
       <View style={[styles.borderAddressView, AppStyles.shadow]}>
         <Text style={styles.headText}>{language.HallHeadText}</Text>
-        <View style={{marginBottom:30}}>
+        
+        <View style={styles.HallTypesView}>
+          {(titleError || titleLengthError) && (
+            <Text style={styles.textRequired}>
+              {titleError ? language.titleRequired : language.titleLengthError}
+            </Text>
+          )}
+          <Text style={styles.text}>{language.HallType}</Text>
+        </View>
+        <View style={styles.hallType}>{renderHallTyes()}</View>
+
+        <View style={{ marginBottom: 30 }}>
           <View style={styles.viewwholeInput}>
             <View>
               <AntDesign
@@ -300,7 +316,7 @@ const ProviderAddInfo = props => {
             setHallType(HallType.value);
           }}
           placeholder={hallType || language.HallType}
-          boxStyles={[styles.dropdown , {marginBottom:25}]}
+          boxStyles={[styles.dropdown, { marginBottom: 25 }]}
           inputstyles={styles.droptext}
           dropdownTextstyles={styles.dropstyle}
         />
@@ -423,6 +439,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
   },
+  HallTypesView:{
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
+    marginRight: 15
+  },
+  hallType: {
+    flexDirection: 'row'
+  },
 
   borderTitleView: {
     height: 500,
@@ -449,8 +474,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     paddingHorizontal: '10%',
-    position:'absolute',
-    bottom:0
+    position: 'absolute',
+    bottom: 0
 
   },
 

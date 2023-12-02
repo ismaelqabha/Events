@@ -39,11 +39,13 @@ export const servicesData = [
     
 ];
 export const hallData = [
-    { key: '1', value: 'قاعة داخلية' },
-    { key: '2', value: 'قاعة خارجية' },
-    { key: '3', value: 'مطعم' },
-    { key: '0', value: 'فندق' },
-];
+    { key: '0', hallType: 'فندق',  img: (require('../assets/photos/hallIcon.png'))},
+    { key: '1', hallType: 'مطعم',  img: (require('../assets/photos/hallIcon.png'))},
+    { key: '2', hallType: 'قاعة داخلية', img: (require('../assets/photos/hallIcon.png')) },
+    { key: '3', hallType: 'قاعة خارجية', img: (require('../assets/photos/hallIcon.png')) },
+    
+];  
+    
 export const regionData = [
     { key: '0', value: 'الجليل' },
     { key: '1', value: 'النقب '  },
@@ -58,10 +60,9 @@ export const socialMediaList = [
     { key: '1', value: 'instagram' },
     { key: '2', value: 'tiktok' },
     { key: '3', value: 'youtube' },
-    { key: '4', value: 'X'},
-    
-   
+    { key: '4', value: 'X'}, 
 ];
+
 
 export const subDetailData = [
     {
