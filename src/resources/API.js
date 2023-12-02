@@ -120,6 +120,17 @@ export const getCities = async body => {
   return await AppFetch(url, 'POST', body);
 };
 
+// Draft services 
+export const addDraftToAPI= async body =>{
+  const url = 'DraftServices/addDraftService';
+  return await AppFetch(url,'POST',body)
+}
+
+export const getDraftFromAPI = async body =>{
+  const url ='DraftServices/getDraftService'
+  return await AppFetch(url,"POST",body)
+}
+
 //Service Images
 export const getServiceImages = async body => {
   const url = 'ServiceImags/getImg';
