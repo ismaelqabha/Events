@@ -6,7 +6,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { colors } from "../assets/AppColors"
-import SearchContext from '../../store/SearchContext';
 import { getUserData } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 
