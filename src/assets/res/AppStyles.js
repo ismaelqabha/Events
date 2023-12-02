@@ -3,7 +3,7 @@ import { colors } from "../AppColors";
 
 // to be figured out
 export const AppStyles = StyleSheet.create({
-  
+
   back: {
     width: 120,
     height: 35,
@@ -11,7 +11,6 @@ export const AppStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 25,
-    // borderWidth: 0.5,
     borderColor: colors.darkGold
   },
   backText: {
@@ -26,7 +25,6 @@ export const AppStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    // borderWidth: 1,
     borderColor: colors.darkGold
   },
   nextText: {
@@ -43,8 +41,69 @@ export const AppStyles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor:colors.BGScereen
+    backgroundColor: colors.BGScereen
   },
-
+  createUserfooter: {
+    paddingVertical: 30,
+    marginRight: 20,
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: -300,
+    borderWidth: 1
+  },
+  footerPart:{
+    width: '94%',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'center'
+  },
+  createUserBack: {
+    width: 100,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  createUserNext: {
+    alignSelf: 'flex-end',
+    width: 150,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.puprble,
+    margin: 3,
+    elevation: 5,
+    borderRadius: 8,
+    marginRight: 20
+  },
+  createUserBackTxt: {
+    fontSize: 18,
+  },
+  createUserNextTxt: {
+    fontSize: 18,
+    color: colors.darkGold
+  },
+  createuserDots: {
+    flexDirection:'row',
+     alignItems: 'center',
+     justifyContent: 'center',
+     marginBottom: 20
+  },
+  dots:{
+    width: 7,
+    height: 7,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: colors.gold,
+    elevation: 5
+  },
+  pressDot:{
+    width: 7,
+    height: 7,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: colors.puprble,
+    elevation: 5
+  },
 
 });

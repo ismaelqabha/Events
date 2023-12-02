@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useEffect, useContext } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -7,8 +7,11 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { colors } from "../assets/AppColors"
 import SearchContext from '../../store/SearchContext';
+import { getUserData } from '../resources/API';
+import SearchContext from '../../store/SearchContext';
 
 const PersonalInfo = (props) => {
+    const { userId, userInfo, setUserInfo } = useContext(SearchContext);
 
     console.log(" userInfo", userInfo);
     console.log(" userId", userId);
@@ -30,110 +33,122 @@ const PersonalInfo = (props) => {
         getUserfromApi()
     }, [])
     const renderContactInfo = () => {
-        return (<View>
-            <Text style={styles.txt}>معلومات التواصل </Text>
-            <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>0546126692</Text>
-                    <Text style={styles.basicInfoTitle}>الموبايل</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Ionicons
-                        style={styles.icon}
-                        name={"call"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
+        const data = userInfo
+        const userData = data?.map(user => {
+            return (<View>
+                <Text style={styles.txt}>معلومات التواصل </Text>
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{user.UserPhone}</Text>
+                        <Text style={styles.basicInfoTitle}>الموبايل</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Ionicons
+                            style={styles.icon}
+                            name={"call"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
 
-            </View>
-            <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>exsample@gmail.com</Text>
-                    <Text style={styles.basicInfoTitle}>Email</Text>
                 </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"email"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{user.Email}</Text>
+                        <Text style={styles.basicInfoTitle}>Email</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={styles.icon}
+                            name={"email"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
 
-            </View>
-        </View>)
+                </View>
+            </View>)
+        })
+        return userData;
     }
     const renderBasicInfo = () => {
-        return (<View>
-            <Text style={styles.txt}>المعلومات الاساسية</Text>
-            <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>ذكر</Text>
-                    <Text style={styles.basicInfoTitle}>الجنس</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"user"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
+        const data = userInfo
+        const userData = data?.map(user => {
+            return (<View>
+                <Text style={styles.txt}>المعلومات الاساسية</Text>
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{user.Usergender}</Text>
+                        <Text style={styles.basicInfoTitle}>الجنس</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={styles.icon}
+                            name={"user"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
 
-            </View>
-            <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>1/12/1996</Text>
-                    <Text style={styles.basicInfoTitle}>تاريخ الميلاد</Text>
                 </View>
-                <View style={styles.IconView}>
-                    <FontAwesome
-                        style={styles.icon}
-                        name={"birthday-cake"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{user.UserbirthDate}</Text>
+                        <Text style={styles.basicInfoTitle}>تاريخ الميلاد</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <FontAwesome
+                            style={styles.icon}
+                            name={"birthday-cake"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
 
-            </View>
-        </View>)
+                </View>
+            </View>)
+        })
+        return userData;
     }
     const renderAddressInfo = () => {
-        return (<View>
-            <Text style={styles.txt}>العنوان</Text>
-            <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>وادي عارة</Text>
-                    <Text style={styles.basicInfoTitle}>المنطقة</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"address"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
+        const data = userInfo
+        const userData = data?.map(user => {
+            return (<View>
+                <Text style={styles.txt}>العنوان</Text>
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{user.UserRegion}</Text>
+                        <Text style={styles.basicInfoTitle}>المنطقة</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={styles.icon}
+                            name={"address"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
 
-            </View>
-            <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>برطعة</Text>
-                    <Text style={styles.basicInfoTitle}>المدينة</Text>
                 </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"address"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{user.UserCity}</Text>
+                        <Text style={styles.basicInfoTitle}>المدينة</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={styles.icon}
+                            name={"address"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
 
-            </View>
-            <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>الموقع الحالي</Text>
-                    <Text style={styles.basicInfoTitle}>Location</Text>
                 </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"location-pin"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{user.UserLocation} </Text>
+                        <Text style={styles.basicInfoTitle}>Location</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={styles.icon}
+                            name={"location-pin"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
 
-            </View>
-        </View>)
+                </View>
+            </View>)
+        })
+        return userData;
     }
     const renderSoialDetail = () => {
         const data = userInfo
@@ -161,9 +176,8 @@ const PersonalInfo = (props) => {
         const userData = data?.map(user => {
             return (
                 <View style={styles.imgView}>
-                    <Image style={styles.profilImg} source={
-                       // user.UserPhoto ? {uri: user.UserPhoto} : 
-                        require('../assets/photos/user.png')} />
+
+                    <Image style={styles.profilImg} source={user.UserPhoto ? {uri: user.UserPhoto} : require('../assets/photos/user.png')} />
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Pressable style={styles.editName}>
                             <AntDesign
@@ -199,24 +213,9 @@ const PersonalInfo = (props) => {
                 <Text style={styles.titleTxt}>المعلومات الشخصية </Text>
             </View>
             <ScrollView>
-                <View style={styles.imgView}>
-                    <Image style={styles.profilImg} source={require('../assets/photos/user.png')} />
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Pressable style={styles.editName}>
-                            <AntDesign
-                                name={"edit"}
-                                color={'white'}
-                                size={20} />
-                        </Pressable>
-                        <Text style={styles.userName}>اسماعيل كبها</Text>
-                    </View>
-                    <Pressable style={styles.editImg}>
-                        <Entypo
-                            name={"camera"}
-                            color={colors.puprble}
-                            size={25} />
-                    </Pressable>
-                </View>
+
+                {renderUserName()}
+
                 <View style={styles.content}>
                     {renderBasicInfo()}
                 </View>
@@ -232,7 +231,7 @@ const PersonalInfo = (props) => {
                 <View style={styles.content}>
                     {renderSoialDetail()}
                 </View>
-                
+
             </ScrollView>
 
         </View>
