@@ -5,18 +5,18 @@ export const Users = [
         USER_ID: 1,
         User_name: 'Ali',
         Password: '123',
-        Email:'',
+        Email: '',
         UserAdress: '',
-        UserPhone:'',
+        UserPhone: '',
         UserType: 'Client',
     },
     {
         USER_ID: 2,
         User_name: 'Ahmed',
         Password: '000',
-        Email:'',
+        Email: '',
         UserAdress: '',
-        UserPhone:'',
+        UserPhone: '',
         UserType: 'Provider',
     },
 ];
@@ -33,33 +33,33 @@ export const servicesData = [
         workingRegion: [],
         servicePice: '',
         serviceStutes: '',
-        
-        
+
+
     },
-    
+
 ];
 export const hallData = [
-    { key: '0', hallType: 'فندق',  img: (require('../assets/photos/hallIcon.png'))},
-    { key: '1', hallType: 'مطعم',  img: (require('../assets/photos/hallIcon.png'))},
-    { key: '2', hallType: 'قاعة داخلية', img: (require('../assets/photos/hallIcon.png')) },
+    { key: '0', hallType: 'فندق', img: (require('../assets/photos/hotel.png')) },
+    { key: '1', hallType: 'مطعم', img: (require('../assets/photos/restaurant.png')) },
+    { key: '2', hallType: 'قاعة داخلية', img: (require('../assets/photos/externalHall.png')) },
     { key: '3', hallType: 'قاعة خارجية', img: (require('../assets/photos/hallIcon.png')) },
-    
-];  
-    
+
+];
+
 export const regionData = [
     { key: '0', value: 'الجليل' },
-    { key: '1', value: 'النقب '  },
-    { key: '2', value: 'الساحل'  },
-    { key: '3', value: 'المثلث الشمالي'  },
-    { key: '4', value: 'المثلث الجنوبي'  },
-    { key: '5', value: 'الضفة الغربية'  },
+    { key: '1', value: 'النقب ' },
+    { key: '2', value: 'الساحل' },
+    { key: '3', value: 'المثلث الشمالي' },
+    { key: '4', value: 'المثلث الجنوبي' },
+    { key: '5', value: 'الضفة الغربية' },
 ]
 export const socialMediaList = [
     { key: '2', value: 'Facebook' },
     { key: '3', value: 'Instegram' },
     { key: '5', value: 'TikTok' },
     { key: '0', value: 'YouTube' },
-    { key: '1', value: 'X'},
+    { key: '1', value: 'X' },
 ];
 export const mandoteryOptions = [
     { key: '1', value: 'اجباري' },
@@ -108,7 +108,7 @@ export const mandoteryOptions = [
 //         image: (require('../../src/assets/photos/talmarah.png')),
 //         coverPhoto: true,
 //     },
-    
+
 // ];
 export const subDetailData = [
     {
@@ -129,12 +129,12 @@ export const subDetailData = [
 export const subDetail = [
     {
         subDetail_Id: 1,
-        id:1,
+        id: 1,
         detailSubtitle: 'لحمة',
         detailSubtitleCost: 50,
         //imgSrc: (require('../../src/assets/photos/meat.png')),
     },
-   
+
 ];
 export const serviceDetail = [
     {
@@ -182,7 +182,7 @@ export const servicesCategory = [
         titleCategory: 'شيف',
         img: (require('../assets/photos/chefIcon.png')),
     },
-   
+
     {
         cat_id: 9,
         titleCategory: 'فرقة شعبية',
@@ -213,7 +213,7 @@ export const servicesCategory = [
         titleCategory: 'مركز تجميل',
         img: (require('../assets/photos/beutyCentreIcon.png')),
     },
-    
+
     // {
     //     cat_id: 12,
     //     titleCategory: ' فساتين',
@@ -234,14 +234,10 @@ export const servicesCategory = [
     //     titleCategory: 'اكسسوارات',
     //     img: (require('../assets/photos/accessories.png')),
     // },
-   
-    // {
-    //     cat_id: 17,
-    //     titleCategory: 'ألعاب نارية',
-    //     img: (require('../assets/photos/fireworks.png')),
-    // },
+
+
     {
-        cat_id: 18,
+        cat_id: 18, 
         titleCategory: 'مهرج',
         img: (require('../assets/photos/jockerIcon.png')),
     },
@@ -250,7 +246,11 @@ export const servicesCategory = [
         titleCategory: 'أطفال',
         img: (require('../assets/photos/kidsIcon.png')),
     },
-
+    {
+        cat_id: 17,
+        titleCategory: 'تأجير معدات',
+        img: (require('../assets/photos/tools.png')),
+    },
 
 ];
 export const Events = [
