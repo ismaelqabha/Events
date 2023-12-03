@@ -21,6 +21,7 @@ import { colors } from '../../assets/AppColors';
 import SearchContext from '../../../store/SearchContext';
 import { mandoteryOptions } from '../../resources/data';
 import { SelectList } from 'react-native-dropdown-select-list';
+import { showMessage } from '../../resources/Functions';
 
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
@@ -44,7 +45,6 @@ const ProviderAddServiceDetail = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
 
   useEffect(() => {
-    console.log("additional -> ", additionalServices);
     var man = filterData(additionalServices, "Mandatory")
     man && man.length ? setIsMan(true) : setIsMan(false)
     var opt = filterData(additionalServices, "Optional")
@@ -89,6 +89,7 @@ const ProviderAddServiceDetail = props => {
     await addService(body)
       .then(res => {
         console.log('res ->', res);
+        showMessage("تم حفظ البيانات")
       })
       .catch(e => {
         console.log('create new event error : ', e);
@@ -144,7 +145,6 @@ const ProviderAddServiceDetail = props => {
   };
   const renderOptionalServices = () => {
     const filterArray = filterData(additionalServices, "Optional")
-    console.log("hello 2");
     const cardsArray = filterArray.map(card => {
       return <ProviderShowServDetailComp {...card} />;
     });

@@ -74,6 +74,7 @@ const ProviderInitialWithDetailPrice = props => {
         await addService(body)
             .then(res => {
                 console.log('res ->', res);
+                showMessage("تم حفظ البيانات")
             })
             .catch(e => {
                 console.log('create new event error : ', e);
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
         width: '70%',
         backgroundColor: 'white',
         alignItems: 'center',
-         marginRight: 20,
+        marginRight: 20,
         height: 50,
         justifyContent: 'space-around',
         marginTop: 10,

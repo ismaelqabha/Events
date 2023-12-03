@@ -59,6 +59,7 @@ const ProviderContantPrice = (props) => {
     await addService(body)
       .then(res => {
         console.log('res ->', res);
+        showMessage("تم حفظ البيانات")
       })
       .catch(e => {
         console.log('create new event error : ', e);
