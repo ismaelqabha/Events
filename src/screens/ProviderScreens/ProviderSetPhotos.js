@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -34,6 +34,10 @@ const ProviderSetPhotos = props => {
     // photoArray.length <5 ? showMessage() :
     checkServiceType()
   };
+  
+  useEffect(()=>{
+    console.log("photoArray -> ",photoArray);
+  },[photoArray])
 
   const checkServiceType=()=>{
     selectServiceType === servicesCategory[0].titleCategory ? 

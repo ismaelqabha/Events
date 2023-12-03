@@ -17,9 +17,10 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import SearchContext from '../../../store/SearchContext';
-import { addService } from '../../resources/API';
+import { addService, addServiceImages } from '../../resources/API';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { colors } from '../../assets/AppColors';
+import { showMessage } from '../../resources/Functions';
 
 const ProviderInitialWithDetailPrice = props => {
     const langauge = strings.arabic.ProviderScreens.ProviderInitialWithDetailPrice;
@@ -72,10 +73,13 @@ const ProviderInitialWithDetailPrice = props => {
             additionalServices: additionalServices,
         };
         await addService(body)
-            .then(res => {
-                console.log('res ->', res);
-                showMessage("تم حفظ البيانات")
+        then(async res => {
+            console.log(' service res ->', res);
+            await addServiceImages(photoArray).then((res)=>{
+              console.log("images res -> ",res );
+              showMessage("تم حفظ البيانات")
             })
+          })
             .catch(e => {
                 console.log('create new event error : ', e);
             });

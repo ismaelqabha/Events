@@ -131,10 +131,37 @@ export const getDraftFromAPI = async body =>{
   return await AppFetch(url,"POST",body)
 }
 
+export const removeDraftFromAPI = async body =>{
+  const url ='DraftServices/deleteDraftService'
+  return await AppFetch(url,"POST",body)
+}
+
 //Service Images
 export const getServiceImages = async body => {
   const url = 'ServiceImags/getImg';
   return await AppFetch(url, 'POST', body);
+};
+
+export const addServiceImages = async imagesArray => {
+  const url = 'ServiceImags/addImg';
+  try {
+    const formData = new FormData();
+    const headers={
+      'Content-Type': 'multipart/form-data',
+    }
+    imagesArray?.forEach((data,index) => {
+      formData.append(`image${index}`,{
+        uri:data.image,
+        type: 'image/jpeg',
+        name: `image${index}.jpg`,
+        coverPhoto:data.coverPhoto
+      })
+    });
+    return await AppFetch(url, 'POST', formData , headers);
+  } catch (error) {
+    
+  }
+  
 };
 
 // Service Booking Dates
@@ -166,14 +193,14 @@ export const RemoveFavorite = async body => {
   return await AppFetch(url, 'DELETE', body);
 };
 
-const AppFetch = async (url, method, body) => {
+const AppFetch = async (url, method, body , headers) => {
   const fullUrl = baseUrl + url;
   const bodyStr = JSON.stringify(body) || '';
 
   return fetch(fullUrl, {
     method: method,
     body: bodyStr,
-    headers: {
+    headers: headers || {
       'content-type': 'application/json',
     },
   })

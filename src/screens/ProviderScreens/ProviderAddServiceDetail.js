@@ -22,6 +22,7 @@ import SearchContext from '../../../store/SearchContext';
 import { mandoteryOptions } from '../../resources/data';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { showMessage } from '../../resources/Functions';
+import { addServiceImages } from '../../resources/API';
 
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
@@ -39,7 +40,8 @@ const ProviderAddServiceDetail = props => {
     selectServiceType,
     workAreas,
     additionalServices,
-    setAdditionalServices
+    setAdditionalServices,
+    photoArray
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(SearchContext);
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
@@ -87,9 +89,12 @@ const ProviderAddServiceDetail = props => {
       additionalServices: additionalServices,
     };
     await addService(body)
-      .then(res => {
-        console.log('res ->', res);
-        showMessage("تم حفظ البيانات")
+      .then(async res => {
+        console.log(' service res ->', res);
+        await addServiceImages(photoArray).then((res)=>{
+          console.log("images res -> ",res );
+          showMessage("تم حفظ البيانات")
+        })
       })
       .catch(e => {
         console.log('create new event error : ', e);
