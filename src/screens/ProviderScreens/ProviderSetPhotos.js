@@ -56,7 +56,7 @@ const ProviderSetPhotos = props => {
   const showRequestDeniedAlert = () => {
     Alert.alert(
       'Permission Denied',
-      'To use this feature, please enable READ_EXTERNAL_STORAGE access in app settings.',
+      'To use this feature, please enable Camera access in app settings.',
       [
         { text: 'Go to Settings', onPress: () => openAppSettings() },
         { text: 'Cancel', style: 'cancel' },
@@ -67,22 +67,14 @@ const ProviderSetPhotos = props => {
 
   const onAddImgPress = async () => {
     try {
-      const result = await request(
-        Platform.OS === 'ios'
-          ? PERMISSIONS.IOS.PHOTO_LIBRARY
-          : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
-      );
-      if (result === 'granted') {
-        let options = {
+          let options = {
           mediaType: 'photo',
           includeBase64: false,
         };
 
         launchImageLibrary(options, response => GalleryImageResponse(response));
-      } else {
-        showRequestDeniedAlert()
       }
-    } catch (error) {
+     catch (error) {
       console.error(error);
     }
   };
