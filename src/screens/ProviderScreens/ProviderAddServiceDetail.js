@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -25,6 +25,9 @@ import { SelectList } from 'react-native-dropdown-select-list';
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
   const [Dtitle, setDTitle] = useState('');
+  const [nec, setNec] = useState("Mandatory");
+  const [isMan, setIsMan] = useState(false);
+  const [isOpt, setIsOpt] = useState(false);
   const {
     serviceAddress,
     price,
@@ -39,6 +42,14 @@ const ProviderAddServiceDetail = props => {
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(SearchContext);
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
+
+  useEffect(() => {
+    console.log("additional -> ", additionalServices);
+    var man = filterData(additionalServices, "Mandatory")
+    man && man.length ? setIsMan(true) : setIsMan(false)
+    var opt = filterData(additionalServices, "Optional")
+    opt && opt.length ? setIsOpt(true) : setIsOpt(false)
+  }, [additionalServices])
 
   let Did = uuidv4();
 
@@ -82,20 +93,7 @@ const ProviderAddServiceDetail = props => {
       .catch(e => {
         console.log('create new event error : ', e);
       });
-    // console.log('--------------------------------------');
-    // console.log('Service detailes -> ');
-    // console.log('User ID -> ', userId);
-    // console.log('Price -> ', price);
-    // console.log('address -> ', serviceAddress);
-    // console.log('Region -> ', serviceRegion);
-    // console.log('title -> ', title);
-    // console.log('subTitle -> ', SuTitle);
-    // console.log('description -> ', description);
-    // console.log('selectServiceType -> ', selectServiceType);
-    // console.log('photoArray -> ', photoArray);
-    // console.log('workAreas -> ', workAreas);
-    // console.log('additional services  -> ', additionalServices);
-    // console.log('--------------------------------------');
+
   };
 
   const modalSavePress = () => {
@@ -103,10 +101,12 @@ const ProviderAddServiceDetail = props => {
       const AddNewDetail = {
         detail_Id: Did,
         detailTitle: Dtitle,
+        necessity: nec,
         subDetailArray: []
       };
       setAdditionalServices([...additionalServices, AddNewDetail]);
       setDTitle('');
+      setNec("Mandatory")
       setShowModal(false);
     }
   };
@@ -126,14 +126,26 @@ const ProviderAddServiceDetail = props => {
     props.navigation.goBack();
   };
 
+  const filterData = (data, filter) => {
+    const filterArray = data?.filter(service => {
+      if (service.necessity === filter) {
+        return service
+      }
+    })
+    return filterArray
+  }
+
   const renderMandatoryServices = () => {
-    const cardsArray = additionalServices.map(card => {
+    const filterArray = filterData(additionalServices, "Mandatory")
+    const cardsArray = filterArray?.map(card => {
       return <ProviderShowServDetailComp {...card} />;
     });
     return cardsArray;
   };
   const renderOptionalServices = () => {
-    const cardsArray = additionalServices.map(card => {
+    const filterArray = filterData(additionalServices, "Optional")
+    console.log("hello 2");
+    const cardsArray = filterArray.map(card => {
       return <ProviderShowServDetailComp {...card} />;
     });
     return cardsArray;
@@ -194,7 +206,7 @@ const ProviderAddServiceDetail = props => {
         <View style={styles.list}>
           <SelectList
             data={mandoteryOptions}
-            setSelected={val => { }}
+            setSelected={val => { setNec(mandoteryOptions[val].alt) }}
             placeholder={language.dropdownText}
             boxStyles={styles.dropdown}
             inputStyles={styles.droptext}
@@ -226,30 +238,72 @@ const ProviderAddServiceDetail = props => {
       </Pressable>
     );
   };
-  return (
-    <View style={styles.container}>
+
+  const renderHeader = () => {
+    return (
       <View style={styles.header}>
         <Text style={styles.headText}>{language.Header}</Text>
       </View>
+    )
+  }
+  const renderBody = () => {
+    return (
       <View style={styles.Mbody}>
         {RenderCreateButton()}
-        <ScrollView contentContainerStyle={styles.home}>
-          <View style={styles.MandatoryView}>
-            <Text style={styles.mandotryText}>{language.mandotryText}</Text>
-            {renderMandatoryServices()}
-          </View>
-          <View style={styles.MandatoryView}>
-            <Text style={styles.mandotryText}>{language.optionalText}</Text>
-            {renderOptionalServices()}
-          </View>
-
-        </ScrollView>
+        {renderList()}
       </View>
+    )
+  }
+  const renderMandatory = () => {
+    if (isMan) {
+      return (
+        <View style={styles.MandatoryView}>
+          <Text style={styles.mandotryText}>{language.mandotryText}</Text>
+          {renderMandatoryServices()}
+        </View>
+      )
+    } else {
+      return null
+    }
+
+  }
+
+  const renderOptional = () => {
+    if (isOpt) {
+      return (
+        <View style={styles.MandatoryView}>
+          <Text style={styles.mandotryText}>{language.optionalText}</Text>
+          {renderOptionalServices()}
+        </View>
+      )
+    } else {
+      return null
+    }
+
+
+  }
+
+  const renderList = () => {
+    return (
+      <ScrollView contentContainerStyle={styles.home}>
+        {renderMandatory()}
+        {renderOptional()}
+      </ScrollView>
+    )
+  }
+  const renderFooter = () => {
+    return (
       <View style={styles.footer}>
         <ScreenBack ScreenBack={params.ScreenBack} />
         <ScreenNext ScreenNext={params.ScreenNext} />
       </View>
-
+    )
+  }
+  return (
+    <View style={styles.container}>
+      {renderHeader()}
+      {renderBody()}
+      {renderFooter()}
       {RenderModal()}
     </View>
   );
@@ -411,7 +465,7 @@ const styles = StyleSheet.create({
     minWidth: '60%',
     fontSize: 17,
     borderColor: '#dcdcdc',
-    borderWidth:2,
+    borderWidth: 2,
     borderRadius: 10
   },
   dropstyle: {
