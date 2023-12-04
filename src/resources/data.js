@@ -62,8 +62,8 @@ export const socialMediaList = [
     { key: '1', value: 'X'},
 ];
 export const mandoteryOptions = [
-    { key: '1', value: 'اجباري' },
-    { key: '2', value: 'اختياري' }
+    { key: '0', value: 'اجباري' ,alt:"Mandatory" },
+    { key: '1', value: 'اختياري' , alt:"Optional" }
 ];
 // export const ServiceImages = [
 //     {

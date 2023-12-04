@@ -61,6 +61,8 @@ const ProviderSetPrice = props => {
     await addService(body)
       .then(res => {
         console.log('res ->', res);
+        showMessage("تم حفظ البيانات")
+
       })
       .catch(e => {
         console.log('create new event error : ', e);
@@ -83,17 +85,17 @@ const ProviderSetPrice = props => {
 
   const addServiceImages = async (ID) => {
     var base64Images = photoArray?.map((image, index) => {
-      return {base64:image.base64,coverPhoto:image.coverPhoto}
+      return { base64: image.base64, coverPhoto: image.coverPhoto }
     })
     const body = {
       images: base64Images,
       serviceID: ID
     }
-  
-    await PostImagesToApi(body).then((res)=>{
-      console.log("res ->",res);
-    }).catch(e=>{
-      console.log("posting service images error -> ",e);
+
+    await PostImagesToApi(body).then((res) => {
+      console.log("res ->", res);
+    }).catch(e => {
+      console.log("posting service images error -> ", e);
     })
   }
 
@@ -110,7 +112,7 @@ const ProviderSetPrice = props => {
   };
   const onContantPricePress = () => {
     props.navigation.navigate(ScreenNames.ProviderContantPrice, {
-      data: {  ...props  },
+      data: { ...props },
     });
   };
   const onBackPress = () => {
@@ -228,8 +230,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     paddingHorizontal: '10%',
-    position:'absolute',
-    bottom:0
+    position: 'absolute',
+    bottom: 0
 
   },
   next: {

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TextInput } from 'react-native'
-import React,{useContext} from 'react'
+import React,{useContext, useState} from 'react'
 import { colors } from '../../assets/AppColors'
 import strings from '../../assets/res/strings';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
@@ -8,6 +8,10 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import SearchContext from '../../../store/SearchContext';
+import { addService, addServiceImages } from '../../resources/API';
+import { showMessage } from '../../resources/Functions';
+import { ActivityIndicator } from 'react-native';
+
 
 const ProviderContantPrice = (props) => {
   const {
@@ -20,8 +24,10 @@ const ProviderContantPrice = (props) => {
     selectServiceType,
     workAreas,
     additionalServices,
+    photoArray
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(SearchContext);
+  const [loading , setLoading] = useState(false)
   const langauge = strings.arabic.ProviderScreens.ProviderContantPrice;
 
   const params = {
@@ -56,10 +62,17 @@ const ProviderContantPrice = (props) => {
       workingRegion: workAreas,
       additionalServices: additionalServices,
     };
+    setLoading(true)
     await addService(body)
-      .then(res => {
-        console.log('res ->', res);
+    .then(async res => {
+      console.log(' service res ->', res);
+
+      await addServiceImages(photoArray).then((res)=>{
+        setLoading(false)
+        console.log("images res -> ",res );
+        showMessage("تم حفظ البيانات")
       })
+    })
       .catch(e => {
         console.log('create new event error : ', e);
       });
@@ -70,6 +83,7 @@ const ProviderContantPrice = (props) => {
 
   return (
     <View style={styles.container}>
+      {loading && <ActivityIndicator />}
       <ScreenHeader ScreenHeader={params.ScreenHeader} />
       <View style={styles.body}>
         <View style={styles.price}>

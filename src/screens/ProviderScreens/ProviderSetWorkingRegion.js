@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: '10%',
     position:'absolute',
     bottom:0,
-    backgroundColor:'red'
 
   },
 })
