@@ -101,8 +101,8 @@ const ProviderSetPhotos = props => {
     if (source) {
       const AddNewImg = {
         imgId: uuidv4(),
-        image: source,
-        coverPhoto: true,
+        uri: source,
+        logo: true,
       };
       setPhotoArray([AddNewImg, ...photoArray]);
     } else {
@@ -154,7 +154,7 @@ const ProviderSetPhotos = props => {
   };
 
   const renderServiceImg = ({ item }) => {
-    return <ProviderAddPhotoComp uri={item?.image} selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} />;
+    return <ProviderAddPhotoComp uri={item?.uri} selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} />;
   };
 
   const RenderMainHeader = () => {
