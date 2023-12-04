@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { TextInput } from "react-native";
 import { View, Text, Pressable } from "react-native";
@@ -33,6 +33,7 @@ const ContactComp = () => {
         console.log("updated -> ",socialMediaArray);
 
     }
+   
 
 
     const addSoialMediaContact = () => {
@@ -58,12 +59,16 @@ const ContactComp = () => {
     const SocialMediaComp = (props) => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
-        // if (!props.val.empty) {
-        //     setContactType(props.val?.social)
-        //     setContactVal(props.val?.link)
-        // }
+        useEffect(()=>{
+            console.log("val ", props.val);
+            if (props.val) {
+                setContactType(props?.val?.social)
+                setContactVal(props?.val?.link)
+            }
+        },[])
+        
         return (
-            <View style={styles.mediaItem}>
+            <View key={props?.index} style={styles.mediaItem}>
                 <View style={styles.mediaList}>
                     <SelectList
                         data={socialMediaList}

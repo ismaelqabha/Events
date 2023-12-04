@@ -41,7 +41,9 @@ const ProviderAddServiceDetail = props => {
     workAreas,
     additionalServices,
     setAdditionalServices,
-    photoArray
+    photoArray,
+    socialMediaArray
+
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(SearchContext);
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
@@ -87,11 +89,12 @@ const ProviderAddServiceDetail = props => {
       servicePrice: price,
       workingRegion: workAreas,
       additionalServices: additionalServices,
+      socialMedia:socialMediaArray
     };
     await addService(body)
       .then(async res => {
-        console.log(' service res ->', res);
-        await addServiceImages(photoArray).then((res)=>{
+        console.log(' service res ->', res.serviceID);
+        await addServiceImages(photoArray,res?.serviceID).then((res)=>{
           console.log("images res -> ",res );
           showMessage("تم حفظ البيانات")
         })
