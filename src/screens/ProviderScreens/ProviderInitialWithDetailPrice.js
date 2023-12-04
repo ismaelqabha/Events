@@ -17,9 +17,10 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import SearchContext from '../../../store/SearchContext';
-import { addService } from '../../resources/API';
+import { addService, addServiceImages } from '../../resources/API';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { colors } from '../../assets/AppColors';
+import { showMessage } from '../../resources/Functions';
 
 const ProviderInitialWithDetailPrice = props => {
     const langauge = strings.arabic.ProviderScreens.ProviderInitialWithDetailPrice;
@@ -72,9 +73,13 @@ const ProviderInitialWithDetailPrice = props => {
             additionalServices: additionalServices,
         };
         await addService(body)
-            .then(res => {
-                console.log('res ->', res);
+        then(async res => {
+            console.log(' service res ->', res);
+            await addServiceImages(photoArray).then((res)=>{
+              console.log("images res -> ",res );
+              showMessage("تم حفظ البيانات")
             })
+          })
             .catch(e => {
                 console.log('create new event error : ', e);
             });
@@ -198,7 +203,7 @@ const styles = StyleSheet.create({
         width: '70%',
         backgroundColor: 'white',
         alignItems: 'center',
-         marginRight: 20,
+        marginRight: 20,
         height: 50,
         justifyContent: 'space-around',
         marginTop: 10,
