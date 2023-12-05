@@ -56,10 +56,10 @@ export const regionData = [
 ]
 export const socialMediaList = [
     { key: '0', value: 'facebook' },
-    { key: '1', value: 'Instegram' },
-    { key: '2', value: 'TikTok' },
-    { key: '3', value: 'YouTube' },
-    { key: '4', value: 'X' },
+    { key: '1', value: 'instagram' },
+    { key: '2', value: 'tiktok' },
+    { key: '3', value: 'youtube' },
+    { key: '4', value: 'X'},
 ];
 export const mandoteryOptions = [
     { key: '0', value: 'اجباري' ,alt:"Mandatory" },

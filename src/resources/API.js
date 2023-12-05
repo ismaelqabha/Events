@@ -1,5 +1,5 @@
-const baseUrl = 'https://ev-server.onrender.com/';
-// const baseUrl = "https://localhost:7000/"
+// const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = "http://localhost:7000/"
 
 // Users
 export const getUserData = async (body) => {
@@ -142,24 +142,27 @@ export const getServiceImages = async body => {
   return await AppFetch(url, 'POST', body);
 };
 
-export const addServiceImages = async imagesArray => {
+export const addServiceImages = async (imagesArray,serviceID) => {
   const url = 'ServiceImags/addImg';
   try {
     const formData = new FormData();
     const headers={
       'Content-Type': 'multipart/form-data',
     }
-    imagesArray?.forEach((data,index) => {
-      formData.append(`image${index}`,{
-        uri:data.image,
-        type: 'image/jpeg',
-        name: `image${index}.jpg`,
-        coverPhoto:data.coverPhoto
-      })
-    });
+    const logoArray = [];
+    formData.append("serviceID",serviceID)
+      imagesArray?.forEach((data,index) => {
+        formData.append(`images`,{
+          uri:data.uri,
+          type: 'image/jpeg',
+          name: `image${index}.jpg`,
+        })
+        formData.append("logoArray" , data.logo)
+      });
+      
     return await AppFetch(url, 'POST', formData , headers);
   } catch (error) {
-    
+    console.log("error adding images ", error);
   }
   
 };
@@ -199,7 +202,7 @@ const AppFetch = async (url, method, body , headers) => {
 
   return fetch(fullUrl, {
     method: method,
-    body: bodyStr,
+    body: headers ? body : bodyStr,
     headers: headers || {
       'content-type': 'application/json',
     },

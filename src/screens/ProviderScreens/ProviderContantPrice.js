@@ -24,7 +24,8 @@ const ProviderContantPrice = (props) => {
     selectServiceType,
     workAreas,
     additionalServices,
-    photoArray
+    photoArray,
+    socialMediaArray
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(SearchContext);
   const [loading , setLoading] = useState(false)
@@ -61,13 +62,14 @@ const ProviderContantPrice = (props) => {
       servicePrice: price,
       workingRegion: workAreas,
       additionalServices: additionalServices,
+      socialMedia:socialMediaArray,
     };
     setLoading(true)
     await addService(body)
     .then(async res => {
-      console.log(' service res ->', res);
+      console.log(' service res ->', res.serviceID);
 
-      await addServiceImages(photoArray).then((res)=>{
+      await addServiceImages(photoArray,res?.serviceID).then((res)=>{
         setLoading(false)
         console.log("images res -> ",res );
         showMessage("تم حفظ البيانات")
