@@ -20,6 +20,7 @@ const SearchProvider = props => {
   const [userSpecialDate, setUserSpecialDate] = useState([]);
   const [password, setPassword] = useState(null);
   const [confirmPassword, setconfirmPassword] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState(null);
 
 
 
@@ -111,6 +112,8 @@ const SearchProvider = props => {
         setPassword,
         confirmPassword, 
         setconfirmPassword,
+        profilePhoto, 
+        setProfilePhoto,
         cat,
         setCat,
         isFirst,

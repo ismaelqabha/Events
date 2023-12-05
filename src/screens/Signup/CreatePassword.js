@@ -26,7 +26,7 @@ const CreatePassword = (props) => {
     userStatus,
     userCity,
     createUserRegion,
-    userSpecialDate } = useContext(SearchContext);
+    userSpecialDate, profilePhoto } = useContext(SearchContext);
 
   const [firstPasswordError, setFirstPasswordError] = useState()
   const [secondPasswordError, setSecondPasswordError] = useState()
@@ -61,7 +61,7 @@ const CreatePassword = (props) => {
       UserCity: userCity,
       //UserLocation: req.body.UserLocation,
       Userstatus: userStatus,
-      // UserPhoto: '',
+      UserPhoto: profilePhoto,
       // SpecialDates: userSpecialDate,
       // UserRelations: ''
     }
@@ -69,11 +69,12 @@ const CreatePassword = (props) => {
       let UsersArr = userInfo || [];
       UsersArr.push(AddNewUser);
       setUserInfo([...UsersArr])
+      console.log("UsersArr", UsersArr);
     })
   }
 
   const onCreateUser = () => {
-    if(checkPassword()){
+    if (checkPassword()) {
       if (!chickIfExist()) {
         addNewUser()
         ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',
@@ -86,13 +87,13 @@ const CreatePassword = (props) => {
           ToastAndroid.BOTTOM
         )
       }
-    }else{
+    } else {
       ToastAndroid.showWithGravity('لا يوجد تطابق بين كلمات المرور المكتوبة',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM
       )
     }
-   
+
   }
 
 

@@ -55,11 +55,11 @@ export const regionData = [
     { key: '5', value: 'الضفة الغربية' },
 ]
 export const socialMediaList = [
-    { key: '2', value: 'Facebook' },
-    { key: '3', value: 'Instegram' },
-    { key: '5', value: 'TikTok' },
-    { key: '0', value: 'YouTube' },
-    { key: '1', value: 'X' },
+    { key: '0', value: 'facebook' },
+    { key: '1', value: 'Instegram' },
+    { key: '2', value: 'TikTok' },
+    { key: '3', value: 'YouTube' },
+    { key: '4', value: 'X' },
 ];
 export const mandoteryOptions = [
     { key: '0', value: 'اجباري' ,alt:"Mandatory" },

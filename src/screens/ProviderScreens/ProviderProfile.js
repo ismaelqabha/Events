@@ -114,7 +114,7 @@ const ProviderProfile = (props) => {
     }
     const renderAddCampaign = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ProviderCreateOffer)}>
                 <View>
                     <Text style={styles.basicInfo}>اٍنشاء عرض جديد</Text>
                 </View>

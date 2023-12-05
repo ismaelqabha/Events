@@ -7,7 +7,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScreenNames } from '../../../route/ScreenNames';
-
+import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 
@@ -27,7 +27,9 @@ const CreateUpersonalInfo = (props) => {
         userGender,
         setUserGender,
         userStatus,
-        setUserStatus
+        setUserStatus,
+        profilePhoto, 
+        setProfilePhoto
     } = useContext(SearchContext);
 
     const [userNameError, setUserNameError] = useState(false)
@@ -256,6 +258,38 @@ const CreateUpersonalInfo = (props) => {
         </View>)
 
     }
+    const onAddImgPress = async () => {
+        try {
+              let options = {
+              mediaType: 'photo',
+              includeBase64: false,
+            };
+            launchImageLibrary(options, response => GalleryImageResponse(response));
+          }
+         catch (error) {
+          console.error(error);
+        }
+      };
+
+      const GalleryImageResponse = response => {
+        if (response.didCancel) {
+          console.log('User Cancelled');
+        } else if (response.error) {
+          console.log('Gallery Error : ', response.error);
+        } else if (response.customButton) {
+          console.log('User tapped custom Button ', response.customButton);
+        } else {
+          let imageUri = response.uri || response.assets?.[0]?.uri;
+          SaveImg(imageUri);
+        }
+      };
+      const SaveImg = source => {
+        if (source) {
+          setProfilePhoto(source);
+        } else {
+          console.log('error source isnt legable, source is :', source);
+        }
+      };
 
     return (
         <View style={styles.container}>
@@ -273,8 +307,8 @@ const CreateUpersonalInfo = (props) => {
 
             <ScrollView>
                 <View style={styles.userImg}>
-                    <Image style={styles.profilImg} source={require('../../assets/photos/user.png')} />
-                    <Pressable style={styles.editImg}>
+                    <Image style={styles.profilImg} source={profilePhoto ? {uri: profilePhoto} : require('../../assets/photos/user.png')} />
+                    <Pressable style={styles.editImg} onPress={onAddImgPress}>
                         <Entypo
                             name={"camera"}
                             color={colors.puprble}
@@ -347,8 +381,8 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'white',
         position: 'absolute',
-        right: 115,
-        bottom: 30,
+        right: 105,
+        bottom: 55,
     },
 
     logoDate: {
