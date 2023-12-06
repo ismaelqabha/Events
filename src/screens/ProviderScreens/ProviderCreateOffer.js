@@ -1,12 +1,17 @@
 import { StyleSheet, Text, View, Pressable, TextInput, Image } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { colors } from '../../assets/AppColors';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { ScrollView } from 'react-native-gesture-handler';
 import { launchImageLibrary } from 'react-native-image-picker';
+import SearchContext from '../../../store/SearchContext';
+import { createNewOffer } from '../../resources/API';
 
 const ProviderCreateOffer = (props) => {
+    const { isFirst,serviceCat } = props.route?.params || {}
+    const { userId, campInfo, setCampInfo } = useContext(SearchContext);
+
     const [OfferTitleError, setOfferTitleError] = useState(false)
     const [OfferPriceError, setOOfferPriceError] = useState(false)
     const [OfferExpireDateError, setOfferExpireDateError] = useState(false)
@@ -210,9 +215,25 @@ const ProviderCreateOffer = (props) => {
             </Pressable>
         );
     };
-
+  
     const SaveOffer = () => {
-
+        const addNewOffer = {
+            userId: userId,
+            serviceId: isFirst,
+            campCatType: serviceCat,
+            campTitle: OfferTitle,
+            campContents: OfferContent,
+            campCost: OfferPrice,
+            campImag: '',
+            campRigon: '',
+            campExpirDate: OfferExpireDate
+        }
+        createNewOffer(addNewOffer).then(res => {
+            let OfferArr = campInfo || [];
+            OfferArr.push(addNewOffer);
+            setCampInfo([...OfferArr])
+            console.log("OfferArr", OfferArr);
+        })
     }
 
     const onSavePress = () => {

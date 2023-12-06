@@ -90,6 +90,10 @@ export const getCampaignsByServiceId = async (body) => {
     const url = 'Campaigns/getCampByServiceId'
     return await AppFetch(url, 'POST', body)
 }
+export const createNewOffer = async (body) => {
+  const url = 'Campaigns/createCamp'
+  return await AppFetch(url, 'POST', body)
+}
 
 //Add New Dates According Service Id
 export const NewDatesAdding = async body => {
