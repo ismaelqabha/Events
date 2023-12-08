@@ -1,16 +1,23 @@
 
 import { StyleSheet, Text, View, Pressable, TextInput, ScrollView } from 'react-native'
-import React, { useState,useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import { colors } from '../../assets/AppColors'
 import Entypo from "react-native-vector-icons/Entypo";
 import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const SetUserStatus = (props) => {
   const { userSpecialDate, setUserSpecialDate } = useContext(SearchContext);
-  const [eventTitle, setEventTitle] = useState('');
+  const [eventTitle, setEventTitle] = useState(null);
+  const [eventDate, setEventDate] = useState('DD/MM/YYYY');
+
   const [eventFields, setEventFields] = useState(0)
+
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [date, setDate] = useState(new Date());
 
   const onPressBack = () => {
     props.navigation.goBack();
@@ -57,7 +64,6 @@ const SetUserStatus = (props) => {
       </Pressable>
     );
   };
-
   const onNextPress = () => {
     true
       ? props.navigation.navigate(ScreenNames.CreatePassword
@@ -66,22 +72,25 @@ const SetUserStatus = (props) => {
         })
       : missingData();
   };
-  const addNewSpcialEvent = () => {
-    if (eventTitle.trim().length > 0 && doesntExists()) {
-      const AddNewEvent = {
-        Eventitle: eventTitle,
-        EventDate: []
-      };
-      setUserSpecialDate([...userSpecialDate, AddNewEvent]);
-      setEventTitle('');
-    }
-  };
-  const doesntExists = () => {
-    let exists = userSpecialDate.findIndex(
-      val => val?.detailTitle.toLowerCase() === eventTitle.toLowerCase(),
-    );
-    return exists == -1 ? true : false;
-  };
+
+  // const addNewSpcialEvent = () => {
+  //   if (eventTitle.trim().length > 0 && doesntExists()) {
+  //     const AddNewEvent = {
+  //       Eventitle: eventTitle,
+  //       EventDate: eventDate
+  //     };
+  //     setUserSpecialDate([...userSpecialDate, AddNewEvent]);
+  //     setEventTitle('');
+  //   }
+  // };
+
+
+  // const doesntExists = () => {
+  //   let exists = userSpecialDate.findIndex(
+  //     val => val?.detailTitle.toLowerCase() === eventTitle.toLowerCase(),
+  //   );
+  //   return exists == -1 ? true : false;
+  // };
 
   const checkStrings = val => {
     if (!val) {
@@ -106,62 +115,116 @@ const SetUserStatus = (props) => {
 
 
   const addEvent = () => {
-    setEventFields(eventFields + 1)
+    setUserSpecialDate([...userSpecialDate, { empty: "empty" }])
   }
 
   const renderEventItems = () => {
-    const fiedls = []
-    for (let index = 0; index < eventFields; index++) {
-      fiedls.push(renderAddevent())
-    }
-    return fiedls
+    const fields = userSpecialDate?.map((val, index) => {
+       return <EventItemComponent val={val} index={index} />
+     })
+    return fields
   }
 
-  const renderUserSpecialDates = () => {
+  // const renderEventItems = () => {
+  //   const fiedls = []
+  //   for (let index = 0; index < eventFields; index++) {
+  //     fiedls.push(renderAddevent())
+  //   }
+  //   return fiedls
+  // }
+
+  const updateSpecialEventArray = (data) => {
+    var i = userSpecialDate.findIndex((val) => val.specialEventTitle === data.specialEventTitle || val.specialEventDate === data.specialEventDate)
+    console.log("i ", i);
+    if (i == -1) {
+      var temp = userSpecialDate.findIndex((val) => val.empty === "empty")
+      var newArr = userSpecialDate
+      newArr[temp] = data
+      setUserSpecialDate(newArr)
+    } else {
+      var current = userSpecialDate
+      current[i] = data
+      setUserSpecialDate(current)
+    }
+    console.log("updated -> ", userSpecialDate);
+  }
+
+  const renderUserSpecialDates = (props) => {
     return (<View>
       <Text style={styles.basicInfo}>هل ترغب في اضافة تواريخ لمناسبات عائلية خاصة ؟</Text>
-      <View >
+      <View>
         <Pressable style={styles.item} onPress={addEvent}>
           <Text style={styles.basicInfo}>اضافة</Text>
-
           <View style={styles.IconView}>
             <Entypo
               style={styles.icon}
               name={"plus"}
               color={colors.puprble}
-              size={30} />
+              size={30}/>
           </View>
         </Pressable>
       </View>
-
-      <View style={styles.eventScroll}>
-        <ScrollView>
-          {renderEventItems()}
-        </ScrollView>
-      </View>
-
     </View>)
-
   }
-  const renderAddevent = () => {
+  const onChange = (event, selectedDate) => {
+    setShow(false)
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+
+    let tempDate = new Date(currentDate);
+    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+
+    setEventDate(fDate);
+  }
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  }
+  const onSetEventDate = (evTitle, evDate) => {
+    showMode('date')
+    const data = {
+      specialEventTitle: evTitle,
+      specialEventDate: evDate,
+    }
+    updateSpecialEventArray(data)
+  }
+  const EventItemComponent = () => {
     return (
       <View style={styles.eventItem}>
         <TextInput
           style={styles.input}
           keyboardType='default'
           placeholder='أسم المناسبة '
-        // onChangeText={setFirstPassword}
+          value={eventTitle}
+          onChangeText={(val) => setEventTitle(val)}
+          onSubmitEditing={(val) => {
+            const data = {
+              specialEventTitle: eventTitle,
+              specialEventDate: eventDate,
+            }
+            updateSpecialEventArray(data)
+          }}
         />
-        <View style={styles.Bdate}>
-          <Text>DD/MM/YYYY</Text>
-          <Pressable>
+        <Pressable onPress={onSetEventDate(eventTitle, eventDate)}>
+          <View style={styles.Bdate}>
+            <Text>{eventDate}</Text>
             <Entypo
               style={styles.logoDate}
               name={"calendar"}
               color={"black"}
               size={30} />
-          </Pressable>
-        </View>
+          </View>
+          {show && (
+            <DateTimePicker
+              testID='dateTimePicker'
+              value={date}
+              mode={mode}
+              is24Hour={true}
+              display='calendar'
+              onChange={onChange}
+            />
+          )}
+        </Pressable>
       </View>
     )
   }
@@ -174,8 +237,13 @@ const SetUserStatus = (props) => {
       <View style={styles.body}>
         <Text style={styles.titleText}>تواريخ خاصة</Text>
         {renderUserSpecialDates()}
-      </View>
 
+        <View style={styles.eventScroll}>
+          <ScrollView>
+            {renderEventItems()}
+          </ScrollView>
+        </View>
+      </View>
       {RenderFooter()}
     </View>
   )
@@ -275,7 +343,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 3,
     marginVertical: 10,
-    
+
   },
   eventScroll: {
     height: 250,

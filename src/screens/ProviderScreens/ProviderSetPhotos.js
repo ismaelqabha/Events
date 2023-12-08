@@ -30,6 +30,7 @@ const ProviderSetPhotos = props => {
   const { selectServiceType,photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
   const [selectedPhotos, setSelectedPhotos] = useState([])
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
+  
   const onNextPress = () => {
     // photoArray.length <5 ? showMessage() :
     checkServiceType()

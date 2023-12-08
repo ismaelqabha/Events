@@ -11,6 +11,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { socialMediaList } from "../../resources/data";
 import { emailVerification } from "../../resources/Regex";
 import ServiceProviderContext from "../../../store/ServiceProviderContext";
+
 const ContactComp = () => {
 
     const language = strings.arabic.ProviderComps.ProviderSocialMediaScreen
@@ -23,7 +24,7 @@ const ContactComp = () => {
 
     const updateArray = (data) => {
         var i = socialMediaArray.findIndex((val) => val.social === data.social || val.link === data.link)
-        console.log("i ", i);
+        //console.log("i ",i);
         if (i == -1) {
             var temp = socialMediaArray.findIndex((val) => val.empty === "empty")
             var newArr = socialMediaArray
@@ -34,7 +35,7 @@ const ContactComp = () => {
             current[i] = data
             setSocialMediaArray(current)
         }
-        console.log("updated -> ", socialMediaArray);
+        //console.log("updated -> ",socialMediaArray);
 
     }
 
@@ -94,7 +95,7 @@ const ContactComp = () => {
                 <View style={styles.socialInput}>
                     <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
                     <TextInput style={styles.TextInput}
-                        keyboardType={'phone-pad'}
+                        keyboardType={'default'}
                         placeholder={'حمل رابط الشبكة'}
                         value={contactVal}
                         onChangeText={(val) => setContactVal(val)}
@@ -187,11 +188,9 @@ const ContactComp = () => {
         <View>
             {renderPhoneField()}
             {renderEmailField()}
-
             <View style={styles.addMedia}>
                 <Text style={styles.txt}>الشبكات الاجتماعية</Text>
                 {renderAddButton()}
-
             </View>
             {renderSocialFeilds()}
         </View>

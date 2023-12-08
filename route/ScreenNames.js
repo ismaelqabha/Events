@@ -46,7 +46,7 @@ export const ScreenNames = {
     ProviderWaitingPay: 'ProviderWaitingPay',
     ProviderWaitingReply: 'ProviderWaitingReply',
     ProviderHome: 'ProviderHome',
-
+    ProviderCreateOffer: 'ProviderCreateOffer',
     ProviderProfile: 'ProviderProfile',
     ProviderSocialMediaScreen : 'ProviderSocialMedia',
     ProviderInitialWithDetailPrice : 'ProviderInitialWithDetailPrice',

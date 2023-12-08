@@ -17,9 +17,11 @@ import { useNavigation } from '@react-navigation/native';
 
 const ProviderProfile = (props) => {
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
-    const { userId,setIsfirst, isFirst, setserviceTitle } = useContext(SearchContext);
+    const { userId,setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } = useContext(SearchContext);
     const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
     const navigation = useNavigation();
+
+
     const getServiceInfofromApi = () => {
         getServiceInfoById({ userID: userId }).then(res => {
             setServiceInfoAccorUser(res)
@@ -35,11 +37,14 @@ const ProviderProfile = (props) => {
             if(index == 0 && !isFirst){
                 setIsfirst(card.service_id)
                 setserviceTitle(card.title)
+                setServiceCat(card.servType)
             }
             return <CalenderServiceCard {...card}/>;
         });
         return cardsArray;
     };
+
+   
 
     const seprator = () => {
         return (
@@ -112,9 +117,12 @@ const ProviderProfile = (props) => {
             </Pressable>
         </View>)
     }
+    const createOfferPress = () => {
+        props.navigation.navigate(ScreenNames.ProviderCreateOffer, {isFirst, serviceCat})
+    }
     const renderAddCampaign = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => createOfferPress()}>
                 <View>
                     <Text style={styles.basicInfo}>اٍنشاء عرض جديد</Text>
                 </View>

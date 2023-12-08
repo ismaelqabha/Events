@@ -20,6 +20,7 @@ const SearchProvider = props => {
   const [userSpecialDate, setUserSpecialDate] = useState([]);
   const [password, setPassword] = useState(null);
   const [confirmPassword, setconfirmPassword] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState(null);
 
 
 
@@ -27,7 +28,8 @@ const SearchProvider = props => {
   const [cat, setCat] = useState('');
   const [isFirst, setIsfirst] = useState ()
   const [serviceTitle, setserviceTitle] = useState ()
-  const [sType, setSType] = useState({});
+  const [serviceCat, setServiceCat] = useState();
+  const [sType, setSType] = useState();
   const [ServId, setServId] = useState('');
 
 
@@ -40,6 +42,7 @@ const SearchProvider = props => {
   const [ServiceImages, setServiceImages] = useState([])
   const [ServiceDatesforBooking, setServiceDatesforBooking] = useState([])
   const [datesforBooking, setDatesforBooking] = useState([])
+
   // campighin
   const [campInfo, setCampInfo] = useState([])
   const [campiegnsAccordingServiceId, setCampiegnsAccordingServiceId] = useState([])
@@ -111,12 +114,16 @@ const SearchProvider = props => {
         setPassword,
         confirmPassword, 
         setconfirmPassword,
+        profilePhoto, 
+        setProfilePhoto,
         cat,
         setCat,
         isFirst,
         setIsfirst,
         serviceTitle,
         setserviceTitle,
+        serviceCat, 
+        setServiceCat,
         sType,
         setSType,
         // Service: Service,

@@ -1,5 +1,5 @@
-// const baseUrl = 'https://ev-server.onrender.com/';
-const baseUrl = "http://localhost:7000/"
+const baseUrl = 'https://ev-server.onrender.com/';
+//const baseUrl = "http://localhost:7000/"
 
 // Users
 export const getUserData = async (body) => {
@@ -89,6 +89,10 @@ export const getCampaigns = async (body) => {
 export const getCampaignsByServiceId = async (body) => {
     const url = 'Campaigns/getCampByServiceId'
     return await AppFetch(url, 'POST', body)
+}
+export const createNewOffer = async (body) => {
+  const url = 'Campaigns/createCamp'
+  return await AppFetch(url, 'POST', body)
 }
 
 //Add New Dates According Service Id
