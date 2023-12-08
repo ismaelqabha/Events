@@ -62,11 +62,11 @@ const CreatePassword = (props) => {
       UserCity: userCity,
       //UserLocation: req.body.UserLocation,
       Userstatus: userStatus,
-      UserPhoto: profilePhoto,
+      // UserPhoto: profilePhoto,
       // SpecialDates: userSpecialDate,
       // UserRelations: ''
     }
-    addUser(AddNewUser).then(res => {
+    addUser(AddNewUser , profilePhoto).then(res => {
       let UsersArr = userInfo || [];
       UsersArr.push(AddNewUser);
       setUserInfo([...UsersArr])
