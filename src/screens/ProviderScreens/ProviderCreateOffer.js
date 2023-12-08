@@ -20,7 +20,7 @@ const ProviderCreateOffer = (props) => {
     const [OfferPrice, setOfferPrice] = useState(null)
     const [OfferExpireDate, setOfferExpireDate] = useState(null)
     const [OfferContent, setOfferContent] = useState([])
-    const [ContentDescr, setContentDescr] = useState(null)
+    
     const [offerImg, setOfferImg] = useState(null)
 
 
@@ -108,13 +108,22 @@ const ProviderCreateOffer = (props) => {
         return fields
     }
     const ContentComponent = (props) => {
+        const [ContentDescr, setContentDescr] = useState(null)
+
+        useEffect(()=>{
+            if (props.val) {
+                setContentDescr(props?.val?.contentItem)
+            }
+        },[])
+
         return (
             <View style={styles.contentItemView}>
                 <TextInput
                     style={styles.contentinput}
                     keyboardType='default'
                     placeholder='الوصف'
-                    onChangeText={setContentDescr}
+                    value={ContentDescr}
+                    onChangeText={(val) => setContentDescr(val)}
                     onSubmitEditing={(val) => {
                         const data = {
                             contentItem: ContentDescr
@@ -131,7 +140,7 @@ const ProviderCreateOffer = (props) => {
             var temp = OfferContent.findIndex((val) => val.empty === "empty")
             var newArr = OfferContent
             newArr[temp] = data
-            setUserSpecialDate(newArr)
+            setOfferContent(newArr)
         } else {
             var current = userSpecialDate
             current[i] = data

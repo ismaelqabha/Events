@@ -115,5 +115,12 @@ export const AppStyles = StyleSheet.create({
     backgroundColor: colors.puprble,
     elevation: 5
   },
+  footer: {
+    width: '100%',
+    paddingVertical: 30,
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+  },
 
 });

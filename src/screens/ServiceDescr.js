@@ -17,13 +17,20 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
-    const { userId, setServiceDatesforBooking, ServiceDatesforBooking, setDetailOfServ, campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
-        selectDateforSearch, selectMonthforSearch, requestedDate, setrequestedDate, requestInfo, setRequestInfo, setReachCampaignfrom } = useContext(SearchContext);
+    const { userId, 
+        setServiceDatesforBooking, ServiceDatesforBooking, 
+        setDetailOfServ, 
+        campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
+        selectDateforSearch, 
+        selectMonthforSearch, 
+        requestedDate, setrequestedDate, 
+        requestInfo, setRequestInfo, 
+        setReachCampaignfrom } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
 
     const getDatesfromApi = () => {
-        getbookingDates({ service_ID: data?.service_id }).then(res => {
+        getbookingDates({ serviceID: 'testing' }).then(res => {
             setServiceDatesforBooking(res)
         })
     }
@@ -49,8 +56,6 @@ const ServiceDescr = (props) => {
         getRequestfromApi()
         getCampeignsfromApi()
         setrequestedDate(0)
-
-
     }, [])
 
     const checkIfInEvent = () => {
@@ -92,6 +97,7 @@ const ServiceDescr = (props) => {
 
     const queryfirstDates = () => {
         const requestedDate = moment(new Date())
+        console.log("ServiceDatesforBooking",ServiceDatesforBooking);
         const DateFiltered = ServiceDatesforBooking.filter(datee => {
             const { bookDate, serviceStutes } = datee;
             const bookDateMoment = moment(bookDate);

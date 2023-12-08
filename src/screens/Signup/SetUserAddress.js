@@ -6,7 +6,6 @@ import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { regionData } from '../../resources/data';
-import SearchContext from '../../../store/SearchContext';
 import { getCities } from '../../resources/API';
 import { ScrollView } from 'react-native-gesture-handler';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
@@ -16,7 +15,7 @@ const SetUserAddress = (props) => {
     setUserCity,
     createUserRegion,
     setCreateUserRegion,
-    town, setTown } = useContext(SearchContext);
+    town, setTown } = useContext(UsersContext);
   const [addressError, setAddressError] = useState(false);
 
   const onPressBack = () => {
@@ -70,16 +69,14 @@ const SetUserAddress = (props) => {
 
 
   const RenderFooter = () => {
-    return <View>
-      <View style={styles.footer}>
+    return (
+      <View style={AppStyles.footer}>
         {renderDots()}
         <View style={AppStyles.footerPart}>
           {RenderBackButton()}
           {RenderNextButton()}
         </View>
-
-      </View>
-    </View>;
+      </View>);
   };
   const renderDots = () => {
     return (
@@ -278,13 +275,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginLeft: 15
   },
-  footer: {
-    paddingVertical: 30,
-    marginRight: 40,
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: -250,
-  },
+  
   cityView: {
     marginVertical: 30,
     //alignItems: 'flex-end'

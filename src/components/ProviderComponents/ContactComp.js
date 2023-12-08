@@ -65,7 +65,6 @@ const ContactComp = () => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
         useEffect(() => {
-            console.log("val ", props.val);
             if (props.val) {
                 setContactType(props?.val?.social)
                 setContactVal(props?.val?.link)

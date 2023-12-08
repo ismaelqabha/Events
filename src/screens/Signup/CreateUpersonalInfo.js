@@ -12,9 +12,8 @@ import SearchContext from '../../../store/SearchContext';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 
 const CreateUpersonalInfo = (props) => {
+    const { userId} = useContext(SearchContext);
     const {
-        userId,
-        setuserId,
         userName,
         setUserName,
         userEmail,
@@ -29,7 +28,7 @@ const CreateUpersonalInfo = (props) => {
         setUserStatus,
         profilePhoto,
         setProfilePhoto
-    } = useContext(SearchContext);
+    } = useContext(UsersContext);
 
     const [userNameError, setUserNameError] = useState(false)
     const [emailError, setEmailError] = useState(false)
@@ -262,11 +261,15 @@ const CreateUpersonalInfo = (props) => {
         }
     };
     const SaveImg = source => {
+    };
+    const SaveImg = source => {
         if (source) {
             setProfilePhoto(source);
         } else {
             console.log('error source isnt legable, source is :', source);
+            console.log('error source isnt legable, source is :', source);
         }
+    };
     };
 
     return (

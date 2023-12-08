@@ -5,36 +5,25 @@ import { colors } from '../../assets/AppColors'
 import Entypo from "react-native-vector-icons/Entypo";
 import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
-import SearchContext from '../../../store/SearchContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 
 const SetUserStatus = (props) => {
-  const { userSpecialDate, setUserSpecialDate } = useContext(SearchContext);
-  const [eventTitle, setEventTitle] = useState(null);
-  const [eventDate, setEventDate] = useState('DD/MM/YYYY');
-
-  const [eventFields, setEventFields] = useState(0)
-
-  const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(false);
-  const [date, setDate] = useState(new Date());
+  const { userSpecialDate, setUserSpecialDate } = useContext(UsersContext);
 
   const onPressBack = () => {
     props.navigation.goBack();
   }
 
   const RenderFooter = () => {
-    return <View>
-      <View style={styles.footer}>
+    return (
+      <View style={AppStyles.footer}>
         {renderDots()}
         <View style={AppStyles.footerPart}>
           {RenderBackButton()}
           {RenderNextButton()}
         </View>
-
-      </View>
-    </View>;
+      </View>);
   };
   const renderDots = () => {
     return (
@@ -74,24 +63,6 @@ const SetUserStatus = (props) => {
       : missingData();
   };
 
-  // const addNewSpcialEvent = () => {
-  //   if (eventTitle.trim().length > 0 && doesntExists()) {
-  //     const AddNewEvent = {
-  //       Eventitle: eventTitle,
-  //       EventDate: eventDate
-  //     };
-  //     setUserSpecialDate([...userSpecialDate, AddNewEvent]);
-  //     setEventTitle('');
-  //   }
-  // };
-
-
-  // const doesntExists = () => {
-  //   let exists = userSpecialDate.findIndex(
-  //     val => val?.detailTitle.toLowerCase() === eventTitle.toLowerCase(),
-  //   );
-  //   return exists == -1 ? true : false;
-  // };
 
   const checkStrings = val => {
     if (!val) {
@@ -126,17 +97,9 @@ const SetUserStatus = (props) => {
     return fields
   }
 
-  // const renderEventItems = () => {
-  //   const fiedls = []
-  //   for (let index = 0; index < eventFields; index++) {
-  //     fiedls.push(renderAddevent())
-  //   }
-  //   return fiedls
-  // }
 
   const updateSpecialEventArray = (data) => {
     var i = userSpecialDate.findIndex((val) => val.specialEventTitle === data.specialEventTitle || val.specialEventDate === data.specialEventDate)
-    console.log("i ", i);
     if (i == -1) {
       var temp = userSpecialDate.findIndex((val) => val.empty === "empty")
       var newArr = userSpecialDate
@@ -167,29 +130,37 @@ const SetUserStatus = (props) => {
       </View>
     </View>)
   }
-  const onChange = (event, selectedDate) => {
-    setShow(false)
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
 
-    let tempDate = new Date(currentDate);
-    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
-
-    setEventDate(fDate);
-  }
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  }
-  const onSetEventDate = (evTitle, evDate) => {
-    showMode('date')
-    const data = {
-      specialEventTitle: evTitle,
-      specialEventDate: evDate,
-    }
-    updateSpecialEventArray(data)
-  }
   const EventItemComponent = () => {
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+    const [date, setDate] = useState(new Date());
+    const [eventTitle, setEventTitle] = useState(null);
+    const [eventDate, setEventDate] = useState('DD/MM/YYYY');
+
+
+    const onChange = (event, selectedDate) => {
+      setShow(false)
+      const currentDate = selectedDate || date;
+      setDate(currentDate);
+
+      let tempDate = new Date(currentDate);
+      let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+
+      setEventDate(fDate);
+    }
+    const showMode = (currentMode) => {
+      setShow(true);
+      setMode(currentMode);
+    }
+    const onSetEventDate = (evTitle, evDate) => {
+      showMode('date')
+      const data = {
+        specialEventTitle: evTitle,
+        specialEventDate: evDate,
+      }
+      updateSpecialEventArray(data)
+    }
     return (
       <View style={styles.eventItem}>
         <TextInput
@@ -206,9 +177,11 @@ const SetUserStatus = (props) => {
             updateSpecialEventArray(data)
           }}
         />
-        <Pressable onPress={onSetEventDate(eventTitle, eventDate)}>
+        <Pressable
+          onPress={() => onSetEventDate(eventTitle, eventDate)}
+        >
           <View style={styles.Bdate}>
-            <Text>{eventDate}</Text>
+            <Text >{eventDate}</Text>
             <Entypo
               style={styles.logoDate}
               name={"calendar"}
@@ -351,11 +324,5 @@ const styles = StyleSheet.create({
   eventScroll: {
     height: 250,
   },
-  footer: {
-    paddingVertical: 30,
-    marginRight: 40,
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: -190,
-  },
+
 })

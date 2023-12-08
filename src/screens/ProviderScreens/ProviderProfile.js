@@ -54,6 +54,10 @@ const ProviderProfile = (props) => {
     const onCreatePress = () => {
         props.navigation.navigate(ScreenNames.ProviderCreateListing)
     }
+    const createOfferPress = () => {
+        props.navigation.navigate(ScreenNames.ProviderCreateOffer, {isFirst, serviceCat})
+    }
+
     const renderClients = () => {
         return (<View>
             <Pressable style={styles.item}>
@@ -117,9 +121,6 @@ const ProviderProfile = (props) => {
             </Pressable>
         </View>)
     }
-    const createOfferPress = () => {
-        props.navigation.navigate(ScreenNames.ProviderCreateOffer, {isFirst, serviceCat})
-    }
     const renderAddCampaign = () => {
         return (<View>
             <Pressable style={styles.item} onPress={() => createOfferPress()}>
@@ -130,6 +131,38 @@ const ProviderProfile = (props) => {
                     <Entypo
                         style={styles.icon}
                         name={"plus"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
+        </View>)
+    }
+    const renderDetermineRegion = () => {
+        return (<View>
+            <Pressable style={styles.item} onPress={() => createOfferPress()}>
+                <View>
+                    <Text style={styles.basicInfo}>تحديد مناطق العمل</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <AntDesign
+                        style={styles.icon}
+                        name={"select1"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
+        </View>)
+    }
+    const renderSetEventsType = () => {
+        return (<View>
+            <Pressable style={styles.item} onPress={() => createOfferPress()}>
+                <View>
+                    <Text style={styles.basicInfo}>تحديد أنواع المناسبات </Text>
+                </View>
+                <View style={styles.IconView}>
+                    <AntDesign
+                        style={styles.icon}
+                        name={"select1"}
                         color={colors.puprble}
                         size={25} />
                 </View>
@@ -258,6 +291,12 @@ const ProviderProfile = (props) => {
                 <View style={styles.content}>
                     {renderAddCampaign()}
                 </View>
+                <View style={styles.content}>
+                    {renderDetermineRegion()}
+                </View>
+                <View style={styles.content}>
+                    {renderSetEventsType()}
+                </View>
                 {seprator()}
                 
             </ScrollView>
@@ -272,8 +311,6 @@ const styles = StyleSheet.create({
         backgroundColor: colors.BGScereen,
         marginBottom: 70
     },
-
-
     headView: {
         marginTop: 20,
         marginRight: 20,

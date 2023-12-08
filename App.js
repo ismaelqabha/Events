@@ -6,6 +6,8 @@ import 'react-native-gesture-handler';
 import MainNavigation from '../Events/route/nav';
 import SearchProvider from '../Events/store/SearchProvider';
 import ServiceProviderProvider from './store/ServiceProviderProvider';
+import UsersContext from './store/UsersContext';
+import UsersProvider from './store/UsersProvider';
 
 const App = () => {
   LogBox.ignoreLogs([
