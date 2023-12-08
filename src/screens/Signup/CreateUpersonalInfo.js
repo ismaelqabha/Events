@@ -138,7 +138,8 @@ const CreateUpersonalInfo = (props) => {
     }
 
     const renderPersonalInfo = () => {
-        return (<View>
+        return (
+        <View>
             <View style={styles.inputView}>
                 {userNameError && (
                     <Text style={styles.textRequired}>*</Text>
@@ -260,8 +261,7 @@ const CreateUpersonalInfo = (props) => {
             SaveImg(imageUri);
         }
     };
-    const SaveImg = source => {
-    };
+
     const SaveImg = source => {
         if (source) {
             setProfilePhoto(source);
@@ -269,7 +269,6 @@ const CreateUpersonalInfo = (props) => {
             console.log('error source isnt legable, source is :', source);
             console.log('error source isnt legable, source is :', source);
         }
-    };
     };
 
     return (
