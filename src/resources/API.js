@@ -1,5 +1,5 @@
-const baseUrl = 'https://ev-server.onrender.com/';
-//const baseUrl = "http://localhost:7000/"
+// const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = "http://localhost:7000/"
 
 // Users
 export const getUserData = async (body) => {
@@ -10,8 +10,12 @@ export const addUser = async (AddNewUser , UserPhoto) => {
     const url = 'Users/create'
     try {
       const formData = new FormData();
-      formData.append("UserPhoto",UserPhoto)
-      formData.append("UserData",AddNewUser)
+      formData.append("UserPhoto",{
+        uri:UserPhoto,
+        type: 'image/jpeg',
+        name: `userPhoto.jpg`,
+      })
+      formData.append("UserData",JSON.stringify(AddNewUser))
       const headers={
         'Content-Type': 'multipart/form-data',
       }
