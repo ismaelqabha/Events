@@ -250,30 +250,10 @@ const ProviderAddInfo = props => {
       </View>
     );
   };
-  const renderHallType = () => {
-    return (
-      <View>
-        <View style={styles.viewwholeInput}>
-          <View>
-            <AntDesign
-              name={"question"}
-              color={colors.puprble}
-              size={20} />
-          </View>
-          <View style={styles.itemView}>
-            {desError && (
-              <Text style={styles.textRequired}>{language.titleRequired}</Text>
-            )}
-            <Text style={styles.text}> {language.hallType}</Text>
-          </View>
-        </View>
-        <View style={styles.hallType}></View>
-      </View>
-    )
-  }
+
   const renderHallCapacity = () => {
     return (
-      <View>
+      <View style={{ marginBottom: 30 }}>
         <View style={styles.viewwholeInput}>
           <View>
             <AntDesign
@@ -282,18 +262,22 @@ const ProviderAddInfo = props => {
               size={20} />
           </View>
           <View style={styles.itemView}>
-            {desError && (
-              <Text style={styles.textRequired}>{language.titleRequired}</Text>
+            {(titleError || titleLengthError) && (
+              <Text style={styles.textRequired}>
+                {titleError ? language.titleRequired : language.titleLengthError}
+              </Text>
             )}
-            <Text style={styles.text}> {language.hallCapsity}</Text>
+            <Text style={styles.text}>{language.HallCapacity}</Text>
           </View>
         </View>
         <TextInput
-          style={styles.capsityInput}
-          keyboardType='number-pad'
-          maxLength={300}
-          onChangeText={value => {}}
-          //value={}
+          style={styles.titleInput}
+          keyboardType="numeric"
+          maxLength={7}
+          onChangeText={value => {
+            setHallCapacity(value)
+          }}
+          value={hallCapacity}
         />
       </View>
     )
@@ -307,8 +291,6 @@ const ProviderAddInfo = props => {
         {RenderTitleBox()}
         {RenderSubTitleBox()}
         {RenderDescription()}
-        {renderHallType()}
-        {renderHallCapacity()}
       </View>
     );
   };
@@ -321,55 +303,26 @@ const ProviderAddInfo = props => {
     return (
       <View style={[styles.borderAddressView, AppStyles.shadow]}>
         <Text style={styles.headText}>{language.HallHeadText}</Text>
-        
-        <View style={styles.HallTypesView}>
-          {(titleError || titleLengthError) && (
-            <Text style={styles.textRequired}>
-              {titleError ? language.titleRequired : language.titleLengthError}
-            </Text>
-          )}
-          <Text style={styles.text}>{language.HallType}</Text>
-        </View>
+
+        {renderHallTypesHeader()}
         <View style={styles.hallType}>{renderHallTyes()}</View>
 
-        <View style={{ marginBottom: 30 }}>
-          <View style={styles.viewwholeInput}>
-            <View>
-              <AntDesign
-                name={"question"}
-                color={colors.puprble}
-                size={20} />
-            </View>
-            <View style={styles.itemView}>
-              {(titleError || titleLengthError) && (
-                <Text style={styles.textRequired}>
-                  {titleError ? language.titleRequired : language.titleLengthError}
-                </Text>
-              )}
-              <Text style={styles.text}>{language.HallCapacity}</Text>
-            </View>
-          </View>
-          <TextInput
-            style={styles.titleInput}
-            keyboardType="numeric"
-            maxLength={7}
-            onChangeText={value => {
-              setHallCapacity(value)
-            }}
-            value={hallCapacity}
-          />
-        </View>
-        <SelectList
-          data={hallData}
-          setSelected={val => {
-            let HallType = hallData.find(type => type.key == val);
-            setHallType(HallType.value);
-          }}
-          placeholder={hallType || language.HallType}
-          boxStyles={[styles.dropdown, { marginBottom: 25 }]}
-          inputstyles={styles.droptext}
-          dropdownTextstyles={styles.dropstyle}
-        />
+        {renderHallCapacity()}
+      </View>
+    )
+  }
+
+
+
+  const renderHallTypesHeader = () => {
+    return (
+      <View style={styles.HallTypesView}>
+        {(titleError || titleLengthError) && (
+          <Text style={styles.textRequired}>
+            {titleError ? language.titleRequired : language.titleLengthError}
+          </Text>
+        )}
+        <Text style={styles.text}>{language.HallType}</Text>
       </View>
     )
   }
@@ -479,7 +432,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
   },
- 
+
   viewwholeInput: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -490,7 +443,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 
   },
-  HallTypesView:{
+  HallTypesView: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     alignSelf: 'flex-end',
@@ -501,7 +454,7 @@ const styles = StyleSheet.create({
   },
 
   borderTitleView: {
-    height: 720,
+    height: 520,
     width: "90%",
     borderRadius: 20,
     marginBottom: 30,
@@ -591,7 +544,7 @@ const styles = StyleSheet.create({
     color: 'black',
     backgroundColor: 'white',
   },
-  
+
   descInput: {
     textAlign: 'right',
     height: 200,
@@ -603,7 +556,7 @@ const styles = StyleSheet.create({
     color: 'black',
     backgroundColor: 'white',
   },
-  capsityInput:{
+  capsityInput: {
     textAlign: 'right',
     height: 40,
     width: 315,

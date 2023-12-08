@@ -74,6 +74,7 @@ const ProviderSetPhotos = props => {
           let options = {
           mediaType: 'photo',
           includeBase64: false,
+            
         };
 
         launchImageLibrary(options, response => GalleryImageResponse(response));

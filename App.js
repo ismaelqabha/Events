@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 
-import {LogBox, StyleSheet, View, YellowBox} from 'react-native';
+import { LogBox, StyleSheet, View, YellowBox } from 'react-native';
 import 'react-native-gesture-handler';
 
 import MainNavigation from '../Events/route/nav';
@@ -21,13 +21,13 @@ const App = () => {
   }, []);
 
   return (
-    <ServiceProviderProvider>
-      <SearchProvider>
-        <View style={{flex: 1}}>
+    <SearchProvider>
+      <ServiceProviderProvider>
+        <View style={{ flex: 1 }}>
           <MainNavigation />
         </View>
-      </SearchProvider>
-    </ServiceProviderProvider>
+      </ServiceProviderProvider>
+    </SearchProvider>
   );
 };
 
