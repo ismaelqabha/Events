@@ -1,15 +1,25 @@
 import { StyleSheet, Text, View, Pressable, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { colors } from '../assets/AppColors'
+import ServiceProviderContext from '../../store/ServiceProviderContext'
 
 
-const HallTypeCard = (props) => {
+const HallTypeCard = (props) => {   
+
+    const {hallType,setHallType} = useContext(ServiceProviderContext)
 
     const [HallPress, setHallPress] = useState(false)
 
-    const onHallTypePress= () => {
-
+    const onHallTypePress=  () => {
+      setHallType(props.hallType)
     }
+    useEffect(()=>{
+        if (hallType !== props.hallType) {
+            setHallPress(false)
+        }else{
+            setHallPress(true)
+        }
+    },[hallType])
     
     return (
         <View style={styles.container}>

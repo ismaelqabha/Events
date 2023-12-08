@@ -6,9 +6,21 @@ export const getUserData = async (body) => {
     const url = 'Users/getUserInfo'
     return await AppFetch(url, 'POST', body)
 }
-export const addUser = async (body) => {
+export const addUser = async (AddNewUser , UserPhoto) => {
     const url = 'Users/create'
-    return await AppFetch(url, 'POST', body)
+    try {
+      const formData = new FormData();
+      formData.append("UserPhoto",UserPhoto)
+      formData.append("UserData",AddNewUser)
+      const headers={
+        'Content-Type': 'multipart/form-data',
+      }
+    
+      return await AppFetch(url, 'POST', formData ,headers)
+      
+    } catch (error) {
+      
+    }
 }
 export const signIn = async (body) => {
   const url = 'Users/login'

@@ -6,6 +6,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
 
 const SetUserStatus = (props) => {
@@ -208,17 +209,19 @@ const SetUserStatus = (props) => {
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <View style={styles.body}>
-        <Text style={styles.titleText}>تواريخ خاصة</Text>
-        {renderUserSpecialDates()}
+      <ScrollWrapper onNextPress={onNextPress} dotPlace={2} amountDots={4}
+      >
+        <View style={styles.body}>
+          <Text style={styles.titleText}>تواريخ خاصة</Text>
+          {renderUserSpecialDates()}
 
-        <View style={styles.eventScroll}>
-          <ScrollView>
-            {renderEventItems()}
-          </ScrollView>
+          <View style={styles.eventScroll}>
+            <ScrollView>
+              {renderEventItems()}
+            </ScrollView>
+          </View>
         </View>
-      </View>
-      {RenderFooter()}
+      </ScrollWrapper>
     </View>
   )
 }

@@ -8,6 +8,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { regionData } from '../../resources/data';
 import { getCities } from '../../resources/API';
 import { ScrollView } from 'react-native-gesture-handler';
+import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
 
 const SetUserAddress = (props) => {
@@ -178,11 +179,14 @@ const SetUserAddress = (props) => {
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <View style={styles.body}>
-        <Text style={styles.titleText}>العنوان</Text>
-        {RenderLocationDetails()}
-      </View>
-      {RenderFooter()}
+      <ScrollWrapper onNextPress={onNextPress} dotPlace={1} amountDots={4}
+      >
+        <View style={styles.body}>
+          <Text style={styles.titleText}>العنوان</Text>
+          {RenderLocationDetails()}
+        </View>
+      </ScrollWrapper>
+
     </View>
   )
 }
