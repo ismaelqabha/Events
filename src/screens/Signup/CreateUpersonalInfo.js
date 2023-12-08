@@ -10,12 +10,12 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
 import { AppStyles } from '../../assets/res/AppStyles';
+import UsersContext from '../../../store/UsersContext';
 
 
 const CreateUpersonalInfo = (props) => {
+    const { userId} = useContext(SearchContext);
     const {
-        userId,
-        setuserId,
         userName,
         setUserName,
         userEmail,
@@ -28,9 +28,9 @@ const CreateUpersonalInfo = (props) => {
         setUserGender,
         userStatus,
         setUserStatus,
-        profilePhoto, 
+        profilePhoto,
         setProfilePhoto
-    } = useContext(SearchContext);
+    } = useContext(UsersContext);
 
     const [userNameError, setUserNameError] = useState(false)
     const [emailError, setEmailError] = useState(false)
@@ -47,12 +47,12 @@ const CreateUpersonalInfo = (props) => {
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [date, setDate] = useState(new Date());
-    
+
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    const onChange = (event,selectedDate) => {
+    const onChange = (event, selectedDate) => {
         setShow(false)
         const currentDate = selectedDate || date;
         setDate(currentDate);
@@ -66,7 +66,7 @@ const CreateUpersonalInfo = (props) => {
         setShow(true);
         setMode(currentMode);
     }
-   
+
     const RenderFooter = () => {
         return <View style={styles.footer}>
             {renderDots()}
@@ -260,36 +260,36 @@ const CreateUpersonalInfo = (props) => {
     }
     const onAddImgPress = async () => {
         try {
-              let options = {
-              mediaType: 'photo',
-              includeBase64: false,
+            let options = {
+                mediaType: 'photo',
+                includeBase64: false,
             };
             launchImageLibrary(options, response => GalleryImageResponse(response));
-          }
-         catch (error) {
-          console.error(error);
         }
-      };
+        catch (error) {
+            console.error(error);
+        }
+    };
 
-      const GalleryImageResponse = response => {
+    const GalleryImageResponse = response => {
         if (response.didCancel) {
-          console.log('User Cancelled');
+            console.log('User Cancelled');
         } else if (response.error) {
-          console.log('Gallery Error : ', response.error);
+            console.log('Gallery Error : ', response.error);
         } else if (response.customButton) {
-          console.log('User tapped custom Button ', response.customButton);
+            console.log('User tapped custom Button ', response.customButton);
         } else {
-          let imageUri = response.uri || response.assets?.[0]?.uri;
-          SaveImg(imageUri);
+            let imageUri = response.uri || response.assets?.[0]?.uri;
+            SaveImg(imageUri);
         }
-      };
-      const SaveImg = source => {
+    };
+    const SaveImg = source => {
         if (source) {
-          setProfilePhoto(source);
+           // setProfilePhoto(source);
         } else {
-          console.log('error source isnt legable, source is :', source);
+            console.log('error source isnt legable, source is :', source);
         }
-      };
+    };
 
     return (
         <View style={styles.container}>
@@ -307,7 +307,7 @@ const CreateUpersonalInfo = (props) => {
 
             <ScrollView>
                 <View style={styles.userImg}>
-                    <Image style={styles.profilImg} source={profilePhoto ? {uri: profilePhoto} : require('../../assets/photos/user.png')} />
+                    <Image style={styles.profilImg} source={profilePhoto ? { uri: profilePhoto } : require('../../assets/photos/user.png')} />
                     <Pressable style={styles.editImg} onPress={onAddImgPress}>
                         <Entypo
                             name={"camera"}

@@ -60,6 +60,7 @@ const ContactComp = () => {
     const SocialMediaComp = (props) => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
+        
         useEffect(()=>{
             console.log("val ", props.val);
             if (props.val) {

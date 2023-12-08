@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
 import { favoritesList, fileFavorites, Events, Request, Payment, serviceDetail, subDetail, subDetailData, servicesData, ServiceImages, Users } from '../src/resources/data';
 import SearchContext from '../store/SearchContext';
-import { v4 as uuidv4 } from 'uuid';
 
 
 const SearchProvider = props => {
 
   //user
   const [userId, setuserId] = useState(1);
-  const [userInfo, setUserInfo] = useState([]);
-  const [userName, setUserName] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
-  const [userPhone, setUserPhone] = useState(null);
-  const [userBD, setUserBD] = useState(null);
-  const [userGender, setUserGender] = useState(null);
-  const [userStatus, setUserStatus] = useState(null);
-  const [userCity, setUserCity] = useState(null);
-  const [createUserRegion, setCreateUserRegion] = useState(null);
-  const [userSpecialDate, setUserSpecialDate] = useState([]);
-  const [password, setPassword] = useState(null);
-  const [confirmPassword, setconfirmPassword] = useState(null);
-  const [profilePhoto, setProfilePhoto] = useState(null);
-
-
+  // const [userInfo, setUserInfo] = useState([]);
+  // const [userName, setUserName] = useState(null);
+  // const [userEmail, setUserEmail] = useState(null);
+  // const [userPhone, setUserPhone] = useState(null);
+  // const [userBD, setUserBD] = useState(null);
+  // const [userGender, setUserGender] = useState(null);
+  // const [userStatus, setUserStatus] = useState(null);
+  // const [userCity, setUserCity] = useState(null);
+  // const [createUserRegion, setCreateUserRegion] = useState(null);
+  // const [userSpecialDate, setUserSpecialDate] = useState([]);
+  // const [password, setPassword] = useState(null);
+  // const [confirmPassword, setconfirmPassword] = useState(null);
+  // const [profilePhoto, setProfilePhoto] = useState(null);
 
 
   const [cat, setCat] = useState('');
@@ -37,6 +34,7 @@ const SearchProvider = props => {
   // Data service favorites
   const [userFavorates, setUserFavorates] = useState([])
   const [fileFavoriteState, setFileFavoriteState] = useState([])
+
   // service Info
   const [ServiceDataInfo, setServiceDataInfo] = useState([])
   const [ServiceImages, setServiceImages] = useState([])
@@ -90,32 +88,32 @@ const SearchProvider = props => {
       value={{
         userId,
         setuserId,
-        userName, 
-        setUserName,
-        userEmail, 
-        setUserEmail,
-        userPhone, 
-        setUserPhone,
-        userBD, 
-        setUserBD,
-        userInfo,
-        setUserInfo,
-        userGender, 
-        setUserGender,
-        userStatus, 
-        setUserStatus,
-        userCity, 
-        setUserCity,
-        createUserRegion, 
-        setCreateUserRegion,
-        userSpecialDate, 
-        setUserSpecialDate,
-        password, 
-        setPassword,
-        confirmPassword, 
-        setconfirmPassword,
-        profilePhoto, 
-        setProfilePhoto,
+        // userName, 
+        // setUserName,
+        // userEmail, 
+        // setUserEmail,
+        // userPhone, 
+        // setUserPhone,
+        // userBD, 
+        // setUserBD,
+        // userInfo,
+        // setUserInfo,
+        // userGender, 
+        // setUserGender,
+        // userStatus, 
+        // setUserStatus,
+        // userCity, 
+        // setUserCity,
+        // createUserRegion, 
+        // setCreateUserRegion,
+        // userSpecialDate, 
+        // setUserSpecialDate,
+        // password, 
+        // setPassword,
+        // confirmPassword, 
+        // setconfirmPassword,
+        // profilePhoto, 
+        // setProfilePhoto,
         cat,
         setCat,
         isFirst,

@@ -6,16 +6,17 @@ import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
 import { addUser } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
 
 
 const CreatePassword = (props) => {
+
+  const { userId } = useContext(SearchContext);
 
   const { password,
     setPassword,
     confirmPassword,
     setconfirmPassword,
-    userId,
-    setuserId,
     userInfo,
     setUserInfo,
     userName,
@@ -26,7 +27,7 @@ const CreatePassword = (props) => {
     userStatus,
     userCity,
     createUserRegion,
-    userSpecialDate, profilePhoto } = useContext(SearchContext);
+    userSpecialDate, profilePhoto } = useContext(UsersContext);
 
   const [firstPasswordError, setFirstPasswordError] = useState()
   const [secondPasswordError, setSecondPasswordError] = useState()
@@ -59,10 +60,11 @@ const CreatePassword = (props) => {
       UserbirthDate: userBD,
       UserRegion: createUserRegion,
       UserCity: userCity,
-      //UserLocation: req.body.UserLocation,
       Userstatus: userStatus,
-      UserPhoto: profilePhoto,
-      // SpecialDates: userSpecialDate,
+      SpecialDates: userSpecialDate,
+      
+      //UserLocation: req.body.UserLocation,
+      //UserPhoto: profilePhoto,
       // UserRelations: ''
     }
     addUser(AddNewUser).then(res => {
@@ -70,6 +72,10 @@ const CreatePassword = (props) => {
       UsersArr.push(AddNewUser);
       setUserInfo([...UsersArr])
       console.log("UsersArr", UsersArr);
+      ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM
+      )
     })
   }
 
@@ -77,10 +83,6 @@ const CreatePassword = (props) => {
     if (checkPassword()) {
       if (!chickIfExist()) {
         addNewUser()
-        ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM
-        )
       } else {
         ToastAndroid.showWithGravity('لديك حساب مسبقا',
           ToastAndroid.SHORT,
@@ -98,16 +100,16 @@ const CreatePassword = (props) => {
 
 
   const RenderFooter = () => {
-    return <View>
-      <View style={styles.footer}>
+    return (
+      <View style={AppStyles.footer}>
         {renderDots()}
         <View style={AppStyles.footerPart}>
           {RenderBackButton()}
           {RenderNextButton()}
         </View>
 
-      </View>
-    </View>;
+
+      </View>);
   };
   const renderDots = () => {
     return (
@@ -255,13 +257,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     backgroundColor: 'lightgray',
-  },
-  footer: {
-    paddingVertical: 30,
-    marginRight: 40,
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: -360,
   },
   inputView: {
     alignItems: 'flex-end',

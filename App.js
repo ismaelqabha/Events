@@ -1,11 +1,13 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 
-import {LogBox, StyleSheet, View, YellowBox} from 'react-native';
+import { LogBox, StyleSheet, View, YellowBox } from 'react-native';
 import 'react-native-gesture-handler';
 
 import MainNavigation from '../Events/route/nav';
 import SearchProvider from '../Events/store/SearchProvider';
 import ServiceProviderProvider from './store/ServiceProviderProvider';
+import UsersContext from './store/UsersContext';
+import UsersProvider from './store/UsersProvider';
 
 const App = () => {
   LogBox.ignoreLogs([
@@ -22,11 +24,13 @@ const App = () => {
 
   return (
     <ServiceProviderProvider>
-      <SearchProvider>
-        <View style={{flex: 1}}>
-          <MainNavigation />
-        </View>
-      </SearchProvider>
+      <UsersProvider>
+        <SearchProvider>
+          <View style={{ flex: 1 }}>
+            <MainNavigation />
+          </View>
+        </SearchProvider>
+      </UsersProvider>
     </ServiceProviderProvider>
   );
 };
