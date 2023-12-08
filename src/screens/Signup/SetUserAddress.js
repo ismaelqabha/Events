@@ -9,6 +9,7 @@ import { regionData } from '../../resources/data';
 import { getCities } from '../../resources/API';
 import { ScrollView } from 'react-native-gesture-handler';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
+import UsersContext from '../../../store/UsersContext';
 
 const SetUserAddress = (props) => {
   const { userCity,

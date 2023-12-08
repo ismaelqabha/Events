@@ -7,6 +7,7 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
 import { addUser } from '../../resources/API';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
+import UsersContext from '../../../store/UsersContext';
 
 
 const CreatePassword = (props) => {

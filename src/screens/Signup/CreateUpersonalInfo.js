@@ -10,9 +10,10 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
+import UsersContext from '../../../store/UsersContext';
 
 const CreateUpersonalInfo = (props) => {
-    const { userId} = useContext(SearchContext);
+    const { userId } = useContext(SearchContext);
     const {
         userName,
         setUserName,
@@ -139,101 +140,101 @@ const CreateUpersonalInfo = (props) => {
 
     const renderPersonalInfo = () => {
         return (
-        <View>
-            <View style={styles.inputView}>
-                {userNameError && (
-                    <Text style={styles.textRequired}>*</Text>
-                )}
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                    placeholder='الاسم'
-                    onChangeText={setUserName}
-
-                />
-            </View>
-            <View style={styles.inputView}>
-                {emailError && (
-                    <Text style={styles.textRequired}>*</Text>
-                )}
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                    placeholder='البريد الألكتروني'
-                    onChangeText={setUserEmail}
-
-                />
-            </View>
-            <View style={styles.inputView}>
-                {userPhoneError && (
-                    <Text style={styles.textRequired}>*</Text>
-                )}
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                    placeholder='الموبايل'
-                    onChangeText={setUserPhone}
-
-                />
-            </View>
-            <View style={styles.inputView}>
-                {userBDError && (
-                    <Text style={styles.textRequired}>*</Text>
-                )}
-                <Pressable onPress={() => showMode('date')} >
-                    <View style={styles.Bdate}>
-                        <Text>{userBD}</Text>
-                        <Entypo
-                            style={styles.logoDate}
-                            name={"calendar"}
-                            color={"black"}
-                            size={30} />
-                    </View>
-                    {show && (
-                        <DateTimePicker
-                            testID='dateTimePicker'
-                            value={date}
-                            mode={mode}
-                            is24Hour={true}
-                            display='spinner'
-                            onChange={onChange}
-                        />
+            <View>
+                <View style={styles.inputView}>
+                    {userNameError && (
+                        <Text style={styles.textRequired}>*</Text>
                     )}
-                </Pressable>
-            </View>
-            <Text style={{ fontSize: 20, marginRight: 20 }}>الجنس</Text>
-            <View style={styles.gender}>
-                <Pressable style={[malePress ? styles.genderPress : styles.genderNotPres]}
-                    onPress={() => onMalePress()}>
-                    <FontAwesome
-                        name={"male"}
-                        color={colors.puprble}
-                        size={50} />
-                </Pressable>
-                <Pressable style={[femalePress ? styles.genderPress : styles.genderNotPres]}
-                    onPress={() => onFemalePress()}>
-                    <FontAwesome
-                        name={"female"}
-                        color={colors.puprble}
-                        size={50} />
-                </Pressable>
-            </View>
-            <Text style={{ fontSize: 20, marginRight: 20 }}>الحالة الاجتماعية</Text>
-            <View style={styles.status}>
-                <Pressable style={[singlePress ? styles.statusPress : styles.statusNotPres]}
-                    onPress={() => onSinglePress()}>
-                    <Text style={styles.statustxt}>أعزب</Text>
-                </Pressable>
-                <Pressable style={[engagedPress ? styles.statusPress : styles.statusNotPres]}
-                    onPress={() => onEngagedPress()}>
-                    <Text style={styles.statustxt}>خاطب</Text>
-                </Pressable>
-                <Pressable style={[marridPress ? styles.statusPress : styles.statusNotPres]}
-                    onPress={() => onMarridPress()}>
-                    <Text style={styles.statustxt}>متزوج</Text>
-                </Pressable>
-            </View>
-        </View>)
+                    <TextInput
+                        style={styles.input}
+                        keyboardType='default'
+                        placeholder='الاسم'
+                        onChangeText={setUserName}
+
+                    />
+                </View>
+                <View style={styles.inputView}>
+                    {emailError && (
+                        <Text style={styles.textRequired}>*</Text>
+                    )}
+                    <TextInput
+                        style={styles.input}
+                        keyboardType='default'
+                        placeholder='البريد الألكتروني'
+                        onChangeText={setUserEmail}
+
+                    />
+                </View>
+                <View style={styles.inputView}>
+                    {userPhoneError && (
+                        <Text style={styles.textRequired}>*</Text>
+                    )}
+                    <TextInput
+                        style={styles.input}
+                        keyboardType='default'
+                        placeholder='الموبايل'
+                        onChangeText={setUserPhone}
+
+                    />
+                </View>
+                <View style={styles.inputView}>
+                    {userBDError && (
+                        <Text style={styles.textRequired}>*</Text>
+                    )}
+                    <Pressable onPress={() => showMode('date')} >
+                        <View style={styles.Bdate}>
+                            <Text>{userBD}</Text>
+                            <Entypo
+                                style={styles.logoDate}
+                                name={"calendar"}
+                                color={"black"}
+                                size={30} />
+                        </View>
+                        {show && (
+                            <DateTimePicker
+                                testID='dateTimePicker'
+                                value={date}
+                                mode={mode}
+                                is24Hour={true}
+                                display='spinner'
+                                onChange={onChange}
+                            />
+                        )}
+                    </Pressable>
+                </View>
+                <Text style={{ fontSize: 20, marginRight: 20 }}>الجنس</Text>
+                <View style={styles.gender}>
+                    <Pressable style={[malePress ? styles.genderPress : styles.genderNotPres]}
+                        onPress={() => onMalePress()}>
+                        <FontAwesome
+                            name={"male"}
+                            color={colors.puprble}
+                            size={50} />
+                    </Pressable>
+                    <Pressable style={[femalePress ? styles.genderPress : styles.genderNotPres]}
+                        onPress={() => onFemalePress()}>
+                        <FontAwesome
+                            name={"female"}
+                            color={colors.puprble}
+                            size={50} />
+                    </Pressable>
+                </View>
+                <Text style={{ fontSize: 20, marginRight: 20 }}>الحالة الاجتماعية</Text>
+                <View style={styles.status}>
+                    <Pressable style={[singlePress ? styles.statusPress : styles.statusNotPres]}
+                        onPress={() => onSinglePress()}>
+                        <Text style={styles.statustxt}>أعزب</Text>
+                    </Pressable>
+                    <Pressable style={[engagedPress ? styles.statusPress : styles.statusNotPres]}
+                        onPress={() => onEngagedPress()}>
+                        <Text style={styles.statustxt}>خاطب</Text>
+                    </Pressable>
+                    <Pressable style={[marridPress ? styles.statusPress : styles.statusNotPres]}
+                        onPress={() => onMarridPress()}>
+                        <Text style={styles.statustxt}>متزوج</Text>
+                    </Pressable>
+                </View>
+            </View>)
 
     }
     const onAddImgPress = async () => {

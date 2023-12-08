@@ -7,6 +7,7 @@ import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
+import UsersContext from '../../../store/UsersContext';
 
 const SetUserStatus = (props) => {
   const { userSpecialDate, setUserSpecialDate } = useContext(UsersContext);

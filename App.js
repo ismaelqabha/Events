@@ -23,13 +23,15 @@ const App = () => {
   }, []);
 
   return (
-    <SearchProvider>
-      <ServiceProviderProvider>
-        <KeyboardAvoidingView style={{ flex: 1 }}>
-          <MainNavigation />
-        </KeyboardAvoidingView>
-      </ServiceProviderProvider>
-    </SearchProvider>
+    <UsersProvider>
+      <SearchProvider>
+        <ServiceProviderProvider>
+          <KeyboardAvoidingView style={{ flex: 1 }}>
+            <MainNavigation />
+          </KeyboardAvoidingView>
+        </ServiceProviderProvider>
+      </SearchProvider>
+    </UsersProvider>
   );
 };
 
