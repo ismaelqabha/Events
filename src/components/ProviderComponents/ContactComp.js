@@ -16,7 +16,11 @@ const ContactComp = () => {
 
     const language = strings.arabic.ProviderComps.ProviderSocialMediaScreen
     const { socialMediaArray,
-        setSocialMediaArray } = useContext(ServiceProviderContext)
+        setSocialMediaArray,
+        phoneNumer,
+        setPhoneNumer,
+        email,
+        setEmail } = useContext(ServiceProviderContext)
 
     const updateArray = (data) => {
         var i = socialMediaArray.findIndex((val) => val.social === data.social || val.link === data.link)
@@ -34,7 +38,7 @@ const ContactComp = () => {
         //console.log("updated -> ",socialMediaArray);
 
     }
-   
+
 
 
     const addSoialMediaContact = () => {
@@ -60,15 +64,13 @@ const ContactComp = () => {
     const SocialMediaComp = (props) => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
-        
-        useEffect(()=>{
-            console.log("val ", props.val);
+        useEffect(() => {
             if (props.val) {
                 setContactType(props?.val?.social)
                 setContactVal(props?.val?.link)
             }
-        },[])
-        
+        }, [])
+
         return (
             <View key={props?.index} style={styles.mediaItem}>
                 <View style={styles.mediaList}>
@@ -77,7 +79,7 @@ const ContactComp = () => {
                         setSelected={val => {
                             setContactType(socialMediaList[val].value)
                             const data = {
-                                social: contactType,
+                                social: socialMediaList[val].value,
                                 link: contactVal,
                             }
                             updateArray(data)
@@ -99,7 +101,7 @@ const ContactComp = () => {
                         onSubmitEditing={(val) => {
                             const data = {
                                 social: contactType,
-                                link: contactVal,
+                                link: val,
                             }
                             updateArray(data)
                         }}
@@ -110,7 +112,6 @@ const ContactComp = () => {
     }
 
     const renderPhoneField = () => {
-        const [contactVal, setContactVal] = useState(null)
 
         return (
             <View style={styles.contactItem}>
@@ -118,28 +119,22 @@ const ContactComp = () => {
                 <TextInput style={styles.TextInput}
                     keyboardType={'phone-pad'}
                     placeholder={language.Phone}
-                    value={contactVal}
-                    onChangeText={(val) => setContactVal(val)}
+                    value={phoneNumer}
+                    onChangeText={(val) => setPhoneNumer(val)}
                 />
             </View>
         )
     }
     const renderEmailField = () => {
-        const [contactVal, setContactVal] = useState(null)
         const [isWrong, setIsWrong] = useState(false)
 
         const verifyEmail = () => {
-            if (contactVal?.trim()?.length < 1) {
+            if (email?.trim()?.length < 1) {
                 setIsWrong(false)
             }
             else
-                if (emailVerification.test(contactVal)) {
+                if (emailVerification.test(email)) {
                     setIsWrong(false)
-                    const data = {
-                        social: "email",
-                        link: contactVal
-                    }
-                    updateArray(data)
                 } else {
                     setIsWrong(true);
                 }
@@ -164,8 +159,8 @@ const ContactComp = () => {
                     <TextInput style={styles.TextInput}
                         keyboardType={'email-address'}
                         placeholder={language.mail}
-                        value={contactVal}
-                        onChangeText={(val) => setContactVal(val)}
+                        value={email}
+                        onChangeText={(val) => setEmail(val)}
                         onSubmitEditing={(val) => verifyEmail()}
                     />
                 </View>
@@ -269,7 +264,7 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         height: 50,
-        width: 100,
+        width: 250,
         fontSize: 17,
         borderRadius: 10,
         fontWeight: 'bold',

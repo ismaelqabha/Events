@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TextInput } from 'react-native'
-import React,{useContext, useState} from 'react'
+import React, { useContext, useState } from 'react'
 import { colors } from '../../assets/AppColors'
 import strings from '../../assets/res/strings';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
@@ -7,28 +7,14 @@ import Foundation from 'react-native-vector-icons/Foundation';
 import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
-import SearchContext from '../../../store/SearchContext';
-import { addService, addServiceImages } from '../../resources/API';
-import { showMessage } from '../../resources/Functions';
 import { ActivityIndicator } from 'react-native';
+import {onPublishPress} from '../../resources/Functions'
 
 
 const ProviderContantPrice = (props) => {
-  const {
-    serviceAddress,
-    price,
-    serviceRegion,
-    title,
-    SuTitle,
-    description,
-    selectServiceType,
-    workAreas,
-    additionalServices,
-    photoArray,
-    socialMediaArray
-  } = useContext(ServiceProviderContext);
-  const { userId } = useContext(SearchContext);
-  const [loading , setLoading] = useState(false)
+
+  const context = useContext(ServiceProviderContext);
+  const [loading, setLoading] = useState(false)
   const langauge = strings.arabic.ProviderScreens.ProviderContantPrice;
 
   const params = {
@@ -47,38 +33,10 @@ const ProviderContantPrice = (props) => {
       nextStyle: styles.next,
       nextTextStyle: styles.nextText,
       Text: langauge.Next,
-      onPress: () => onPublishPress(),
+      onPress: () => onPublishPress(context.allData),
     },
   };
-  const onPublishPress = async () => {
-    const body = {
-      userID: userId,
-      servType: selectServiceType,
-      title: title,
-      subTitle: SuTitle,
-      desc: description,
-      region: serviceRegion,
-      address: serviceAddress,
-      servicePrice: price,
-      workingRegion: workAreas,
-      additionalServices: additionalServices,
-      socialMedia:socialMediaArray,
-    };
-    setLoading(true)
-    await addService(body)
-    .then(async res => {
-      console.log(' service res ->', res.serviceID);
 
-      await addServiceImages(photoArray,res?.serviceID).then((res)=>{
-        setLoading(false)
-        console.log("images res -> ",res );
-        showMessage("تم حفظ البيانات")
-      })
-    })
-      .catch(e => {
-        console.log('create new event error : ', e);
-      });
-  };
   const onBackPress = () => {
     props.navigation.goBack();
   };
