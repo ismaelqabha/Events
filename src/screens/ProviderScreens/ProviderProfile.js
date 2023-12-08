@@ -286,9 +286,6 @@ const ProviderProfile = (props) => {
                 </View>
                 {seprator()}
                 <View style={styles.content}>
-                    {renderCreateService()}
-                </View>
-                <View style={styles.content}>
                     {renderAddCampaign()}
                 </View>
                 <View style={styles.content}>
@@ -296,6 +293,10 @@ const ProviderProfile = (props) => {
                 </View>
                 <View style={styles.content}>
                     {renderSetEventsType()}
+                </View>
+                {seprator()}
+                <View style={styles.content}>
+                    {renderCreateService()}
                 </View>
                 {seprator()}
                 

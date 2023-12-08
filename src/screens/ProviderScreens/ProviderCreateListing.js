@@ -14,26 +14,25 @@ import SearchContext from '../../../store/SearchContext';
 const ProviderCreateListing = props => {
 
 
-  const { draftServices, setDraftID , setDraftServices } = useContext(ServiceProviderContext)
-  const {userId} = useContext(SearchContext)
+  const { draftServices, setDraftID, setDraftServices } = useContext(ServiceProviderContext)
+  const { userId } = useContext(SearchContext)
   const language = strings.arabic.ProviderScreens.ProviderCreateListing
 
-  useEffect(()=>{
+  useEffect(() => {
     updateDraftServices()
-  },[])
+  }, [])
 
-  const updateDraftServices=async ()=>{
-    await getDraftFromAPI(userId).then((res)=>{
-      if(res?.drafts){
-        console.log("res ->",res);
+  const updateDraftServices = async () => {
+    await getDraftFromAPI(userId).then((res) => {
+      if (res?.drafts) {
+        console.log("res ->", res);
         setDraftServices(res.drafts)
       }
-    }).catch(e=> console.log("error fetching draft services -> ",e))
+    }).catch(e => console.log("error fetching draft services -> ", e))
   }
+
   const onStartPress = () => {
-
     setDraftID(null)
-
     props.navigation.navigate(ScreenNames.ProviderChooseService, {
       data: { ...props },
       isFromChooseServiceClick: true,
@@ -51,7 +50,7 @@ const ProviderCreateListing = props => {
 
   const noDrafts = () => {
     return (
-      <View>
+      <View style={styles.draft}>
         <Text style={{ color: 'black', alignSelf: 'center', fontSize: 20 }}>
           there is no drafts currently
         </Text>
@@ -91,12 +90,21 @@ const ProviderCreateListing = props => {
   const onBackPress = () => {
     props.navigation.goBack();
   }
-
+  const renderCreateService = () => {
+    return <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'flex-end'}}
+      onPress={() => onStartPress()}
+    //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
+    >
+      <Text style={styles.titleTxt}>خدمة جديدة</Text>
+      <AntDesign name="plussquareo" style={styles.plusSquare} />
+    </TouchableOpacity>
+  }
 
   //   create a new service component
   const newService = () => {
     return (
       <View style={styles.title}>
+
         <Pressable onPress={onBackPress}
         >
           <Ionicons
@@ -105,12 +113,8 @@ const ProviderCreateListing = props => {
             color={"black"}
             size={25} />
         </Pressable>
-        <TouchableOpacity
-          onPress={() => onStartPress()}
-        //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
-        >
-          <AntDesign name="plussquareo" style={styles.plusSquare} />
-        </TouchableOpacity>
+        <Text style={styles.titleTxt}>خدمة جديدة</Text>
+
       </View>
     );
   };
@@ -118,12 +122,14 @@ const ProviderCreateListing = props => {
   return (
     <View style={styles.container}>
       {newService()}
-      {seperator()}
+
       <View style={styles.body}>
-        {renderService()}
+
       </View>
 
       <View style={styles.footer}>
+        <View style={{ justifyContent: 'center' }}>{renderService()}</View>
+        <View>{renderCreateService()}</View>
       </View>
     </View>
   );
@@ -142,12 +148,22 @@ const styles = StyleSheet.create({
   body: {
     height: '40%',
     marginTop: 20,
+    borderWidth: 1
   },
   footer: {
-    //alignItems: 'flex-end',
+    height: '40%',
     marginTop: 20,
+    borderWidth: 1
   },
+  draft: {
+    backgroundColor: 'white',
+    width: '90%',
+    alignSelf: 'center',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
 
+  },
   headText: {
     fontSize: 25,
     color: 'black',
@@ -170,13 +186,20 @@ const styles = StyleSheet.create({
     color: '#d3d3d3',
   },
   lessThan: { fontSize: 20, alignSelf: 'center', marginLeft: 30 },
-  plusSquare: { fontSize: 30, alignSelf: 'center', marginRight: 30 },
+  plusSquare: { fontSize: 30, marginRight: 20 },
 
 
   title: {
     flexDirection: 'row',
-    marginTop: 20,
+    // marginTop: 20,
     justifyContent: 'space-between',
+    height: 50,
+    alignItems: 'center'
+  },
+  titleTxt: {
+    fontSize: 18,
+    color: 'black',
+    marginRight: 20,
   },
   icon: {
     alignSelf: 'flex-start',
