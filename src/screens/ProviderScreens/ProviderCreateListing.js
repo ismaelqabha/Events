@@ -46,7 +46,7 @@ const ProviderCreateListing = props => {
     const cardsArray = data.map(draft => {
       return <PoviderServiceListCard body={draft} />;
     });
-    return cardsArray.length < 1 ? noDrafts() : cardsArray
+    return cardsArray //.length < 1 ? noDrafts() : cardsArray
   };
 
   const noDrafts = () => {
@@ -122,9 +122,15 @@ const ProviderCreateListing = props => {
 
   const renderSubsicribeUser = () => {
     return (
-      <View style={styles.welcomingView}>
-       <Text style={styles.welcomingtxt}>مرحبا بك اسماعيل كبها</Text>
-       <Text style={styles.welcomingtxt}>نشكرك على انضمامك لعائلة مناسباتي كمزود خدمات التي تقوم احياء مناسبات الزبائن</Text>
+      <View>
+        <View style={styles.welcomingView}>
+          <Text style={styles.welcomingtxt}>مرحبا بك اسماعيل كبها</Text>
+          <Text style={styles.welcomingtxt}>نشكرك على انضمامك لعائلة مناسباتي كمزود خدمات التي تقوم احياء مناسبات الزبائن</Text>
+        </View>
+        <View style={styles.subscribesView}>
+          <Text style={styles.titleTxt}>إشتراك</Text>
+          <AntDesign name="plussquareo" style={styles.plusSquare} />
+        </View>
       </View>
     )
   }
@@ -138,8 +144,8 @@ const ProviderCreateListing = props => {
       </View>
 
       <View style={styles.footer}>
-        <View style={{ justifyContent: 'center' }}>{renderService()}</View>
         <View>{renderCreateService()}</View>
+        <View style={{ justifyContent: 'center' }}>{renderService()}</View>
       </View>
     </View>
   );
@@ -158,12 +164,12 @@ const styles = StyleSheet.create({
   body: {
     height: '40%',
     marginTop: 20,
-    borderWidth: 1
+    paddingTop: 30
   },
   footer: {
     height: '40%',
     marginTop: 20,
-    borderWidth: 1
+    //borderWidth: 1
   },
   draft: {
     backgroundColor: 'white',
@@ -172,7 +178,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 40,
     justifyContent: 'center',
-
+    marginTop: 60
   },
   headText: {
     fontSize: 25,
@@ -180,7 +186,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Cairo-VariableFont_slnt,wght',
   },
   footerText: {
-    fontSize: 18,
+    fontSize: 15,
     color: 'black',
     marginRight: 30,
     marginBottom: 10,
@@ -196,7 +202,7 @@ const styles = StyleSheet.create({
     color: '#d3d3d3',
   },
   lessThan: { fontSize: 20, alignSelf: 'center', marginLeft: 30 },
-  plusSquare: { fontSize: 30, marginRight: 20 },
+  plusSquare: { fontSize: 30, marginRight: 20, color: colors.puprble },
 
 
   title: {
@@ -214,14 +220,19 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginLeft: 10,
   },
-  welcomingView:{
+  welcomingView: {
     width: '90%',
     alignSelf: 'center'
   },
-  welcomingtxt:{
+  welcomingtxt: {
     fontSize: 18,
     color: colors.puprble,
     marginBottom: 10,
+  },
+  subscribesView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 20
   }
 
 });
