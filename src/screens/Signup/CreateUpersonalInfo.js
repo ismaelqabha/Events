@@ -285,6 +285,8 @@ const CreateUpersonalInfo = (props) => {
 
             <ScrollWrapper
                 onNextPress={onNextPress}
+                dotPlace={0}
+                amountDots={4}
             >
                 <View style={styles.userImg}>
                     <Image style={styles.profilImg} source={profilePhoto ? { uri: profilePhoto } : require('../../assets/photos/user.png')} />

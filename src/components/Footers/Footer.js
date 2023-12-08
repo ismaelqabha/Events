@@ -12,10 +12,10 @@ import { Text } from 'react-native';
 
 const Footer = ({
     footerVisibility,
-    onScrollDirectionChange,
-    onKeyboardVisibilityChange,
     style,
     onNextPress,
+    dotPlace,
+    amountDots
 }) => {
 
     const animatedFooterStyle = useAnimatedStyle(() => {
@@ -27,7 +27,7 @@ const Footer = ({
     const RenderFooter = () => {
 
         return <Animated.View
-            style={[style , animatedFooterStyle]}
+            style={[style, animatedFooterStyle]}
         >
             {renderDots()}
             {RenderNextButton()}
@@ -47,15 +47,20 @@ const Footer = ({
     const renderDots = () => {
         return (
             <View style={AppStyles.createuserDots}>
-                <View style={AppStyles.pressDot}></View>
-                <View style={AppStyles.dots}></View>
-                <View style={AppStyles.dots}></View>
-                <View style={AppStyles.dots}></View>
+                {dots()}
             </View>
         )
     }
 
-    return  RenderFooter() 
+    const dots = () => {
+        const allDots = []
+        for (let index = 0; index < amountDots; index++) {
+            allDots.push(<View style={dotPlace == index ? AppStyles.pressDot : AppStyles.dots}></View>)
+        }
+        return allDots
+    }
+
+    return RenderFooter()
 
 
 

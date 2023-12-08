@@ -8,14 +8,12 @@ import {
 } from 'react-native-reanimated';
 import { Keyboard } from 'react-native';
 
-const ScrollWrapper = ({ onNextPress, children }) => {
+const ScrollWrapper = ({ amountDots, dotPlace, onNextPress, children }) => {
 
     const [scrollDirection, setScrollDirection] = useState('up');
     const [keyboardVisible, setKeyboardVisible] = useState(false);
     const scrollY = useSharedValue(0);
     const footerVisibility = useSharedValue(0);
-
-
 
     useEffect(() => {  // Keyboard Listeners 
         const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
@@ -68,6 +66,8 @@ const ScrollWrapper = ({ onNextPress, children }) => {
                 style={AppStyles.signUpFooter}
                 onNextPress={onNextPress}
                 footerVisibility={footerVisibility}
+                dotPlace={dotPlace}
+                amountDots={amountDots}
             />}
         </View>
     );

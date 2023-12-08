@@ -7,6 +7,7 @@ import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 
 const SetUserStatus = (props) => {
   const { userSpecialDate, setUserSpecialDate } = useContext(SearchContext);
@@ -120,8 +121,8 @@ const SetUserStatus = (props) => {
 
   const renderEventItems = () => {
     const fields = userSpecialDate?.map((val, index) => {
-       return <EventItemComponent val={val} index={index} />
-     })
+      return <EventItemComponent val={val} index={index} />
+    })
     return fields
   }
 
@@ -160,7 +161,7 @@ const SetUserStatus = (props) => {
               style={styles.icon}
               name={"plus"}
               color={colors.puprble}
-              size={30}/>
+              size={30} />
           </View>
         </Pressable>
       </View>
@@ -234,17 +235,19 @@ const SetUserStatus = (props) => {
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <View style={styles.body}>
-        <Text style={styles.titleText}>تواريخ خاصة</Text>
-        {renderUserSpecialDates()}
+      <ScrollWrapper onNextPress={onNextPress} dotPlace={2} amountDots={4}
+      >
+        <View style={styles.body}>
+          <Text style={styles.titleText}>تواريخ خاصة</Text>
+          {renderUserSpecialDates()}
 
-        <View style={styles.eventScroll}>
-          <ScrollView>
-            {renderEventItems()}
-          </ScrollView>
+          <View style={styles.eventScroll}>
+            <ScrollView>
+              {renderEventItems()}
+            </ScrollView>
+          </View>
         </View>
-      </View>
-      {RenderFooter()}
+      </ScrollWrapper>
     </View>
   )
 }

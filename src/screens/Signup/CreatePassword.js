@@ -6,6 +6,7 @@ import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
 import { addUser } from '../../resources/API';
+import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 
 
 const CreatePassword = (props) => {
@@ -200,13 +201,13 @@ const CreatePassword = (props) => {
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-
-      <View style={styles.body}>
-        <Text style={styles.titleText}>تعيين كلمة المرور</Text>
-        {renderPassword()}
-      </View>
-
-      {RenderFooter()}
+      <ScrollWrapper onNextPress={onNextPress} dotPlace={3} amountDots={4}
+      >
+        <View style={styles.body}>
+          <Text style={styles.titleText}>تعيين كلمة المرور</Text>
+          {renderPassword()}
+        </View>
+      </ScrollWrapper>
     </View>
   )
 }
