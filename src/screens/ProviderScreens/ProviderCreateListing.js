@@ -10,6 +10,7 @@ import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { getDraftFromAPI } from '../../resources/API';
 import SearchContext from '../../../store/SearchContext';
+import { colors } from '../../assets/AppColors';
 
 const ProviderCreateListing = props => {
 
@@ -91,7 +92,7 @@ const ProviderCreateListing = props => {
     props.navigation.goBack();
   }
   const renderCreateService = () => {
-    return <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'flex-end'}}
+    return <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'flex-end' }}
       onPress={() => onStartPress()}
     //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
     >
@@ -119,12 +120,21 @@ const ProviderCreateListing = props => {
     );
   };
 
+  const renderSubsicribeUser = () => {
+    return (
+      <View style={styles.welcomingView}>
+       <Text style={styles.welcomingtxt}>مرحبا بك اسماعيل كبها</Text>
+       <Text style={styles.welcomingtxt}>نشكرك على انضمامك لعائلة مناسباتي كمزود خدمات التي تقوم احياء مناسبات الزبائن</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       {newService()}
 
       <View style={styles.body}>
-
+        {renderSubsicribeUser()}
       </View>
 
       <View style={styles.footer}>
@@ -191,20 +201,28 @@ const styles = StyleSheet.create({
 
   title: {
     flexDirection: 'row',
-    // marginTop: 20,
     justifyContent: 'space-between',
     height: 50,
     alignItems: 'center'
   },
   titleTxt: {
-    fontSize: 18,
-    color: 'black',
+    fontSize: 20,
+    color: colors.puprble,
     marginRight: 20,
   },
   icon: {
     alignSelf: 'flex-start',
     marginLeft: 10,
   },
+  welcomingView:{
+    width: '90%',
+    alignSelf: 'center'
+  },
+  welcomingtxt:{
+    fontSize: 18,
+    color: colors.puprble,
+    marginBottom: 10,
+  }
 
 });
 
