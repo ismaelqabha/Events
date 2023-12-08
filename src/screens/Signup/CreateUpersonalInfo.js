@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, Image } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, Image, Keyboard } from 'react-native'
 import React, { useState, useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -9,8 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
-import { AppStyles } from '../../assets/res/AppStyles';
-
+import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 
 const CreateUpersonalInfo = (props) => {
     const {
@@ -28,7 +27,7 @@ const CreateUpersonalInfo = (props) => {
         setUserGender,
         userStatus,
         setUserStatus,
-        profilePhoto, 
+        profilePhoto,
         setProfilePhoto
     } = useContext(SearchContext);
 
@@ -47,12 +46,11 @@ const CreateUpersonalInfo = (props) => {
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [date, setDate] = useState(new Date());
-    
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    const onChange = (event,selectedDate) => {
+    const onChange = (event, selectedDate) => {
         setShow(false)
         const currentDate = selectedDate || date;
         setDate(currentDate);
@@ -62,36 +60,13 @@ const CreateUpersonalInfo = (props) => {
 
         setUserBD(fDate);
     }
+
+
+
+
     const showMode = (currentMode) => {
         setShow(true);
         setMode(currentMode);
-    }
-   
-    const RenderFooter = () => {
-        return <View style={styles.footer}>
-            {renderDots()}
-            {RenderNextButton()}
-        </View>;
-    };
-    const RenderNextButton = () => {
-        return (
-            <Pressable
-                style={AppStyles.createUserNext}
-                onPress={() => onNextPress()}>
-                <Text style={AppStyles.createUserNextTxt}>التالي</Text>
-            </Pressable>
-        );
-    };
-
-    const renderDots = () => {
-        return (
-            <View style={AppStyles.createuserDots}>
-                <View style={AppStyles.pressDot}></View>
-                <View style={AppStyles.dots}></View>
-                <View style={AppStyles.dots}></View>
-                <View style={AppStyles.dots}></View>
-            </View>
-        )
     }
 
     const onNextPress = () => {
@@ -174,6 +149,7 @@ const CreateUpersonalInfo = (props) => {
                     keyboardType='default'
                     placeholder='الاسم'
                     onChangeText={setUserName}
+
                 />
             </View>
             <View style={styles.inputView}>
@@ -185,6 +161,7 @@ const CreateUpersonalInfo = (props) => {
                     keyboardType='default'
                     placeholder='البريد الألكتروني'
                     onChangeText={setUserEmail}
+
                 />
             </View>
             <View style={styles.inputView}>
@@ -196,6 +173,7 @@ const CreateUpersonalInfo = (props) => {
                     keyboardType='default'
                     placeholder='الموبايل'
                     onChangeText={setUserPhone}
+
                 />
             </View>
             <View style={styles.inputView}>
@@ -260,36 +238,36 @@ const CreateUpersonalInfo = (props) => {
     }
     const onAddImgPress = async () => {
         try {
-              let options = {
-              mediaType: 'photo',
-              includeBase64: false,
+            let options = {
+                mediaType: 'photo',
+                includeBase64: false,
             };
             launchImageLibrary(options, response => GalleryImageResponse(response));
-          }
-         catch (error) {
-          console.error(error);
         }
-      };
+        catch (error) {
+            console.error(error);
+        }
+    };
 
-      const GalleryImageResponse = response => {
+    const GalleryImageResponse = response => {
         if (response.didCancel) {
-          console.log('User Cancelled');
+            console.log('User Cancelled');
         } else if (response.error) {
-          console.log('Gallery Error : ', response.error);
+            console.log('Gallery Error : ', response.error);
         } else if (response.customButton) {
-          console.log('User tapped custom Button ', response.customButton);
+            console.log('User tapped custom Button ', response.customButton);
         } else {
-          let imageUri = response.uri || response.assets?.[0]?.uri;
-          SaveImg(imageUri);
+            let imageUri = response.uri || response.assets?.[0]?.uri;
+            SaveImg(imageUri);
         }
-      };
-      const SaveImg = source => {
+    };
+    const SaveImg = source => {
         if (source) {
-          setProfilePhoto(source);
+            setProfilePhoto(source);
         } else {
-          console.log('error source isnt legable, source is :', source);
+            console.log('error source isnt legable, source is :', source);
         }
-      };
+    };
 
     return (
         <View style={styles.container}>
@@ -305,9 +283,11 @@ const CreateUpersonalInfo = (props) => {
                 <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
             </View>
 
-            <ScrollView>
+            <ScrollWrapper
+                onNextPress={onNextPress}
+            >
                 <View style={styles.userImg}>
-                    <Image style={styles.profilImg} source={profilePhoto ? {uri: profilePhoto} : require('../../assets/photos/user.png')} />
+                    <Image style={styles.profilImg} source={profilePhoto ? { uri: profilePhoto } : require('../../assets/photos/user.png')} />
                     <Pressable style={styles.editImg} onPress={onAddImgPress}>
                         <Entypo
                             name={"camera"}
@@ -320,8 +300,7 @@ const CreateUpersonalInfo = (props) => {
                     {renderPersonalInfo()}
                 </View>
                 <Text>Hi</Text>
-            </ScrollView>
-            {RenderFooter()}
+            </ScrollWrapper>
         </View>
     )
 }
@@ -357,11 +336,7 @@ const styles = StyleSheet.create({
         top: -13,
         right: 10
     },
-    footer: {
-        width: '100%',
-        marginVertical: 20,
-        marginRight: 20,
-    },
+
     profilImg: {
         width: 170,
         height: 170,
