@@ -96,7 +96,7 @@ const ProviderCreateListing = props => {
       onPress={() => onStartPress()}
     //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
     >
-      <Text style={styles.titleTxt}>خدمة جديدة</Text>
+      <Text style={styles.titleTxt}>البدء بخدمة جديدة</Text>
       <AntDesign name="plussquareo" style={styles.plusSquare} />
     </TouchableOpacity>
   }
@@ -125,11 +125,19 @@ const ProviderCreateListing = props => {
       <View>
         <View style={styles.welcomingView}>
           <Text style={styles.welcomingtxt}>مرحبا بك اسماعيل كبها</Text>
-          <Text style={styles.welcomingtxt}>نشكرك على انضمامك لعائلة مناسباتي كمزود خدمات التي تقوم احياء مناسبات الزبائن</Text>
+          <Text style={styles.welcomingtxt}>نشكرك على اختيارك تطبيق مناسباتي لتسويق مصلحتك </Text>
         </View>
         <View style={styles.subscribesView}>
-          <Text style={styles.titleTxt}>إشتراك</Text>
-          <AntDesign name="plussquareo" style={styles.plusSquare} />
+          <Text style={styles.DescTxt}>تطبيق مناسباتي يتيح لك الفرصة للوصول لاكبر عدد ممكن من الزبائن الباحثين عن خدمات للمناسبات </Text>
+          <AntDesign name="check" style={styles.check} />
+        </View>
+        <View style={styles.subscribesView}>
+          <Text style={styles.DescTxt}>التطبيق يمكنك من ادارة جميع عمليات الحجوزات في مصلحتك من قبل الزبائن</Text>
+          <AntDesign name="check" style={styles.check} />
+        </View>
+        <View style={styles.subscribesView}>
+          <Text style={styles.DescTxt}>عند انشائك حساب لمصلحتك على التطبيق ستصبح مستخدم مزود خدمات قابلا لاستقبال طلبات الحجز من قبل الزبائن </Text>
+          <AntDesign name="check" style={styles.check} />
         </View>
       </View>
     )
@@ -162,12 +170,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   body: {
-    height: '40%',
+    height: '70%',
     marginTop: 20,
     paddingTop: 30
   },
   footer: {
-    height: '40%',
+    height: '20%',
     marginTop: 20,
     //borderWidth: 1
   },
@@ -202,7 +210,8 @@ const styles = StyleSheet.create({
     color: '#d3d3d3',
   },
   lessThan: { fontSize: 20, alignSelf: 'center', marginLeft: 30 },
-  plusSquare: { fontSize: 30, marginRight: 20, color: colors.puprble },
+  check: { fontSize: 30, color: colors.puprble },
+  plusSquare: { fontSize: 30, color: colors.puprble, marginRight: 20 },
 
 
   title: {
@@ -212,9 +221,15 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   titleTxt: {
-    fontSize: 20,
+    fontSize: 22,
     color: colors.puprble,
     marginRight: 20,
+  },
+  DescTxt: {
+    fontSize: 18,
+    color: colors.puprble,
+    marginRight: 20,
+    width: '80%'
   },
   icon: {
     alignSelf: 'flex-start',
@@ -225,14 +240,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   welcomingtxt: {
-    fontSize: 18,
+    fontSize: 20,
     color: colors.puprble,
     marginBottom: 10,
   },
   subscribesView: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 20
+    marginTop: 20,
+    width: '90%',
+    alignSelf: 'center',
+
   }
 
 });

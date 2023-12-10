@@ -10,7 +10,7 @@ const ProviderCalender = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    console.log("serviceTitle", serviceTitle);
+    //console.log("serviceTitle", serviceTitle);
     return (
         <View style={styles.container}>
             <View style={styles.title}>

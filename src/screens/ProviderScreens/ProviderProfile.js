@@ -139,7 +139,7 @@ const ProviderProfile = (props) => {
     }
     const renderDetermineRegion = () => {
         return (<View>
-            <Pressable style={styles.item} onPress={() => createOfferPress()}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion)}>
                 <View>
                     <Text style={styles.basicInfo}>تحديد مناطق العمل</Text>
                 </View>
@@ -155,7 +155,7 @@ const ProviderProfile = (props) => {
     }
     const renderSetEventsType = () => {
         return (<View>
-            <Pressable style={styles.item} onPress={() => createOfferPress()}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ProviderSetEventType)}>
                 <View>
                     <Text style={styles.basicInfo}>تحديد أنواع المناسبات </Text>
                 </View>

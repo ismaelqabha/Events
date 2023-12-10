@@ -51,6 +51,7 @@ export const ScreenNames = {
     ProviderSocialMediaScreen : 'ProviderSocialMedia',
     ProviderInitialWithDetailPrice : 'ProviderInitialWithDetailPrice',
     ProviderContantPrice: 'ProviderContantPrice',
+    ProviderSetEventType: 'ProviderSetEventType',
 
 
 
