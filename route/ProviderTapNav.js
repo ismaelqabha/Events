@@ -9,7 +9,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import ProviderHome from '../src/screens/ProviderScreens/ProviderHome';
 import { colors } from '../src/assets/AppColors';
 import ProviderProfile from '../src/screens/ProviderScreens/ProviderProfile';
-import ProviderCalender from '../src/screens/ProviderScreens/ProviderCalender';
+import ProviderNotification from '../src/screens/ProviderScreens/ProviderNotification';
 
 
 const ProviderTapNav = () => {
@@ -44,12 +44,13 @@ const ProviderTapNav = () => {
                     )
                 }}
             />
-            <Tap.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender}
+           
+            <Tap.Screen name={ScreenNames.ProviderCalender} component={ProviderNotification}
                 options={{
-                    title: 'التقويم',
+                    title: 'الاشعارات',
                     drawerIcon: () => (
                         <AntDesign
-                            name='calendar'
+                            name='notification'
                             style={{ fontSize: 30, color: '#1e90ff' }}
                         />
                     )

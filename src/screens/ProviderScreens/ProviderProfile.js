@@ -73,16 +73,16 @@ const ProviderProfile = (props) => {
             </Pressable>
         </View>)
     }
-    const renderNotification = () => {
+    const renderCalender = () => {
         return (<View>
             <Pressable style={styles.item}>
                 <View>
-                    <Text style={styles.basicInfo}>الاشعارات (2)</Text>
+                    <Text style={styles.basicInfo}>التقويم</Text>
                 </View>
                 <View style={styles.IconView}>
                     <AntDesign
                         style={styles.icon}
-                        name={"notification"}
+                        name={"calendar"}
                         color={colors.puprble}
                         size={25} />
                 </View>
@@ -268,10 +268,10 @@ const ProviderProfile = (props) => {
                 </View>
                 {seprator()}
                 <View style={styles.content}>
-                    {renderPayments()}
+                    {renderCalender()}
                 </View>
                 <View style={styles.content}>
-                    {renderNotification()}
+                    {renderPayments()}
                 </View>
                 <View style={styles.content}>
                     {renderClients()}

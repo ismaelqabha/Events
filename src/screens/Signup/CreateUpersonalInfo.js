@@ -60,10 +60,6 @@ const CreateUpersonalInfo = (props) => {
 
         setUserBD(fDate);
     }
-
-
-
-
     const showMode = (currentMode) => {
         setShow(true);
         setMode(currentMode);

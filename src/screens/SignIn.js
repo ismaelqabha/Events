@@ -6,17 +6,18 @@ import { colors } from '../assets/AppColors';
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { getUserData, signIn } from '../resources/API';
+import UsersContext from '../../store/UsersContext';
 
 
 const SignIn = (props) => {
-    const { userId,
-        setuserId,
-        userEmail,
-        password,
-        setPassword,
-        setUserEmail,
-        userInfo,
-        setUserInfo, } = useContext(SearchContext);
+    const { userId,setuserId, } = useContext(SearchContext);
+        const {
+            userEmail,
+            password,
+            setPassword,
+            setUserEmail,
+            userInfo,
+            setUserInfo, } = useContext(UsersContext);
 
     const [verifyUser, setVerifyUser] = useState()
 
@@ -30,7 +31,7 @@ const SignIn = (props) => {
                 )
                 getUserInfo()
                 props.navigation.navigate(ScreenNames.Splash);
-                console.log("id", userId);
+                
             } else {
                 if (res.message === 'not found') {
                     ToastAndroid.showWithGravity('عذرا لا يوجد حساب لهذة البيانات المدخلة',
@@ -50,8 +51,9 @@ const SignIn = (props) => {
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
             setUserInfo(res)
-            console.log("user data", res);
+           // console.log("user data", res);
             renderUserId()
+           
         })
     }
 
