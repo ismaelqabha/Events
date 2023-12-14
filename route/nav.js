@@ -50,6 +50,7 @@ import SetUserAddress from "../src/screens/Signup/SetUserAddress";
 import SetUserStatus from "../src/screens/Signup/SetUserStatus";
 import ProviderCreateOffer from "../src/screens/ProviderScreens/ProviderCreateOffer";
 import ProviderSetEventType from "../src/screens/ProviderScreens/ProviderSetEventType";
+import UserProfile from "../src/screens/UserProfile";
 
 
 
@@ -108,6 +109,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ServiceDetail} component={ServiceDetail} />
                 <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
                 <Stack.Screen name={ScreenNames.Campaigns} component={Campaigns} />
+                <Stack.Screen name={ScreenNames.UserProfile} component={UserProfile} />
                 
                 
 

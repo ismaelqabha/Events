@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const ProviderProfile = (props) => {
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
-    const { userId,setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } = useContext(SearchContext);
+    const { userId, setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } = useContext(SearchContext);
     const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
     const navigation = useNavigation();
 
@@ -33,18 +33,18 @@ const ProviderProfile = (props) => {
 
     const renderMyService = () => {
         const data = serviceInfoAccorUser || [];
-        const cardsArray = data?.map((card,index) => {
-            if(index == 0 && !isFirst){
+        const cardsArray = data?.map((card, index) => {
+            if (index == 0 && !isFirst) {
                 setIsfirst(card.service_id)
                 setserviceTitle(card.title)
                 setServiceCat(card.servType)
             }
-            return <CalenderServiceCard {...card}/>;
+            return <CalenderServiceCard {...card} />;
         });
         return cardsArray;
     };
 
-   
+
 
     const seprator = () => {
         return (
@@ -55,7 +55,7 @@ const ProviderProfile = (props) => {
         props.navigation.navigate(ScreenNames.ProviderCreateListing)
     }
     const createOfferPress = () => {
-        props.navigation.navigate(ScreenNames.ProviderCreateOffer, {isFirst, serviceCat})
+        props.navigation.navigate(ScreenNames.ProviderCreateOffer, { isFirst, serviceCat })
     }
 
     const renderClients = () => {
@@ -75,7 +75,7 @@ const ProviderProfile = (props) => {
     }
     const renderCalender = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ProviderCalender)}>
                 <View>
                     <Text style={styles.basicInfo}>التقويم</Text>
                 </View>
@@ -171,7 +171,6 @@ const ProviderProfile = (props) => {
     }
     const renderSoialMedia = () => {
         return (<View>
-            <Text style={styles.txt}>الشبكات الاجتماعية</Text>
             <View style={styles.item}>
                 <Pressable>
                     <Text style={styles.basicInfo}>اضافة</Text>
@@ -215,7 +214,7 @@ const ProviderProfile = (props) => {
     }
     const renderContactInfo = () => {
         return (<View>
-            <Text style={styles.txt}>معلومات التواصل </Text>
+
             <View style={styles.item}>
                 <View><Text style={styles.basicInfo}>0546126692</Text>
                     <Text style={styles.basicInfoTitle}>الموبايل</Text>
@@ -267,39 +266,35 @@ const ProviderProfile = (props) => {
                     {renderMyService()}
                 </View>
                 {seprator()}
-                <View style={styles.content}>
+                <View style={styles.viewSet}>
                     {renderCalender()}
-                </View>
-                <View style={styles.content}>
                     {renderPayments()}
-                </View>
-                <View style={styles.content}>
                     {renderClients()}
                 </View>
-                {seprator()}
-                <View style={styles.content}>
+
+                <Text style={styles.txt}>معلومات التواصل </Text>
+                <View style={styles.viewSet}>
                     {renderContactInfo()}
                 </View>
-                {seprator()}
-                <View style={styles.content}>
+
+                <Text style={styles.txt}>الشبكات الاجتماعية</Text>
+                <View style={styles.viewSet}>
                     {renderSoialMedia()}
                 </View>
-                {seprator()}
-                <View style={styles.content}>
+
+                <Text style={styles.txt}>العمليات</Text>
+                <View style={styles.viewSet}>
                     {renderAddCampaign()}
-                </View>
-                <View style={styles.content}>
                     {renderDetermineRegion()}
-                </View>
-                <View style={styles.content}>
                     {renderSetEventsType()}
                 </View>
-                {seprator()}
-                <View style={styles.content}>
+
+                <Text style={styles.txt}>جديد</Text>
+                <View style={styles.viewSet}>
                     {renderCreateService()}
                 </View>
-                {seprator()}
                 
+
             </ScrollView>
         </View>
     )
@@ -323,13 +318,22 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
     content: {
-        marginRight: 20,
+        //marginRight: 20,
+
+    },
+    viewSet: {
+        backgroundColor: 'white',
+        width: '90%',
+        alignSelf: 'center',
+        borderRadius: 10,
+        padding: 10
     },
     txt: {
         fontSize: 20,
         color: colors.puprble,
-        marginLeft: 10,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginVertical: 10,
+        marginRight: 20
     },
     basicInfo: {
         fontSize: 18,

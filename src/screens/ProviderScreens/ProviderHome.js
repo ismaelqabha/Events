@@ -363,7 +363,6 @@ const ProviderHome = (props) => {
 
                 </Pressable>
                 <Text style={styles.headerTxt}>خدماتي</Text>
-
             </View>
             <ScrollView>
                 <View style={styles.content}>
@@ -462,12 +461,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 10
+        padding: 10
     },
 
     headerTxt: {
         fontSize: 18,
-        marginRight: 20,
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },

@@ -45,7 +45,7 @@ const ProviderTapNav = () => {
                 }}
             />
            
-            <Tap.Screen name={ScreenNames.ProviderCalender} component={ProviderNotification}
+            <Tap.Screen name={ScreenNames.ProviderNotification} component={ProviderNotification}
                 options={{
                     title: 'الاشعارات',
                     drawerIcon: () => (
