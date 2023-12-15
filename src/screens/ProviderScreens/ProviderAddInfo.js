@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   Animated,
+  Platform,
 } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { ScreenNames } from '../../../route/ScreenNames';
@@ -20,6 +21,9 @@ import { colors } from '../../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import HallTypeCard from '../../components/HallTypeCard';
+import { PERMISSIONS, RESULTS, request } from 'react-native-permissions';
+import { showMessage } from '../../resources/Functions';
+import Geolocation from '@react-native-community/geolocation';
 
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
@@ -48,6 +52,8 @@ const ProviderAddInfo = props => {
     setHallCapacity,
     hallType,
     setHallType,
+    setLatitude,
+    setLongitude
   } = useContext(ServiceProviderContext);
 
   const [detailesHeight, setDetailesHeight] = useState(500);
@@ -108,6 +114,38 @@ const ProviderAddInfo = props => {
       checkLength(description, 300)
       ? true
       : false;
+  };
+
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'android') {
+      const permission = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      if (permission === RESULTS.GRANTED) {
+        getLocation()
+      } else {
+        showMessage("permission denide")
+
+      }
+    } else if (Platform.OS === 'ios') {
+      const permission = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      if (permission === RESULTS.GRANTED) {
+        getLocation()
+      } else {
+        showMessage("permission denide")
+
+      }
+    }
+  };
+
+  const getLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        showMessage("location have been saved")
+      },
+      (err) => showMessage(err.message),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
   };
 
   const checkStrings = val => {
@@ -360,7 +398,7 @@ const ProviderAddInfo = props => {
           dropdownTextstyles={styles.dropstyle}
         />
 
-        <Pressable style={styles.location}>
+        <Pressable style={styles.location} onPress={requestLocationPermission}>
           <Text style={styles.locationTitle}>أضف موقع</Text>
           <View style={styles.IconView}>
             <Entypo

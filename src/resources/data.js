@@ -59,23 +59,24 @@ export const hallData = [
 ];
 
 export const regionData = [
-    { key: '0', value: 'الجليل' },
+    { key: "الجليل الأعلى", value: ["ترشيحا", "حرفيش", "معليا", "البقيعة", "بيت جن", "فسوطة", "المغار","كسرى",  "الرامة" ,"ساجور", "نحف" ," دير الأسد-البعنة" ," وادي سلامة" , "طوبا" , "الزنغرية"] },
     { key: '1', value: 'النقب ' },
     { key: '2', value: 'الساحل' },
     { key: '3', value: 'المثلث الشمالي' },
     { key: '4', value: 'المثلث الجنوبي' },
     { key: '5', value: 'الضفة الغربية' },
+
 ]
 export const socialMediaList = [
     { key: '0', value: 'facebook' },
     { key: '1', value: 'instagram' },
     { key: '2', value: 'tiktok' },
     { key: '3', value: 'youtube' },
-    { key: '4', value: 'X'},
+    { key: '4', value: 'X' },
 ];
 export const mandoteryOptions = [
-    { key: '0', value: 'اجباري' ,alt:"Mandatory" },
-    { key: '1', value: 'اختياري' , alt:"Optional" }
+    { key: '0', value: 'اجباري', alt: "Mandatory" },
+    { key: '1', value: 'اختياري', alt: "Optional" }
 ];
 export const subDetailData = [
     {
@@ -204,7 +205,7 @@ export const servicesCategory = [
 
 
     {
-        cat_id: 18, 
+        cat_id: 18,
         titleCategory: 'مهرج',
         img: (require('../assets/photos/jockerIcon.png')),
     },
