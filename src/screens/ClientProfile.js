@@ -3,8 +3,9 @@ import React from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Fontisto from "react-native-vector-icons/Fontisto";
 import { colors } from "../assets/AppColors"
+import { ScreenNames } from '../../route/ScreenNames';
 
 const ClientProfile = (props) => {
     const backPress = () => {
@@ -19,7 +20,7 @@ const ClientProfile = (props) => {
 
     const renderSpecialEvents = () => {
         return (<View>
-            <Text style={styles.txt}>مناسبات خاصة</Text>
+
             <View style={styles.item}>
                 <Pressable>
                     <Text style={styles.basicInfo}>اضافة</Text>
@@ -61,7 +62,7 @@ const ClientProfile = (props) => {
     }
     const renderRelations = () => {
         return (<View>
-            <Text style={styles.txt}>العلاقات (2)</Text>
+
             <View style={styles.item}>
                 <Pressable>
                     <Text style={styles.basicInfo}>اضافة علاقة</Text>
@@ -108,7 +109,7 @@ const ClientProfile = (props) => {
     }
     const renderReservation = () => {
         return (<View>
-            <Text style={styles.txt}>المناسبات السابقة</Text>
+
             <Pressable style={styles.item}>
                 <View><Text style={styles.basicInfo}>عيد ميلاد أحمد</Text>
                     <Text style={styles.basicInfoTitle}>عيد ميلاد</Text>
@@ -123,16 +124,16 @@ const ClientProfile = (props) => {
             </Pressable>
         </View>)
     }
-    const renderNotification = () => {
+    const renderFavorite = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.FileFavorites)}>
                 <View>
-                    <Text style={styles.basicInfo}>الاشعارات (2)</Text>
+                    <Text style={styles.basicInfo}> المفضلة</Text>
                 </View>
                 <View style={styles.IconView}>
-                    <AntDesign
+                    <Fontisto
                         style={styles.icon}
-                        name={"notification"}
+                        name={"favorite"}
                         color={colors.puprble}
                         size={25} />
                 </View>
@@ -171,7 +172,7 @@ const ClientProfile = (props) => {
             </Pressable>
         </View>)
     }
-    
+
     return (
         <View style={styles.container}>
             <View style={styles.title}>
@@ -187,30 +188,35 @@ const ClientProfile = (props) => {
             </View>
             <ScrollView>
                 <View style={styles.imgView}>
-                    <Text style={styles.userName}>اسماعيل كبها</Text>
+                    <Pressable onPress={() => props.navigation.navigate(ScreenNames.UserProfile)}>
+                        <Text style={styles.userName}>اسماعيل كبها</Text>
+                    </Pressable>
                     <Image style={styles.profilImg} source={require('../assets/photos/user.png')} />
                 </View>
-                <View style={styles.content}>
+                {seprator()}
+
+                <Text style={styles.txt}>الافعال</Text>
+                <View style={styles.viewSet}>
+                    {renderFavorite()}
                     {renderPayments()}
-                </View>
-                <View style={styles.content}>
                     {renderFeedBack()}
                 </View>
-                <View style={styles.content}>
-                    {renderNotification()}
-                </View>
-                {seprator()}
-                <View style={styles.content}>
+
+                <Text style={styles.txt}>مناسبات خاصة</Text>
+                <View style={styles.viewSet}>
                     {renderSpecialEvents()}
                 </View>
-                {seprator()}
-                <View style={styles.content}>
+
+                <Text style={styles.txt}>العلاقات (2)</Text>
+                <View style={styles.viewSet}>
                     {renderRelations()}
                 </View>
-                {seprator()}
-                <View style={styles.content}>
+
+                <Text style={styles.txt}>المناسبات السابقة</Text>
+                <View style={styles.viewSet}>
                     {renderReservation()}
                 </View>
+
             </ScrollView>
         </View>
     )
@@ -270,11 +276,19 @@ const styles = StyleSheet.create({
     content: {
         marginRight: 20,
     },
+    viewSet: {
+        backgroundColor: 'white',
+        width: '90%',
+        alignSelf: 'center',
+        borderRadius: 10,
+        padding: 10
+    },
     txt: {
         fontSize: 20,
         color: colors.puprble,
-        marginLeft: 10,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginVertical: 10,
+        marginRight: 20
     },
     basicInfo: {
         fontSize: 18,

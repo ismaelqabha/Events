@@ -16,7 +16,7 @@ export default function Splash(props) {
             props.navigation.replace('Drawr')
         })
     }
-
+    
     const getDataFromApi = () => {
         getHomePageData({ servType: servType }).then(res => {
             setServiceDataInfo(res)

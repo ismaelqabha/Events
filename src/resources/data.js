@@ -38,6 +38,18 @@ export const servicesData = [
     },
 
 ];
+export const EventType = [
+    { key: '0', eventTitle: 'زفاف', img: (require('../assets/photos/wedding.png')) },
+    { key: '1', eventTitle: 'خطوبة', img: (require('../assets/photos/engagment.png')) },
+    { key: '2', eventTitle: 'ذكرى زواج', img: (require('../assets/photos/MariedAnvesrary.png')) },
+    { key: '3', eventTitle: 'تخرج', img: (require('../assets/photos/graduation.png')) },
+    { key: '4', eventTitle: 'وليمة', img: (require('../assets/photos/feastEvent.png')) },
+    { key: '5', eventTitle: 'مولود جديد', img: (require('../assets/photos/newPorn.png')) },
+    { key: '6', eventTitle: 'عيد ميلاد', img: (require('../assets/photos/BDEvent.png')) },
+    { key: '7', eventTitle: 'اجتماع عمل', img: (require('../assets/photos/meeting.png')) },
+    { key: '8', eventTitle: 'مؤتمر', img: (require('../assets/photos/coference.png')) }
+
+];
 export const hallData = [
     { key: '0', hallType: 'فندق', img: (require('../assets/photos/hotel.png')) },
     { key: '1', hallType: 'مطعم', img: (require('../assets/photos/restaurant.png')) },
@@ -66,51 +78,6 @@ export const mandoteryOptions = [
     { key: '0', value: 'اجباري', alt: "Mandatory" },
     { key: '1', value: 'اختياري', alt: "Optional" }
 ];
-// export const ServiceImages = [
-//     {
-//         imgId: 1,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: true,
-//     },
-//     {
-//         imgId: 2,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 3,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 1,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: true,
-//     },
-//     {
-//         imgId: 2,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 3,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 1,
-//         serviceID: 3,
-//         image: (require('../../src/assets/photos/talmarah.png')),
-//         coverPhoto: true,
-//     },
-
-// ];
 export const subDetailData = [
     {
         orderItems: [

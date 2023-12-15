@@ -209,8 +209,7 @@ const SetUserStatus = (props) => {
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <ScrollWrapper onNextPress={onNextPress} dotPlace={2} amountDots={4}
-      >
+      <ScrollWrapper onNextPress={onNextPress} dotPlace={2} amountDots={4}>
         <View style={styles.body}>
           <Text style={styles.titleText}>تواريخ خاصة</Text>
           {renderUserSpecialDates()}
@@ -323,7 +322,7 @@ const styles = StyleSheet.create({
 
   },
   eventScroll: {
-    height: 250,
+    height: 350,
   },
 
 })

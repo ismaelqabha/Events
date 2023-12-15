@@ -8,9 +8,11 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { colors } from "../assets/AppColors"
 import { getUserData } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
+import UsersContext from '../../store/UsersContext';
 
 const PersonalInfo = (props) => {
-    const { userId, userInfo, setUserInfo } = useContext(SearchContext);
+    const { userId } = useContext(SearchContext);
+    const {  userInfo, setUserInfo } = useContext(UsersContext);
 
     console.log(" userInfo", userInfo);
     console.log(" userId", userId);

@@ -10,30 +10,30 @@ import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { getDraftFromAPI } from '../../resources/API';
 import SearchContext from '../../../store/SearchContext';
+import { colors } from '../../assets/AppColors';
 
 const ProviderCreateListing = props => {
 
 
-  const { draftServices, setDraftID , setDraftServices } = useContext(ServiceProviderContext)
-  const {userId} = useContext(SearchContext)
+  const { draftServices, setDraftID, setDraftServices } = useContext(ServiceProviderContext)
+  const { userId } = useContext(SearchContext)
   const language = strings.arabic.ProviderScreens.ProviderCreateListing
 
-  useEffect(()=>{
+  useEffect(() => {
     updateDraftServices()
-  },[])
+  }, [])
 
-  const updateDraftServices=async ()=>{
-    await getDraftFromAPI(userId).then((res)=>{
-      if(res?.drafts){
-        console.log("res ->",res);
+  const updateDraftServices = async () => {
+    await getDraftFromAPI(userId).then((res) => {
+      if (res?.drafts) {
+        console.log("res ->", res);
         setDraftServices(res.drafts)
       }
-    }).catch(e=> console.log("error fetching draft services -> ",e))
+    }).catch(e => console.log("error fetching draft services -> ", e))
   }
+
   const onStartPress = () => {
-
     setDraftID(null)
-
     props.navigation.navigate(ScreenNames.ProviderChooseService, {
       data: { ...props },
       isFromChooseServiceClick: true,
@@ -46,12 +46,12 @@ const ProviderCreateListing = props => {
     const cardsArray = data.map(draft => {
       return <PoviderServiceListCard body={draft} />;
     });
-    return cardsArray.length < 1 ? noDrafts() : cardsArray
+    return cardsArray //.length < 1 ? noDrafts() : cardsArray
   };
 
   const noDrafts = () => {
     return (
-      <View>
+      <View style={styles.draft}>
         <Text style={{ color: 'black', alignSelf: 'center', fontSize: 20 }}>
           there is no drafts currently
         </Text>
@@ -91,12 +91,21 @@ const ProviderCreateListing = props => {
   const onBackPress = () => {
     props.navigation.goBack();
   }
-
+  const renderCreateService = () => {
+    return <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'flex-end' }}
+      onPress={() => onStartPress()}
+    //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
+    >
+      <Text style={styles.titleTxt}>البدء بخدمة جديدة</Text>
+      <AntDesign name="plussquareo" style={styles.plusSquare} />
+    </TouchableOpacity>
+  }
 
   //   create a new service component
   const newService = () => {
     return (
       <View style={styles.title}>
+
         <Pressable onPress={onBackPress}
         >
           <Ionicons
@@ -105,25 +114,46 @@ const ProviderCreateListing = props => {
             color={"black"}
             size={25} />
         </Pressable>
-        <TouchableOpacity
-          onPress={() => onStartPress()}
-        //activeOpacity={0.2} underlayColor={supmeted ? 'white' : 'gray'}
-        >
-          <AntDesign name="plussquareo" style={styles.plusSquare} />
-        </TouchableOpacity>
+        <Text style={styles.titleTxt}>خدمة جديدة</Text>
+
       </View>
     );
   };
 
+  const renderSubsicribeUser = () => {
+    return (
+      <View>
+        <View style={styles.welcomingView}>
+          <Text style={styles.welcomingtxt}>مرحبا بك اسماعيل كبها</Text>
+          <Text style={styles.welcomingtxt}>نشكرك على اختيارك تطبيق مناسباتي لتسويق مصلحتك </Text>
+        </View>
+        <View style={styles.subscribesView}>
+          <Text style={styles.DescTxt}>تطبيق مناسباتي يتيح لك الفرصة للوصول لاكبر عدد ممكن من الزبائن الباحثين عن خدمات للمناسبات </Text>
+          <AntDesign name="check" style={styles.check} />
+        </View>
+        <View style={styles.subscribesView}>
+          <Text style={styles.DescTxt}>التطبيق يمكنك من ادارة جميع عمليات الحجوزات في مصلحتك من قبل الزبائن</Text>
+          <AntDesign name="check" style={styles.check} />
+        </View>
+        <View style={styles.subscribesView}>
+          <Text style={styles.DescTxt}>عند انشائك حساب لمصلحتك على التطبيق ستصبح مستخدم مزود خدمات قابلا لاستقبال طلبات الحجز من قبل الزبائن </Text>
+          <AntDesign name="check" style={styles.check} />
+        </View>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       {newService()}
-      {seperator()}
+
       <View style={styles.body}>
-        {renderService()}
+        {renderSubsicribeUser()}
       </View>
 
       <View style={styles.footer}>
+        <View>{renderCreateService()}</View>
+        <View style={{ justifyContent: 'center' }}>{renderService()}</View>
       </View>
     </View>
   );
@@ -140,21 +170,31 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   body: {
-    height: '40%',
+    height: '70%',
     marginTop: 20,
+    paddingTop: 30
   },
   footer: {
-    //alignItems: 'flex-end',
+    height: '20%',
     marginTop: 20,
+    //borderWidth: 1
   },
-
+  draft: {
+    backgroundColor: 'white',
+    width: '90%',
+    alignSelf: 'center',
+    borderRadius: 10,
+    height: 40,
+    justifyContent: 'center',
+    marginTop: 60
+  },
   headText: {
     fontSize: 25,
     color: 'black',
     fontFamily: 'Cairo-VariableFont_slnt,wght',
   },
   footerText: {
-    fontSize: 18,
+    fontSize: 15,
     color: 'black',
     marginRight: 30,
     marginBottom: 10,
@@ -170,18 +210,48 @@ const styles = StyleSheet.create({
     color: '#d3d3d3',
   },
   lessThan: { fontSize: 20, alignSelf: 'center', marginLeft: 30 },
-  plusSquare: { fontSize: 30, alignSelf: 'center', marginRight: 30 },
+  check: { fontSize: 30, color: colors.puprble },
+  plusSquare: { fontSize: 30, color: colors.puprble, marginRight: 20 },
 
 
   title: {
     flexDirection: 'row',
-    marginTop: 20,
     justifyContent: 'space-between',
+    height: 50,
+    alignItems: 'center'
+  },
+  titleTxt: {
+    fontSize: 22,
+    color: colors.puprble,
+    marginRight: 20,
+  },
+  DescTxt: {
+    fontSize: 18,
+    color: colors.puprble,
+    marginRight: 20,
+    width: '80%'
   },
   icon: {
     alignSelf: 'flex-start',
     marginLeft: 10,
   },
+  welcomingView: {
+    width: '90%',
+    alignSelf: 'center'
+  },
+  welcomingtxt: {
+    fontSize: 20,
+    color: colors.puprble,
+    marginBottom: 10,
+  },
+  subscribesView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 20,
+    width: '90%',
+    alignSelf: 'center',
+
+  }
 
 });
 
