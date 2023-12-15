@@ -4,16 +4,16 @@ import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import { colors } from '../assets/AppColors';
 
 
 const ServiceCard = (props) => {
-    const { isFromChooseServiceClick, isChecked } = props;
+    const { isFromChooseServiceClick, isFromSearchServiceClick, isChecked } = props;
     const { cat, setCat, ServiceDataInfo, setServiceDataInfo, ServId, userId, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
 
     const [pressed, setPressed] = useState(true)
 
-    //console.log("ServId", ServId);
     const chickIfChecked = () => {
         return isChecked
     }
@@ -49,7 +49,6 @@ const ServiceCard = (props) => {
                 }
                 setServiceDataInfo([...ServiceArr])
             }
-            //navigation.navigate(ScreenNames.Results, { data: { ...props } });
         }
 
     }
@@ -59,7 +58,7 @@ const ServiceCard = (props) => {
         if (isFromChooseServiceClick === true) {
             const ServiceCard = props;
             const clicked = chickIfChecked(ServiceCard);
-            return <TouchableOpacity style={clicked ? styles.otherbodyActive : styles.otherbody} onPress={() => onCatPress(ServiceCard)}>
+            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody,styles.shadow]} onPress={() => onCatPress(ServiceCard)}>
                 <Image
                     source={ServiceCard.img}
 
@@ -69,18 +68,38 @@ const ServiceCard = (props) => {
             </TouchableOpacity>;
 
         } else {
-            const ServiceCard = props;
-            const clicked = chickIfChecked(ServiceCard);
-            return <View>
-                <TouchableOpacity style={clicked ? styles.pressBody : styles.body} onPress={() => onCatPress()}>
-                    <Image
-                        source={props.img}
-                        style={styles.img}
-                    />
+            if (isFromSearchServiceClick === true) {
+                const ServiceCard = props;
+                const clicked = chickIfChecked(ServiceCard);
+                return <View>
+                    <TouchableOpacity style={clicked ? styles.pressBody : styles.body} onPress={() => onCatPress()}>
+                        <Image
+                            source={props.img}
+                            style={styles.img}
+                        />
 
-                </TouchableOpacity>
-                <Text style={styles.text}>{props.titleCategory}</Text>
-            </View>;
+                    </TouchableOpacity>
+                    <Text style={styles.text}>{props.titleCategory}</Text>
+                </View>;
+            } else {
+                const ServiceCard = props;
+                const clicked = chickIfChecked(ServiceCard);
+
+                return <View style={clicked ? styles.HomeScreenViewPress : styles.HomeScreenView}>
+                    <TouchableOpacity
+                        onPress={() => onCatPress()}
+
+                    >
+                        <Image
+                            source={props.img}
+                            style={styles.HomeScreenimg}
+                        />
+                        <Text style={styles.text}>{props.titleCategory}</Text>
+                    </TouchableOpacity>
+
+                </View>;
+            }
+
         }
     }
 
@@ -97,11 +116,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     body: {
-        height: 95,
-        width: 95,
+        height: 100,
+        width: 100,
         borderRadius: 30,
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         margin: 10,
         paddingVertical: 20,
         backgroundColor: '#ffff',
@@ -112,7 +131,7 @@ const styles = StyleSheet.create({
         width: 100,
         borderRadius: 30,
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         margin: 10,
         paddingVertical: 20,
         backgroundColor: '#ffff',
@@ -121,6 +140,27 @@ const styles = StyleSheet.create({
         borderWidth: 2
     },
     img: {
+        width: 100,
+        height: 100,
+    },
+    HomeScreenView: {
+        //alignItems: 'center',
+        justifyContent: 'center',
+        margin: 15,
+        height: 100,
+        width: 60,
+    },
+    HomeScreenViewPress: {
+        justifyContent: 'center',
+        margin: 15,
+        height: 100,
+        width: 65,
+        borderWidth: 3,
+        borderColor: colors.darkGold,
+        borderRadius: 15,
+        //elevation: 5
+    },
+    HomeScreenimg: {
         width: 60,
         height: 60,
     },
@@ -128,9 +168,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 17,
         fontWeight: 'bold',
-        //color: 'black',
-        fontFamily: 'Cairo-VariableFont_slnt,wght',
-        width: '100%'
+        color: colors.puprble,
+        //fontFamily: 'Cairo-VariableFont_slnt,wght',
+        //width: '100%'
     },
     otherbody: {
         height: 120,
@@ -138,10 +178,12 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignItems: 'center',
         marginTop: 10,
-        borderWidth: 3,
+        //borderWidth: 3,
         alignSelf: 'center',
         justifyContent: 'center',
-        borderColor: 'white',
+        //borderColor: 'red',
+        backgroundColor: 'white',
+        elevation: 5
     },
     otherbodyActive: {
         height: 120,
@@ -149,10 +191,11 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignItems: 'center',
         marginTop: 10,
-        borderWidth: 3,
+        borderWidth: 5,
         alignSelf: 'center',
         justifyContent: 'center',
-        borderColor: '#5f9ea0',
+        borderColor: colors.puprble,
+        backgroundColor: 'white'
     },
     otherimg: {
         width: 60,
@@ -162,14 +205,21 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        color: 'black',
+        color: colors.puprble,
     },
     othertextActive: {
         textAlign: 'center',
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#5f9ea0',
+        color: colors.puprble,
     },
+    // shadow: {
+    //     shadowColor: 'black',
+    //     shadowOffset: { width: -2, height: 4 },
+    //     shadowOpacity: 0.2,
+    //     shadowRadius: 3,
+    //     elevation: 7,
+    //   },
 })
 
 export default ServiceCard;

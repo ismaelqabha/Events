@@ -2,6 +2,8 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useContext, useEffect } from 'react'
 import { getCampaigns, getFavoritesforUser, getHomePageData } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
+import { BackgroundImage } from 'react-native-elements/dist/config';
+import { ImageBackground } from 'react-native';
 
 
 export default function Splash(props) {
@@ -18,6 +20,7 @@ export default function Splash(props) {
     const getDataFromApi = () => {
         getHomePageData({ servType: servType }).then(res => {
             setServiceDataInfo(res)
+            //console.log("setServiceDataInfo", res);
             getFavoritesFromApi()
             getCampaignfromApi()
         })
@@ -39,21 +42,16 @@ export default function Splash(props) {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.logo}>Monasbat</Text>
-        </View>
+        <ImageBackground style={styles.container} source={require('../assets/photos/backgroundSplash.png')}>
+           
+        </ImageBackground>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+       
     },
-    logo: {
-        fontSize: 40,
-        color: 'blue',
-        fontWeight: 'bold'
-    }
+    
 })

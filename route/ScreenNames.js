@@ -13,8 +13,22 @@ export const ScreenNames = {
     SubDetailPrices: 'SubDetailPrices',
     Campaigns: 'Campaigns',
     ClientSearch: 'ClientSearch',
+    PersonalInfo: 'PersonalInfo',
     UserProfile: 'UserProfile',
-    CreateUser: 'CreateUser',
+    Security: 'Security',
+    Support: 'Support',
+    Settings: 'Settings',
+    ClientPayment: 'ClientPayment',
+    ClientNotification: 'ClientNotification',
+    LogOut: 'LogOut',
+    ClientProfile: 'ClientProfile',
+
+    // Create User
+    CreateUpersonalInfo: 'CreateUpersonalInfo',
+    CreatePassword: 'CreatePassword',
+    SetUserAddress: 'SetUserAddress',
+    SetUserStatus: 'SetUserStatus',
+    
 
     // Provider Screens
     ProviderCreateListing: 'ProviderCreateListing',
@@ -31,6 +45,13 @@ export const ScreenNames = {
     ProviderBookingRequest: 'ProviderBookingRequest',
     ProviderWaitingPay: 'ProviderWaitingPay',
     ProviderWaitingReply: 'ProviderWaitingReply',
+    ProviderHome: 'ProviderHome',
+    ProviderCreateOffer: 'ProviderCreateOffer',
+    ProviderProfile: 'ProviderProfile',
+    ProviderSocialMediaScreen : 'ProviderSocialMedia',
+    ProviderInitialWithDetailPrice : 'ProviderInitialWithDetailPrice',
+    ProviderContantPrice: 'ProviderContantPrice',
+
 
 
     Splash: 'Splash',

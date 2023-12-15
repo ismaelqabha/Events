@@ -1,12 +1,12 @@
-import React, { useContext, useState,useEffect } from 'react';
-import { View, StyleSheet, Image, Modal, Text, Pressable, TextInput,Alert,ToastAndroid } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, StyleSheet, Image, Modal, Text, Pressable, TextInput, Alert, ToastAndroid } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
 import { TouchableOpacity } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import { AddNewFavorites, DeleteFileFavorite, RemoveFavorite, UpdateFileFavorite, getFavoritesbyFileId } from '../resources/API';
-
+import Entypo from "react-native-vector-icons/Entypo";
 
 
 
@@ -20,7 +20,7 @@ const FileFavoCard = (props) => {
     const [fileFavoriteName, setfileFavoriteName] = useState();
     const [favoritelistbyFileId, setFavoritelistbyFileId] = useState([]);
     const [serviceId, setServiceId] = useState();
-   
+
 
 
     const fileFavoriteIndex = fileFavoriteState?.findIndex(item => item.fileId === fileId)
@@ -61,7 +61,7 @@ const FileFavoCard = (props) => {
     }
 
     const getFavoItemfromAPI = () => {
-        getFavoritesbyFileId({favoListFileId: fileId}).then(res => {
+        getFavoritesbyFileId({ favoListFileId: fileId }).then(res => {
             setFavoritelistbyFileId(res)
         })
         getServiceID()
@@ -70,21 +70,21 @@ const FileFavoCard = (props) => {
         const favoriteData = favoritelistbyFileId || [];
         return favoriteData?.map(item => {
             return setServiceId(item.favoListServiceId)
-        }); 
+        });
     }
     useEffect(() => {
         getFavoItemfromAPI()
     }, [])
-    
+
     const removeFavoritList = () => {
         RemoveFavorite({ favoListUserId: userId, favoListServiceId: serviceId }).then(res => {
             setUserFavorates(res?.favorates)
-        }) 
+        })
     }
 
     const removing = () => {
         DeleteFileFavorite({ fileId: fileId }).then(res => {
-                           
+
             if (res.message === "Delete Sucessfuly") {
                 const delData = fileFavoriteState
                 const newData = delData?.filter(item => item !== fileId)
@@ -94,8 +94,8 @@ const FileFavoCard = (props) => {
         removeFavoritList()
         setShowModal(false)
         ToastAndroid.showWithGravity('تم اٍلالغاء بنجاح',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM
         )
     }
 
@@ -124,11 +124,11 @@ const FileFavoCard = (props) => {
             ],
             { cancelable: false } // Prevent closing the alert by tapping outside
         );
-        
+
     }
 
     const onUpdatePress = () => {
-        const editFileInfo = {fileName: fileFavoriteName}
+        const editFileInfo = { fileName: fileFavoriteName }
         UpdateFileFavorite(editFileInfo).then(res => {
             const file = fileFavoriteState || [];
             if (fileFavoriteIndex > -1) {
@@ -143,7 +143,7 @@ const FileFavoCard = (props) => {
 
     return (
         <View style={styles.container}>
-            <Card >
+            {/* <Card >
                 <TouchableOpacity style={styles.cardHeader}
                     onPress={onCaardPress} onLongPress={whencardLongPress}
                 >
@@ -158,7 +158,28 @@ const FileFavoCard = (props) => {
                     />
                     <Card.Title style={{ fontSize: 20, marginLeft: 90 }}>{fileName}</Card.Title>
                 </TouchableOpacity>
-            </Card>
+            </Card> */}
+
+            <View style={styles.card}>
+                <View style={styles.imgView}>
+                    <Image style={styles.image} source={require('../assets/photos/abofaneh.png')} />
+                </View>
+                <View style={styles.titleView}>
+                    <Text style={styles.titleTxt}>{fileName}</Text>
+                </View>
+                <View style={styles.iconView}>
+                <Pressable onPress={onCaardPress}
+                >
+                    <Entypo
+                        style={styles.icon}
+                        name={"plus"}
+                        color={"black"}
+                        size={20} />
+                </Pressable>
+                </View>
+            </View>
+
+
             <Modal
                 transparent
                 visible={showModal}
@@ -217,14 +238,50 @@ const FileFavoCard = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-
+        alignItems: 'center',
+    },
+    card: {
+        width: '85%',
+        height: 70,
+        //borderWidth: 1,
+        flexDirection: 'row',
+    },
+    imgView: {
+        width: 60,
+        height: 60,
+        margin: 5,
+        borderRadius: 8,
+        elevation: 2
+    },
+    titleView: {
+        width: 150,
+        height: 60,
+       // borderWidth: 1,
+        margin: 5,
+        alignSelf: 'center',
+        marginLeft: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    titleTxt: {
+        fontSize: 15,
+        fontWeight: 'bold'
     },
     image: {
-        width: 70,
-        height: 70,
-        borderRadius: 30,
+        width: 60,
+        height: 60,
+        borderRadius: 8,
     },
-   
+    iconView:{
+        width: 60,
+        height: 60,
+        margin: 5,
+        alignSelf: 'flex-end',
+        //borderWidth: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
     cardHeader: {
         flexDirection: 'row',
     },

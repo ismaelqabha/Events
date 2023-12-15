@@ -1,13 +1,15 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 
-import {LogBox, StyleSheet, View, YellowBox} from 'react-native';
+import { KeyboardAvoidingView, LogBox, StyleSheet, View, YellowBox } from 'react-native';
 import 'react-native-gesture-handler';
 
 import MainNavigation from '../Events/route/nav';
 import SearchProvider from '../Events/store/SearchProvider';
 import ServiceProviderProvider from './store/ServiceProviderProvider';
+import UsersContext from './store/UsersContext';
+import UsersProvider from './store/UsersProvider';
 
-const App: () => Node = () => {
+const App = () => {
   LogBox.ignoreLogs([
     'source.uri should not be an empty string',
     'Warning: Each child in a list should have a unique "key" prop.',
@@ -21,13 +23,15 @@ const App: () => Node = () => {
   }, []);
 
   return (
-    <ServiceProviderProvider>
+    <UsersProvider>
       <SearchProvider>
-        <View style={{flex: 1}}>
-          <MainNavigation />
-        </View>
+        <ServiceProviderProvider>
+          <KeyboardAvoidingView style={{ flex: 1 }}>
+            <MainNavigation />
+          </KeyboardAvoidingView>
+        </ServiceProviderProvider>
       </SearchProvider>
-    </ServiceProviderProvider>
+    </UsersProvider>
   );
 };
 

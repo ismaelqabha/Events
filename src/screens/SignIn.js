@@ -1,62 +1,90 @@
-import React,{useContext,useState} from 'react';
-import { View, StyleSheet, Text, Image, TextInput, Pressable, ImageBackground } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, Text, Image, TextInput, Pressable, ImageBackground, ToastAndroid } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
+import { colors } from '../assets/AppColors';
+import EvilIcons from "react-native-vector-icons/EvilIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { getUserData, signIn } from '../resources/API';
+
 
 const SignIn = (props) => {
-    const { userId, setuserId,UserState, setUserState } = useContext(SearchContext);
-    const [userName, setuserName] = useState()
-    const [Password, setPassword] = useState()
+    const { userId,
+        setuserId,
+        userEmail,
+        password,
+        setPassword,
+        setUserEmail,
+        userInfo,
+        setUserInfo, } = useContext(SearchContext);
 
-    const CheckUser = () => {
-        const isUser = UserState.find(item => item.User_name === userName && item.Password === Password)
-        return !!isUser;
-    }
-    const onEnterPress = () => {
-        // if(!CheckUser()){
-        //     renderUserId();
-        //     props.navigation.navigate(ScreenNames.ClientHomeAds);
-        // }
-        // console.log('LogIn',userId);
-    }
-    const query = () => {
-        return UserState.filter(use => {
-            return use.Password === Password;
+    const [verifyUser, setVerifyUser] = useState()
+
+    const logUser = () => {
+        signIn({ Email: userEmail, Password: password }).then(res => {
+            if (res.message === 'Authentecatin successed') {
+                //setVerifyUser(res)
+                ToastAndroid.showWithGravity('تم التسجيل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+                )
+                getUserInfo()
+                props.navigation.navigate(ScreenNames.Splash);
+                console.log("id", userId);
+            } else {
+                if (res.message === 'not found') {
+                    ToastAndroid.showWithGravity('عذرا لا يوجد حساب لهذة البيانات المدخلة',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM
+                    )
+                } else {
+                    ToastAndroid.showWithGravity('',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM
+                    )
+                }
+            }
         })
     }
 
-    const renderUserId = () => { 
-        const data = query();
-        const UserArray = data.map(id => {
+    const getUserInfo = () => {
+        getUserData({ Email: userEmail }).then(res => {
+            setUserInfo(res)
+            console.log("user data", res);
+            renderUserId()
+        })
+    }
+
+    const onEnterPress = () => {
+        logUser()
+    }
+    const onSignupPress = () => {
+        props.navigation.navigate(ScreenNames.CreateUpersonalInfo);
+    }
+
+    const renderUserId = () => {
+        const UserArray = userInfo.map(id => {
             return setuserId(id.USER_ID)
         });
         return UserArray;
     };
 
     return (
-
-       
-            <View style={styles.container} >
- {/* 
-        <ImageBackground style={styles.container} source={""
-             require('../assets/photos/bg.png')
-            }>*/}
-
-            {/* <View style={styles.container}> */}
-            {/* <Text onPress={() => props.navigation.navigate(ScreenNames.SignUp)}>In</Text> */}
-            {/* <Text onPress={()=> props.navigation.navigate('Tabs' , {screen:ScreenNames.ClientInfo}) }>In</Text> */}
-            {/* <Image
-                source={require('../assets/photos/signIn.png')}
+        <ImageBackground style={styles.container}
+            source={require('../assets/photos/backgroundMain.png')}
+        >
+             <Image
+                source={require('../assets/photos/logoIcon.png')}
                 style={styles.image}
-            /> */}
-
+            />
+            <Text style={styles.TitleTxt}>تسجيل الدخول</Text>
             <Text style={styles.text}>مرحبا بك</Text>
-            <View style={styles.textIn}>
+            <View style={styles.logInView}>
                 <TextInput
                     style={styles.input}
                     keyboardType="email-address"
                     placeholder='البريد الالكتروني'
-                    onChangeText={(value) => setuserName(value)}
+                    onChangeText={(value) => setUserEmail(value)}
                 />
                 <TextInput
                     style={styles.input}
@@ -64,81 +92,123 @@ const SignIn = (props) => {
                     placeholder='كلمة المرور'
                     onChangeText={(value) => setPassword(value)}
                 />
+                <Pressable style={styles.btnEnter} onPress={() => onEnterPress()}>
+                    <Text style={styles.txtُEnter}>تسجيل الدخول</Text>
+                </Pressable>
             </View>
+
             <Pressable>
-                <Text style={styles.txt}>نسيت كلمةالمرور?</Text>
+                <Text>هل نسيت كلمة المرور؟</Text>
             </Pressable>
+            <Text style={styles.or}>أو</Text>
+            <Text style={styles.txt}>سجل من خلال</Text>
 
-            <Pressable style={styles.btnEnter} onPress={() => onEnterPress()}>
-                <Text style={styles.txtُEnter}>دخول</Text>
-            </Pressable>
+            <View style={styles.logInView}>
+                <Pressable style={styles.facebookbtn} onPress={() => onEnterPress()}>
+                    <AntDesign
+                        name={"google"}
+                        color={"white"}
+                        size={15} />
+                    <Text style={styles.facetxtُ}>Google</Text>
+                </Pressable>
+                <Pressable style={styles.facebookbtn}>
+                    <EvilIcons
+                        name={"sc-facebook"}
+                        color={"white"}
+                        size={25} />
+                    <Text style={styles.facetxtُ}>Facebook</Text>
+                </Pressable>
 
             </View>
-      
+            <Pressable style={styles.signup} onPress={() => onSignupPress()}>
+                <Text style={styles.text}>ليس لديك حساب؟ سجل الان</Text>
+            </Pressable>
+
+        </ImageBackground>
+
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        
+        alignItems: 'center'
     },
     image: {
-        width: 150,
-        height: 150,
-        marginHorizontal: 120,
-        marginVertical: 80,
-        
+        width: 170,
+        height: 170,
+        alignSelf: 'center',
     },
     text: {
-        fontSize: 20,
+        fontSize: 15,
         textAlign: 'center',
-        fontWeight: 'bold',
-        color:'#1e90ff'
-
+        color: colors.puprble,
+        marginBottom: 10
+    },
+    TitleTxt: {
+        fontSize: 25,
+        textAlign: 'center',
+        color: colors.puprble,
+        fontWeight: 'bold'
     },
     input: {
-        alignContent: 'center',
         textAlign: 'center',
         height: 40,
-        width: 300,
-        fontSize: 17,
-        borderRadius: 15,
-        fontWeight: 'bold',
-        borderWidth: 1,
-        borderColor:'#1e90ff',
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.3,
-        marginTop: 10,
-        Color: '#1e90ff'
+        width: '90%',
+        fontSize: 15,
+        borderRadius: 25,
+        backgroundColor: 'lightgray',
+        elevation: 5,
+        marginBottom: 15,
     },
     txt: {
-        color: 'black',
         fontSize: 15,
-        marginTop: 10,
-        paddingRight: 45,
+        marginVertical: 10,
     },
-
+    or:{
+      marginVertical: 10
+    },
     txtُEnter: {
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 15,
+        //fontWeight: 'bold',
         textAlign: 'center',
-        color:'white',
+        color: 'white',
     },
     btnEnter: {
-        width: 200,
-        height: 40,
-        borderRadius: 20,
-        marginTop: 100,
-        marginLeft: 90,
+        width: '90%',
+        height: 50,
+        borderRadius: 25,
+        marginTop: 10,
         justifyContent: 'center',
         textAlign: 'center',
-        backgroundColor: '#1e90ff'
-
+        backgroundColor: colors.puprble
     },
-    textIn:{
+    logInView: {
         alignItems: 'center',
+        width: 400,
+        //paddingVertical: 20
     },
+    signup: {
+        position: 'absolute',
+        bottom: 20
+    },
+    facebookbtn: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '90%',
+        height: 50,
+        borderRadius: 25,
+        marginBottom: 10,
+        backgroundColor: colors.gold
+    },
+    facetxtُ: {
+        fontSize: 15,
+        textAlign: 'center',
+        color: 'white',
+        marginLeft: 20
+    },
+
 
 })
 

@@ -1,14 +1,34 @@
-const baseUrl = 'https://ev-server.onrender.com/';
-// const baseUrl = "https://localhost:7000/"
+// const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = "http://localhost:7000/"
 
 // Users
 export const getUserData = async (body) => {
     const url = 'Users/getUserInfo'
     return await AppFetch(url, 'POST', body)
 }
-export const addUser = async (body) => {
+export const addUser = async (AddNewUser , UserPhoto) => {
     const url = 'Users/create'
-    return await AppFetch(url, 'POST', body)
+    try {
+      const formData = new FormData();
+      formData.append("UserPhoto",{
+        uri:UserPhoto,
+        type: 'image/jpeg',
+        name: `userPhoto.jpg`,
+      })
+      formData.append("UserData",JSON.stringify(AddNewUser))
+      const headers={
+        'Content-Type': 'multipart/form-data',
+      }
+    
+      return await AppFetch(url, 'POST', formData ,headers)
+      
+    } catch (error) {
+      
+    }
+}
+export const signIn = async (body) => {
+  const url = 'Users/login'
+  return await AppFetch(url, 'POST', body)
 }
 
 // Service Data
@@ -86,6 +106,10 @@ export const getCampaignsByServiceId = async (body) => {
     const url = 'Campaigns/getCampByServiceId'
     return await AppFetch(url, 'POST', body)
 }
+export const createNewOffer = async (body) => {
+  const url = 'Campaigns/createCamp'
+  return await AppFetch(url, 'POST', body)
+}
 
 //Add New Dates According Service Id
 export const NewDatesAdding = async body => {
@@ -116,10 +140,51 @@ export const getCities = async body => {
   return await AppFetch(url, 'POST', body);
 };
 
+// Draft services 
+export const addDraftToAPI= async body =>{
+  const url = 'DraftServices/addDraftService';
+  return await AppFetch(url,'POST',body)
+}
+
+export const getDraftFromAPI = async body =>{
+  const url ='DraftServices/getDraftService'
+  return await AppFetch(url,"POST",body)
+}
+
+export const removeDraftFromAPI = async body =>{
+  const url ='DraftServices/deleteDraftService'
+  return await AppFetch(url,"POST",body)
+}
+
 //Service Images
 export const getServiceImages = async body => {
   const url = 'ServiceImags/getImg';
   return await AppFetch(url, 'POST', body);
+};
+
+export const addServiceImages = async (imagesArray,serviceID) => {
+  const url = 'ServiceImags/addImg';
+  try {
+    const formData = new FormData();
+    const headers={
+      'Content-Type': 'multipart/form-data',
+    }
+    const logoArray = [];
+    formData.append("serviceID",serviceID)
+      imagesArray?.forEach((data,index) => {
+        formData.append(`images`,{
+          uri:data.uri,
+          type: 'image/jpeg',
+          name: `image${index}.jpg`,
+        })
+        formData.append("logoArray" , data.logo)
+      });
+      
+    return await AppFetch(url, 'POST', formData , headers);
+  } catch (error) {
+    console.log("error adding images ", error);
+  }
+  
 };
 
 // Service Booking Dates
@@ -151,14 +216,14 @@ export const RemoveFavorite = async body => {
   return await AppFetch(url, 'DELETE', body);
 };
 
-const AppFetch = async (url, method, body) => {
+const AppFetch = async (url, method, body , headers) => {
   const fullUrl = baseUrl + url;
   const bodyStr = JSON.stringify(body) || '';
 
   return fetch(fullUrl, {
     method: method,
-    body: bodyStr,
-    headers: {
+    body: headers ? body : bodyStr,
+    headers: headers || {
       'content-type': 'application/json',
     },
   })

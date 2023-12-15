@@ -1,19 +1,32 @@
 import React, { useState } from 'react';
 import { favoritesList, fileFavorites, Events, Request, Payment, serviceDetail, subDetail, subDetailData, servicesData, ServiceImages, Users } from '../src/resources/data';
 import SearchContext from '../store/SearchContext';
-import { v4 as uuidv4 } from 'uuid';
 
 
 const SearchProvider = props => {
 
+  //user
   const [userId, setuserId] = useState(1);
-  const [userInfo, setUserInfo] = useState([]);
-  const [sType, setSType] = useState({});
+  // const [userInfo, setUserInfo] = useState([]);
+  // const [userName, setUserName] = useState(null);
+  // const [userEmail, setUserEmail] = useState(null);
+  // const [userPhone, setUserPhone] = useState(null);
+  // const [userBD, setUserBD] = useState(null);
+  // const [userGender, setUserGender] = useState(null);
+  // const [userStatus, setUserStatus] = useState(null);
+  // const [userCity, setUserCity] = useState(null);
+  // const [createUserRegion, setCreateUserRegion] = useState(null);
+  // const [userSpecialDate, setUserSpecialDate] = useState([]);
+  // const [password, setPassword] = useState(null);
+  // const [confirmPassword, setconfirmPassword] = useState(null);
+  // const [profilePhoto, setProfilePhoto] = useState(null);
 
-  const [Service, setService] = useState({});
-  const [city, setCity] = useState({});
+
   const [cat, setCat] = useState('');
-  const [fId, setFId] = useState({});
+  const [isFirst, setIsfirst] = useState ()
+  const [serviceTitle, setserviceTitle] = useState ()
+  const [serviceCat, setServiceCat] = useState();
+  const [sType, setSType] = useState();
   const [ServId, setServId] = useState('');
 
 
@@ -21,16 +34,18 @@ const SearchProvider = props => {
   // Data service favorites
   const [userFavorates, setUserFavorates] = useState([])
   const [fileFavoriteState, setFileFavoriteState] = useState([])
+
   // service Info
   const [ServiceDataInfo, setServiceDataInfo] = useState([])
   const [ServiceImages, setServiceImages] = useState([])
   const [ServiceDatesforBooking, setServiceDatesforBooking] = useState([])
   const [datesforBooking, setDatesforBooking] = useState([])
+
   // campighin
   const [campInfo, setCampInfo] = useState([])
   const [campiegnsAccordingServiceId, setCampiegnsAccordingServiceId] = useState([])
   const [reachCampaignfrom, setReachCampaignfrom] = useState('fromHome')
- 
+
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
   const [town, setTown] = useState([])
@@ -38,14 +53,14 @@ const SearchProvider = props => {
   const [detailIdState, setdetailIdState] = useState();
 
   // Request
-  const [requestInfo, setRequestInfo] = useState( [])
+  const [requestInfo, setRequestInfo] = useState([])
   const [orderSubdetail, setOrderSubdetail] = useState([])
   const [isFromRequestScreen, setisFromRequestScreen] = useState()
   const [RequestIdState, setRequestIdState] = useState();
   const [TimeText, setTimeText] = useState()
 
- // Event 
- const [eventInfo, setEventInfo] = useState([])
+  // Event 
+  const [eventInfo, setEventInfo] = useState([])
 
   // ClientSearch
   const [cityselected, setcityselected] = useState("");
@@ -58,13 +73,12 @@ const SearchProvider = props => {
 
 
   //Booking
- 
-  const [UserState, setUserState] = useState(Users || [])
+
   const [userPayment, setUserPayment] = useState(Payment || [])
   const [serviceImg, setserviceImg] = useState([])
   const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
- 
+
 
 
 
@@ -72,25 +86,57 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
-        Service: Service,
-        setService,
-        city: city,
-        setCity,
         userId,
         setuserId,
+        // userName, 
+        // setUserName,
+        // userEmail, 
+        // setUserEmail,
+        // userPhone, 
+        // setUserPhone,
+        // userBD, 
+        // setUserBD,
+        // userInfo,
+        // setUserInfo,
+        // userGender, 
+        // setUserGender,
+        // userStatus, 
+        // setUserStatus,
+        // userCity, 
+        // setUserCity,
+        // createUserRegion, 
+        // setCreateUserRegion,
+        // userSpecialDate, 
+        // setUserSpecialDate,
+        // password, 
+        // setPassword,
+        // confirmPassword, 
+        // setconfirmPassword,
+        // profilePhoto, 
+        // setProfilePhoto,
         cat,
         setCat,
+        isFirst,
+        setIsfirst,
+        serviceTitle,
+        setserviceTitle,
+        serviceCat, 
+        setServiceCat,
         sType,
         setSType,
-        fId,
-        setFId,
-        ServId,
-        setServId,
+        // Service: Service,
+        // setService,
+        // city: city,
+        // setCity,
+        // fId,
+        // setFId,
+         ServId,
+         setServId,
         userFavorates,
         setUserFavorates,
         fileFavoriteState,
         setFileFavoriteState,
-        requestInfo, 
+        requestInfo,
         setRequestInfo,
         ImgOfServeice,
         setImgOfServeice,
@@ -110,8 +156,6 @@ const SearchProvider = props => {
         setRequestIdState,
         serviceImg,
         setserviceImg,
-        UserState,
-        setUserState,
         campInfo,
         setCampInfo,
         userRegion,
@@ -136,21 +180,20 @@ const SearchProvider = props => {
         setrequestedDate,
         Categorychozen,
         setCategorychozen,
-        isFromRequestScreen, 
+        isFromRequestScreen,
         setisFromRequestScreen,
-        orderSubdetail, 
+        orderSubdetail,
         setOrderSubdetail,
-        eventInfo, 
+        eventInfo,
         setEventInfo,
-        TimeText, 
+        TimeText,
         setTimeText,
-        campiegnsAccordingServiceId, 
+        campiegnsAccordingServiceId,
         setCampiegnsAccordingServiceId,
-        reachCampaignfrom, 
+        reachCampaignfrom,
         setReachCampaignfrom,
-        userInfo, 
-        setUserInfo
-        
+       
+
       }}>
       {props.children}
     </SearchContext.Provider>

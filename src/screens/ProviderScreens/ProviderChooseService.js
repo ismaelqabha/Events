@@ -1,19 +1,26 @@
-import React, {useContext, useState} from 'react';
-import {View, StyleSheet, Pressable, Text} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {servicesCategory} from '../../resources/data';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import { servicesCategory } from '../../resources/data';
 import ServiceCard from '../../components/ServiceCard';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
 import strings from '../../assets/res/strings';
-import {Platform} from 'react-native';
-import {ToastAndroid} from 'react-native';
-import {Alert} from 'react-native';
+import { Platform } from 'react-native';
+import { ToastAndroid } from 'react-native';
+import { Alert } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import { colors } from '../../assets/AppColors';
+import HeaderComp from '../../components/ProviderComponents/HeaderComp';
+import { useNavigation } from '@react-navigation/native';
+import { AppStyles } from '../../assets/res/AppStyles';
+import { v4 as uuidv4 } from 'uuid';
+import { addDraftToAPI } from '../../resources/API';
+
 
 const ProviderChooseService = props => {
-  const {isFromChooseServiceClick} = props.route?.params || {};
-  const {ServId} = useContext(SearchContext);
+  const { isFromChooseServiceClick } = props.route?.params || {};
+  const { ServId } = useContext(SearchContext);
   const {
     selectServiceType,
     setSelectServiceType,
@@ -22,8 +29,29 @@ const ProviderChooseService = props => {
     setTitle,
     setSuTitle,
     setDescription,
+    setPhotoArray,
+    setWorkAreas,
+    setPrice,
+    setAdditionalServices,
+    SuTitle,
+    title,
+    description,
+    serviceRegion,
+    serviceAddress,
+    workAreas,
+    price,
+    photoArray,
+    additionalServices,
+    draftServices,
+    setDraftServices,
+    draftID,
+    socialMediaArray
   } = useContext(ServiceProviderContext);
-  const {saveData} = props;
+  const { userId } = useContext(SearchContext);
+
+  const { saveData } = props;
+
+  const navigation = useNavigation()
 
   // TODO: change depending on user specifid language
   const language = strings.arabic.ProviderScreens.ProviderChooseService;
@@ -32,18 +60,18 @@ const ProviderChooseService = props => {
 
   const onNextPress = () => {
     selectServiceType
-      ? props.navigation.navigate(ScreenNames.ProviderAddInfo, {
-          data: {...props},
-        })
-      : showMessage();
+      ? navigation.navigate(ScreenNames.ProviderAddInfo, {
+        data: { ...props },
+      })
+      : showMessage(language.showMessage);
   };
 
   const onBackPress = () => {
     selectServiceType
       ? RenderConfirmationBox()
       : props.navigation.navigate(ScreenNames.ProviderCreateListing, {
-          data: {...props},
-        });
+        data: { ...props },
+      });
   };
 
   //   confirmation popup for leaving with out saving the progress
@@ -57,10 +85,12 @@ const ProviderChooseService = props => {
         text: language.confirmButton,
         onPress: () => {
           props.navigation.navigate(ScreenNames.ProviderCreateListing, {
-            data: {...props},
+            data: { ...props },
           });
           //   cleans the service data
-        //   CleanData();
+          // makes a draft service 
+          !draftID ? createDraft() : null
+          CleanData();
         },
       },
     ];
@@ -74,19 +104,47 @@ const ProviderChooseService = props => {
     setTitle(null);
     setSuTitle(null);
     setDescription(null);
+    setPhotoArray([])
+    setWorkAreas([])
+    setPrice(null)
+    setAdditionalServices([])
   };
 
-  const showMessage = () => {
+  const createDraft = async () => {
+    var draftID = uuidv4()
+    const draft = {
+      userID: userId,
+      servType: selectServiceType,
+      title: title,
+      subTitle: SuTitle,
+      desc: description,
+      region: serviceRegion,
+      address: serviceAddress,
+      servicePrice: price,
+      workingAreas: workAreas,
+      photoArray:photoArray,
+      additionalServices: additionalServices,
+      socialMedia:socialMediaArray,
+      ID:draftID
+    };
+    setDraftServices([...draftServices,draft])
+    await addDraftToAPI(draft) .then((res)=>{
+      showMessage(res?.message);
+    }).catch(e => console.log("add draft error ->",e))
+  }
+
+
+  const showMessage = (msg) => {
     Platform.OS === 'android'
-      ? ToastAndroid.show(language.showMessage, ToastAndroid.SHORT)
-      : Alert.IOS.alert(language.showMessage);
+      ? ToastAndroid.show(msg, ToastAndroid.SHORT)
+      : Alert.IOS.alert(msg);
   };
 
   const query = () => {
     return servicesCategory || [];
   };
 
-  const renderCard = ({item}) => {
+  const renderCard = ({ item }) => {
     return (
       <ServiceCard
         {...item}
@@ -100,7 +158,7 @@ const ProviderChooseService = props => {
   //   renders the Header text
   const RenderHeader = () => {
     return (
-      <View style={styles.header}>
+      <View style={[styles.header]}>
         <Text style={styles.headText}>{language.HeadText}</Text>
       </View>
     );
@@ -111,6 +169,7 @@ const ProviderChooseService = props => {
     return (
       <View style={styles.body}>
         <FlatList data={query()} renderItem={renderCard} numColumns={2} />
+
       </View>
     );
   };
@@ -127,21 +186,22 @@ const ProviderChooseService = props => {
 
   const RenderBackBotton = () => {
     return (
-      <Pressable style={styles.back} onPress={() => onBackPress()}>
-        <Text style={styles.backText}>{language.back}</Text>
+      <Pressable style={[AppStyles.back]} onPress={() => onBackPress()}>
+        <Text style={AppStyles.backText}>{language.back}</Text>
       </Pressable>
     );
   };
 
   const RenderNextButton = () => {
     return (
-      <Pressable style={styles.next} onPress={() => onNextPress()}>
-        <Text style={styles.nextText}>{language.next}</Text>
+      <Pressable style={[AppStyles.next]} onPress={() => onNextPress()}>
+        <Text style={AppStyles.nextText}>{language.next}</Text>
       </Pressable>
     );
   };
   return (
-    <View style={styles.container}>
+    <View style={AppStyles.container}>
+      <HeaderComp noBackArrow={true} />
       {RenderHeader()}
       {RenderServiceTypes()}
       {RenderFooter()}
@@ -150,9 +210,6 @@ const ProviderChooseService = props => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
     alignItems: 'flex-end',
     marginRight: 30,
@@ -161,42 +218,31 @@ const styles = StyleSheet.create({
   },
   headText: {
     fontSize: 20,
-    color: 'black',
+    color: colors.TitleFont,
     fontFamily: 'Cairo-VariableFont_slnt,wght',
+    fontWeight: 'bold'
   },
   body: {
-    height: '75%',
+    height: '61%',
+    width: '80%',
     marginTop: 20,
-    // marginLeft: '18%',
+    alignSelf: 'center',
+    padding: 10,
+    borderRadius: 12,
+    // borderWidth: 0.5,
+    // backgroundColor: 'white'
   },
   footer: {
-    //alignSelf: 'flex-end',
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginRight: 20,
-    marginLeft: 20,
+    width: '100%',
+    height: 50,
+    paddingHorizontal: '10%',
+    position:'absolute',
+    bottom:0
   },
-  next: {
-    width: 70,
-    height: 40,
-    backgroundColor: 'lightgray',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  back: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  nextText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  backText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-});
+
+})
 
 export default ProviderChooseService;

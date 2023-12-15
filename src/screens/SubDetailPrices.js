@@ -4,6 +4,7 @@ import SearchContext from '../../store/SearchContext';
 import { Pressable } from 'react-native';
 import { addNewOrderDetail, getOrderSubdetailInfo, getServiceSubDetail } from '../resources/API';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { colors } from "../assets/AppColors"
 
 const SubDetailPrices = (props) => {
     const { detail_ID } = props.route?.params || {}
@@ -130,7 +131,7 @@ const SubDetailPrices = (props) => {
                         <Text style={styles.subDeText} numberOfLines={2}>{card.detailDescrption}</Text>
                         <Text style={styles.subDeText}>{"السعر " + " " + card.detailCost}</Text>
                     </View>
-                    <Image source={card.detailImg} style={styles.img} />
+                    <Image source={{ uri: card.detailImg}} style={styles.img} />
                 </Pressable>
             </View>
         )
@@ -139,6 +140,7 @@ const SubDetailPrices = (props) => {
         <View style={styles.container}>
             <View style={styles.title}>
                 <Pressable onPress={backPress}
+
                 >
                     <Ionicons
                         style={styles.icon}
@@ -159,6 +161,7 @@ const SubDetailPrices = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: colors.BGScereen
     },
     title: {
         flexDirection: 'row',
@@ -169,44 +172,46 @@ const styles = StyleSheet.create({
     },
     subView: {
         flex: 1,
-        margin: 5
+        alignItems:'center',
+        justifyContent: 'center'
     },
     checkBView: {
-        width: '90%',
-        height: 100,
-        // alignItems: 'center',
+        width: '70%',
+        height: 130,
+        borderRadius: 20,
         alignSelf: 'center',
         justifyContent: 'space-between',
         margin: 10,
-        padding: 5,
         flexDirection: 'row',
         elevation: 5,
         backgroundColor: 'white'
     },
     checkBViewPress: {
-        width: '90%',
-        height: 100,
+        width: '70%',
+        height: 130,
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'space-between',
         margin: 5,
-        padding: 5,
         flexDirection: 'row',
         elevation: 5,
         backgroundColor: 'white',
-        borderWidth: 1
+        borderRadius: 25,
+        borderWidth: 3,
+        borderColor: colors.puprble
     },
     subDeText: {
         fontSize: 15,
         fontWeight: 'bold',
-        textAlign: 'right',
-        marginRight: 10
+        color: colors.puprble,
+        textAlign: 'auto',
+        margin : 5
     },
     img: {
-        width: 80,
-        height: 80,
+        width: '45%',
+        height: '100%',
         backgroundColor: 'gray',
-        alignItems: 'center'
+        borderRadius: 20
     },
 
 })

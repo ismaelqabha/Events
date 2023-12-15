@@ -5,18 +5,18 @@ export const Users = [
         USER_ID: 1,
         User_name: 'Ali',
         Password: '123',
-        Email:'',
+        Email: '',
         UserAdress: '',
-        UserPhone:'',
+        UserPhone: '',
         UserType: 'Client',
     },
     {
         USER_ID: 2,
         User_name: 'Ahmed',
         Password: '000',
-        Email:'',
+        Email: '',
         UserAdress: '',
-        UserPhone:'',
+        UserPhone: '',
         UserType: 'Provider',
     },
 ];
@@ -33,18 +33,37 @@ export const servicesData = [
         workingRegion: [],
         servicePice: '',
         serviceStutes: '',
-        
-        
+
+
     },
-    
+
 ];
+export const hallData = [
+    { key: '0', hallType: 'فندق', img: (require('../assets/photos/hotel.png')) },
+    { key: '1', hallType: 'مطعم', img: (require('../assets/photos/restaurant.png')) },
+    { key: '2', hallType: 'قاعة داخلية', img: (require('../assets/photos/externalHall.png')) },
+    { key: '3', hallType: 'قاعة خارجية', img: (require('../assets/photos/hallIcon.png')) },
+
+];
+
 export const regionData = [
-    { key: '2', value: 'الجليل' },
-    { key: '3', value: 'النقب ' },
-    { key: '5', value: 'الساحل' },
-    { key: '0', value: 'المثلث الشمالي' },
-    { key: '1', value: 'المثلث الجنوبي' },
-    { key: '4', value: 'الضفة الغربية' },
+    { key: '0', value: 'الجليل' },
+    { key: '1', value: 'النقب ' },
+    { key: '2', value: 'الساحل' },
+    { key: '3', value: 'المثلث الشمالي' },
+    { key: '4', value: 'المثلث الجنوبي' },
+    { key: '5', value: 'الضفة الغربية' },
+]
+export const socialMediaList = [
+    { key: '0', value: 'facebook' },
+    { key: '1', value: 'instagram' },
+    { key: '2', value: 'tiktok' },
+    { key: '3', value: 'youtube' },
+    { key: '4', value: 'X'},
+];
+export const mandoteryOptions = [
+    { key: '0', value: 'اجباري' ,alt:"Mandatory" },
+    { key: '1', value: 'اختياري' , alt:"Optional" }
 ];
 // export const ServiceImages = [
 //     {
@@ -89,7 +108,7 @@ export const regionData = [
 //         image: (require('../../src/assets/photos/talmarah.png')),
 //         coverPhoto: true,
 //     },
-    
+
 // ];
 export const subDetailData = [
     {
@@ -110,12 +129,12 @@ export const subDetailData = [
 export const subDetail = [
     {
         subDetail_Id: 1,
-        id:1,
+        id: 1,
         detailSubtitle: 'لحمة',
         detailSubtitleCost: 50,
         //imgSrc: (require('../../src/assets/photos/meat.png')),
     },
-   
+
 ];
 export const serviceDetail = [
     {
@@ -141,104 +160,97 @@ export const servicesCategory = [
     {
         cat_id: 1,
         titleCategory: 'قاعات',
-        img: (require('../assets/photos/hole.png')),
+        img: (require('../assets/photos/hallIcon.png')),
     },
     {
         cat_id: 2,
         titleCategory: 'تصوير',
-        img: (require('../assets/photos/cam.png')),
+        img: (require('../assets/photos/CamIcon.png')),
     },
     {
         cat_id: 3,
         titleCategory: 'مطربين',
-        img: (require('../assets/photos/micro.png')),
+        img: (require('../assets/photos/singerIcon.png')),
     },
     {
         cat_id: 4,
         titleCategory: 'DJ',
-        img: (require('../assets/photos/d-j.png')),
+        img: (require('../assets/photos/DJIcon.png')),
     },
     {
         cat_id: 5,
         titleCategory: 'شيف',
-        img: (require('../assets/photos/chef.png')),
+        img: (require('../assets/photos/chefIcon.png')),
     },
+
     {
-        cat_id: 6,
-        titleCategory: 'تصفيف شعر',
-        img: (require('../assets/photos/hair.png')),
-    },
-    {
-        cat_id: 7,
-        titleCategory: 'مركز تجميل',
-        img: (require('../assets/photos/care.png')),
-    },
-    {
-        cat_id: 8,
-        titleCategory: 'Makeup',
-        img: (require('../assets/photos/Makeup.png')),
-    },
-    // {
-    //     cat_id: 9,
-    //     titleCategory: 'خدمات افراح',
-    //     img: (require('../assets/photos/orgnaize.png')),
-    // },
-    {
-        cat_id: 10,
-        titleCategory: 'بطاقات دعوة',
-        img: (require('../assets/photos/card.png')),
-    },
-    {
-        cat_id: 11,
-        titleCategory: 'تصميم ازهار',
-        img: (require('../assets/photos/flower.png')),
-    },
-    {
-        cat_id: 12,
-        titleCategory: ' فساتين',
-        img: (require('../assets/photos/dress.png')),
-    },
-    {
-        cat_id: 13,
-        titleCategory: 'بدلات عرسان',
-        img: (require('../assets/photos/suit.png')),
-    },
-    {
-        cat_id: 14,
-        titleCategory: 'مجوهرات',
-        img: (require('../assets/photos/jewelry.png')),
-    },
-    {
-        cat_id: 15,
-        titleCategory: 'اكسسوارات',
-        img: (require('../assets/photos/accessories.png')),
+        cat_id: 9,
+        titleCategory: 'فرقة شعبية',
+        img: (require('../assets/photos/fleklorTeamsIcon.png')),
     },
     {
         cat_id: 16,
         titleCategory: 'حلويات',
-        img: (require('../assets/photos/cake.png')),
+        img: (require('../assets/photos/SweetIcon.png')),
     },
     {
-        cat_id: 17,
-        titleCategory: 'ألعاب نارية',
-        img: (require('../assets/photos/fireworks.png')),
+        cat_id: 11,
+        titleCategory: 'تصميم ازهار',
+        img: (require('../assets/photos/flowerIcon.png')),
     },
     {
-        cat_id: 18,
-        titleCategory: 'سيارة زفاف',
-        img: (require('../assets/photos/car.png')),
+        cat_id: 6,
+        titleCategory: 'تصفيف شعر',
+        img: (require('../assets/photos/saloonIcon.png')),
+    },
+    {
+        cat_id: 8,
+        titleCategory: 'Makeup',
+        img: (require('../assets/photos/makeupIcon.png')),
+    },
+    {
+        cat_id: 7,
+        titleCategory: 'مركز تجميل',
+        img: (require('../assets/photos/beutyCentreIcon.png')),
+    },
+
+    // {
+    //     cat_id: 12,
+    //     titleCategory: ' فساتين',
+    //     img: (require('../assets/photos/dress.png')),
+    // },
+    // {
+    //     cat_id: 13,
+    //     titleCategory: 'بدلات عرسان',
+    //     img: (require('../assets/photos/suit.png')),
+    // },
+    // {
+    //     cat_id: 14,
+    //     titleCategory: 'مجوهرات',
+    //     img: (require('../assets/photos/jewelry.png')),
+    // },
+    // {
+    //     cat_id: 15,
+    //     titleCategory: 'اكسسوارات',
+    //     img: (require('../assets/photos/accessories.png')),
+    // },
+
+
+    {
+        cat_id: 18, 
+        titleCategory: 'مهرج',
+        img: (require('../assets/photos/jockerIcon.png')),
     },
     {
         cat_id: 19,
         titleCategory: 'أطفال',
-        img: (require('../assets/photos/kids.png')),
+        img: (require('../assets/photos/kidsIcon.png')),
     },
     {
-        cat_id: 20,
-        titleCategory: 'اخرى',
-        img: (require('../assets/photos/other.png')),
+        cat_id: 17,
+        titleCategory: 'تأجير معدات',
+        img: (require('../assets/photos/tools.png')),
     },
-
 
 ];
 export const Events = [

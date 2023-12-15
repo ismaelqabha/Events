@@ -1,7 +1,11 @@
-import React, {useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ServiceProviderContext from '../store/ServiceProviderContext';
+import SearchContext from './SearchContext';
 
 const ProviderProvider = props => {
+
+  const { userId } = useContext(SearchContext);
+
   //   service Data
   const [serviceAddress, setserviceAddress] = useState(null);
   const [serviceRegion, setserviceRegion] = useState(null);
@@ -13,6 +17,18 @@ const ProviderProvider = props => {
   const [workAreas, setWorkAreas] = useState([]);
   const [price, setPrice] = useState(null);
   const [additionalServices, setAdditionalServices] = useState([]);
+  const [hallCapacity, setHallCapacity] = useState(null);
+  const [hallType, setHallType] = useState(null);
+  const [socialMediaArray, setSocialMediaArray] = useState([])
+  const [phoneNumer, setPhoneNumer] = useState(null);
+  const [email, setEmail] = useState(null);
+
+  // Photo delete mode 
+  const [isDeleteMode, setIsDeleteMode] = useState(false)
+
+  // drafts 
+  const [draftServices, setDraftServices] = useState([]);
+  const [draftID, setDraftID] = useState(null)
 
   // Calender Scrren
   const [serviceInfoAccorUser, setServiceInfoAccorUser] = useState([]);
@@ -40,8 +56,45 @@ const ProviderProvider = props => {
         setPrice,
         additionalServices,
         setAdditionalServices,
-        serviceInfoAccorUser, 
+        serviceInfoAccorUser,
         setServiceInfoAccorUser,
+        hallCapacity,
+        setHallCapacity,
+        hallType,
+        setHallType,
+        allData: {
+          userID: userId,
+          servType: selectServiceType,
+          title: title,
+          subTitle: SuTitle,
+          desc: description,
+          region: serviceRegion,
+          address: serviceAddress,
+          servicePrice: price,
+          serviceStutes: null,
+          workingRegion: workAreas,
+          maxCapasity: hallCapacity,
+          hallType: hallType,
+          isCostPerPerson: null,
+          additionalServices: additionalServices,
+          socialMedia: socialMediaArray,
+          photoArray,
+        },
+
+        // socail data
+        socialMediaArray,
+        setSocialMediaArray,
+        phoneNumer, setPhoneNumer,
+        email, setEmail,
+
+        // Photo delete mode 
+        isDeleteMode,
+        setIsDeleteMode,
+        // Draft documents 
+        draftServices,
+        setDraftServices,
+        draftID,
+        setDraftID,
       }}>
       {props.children}
     </ServiceProviderContext.Provider>

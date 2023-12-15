@@ -1,20 +1,50 @@
 import { StyleSheet, Text, View, Pressable, Image } from 'react-native'
-import React,{useContext} from 'react'
+import React, { useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import { getUserData } from '../resources/API';
 
 const UserProfile = (props) => {
-    const { userId } = useContext(SearchContext);
+    const { userId, userInfo, setUserInfo } = useContext(SearchContext);
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-
+    //console.log("userId", userId);
+    
     const getUserfromApi = () => {
         getUserData({ USER_ID: userId }).then(res => {
-           // setEventInfo(res)
+            setUserInfo(res)
+            //console.log("setUserInfo", res);
         })
+    }
+    useEffect(() => {
+        getUserfromApi()
+    }, [])
+
+    const renderUser = () => {
+
+        const data = userInfo
+        const cardsArray = data?.map(card => {
+            return (<View style={styles.body}>
+                <View style={styles.nameView}>
+                    <Image style={styles.profilImg} source={require('../assets/photos/user.png')} />
+                    <Text style={styles.nameTxt}>{card.User_name}</Text>
+                    <Text >مزود خدمة</Text>
+                </View>
+                <View style={styles.userInfo}>
+                    <View style={styles.infoView}>
+                        <Text style={styles.nameTxt}>{card.UserPhone + 'الموبايل:'}</Text>
+                    </View>
+                    <View style={styles.infoView}>
+                        <Text style={styles.nameTxt}>{card.Email + 'Email :'}</Text>
+                    </View>
+                </View>
+            </View>
+
+            )
+        });
+        return cardsArray;
     }
 
     return (
@@ -29,21 +59,7 @@ const UserProfile = (props) => {
                         size={25} />
                 </Pressable>
             </View>
-            <View style={styles.body}>
-                <View style={styles.nameView}>
-                    <Image style={styles.profilImg} source={require('../assets/photos/user.png')} />
-                    <Text style={styles.nameTxt}>اسماعيل كبها </Text>
-                    <Text >مزود خدمة</Text>
-                </View>
-                <View style={styles.userInfo}>
-                    <View style={styles.infoView}>
-                        <Text style={styles.nameTxt}> الموبايل: 0548596325</Text>
-                    </View>
-                    <View style={styles.infoView}>
-                        <Text style={styles.nameTxt}>Email : Exsample@gmail.com</Text>
-                    </View>
-                </View>
-            </View>
+            {renderUser()}
         </View>
     )
 }

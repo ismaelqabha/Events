@@ -5,11 +5,14 @@ import ProviderWorkRegionComp from '../../components/ProviderComponents/Provider
 import {ScreenNames} from '../../../route/ScreenNames';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
 import strings from '../../assets/res/strings';
-import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
+import HeaderComp from '../../components/ProviderComponents/HeaderComp';
+import { AppStyles } from '../../assets/res/AppStyles';
+import { colors } from '../../assets/AppColors';
 
 const ProviderSetWorkingRegion = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderWorkingRegion;
+
 
   const params = {
     ScreenHeader: {
@@ -17,27 +20,17 @@ const ProviderSetWorkingRegion = props => {
       HeaderTextStyle: styles.headText,
       Text: langauge.Header,
     },
-    ScreenBack: {
-      backStyle: styles.back,
-      backTextStyle: styles.backText,
-      Text: langauge.Back,
-      onPress: () => onBackPress(),
-    },
     ScreenNext: {
-      nextStyle: styles.next,
-      nextTextStyle: styles.nextText,
+      nextStyle: AppStyles.next,
+      nextTextStyle: AppStyles.nextText,
       Text: langauge.Next,
       onPress: () => onNextPress(),
     },
   };
 
   const onNextPress = () => {
-    props.navigation.navigate(ScreenNames.ProviderSetPrice, {data: {...props}});
+    props.navigation.navigate(ScreenNames.ProviderSocialMediaScreen, {data: {...props}});
   };
-  const onBackPress = () => {
-    props.navigation.goBack();
-  };
-
   const query = () => {
     return regionData || [];
   };
@@ -49,8 +42,11 @@ const ProviderSetWorkingRegion = props => {
     return cardsArray;
   };
 
+
+
   return (
-    <View style={styles.container}>
+    <View style={AppStyles.container}>
+      <HeaderComp />
       <ScreenHeader ScreenHeader={params.ScreenHeader} />
       <View style={styles.body}>
         <ScrollView contentContainerStyle={styles.home}>
@@ -58,7 +54,6 @@ const ProviderSetWorkingRegion = props => {
         </ScrollView>
       </View>
       <View style={styles.footer}>
-        <ScreenBack ScreenBack={params.ScreenBack} />
         <ScreenNext ScreenNext={params.ScreenNext} />
       </View>
     </View>
@@ -66,53 +61,35 @@ const ProviderSetWorkingRegion = props => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
     alignItems: 'flex-end',
     marginRight: 30,
-    marginTop: 40,
+    marginTop: 10,
     marginBottom: 10,
   },
   headText: {
     fontSize: 20,
-    color: 'black',
+    color: colors.puprble,
     fontFamily: 'Cairo-VariableFont_slnt,wght',
+    fontWeight: 'bold'
   },
   body: {
-    height: '75%',
-    marginTop: 20,
-    // marginLeft: '18%',
+    height: '80%',
+    alignItems: 'center',
   },
   footer: {
-    //alignSelf: 'flex-end',
     marginTop: 20,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginRight: 20,
-    marginLeft: 20,
+    justifyContent: 'flex-end',
+    width: '100%',
+    height: 50,
+    paddingHorizontal: '10%',
+    position:'absolute',
+    bottom:0,
+
   },
-  next: {
-    width: 70,
-    height: 40,
-    backgroundColor: 'lightgray',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  back: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  nextText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  backText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-});
+})
+
+
 
 export default ProviderSetWorkingRegion;
