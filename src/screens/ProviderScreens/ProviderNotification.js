@@ -102,7 +102,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     padding: 5,
-    marginVertical: 5
+    marginVertical: 2,
+    borderRadius: 5
   },
   notiftxtView: {
     justifyContent: 'space-between'

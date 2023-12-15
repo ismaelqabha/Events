@@ -90,6 +90,14 @@ const UserProfile = (props) => {
         )
     }
 
+    const renderUserContacts = () => {
+        return (
+            <View>
+                
+            </View>
+        )
+    }
+
     const renderUser = () => {
 
         const data = userInfo
