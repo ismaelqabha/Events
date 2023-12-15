@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { ScreenNames } from '../../../route/ScreenNames';
-import { hallData, regionData } from '../../resources/data';
+import { hallData } from '../../resources/data';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import DynamicHeader from '../../components/ProviderComponents/ScrollView/DynamicHeader';
@@ -24,6 +24,7 @@ import HallTypeCard from '../../components/HallTypeCard';
 import { PERMISSIONS, RESULTS, request } from 'react-native-permissions';
 import { showMessage } from '../../resources/Functions';
 import Geolocation from '@react-native-community/geolocation';
+import { getRegions } from '../../resources/API';
 
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
@@ -34,7 +35,10 @@ const ProviderAddInfo = props => {
   const [titleLengthError, setTitleLengthError] = useState(null);
   const [subTitleLengthError, setSubTitleLengthError] = useState(null);
   const [desLengthError, setDesLengthError] = useState(null);
-
+  const [disableLocation, setDisbaleLocation] = useState(false);
+  const [regionData, setRegionData] = useState([])
+  const [regions, setRegions] = useState(null)
+  const [address, setAddress] = useState(null)
   //   service Data
   const {
     serviceAddress,
@@ -56,7 +60,6 @@ const ProviderAddInfo = props => {
     setLongitude
   } = useContext(ServiceProviderContext);
 
-  const [detailesHeight, setDetailesHeight] = useState(500);
   let scrollOffsetY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -68,6 +71,30 @@ const ProviderAddInfo = props => {
     setDesLengthError(!checkLength(description, 300));
 
   }, [title, SuTitle, description]);
+
+  useEffect(() => {
+    getRegionsfromApi()
+  }, [])
+
+  const getRegionsfromApi = async () => {
+
+    getRegions().then((res) => {
+      res?.message ? showMessage(res.message) : updateData(res?.regions)
+    }).catch((e) => {
+      console.log("error fetching -> ", e);
+    })
+
+  }
+
+  const updateData = (regions) => {
+    setRegions(regions)
+    const allData = []
+    regions?.forEach(region => {
+      allData.push(...region?.regionCities)
+    });
+    allData.sort()
+    setRegionData(allData)
+  }
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -105,6 +132,21 @@ const ProviderAddInfo = props => {
       : missingData();
   };
 
+  const searchRegion = (val) => {
+    if (!regions) {
+      return;
+    } else {
+      regions.forEach((region) => {
+        var index = region?.regionCities?.findIndex(city => {
+          return city === val
+        })
+        if (!(index === -1)) {
+          setAddress(region?.regionName)
+        }
+      })
+    }
+  }
+
   const checkRequestedData = () => {
     return checkStrings(title) &&
       checkStrings(SuTitle) &&
@@ -117,6 +159,7 @@ const ProviderAddInfo = props => {
   };
 
   const requestLocationPermission = async () => {
+    setDisbaleLocation(true)
     if (Platform.OS === 'android') {
       const permission = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
       if (permission === RESULTS.GRANTED) {
@@ -141,6 +184,7 @@ const ProviderAddInfo = props => {
       (position) => {
         setLatitude(position.coords.latitude);
         setLongitude(position.coords.longitude);
+        setDisbaleLocation(false)
         showMessage("location have been saved")
       },
       (err) => showMessage(err.message),
@@ -370,7 +414,7 @@ const ProviderAddInfo = props => {
       <View style={[styles.borderAddressView, AppStyles.shadow]}>
         <Text style={styles.headText}>{language.LocationHeadText}</Text>
         <View style={styles.region}>
-          <Text>{language.address}</Text>
+          <Text> {address || language.address}</Text>
         </View>
 
         {/* <TextInput
@@ -389,8 +433,8 @@ const ProviderAddInfo = props => {
         <SelectList
           data={regionData}
           setSelected={val => {
-            let cityObj = regionData.find(city => city.key == val);
-            setserviceRegion(cityObj.value);
+            setserviceRegion(val)
+            searchRegion(val)
           }}
           placeholder={serviceRegion || language.chooseLocation}
           boxStyles={styles.dropdown}
@@ -398,7 +442,7 @@ const ProviderAddInfo = props => {
           dropdownTextstyles={styles.dropstyle}
         />
 
-        <Pressable style={styles.location} onPress={requestLocationPermission}>
+        <Pressable disabled={disableLocation} style={styles.location} onPress={requestLocationPermission}>
           <Text style={styles.locationTitle}>أضف موقع</Text>
           <View style={styles.IconView}>
             <Entypo
