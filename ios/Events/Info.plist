@@ -39,6 +39,12 @@
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Allow access to the photo library for selecting images</string>
 		<!-- end of Storage Permission -->
+		<!-- location Permission -->
+		<key>NSLocationWhenInUseUsageDescription</key>
+<string>Events Needs the location to complete the task</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>Events Needs the location to complete the task</string>
+<!-- end of location Permission -->
 		<!-- Camera permission -->
 		<key>NSCameraUsageDescription</key>
 		<string>We need access to your camera to take photos and videos</string>

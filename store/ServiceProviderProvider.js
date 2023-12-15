@@ -23,6 +23,10 @@ const ProviderProvider = props => {
   const [phoneNumer, setPhoneNumer] = useState(null);
   const [email, setEmail] = useState(null);
 
+  // location 
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
   // Photo delete mode 
   const [isDeleteMode, setIsDeleteMode] = useState(false)
 
@@ -62,6 +66,10 @@ const ProviderProvider = props => {
         setHallCapacity,
         hallType,
         setHallType,
+        latitude,
+        setLatitude,
+        longitude,
+        setLongitude,
         allData: {
           userID: userId,
           servType: selectServiceType,
