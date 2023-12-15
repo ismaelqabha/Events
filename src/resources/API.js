@@ -141,6 +141,12 @@ export const getCities = async body => {
   return await AppFetch(url, 'POST', body);
 };
 
+// Regions
+export const getRegions = async body =>{
+  const url = 'Region/getRegions'
+  return await AppFetch(url,'POST',body)
+}
+
 // Draft services 
 export const addDraftToAPI= async body =>{
   const url = 'DraftServices/addDraftService';
