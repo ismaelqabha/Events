@@ -4,6 +4,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import { getUserData } from '../resources/API';
 import { colors } from '../assets/AppColors';
+import Entypo from "react-native-vector-icons/Entypo";
 
 const UserProfile = (props) => {
     const { userId, userInfo, setUserInfo } = useContext(SearchContext);
@@ -57,7 +58,7 @@ const UserProfile = (props) => {
         return (
             <View style={styles.reView}>
                 <Text style={styles.titleRevTxt}>ماذا قالوا عن اسماعيل كبها </Text>
-                <ScrollView 
+                <ScrollView
                 //horizontal={true} 
                 //showsHorizontalScrollIndicator={false}
                 >
@@ -92,8 +93,33 @@ const UserProfile = (props) => {
 
     const renderUserContacts = () => {
         return (
-            <View>
-                
+            <View style={styles.userContacts}>
+                <View style={styles.contactItem}>
+                    <View><Text style={styles.basicInfo}>0546126692</Text>
+                        <Text style={styles.basicInfoTitle}>الموبايل</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Ionicons
+                            style={styles.icon}
+                            name={"call"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
+
+                </View>
+                <View style={styles.contactItem}>
+                    <View><Text style={styles.basicInfo}>exsample@gmail.com</Text>
+                        <Text style={styles.basicInfoTitle}>Email</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={styles.icon}
+                            name={"email"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
+
+                </View>
             </View>
         )
     }
@@ -121,9 +147,12 @@ const UserProfile = (props) => {
 
     return (
         <View style={styles.container}>
-            {header()}
-            {renderUserName()}
-            {renderReviews()}
+            <ScrollView>
+                {header()}
+                {renderUserName()}
+                {renderUserContacts()}
+                {renderReviews()}
+            </ScrollView>
         </View>
     )
 }
@@ -153,9 +182,37 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginTop: 20,
         padding: 20,
-
         justifyContent: 'space-between',
         alignSelf: 'center'
+    },
+    userContacts: {
+        marginVertical: 30,
+        padding: 20
+    },
+
+    contactItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+        marginTop: 10
+    },
+    basicInfo: {
+        fontSize: 18,
+        color: colors.puprble,
+        fontWeight: 'bold'
+    },
+    basicInfoTitle: {
+        fontSize: 12,
+        textAlign: 'right'
+    },
+    IconView: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginLeft: 15
     },
     nameView: {
         flexDirection: 'row',

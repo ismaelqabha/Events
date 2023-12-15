@@ -4,7 +4,7 @@ import { colors } from '../../assets/AppColors'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import SearchContext from '../../../store/SearchContext';
 
-const ProviderNotification = () => {
+const ProviderNotification = (props) => {
   const { serviceTitle } = useContext(SearchContext);
 
   const onPressHandler = () => {

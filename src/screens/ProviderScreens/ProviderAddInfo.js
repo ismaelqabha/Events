@@ -76,25 +76,7 @@ const ProviderAddInfo = props => {
     getRegionsfromApi()
   }, [])
 
-  const getRegionsfromApi = async () => {
-
-    getRegions().then((res) => {
-      res?.message ? showMessage(res.message) : updateData(res?.regions)
-    }).catch((e) => {
-      console.log("error fetching -> ", e);
-    })
-
-  }
-
-  const updateData = (regions) => {
-    setRegions(regions)
-    const allData = []
-    regions?.forEach(region => {
-      allData.push(...region?.regionCities)
-    });
-    allData.sort()
-    setRegionData(allData)
-  }
+  
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -132,6 +114,25 @@ const ProviderAddInfo = props => {
       : missingData();
   };
 
+  const getRegionsfromApi = async () => {
+    getRegions().then((res) => {
+      res?.message ? showMessage(res.message) : updateData(res?.regions)
+    }).catch((e) => {
+      console.log("error fetching -> ", e);
+    })
+
+  }
+
+  const updateData = (regions) => {
+    setRegions(regions)
+    const allData = []
+    regions?.forEach(region => {
+      allData.push(...region?.regionCities)
+    });
+    allData.sort()
+    setRegionData(allData)
+  }
+  
   const searchRegion = (val) => {
     if (!regions) {
       return;
