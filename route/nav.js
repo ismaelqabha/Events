@@ -51,6 +51,7 @@ import SetUserStatus from "../src/screens/Signup/SetUserStatus";
 import ProviderCreateOffer from "../src/screens/ProviderScreens/ProviderCreateOffer";
 import ProviderSetEventType from "../src/screens/ProviderScreens/ProviderSetEventType";
 import UserProfile from "../src/screens/UserProfile";
+import ProviderNotification from "../src/screens/ProviderScreens/ProviderNotification";
 
 
 
@@ -129,6 +130,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderContantPrice} component={ProviderContantPrice} />
                 <Stack.Screen name={ScreenNames.ProviderCreateOffer} component={ProviderCreateOffer} />
                 <Stack.Screen name={ScreenNames.ProviderSetEventType} component={ProviderSetEventType} />
+                <Stack.Screen name={ScreenNames.ProviderNotification} component={ProviderNotification} />
                 
                 <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />
                 <Stack.Screen name={ScreenNames.CreatePassword} component={CreatePassword} />
