@@ -147,18 +147,17 @@ const styles = StyleSheet.create({
         //alignItems: 'center',
         justifyContent: 'center',
         margin: 15,
-        height: 100,
+        //height: 100,
         width: 60,
     },
     HomeScreenViewPress: {
         justifyContent: 'center',
         margin: 15,
-        height: 100,
+        //height: 100,
         width: 65,
         borderWidth: 3,
         borderColor: colors.darkGold,
-        borderRadius: 15,
-        //elevation: 5
+        borderRadius: 30,
     },
     HomeScreenimg: {
         width: 60,

@@ -11,7 +11,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { ScreenNames } from "./ScreenNames";
 import { colors } from '../src/assets/AppColors';
 import ClientProfile from '../src/screens/ClientProfile';
-import ProviderNotification from '../src/screens/ProviderScreens/ProviderNotification';
 
 
 const TabNavigator = () => {
@@ -64,12 +63,12 @@ const TabNavigator = () => {
                 }}
             />
 
-            <Tap.Screen name={ScreenNames.ProviderNotification} component={ProviderNotification}
+            <Tap.Screen name={ScreenNames.FileFavorites} component={FileFavorites}
                 options={{
-                    title: 'الاشعارات',
+                    title: 'المفضلة',
                     tapBarIcon: () => (
-                        <AntDesign
-                            name='notification'
+                        <Fontisto
+                            name='favorite'
                             style={{ fontSize: 30, color: '#1e90ff' }}
                         />
                     )
