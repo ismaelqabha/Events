@@ -17,6 +17,11 @@ const UsersProvider = (props) => {
     const [confirmPassword, setconfirmPassword] = useState(null);
     const [profilePhoto, setProfilePhoto] = useState(null);
 
+     // location 
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+
 
     return (
         <UsersContext.Provider
@@ -49,6 +54,10 @@ const UsersProvider = (props) => {
                 setconfirmPassword,
                 profilePhoto,
                 setProfilePhoto,
+                latitude, 
+                setLatitude,
+                longitude, 
+                setLongitude
             }}>
             {props.children}
         </UsersContext.Provider>

@@ -11,7 +11,6 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from "../assets/AppColors"
 import { servicesCategory } from '../resources/data';
-import AddNewDates from '../components/AddNewDates';
 import ServiceCard from '../components/ServiceCard';
 import HomeServiceCard from '../components/HomeServiceCard';
 
@@ -131,7 +130,7 @@ const ClientHomeAds = (props) => {
                         <Ionicons
                             //style={styles.menu}
                             name={"notifications"}
-                            color={colors.puprble}
+                            color={colors.gold}
                             size={30} />
                     </Pressable>
                     <Image source={require('../assets/photos/arabicLogo.png')} style={styles.titleImg} />
@@ -142,7 +141,7 @@ const ClientHomeAds = (props) => {
                         <Entypo
                             //style={styles.menu}
                             name={"menu"}
-                            color={colors.puprble}
+                            color={colors.gold}
                             size={30} />
                     </Pressable>
 
@@ -313,13 +312,13 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 20,
-        color: colors.puprble,
+        color: colors.gold,
         fontWeight: 'bold'
     },
     txt: {
         fontSize: 20,
         marginRight: 10,
-        color: colors.puprble
+        color: colors.gold
     },
     headerTxt: {
         fontSize: 20,
@@ -338,7 +337,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 150,
         alignSelf: 'center',
-        backgroundColor: colors.gold,
+        backgroundColor: colors.puprble,
         borderBottomLeftRadius: 60,
         borderBottomRightRadius: 60
     },

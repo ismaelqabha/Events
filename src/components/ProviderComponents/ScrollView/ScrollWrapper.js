@@ -8,7 +8,7 @@ import {
 } from 'react-native-reanimated';
 import { Keyboard } from 'react-native';
 
-const ScrollWrapper = ({ amountDots, dotPlace, onNextPress, children }) => {
+const ScrollWrapper = ({ amountDots, dotPlace, onNextPress,onPressBack, children }) => {
 
     const [scrollDirection, setScrollDirection] = useState('up');
     const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -65,6 +65,7 @@ const ScrollWrapper = ({ amountDots, dotPlace, onNextPress, children }) => {
             {!keyboardVisible && <Footer
                 style={AppStyles.signUpFooter}
                 onNextPress={onNextPress}
+                onPressBack={onPressBack}
                 footerVisibility={footerVisibility}
                 dotPlace={dotPlace}
                 amountDots={amountDots}

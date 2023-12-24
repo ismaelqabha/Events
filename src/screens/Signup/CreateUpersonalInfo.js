@@ -47,7 +47,7 @@ const CreateUpersonalInfo = (props) => {
     const [show, setShow] = useState(false);
     const [date, setDate] = useState(new Date());
 
-    const onPressHandler = () => {
+    const onPressBack = () => {
         props.navigation.goBack();
     }
     const onChange = (event, selectedDate) => {
@@ -271,7 +271,7 @@ const CreateUpersonalInfo = (props) => {
     return (
         <View style={styles.container}>
             <View style={styles.head}>
-                <Pressable onPress={onPressHandler}
+                <Pressable onPress={onPressBack}
                 >
                     <Ionicons
                         style={styles.icon}
@@ -284,6 +284,7 @@ const CreateUpersonalInfo = (props) => {
 
             <ScrollWrapper
                 onNextPress={onNextPress}
+                onPressBack={onPressBack}
                 dotPlace={0}
                 amountDots={4}
             >

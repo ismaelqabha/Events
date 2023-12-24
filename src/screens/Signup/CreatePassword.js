@@ -79,6 +79,7 @@ const CreatePassword = (props) => {
         ToastAndroid.SHORT,
         ToastAndroid.BOTTOM
       )
+      props.navigation.navigate(ScreenNames.ClientHomeAds)
     })
   }
 
@@ -102,47 +103,47 @@ const CreatePassword = (props) => {
   }
 
 
-  const RenderFooter = () => {
-    return (
-      <View style={AppStyles.footer}>
-        {renderDots()}
-        <View style={AppStyles.footerPart}>
-          {RenderBackButton()}
-          {RenderNextButton()}
-        </View>
+  // const RenderFooter = () => {
+  //   return (
+  //     <View style={AppStyles.footer}>
+  //       {renderDots()}
+  //       <View style={AppStyles.footerPart}>
+  //         {RenderBackButton()}
+  //         {RenderNextButton()}
+  //       </View>
 
 
-      </View>);
-  };
-  const renderDots = () => {
-    return (
-      <View style={AppStyles.createuserDots}>
-        <View style={AppStyles.dots}></View>
-        <View style={AppStyles.dots}></View>
-        <View style={AppStyles.dots}></View>
-        <View style={AppStyles.pressDot}></View>
-      </View>
-    )
-  }
-  const RenderNextButton = () => {
-    return (
-      <Pressable
-        style={AppStyles.createUserNext}
-        onPress={() => onNextPress()}
-      >
-        <Text style={AppStyles.createUserNextTxt}>تم</Text>
-      </Pressable>
-    );
-  };
-  const RenderBackButton = () => {
-    return (
-      <Pressable
-        style={AppStyles.createUserBack}
-        onPress={() => onPressBack()}>
-        <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
-      </Pressable>
-    );
-  };
+  //     </View>);
+  // };
+  // const renderDots = () => {
+  //   return (
+  //     <View style={AppStyles.createuserDots}>
+  //       <View style={AppStyles.dots}></View>
+  //       <View style={AppStyles.dots}></View>
+  //       <View style={AppStyles.dots}></View>
+  //       <View style={AppStyles.pressDot}></View>
+  //     </View>
+  //   )
+  // }
+  // const RenderNextButton = () => {
+  //   return (
+  //     <Pressable
+  //       style={AppStyles.createUserNext}
+  //       onPress={() => onNextPress()}
+  //     >
+  //       <Text style={AppStyles.createUserNextTxt}>تم</Text>
+  //     </Pressable>
+  //   );
+  // };
+  // const RenderBackButton = () => {
+  //   return (
+  //     <Pressable
+  //       style={AppStyles.createUserBack}
+  //       onPress={() => onPressBack()}>
+  //       <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
+  //     </Pressable>
+  //   );
+  // };
 
   const onNextPress = () => {
     true ? onCreateUser() : missingData();
@@ -205,7 +206,7 @@ const CreatePassword = (props) => {
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <ScrollWrapper onNextPress={onNextPress} dotPlace={3} amountDots={4}
+      <ScrollWrapper onNextPress={onNextPress} onPressBack={onPressBack} dotPlace={3} amountDots={4}
       >
         <View style={styles.body}>
           <Text style={styles.titleText}>تعيين كلمة المرور</Text>

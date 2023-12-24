@@ -23,7 +23,7 @@ export const SharedScreen = [
         route: ScreenNames.PersonalInfo,
         label: 'المعلومات الشخصية',
         type: Icons.AntDesign,
-        icon: 'profile',
+        icon: 'user',
         component: PersonalInfo,
     },
     {

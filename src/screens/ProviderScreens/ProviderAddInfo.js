@@ -35,10 +35,12 @@ const ProviderAddInfo = props => {
   const [titleLengthError, setTitleLengthError] = useState(null);
   const [subTitleLengthError, setSubTitleLengthError] = useState(null);
   const [desLengthError, setDesLengthError] = useState(null);
+
   const [disableLocation, setDisbaleLocation] = useState(false);
   const [regionData, setRegionData] = useState([])
   const [regions, setRegions] = useState(null)
   const [address, setAddress] = useState(null)
+
   //   service Data
   const {
     serviceAddress,
@@ -365,8 +367,6 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
-
-
   const RenderMainDetails = () => {
     return (
       <View style={[styles.borderTitleView, AppStyles.shadow]}>
@@ -394,9 +394,6 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
-
-
-
   const renderHallTypesHeader = () => {
     return (
       <View style={styles.HallTypesView}>
@@ -418,19 +415,7 @@ const ProviderAddInfo = props => {
           <Text> {address || language.address}</Text>
         </View>
 
-        {/* <TextInput
-          style={styles.input}
-          keyboardType="default"
-          placeholder={language.address}
-          onChangeText={value => setserviceAddress(value)}
-          value={serviceAddress || null}
-          editable={false}
-        /> */}
-        {/* {(titleError || titleLengthError) && (
-          <Text style={{ color: 'red', marginLeft: 100 }}>
-            {titleError ? language.titleRequired : language.titleLengthError}
-            </Text>
-        )} */}
+       
         <SelectList
           data={regionData}
           setSelected={val => {

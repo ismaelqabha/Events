@@ -6,14 +6,14 @@ import Animated, {
     withSpring,
 } from 'react-native-reanimated';
 import { AppStyles } from '../../assets/res/AppStyles';
-import { View } from 'react-native';
-import { Pressable } from 'react-native';
-import { Text } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
+
 
 const Footer = ({
     footerVisibility,
     style,
     onNextPress,
+    onPressBack,
     dotPlace,
     amountDots
 }) => {
@@ -30,7 +30,10 @@ const Footer = ({
             style={[style, animatedFooterStyle]}
         >
             {renderDots()}
-            {RenderNextButton()}
+            <View style={{ flexDirection: 'row' , justifyContent: 'space-between'}}>
+                {RenderBackButton()}
+                {RenderNextButton()}
+            </View>
         </Animated.View>;
     };
 
@@ -40,6 +43,15 @@ const Footer = ({
                 style={AppStyles.createUserNext}
                 onPress={() => onNextPress()}>
                 <Text style={AppStyles.createUserNextTxt}>التالي</Text>
+            </Pressable>
+        );
+    };
+    const RenderBackButton = () => {
+        return (
+            <Pressable
+                style={AppStyles.createUserBack}
+                onPress={() => onPressBack()}>
+                <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
             </Pressable>
         );
     };

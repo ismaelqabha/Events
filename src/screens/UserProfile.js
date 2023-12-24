@@ -41,14 +41,13 @@ const UserProfile = (props) => {
         return (
             <View style={styles.mainView}>
                 <View style={styles.nameView}>
-                    <Text style={styles.nameTxt}>اسماعيل كبها</Text>
                     <View style={styles.profilImg}><Image source={require('../assets/photos/user.png')} /></View>
+                    <Text style={styles.nameTxt}>اسماعيل كبها</Text>
                 </View>
                 <View style={styles.reviewView}>
-                    <Text style={styles.txt}>3 شهور في مناسباتي</Text>
-                    <Text>|</Text>
-                    <Text style={styles.txt}>3 مراجعات</Text>
-
+                   <View style={{}}><Text style={styles.txt}>3 شهور في مناسباتي</Text></View>
+                   <View style={{}}><Text>|</Text></View>
+                   <View style={{}}><Text style={styles.txt}>3 مراجعات</Text></View>
                 </View>
             </View>
         )
@@ -176,17 +175,17 @@ const styles = StyleSheet.create({
     },
     mainView: {
         width: '90%',
-        height: 200,
+        height: 270,
         borderRadius: 10,
         backgroundColor: 'white',
         elevation: 5,
         marginTop: 20,
-        padding: 20,
+       padding: 20,
         justifyContent: 'space-between',
         alignSelf: 'center'
     },
     userContacts: {
-        marginVertical: 30,
+        marginVertical: 10,
         padding: 20
     },
 
@@ -215,7 +214,7 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
     nameView: {
-        flexDirection: 'row',
+        // flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -229,12 +228,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: 'black',
-        marginRight: 20
+        marginVertical: 30
+        // marginRight: 20
     },
     reviewView: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
+        //borderWidth: 1
     },
     txt: {
         fontSize: 15,

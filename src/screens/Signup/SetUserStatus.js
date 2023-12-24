@@ -16,45 +16,45 @@ const SetUserStatus = (props) => {
     props.navigation.goBack();
   }
 
-  const RenderFooter = () => {
-    return (
-      <View style={AppStyles.footer}>
-        {renderDots()}
-        <View style={AppStyles.footerPart}>
-          {RenderBackButton()}
-          {RenderNextButton()}
-        </View>
-      </View>);
-  };
-  const renderDots = () => {
-    return (
-      <View style={AppStyles.createuserDots}>
-        <View style={AppStyles.dots}></View>
-        <View style={AppStyles.dots}></View>
-        <View style={AppStyles.pressDot}></View>
-        <View style={AppStyles.dots}></View>
-      </View>
-    )
-  }
-  const RenderNextButton = () => {
-    return (
-      <Pressable
-        style={AppStyles.createUserNext}
-        onPress={() => onNextPress()}
-      >
-        <Text style={AppStyles.createUserNextTxt}>التالي</Text>
-      </Pressable>
-    );
-  };
-  const RenderBackButton = () => {
-    return (
-      <Pressable
-        style={AppStyles.createUserBack}
-        onPress={() => onPressBack()}>
-        <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
-      </Pressable>
-    );
-  };
+  // const RenderFooter = () => {
+  //   return (
+  //     <View style={AppStyles.footer}>
+  //       {renderDots()}
+  //       <View style={AppStyles.footerPart}>
+  //         {RenderBackButton()}
+  //         {RenderNextButton()}
+  //       </View>
+  //     </View>);
+  // };
+  // const renderDots = () => {
+  //   return (
+  //     <View style={AppStyles.createuserDots}>
+  //       <View style={AppStyles.dots}></View>
+  //       <View style={AppStyles.dots}></View>
+  //       <View style={AppStyles.pressDot}></View>
+  //       <View style={AppStyles.dots}></View>
+  //     </View>
+  //   )
+  // }
+  // const RenderNextButton = () => {
+  //   return (
+  //     <Pressable
+  //       style={AppStyles.createUserNext}
+  //       onPress={() => onNextPress()}
+  //     >
+  //       <Text style={AppStyles.createUserNextTxt}>التالي</Text>
+  //     </Pressable>
+  //   );
+  // };
+  // const RenderBackButton = () => {
+  //   return (
+  //     <Pressable
+  //       style={AppStyles.createUserBack}
+  //       onPress={() => onPressBack()}>
+  //       <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
+  //     </Pressable>
+  //   );
+  // };
   const onNextPress = () => {
     true
       ? props.navigation.navigate(ScreenNames.CreatePassword
@@ -209,7 +209,7 @@ const SetUserStatus = (props) => {
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <ScrollWrapper onNextPress={onNextPress} dotPlace={2} amountDots={4}>
+      <ScrollWrapper onNextPress={onNextPress} onPressBack={onPressBack} dotPlace={2} amountDots={4}>
         <View style={styles.body}>
           <Text style={styles.titleText}>تواريخ خاصة</Text>
           {renderUserSpecialDates()}
