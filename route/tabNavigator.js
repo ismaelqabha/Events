@@ -13,7 +13,7 @@ import Icon, { Icons } from "../src/components/Icons"
 import * as Animatable from 'react-native-animatable';
 
 const TabArr = [
-    { route: ScreenNames.ClientHomeAds, label: 'الرئيسيه', type: Icons.AntDesign, activeIcon: 'home', inActiveIcon: 'home', component: ClientHomeAds },
+    { route: ScreenNames.ClientHomeAds, label: 'الرئيسيه', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home', component: ClientHomeAds },
     { route: ScreenNames.FileFavorites, label: 'المفضلة', type: Icons.MaterialIcons, activeIcon: 'favorite', inActiveIcon: 'favorite-border', component: FileFavorites },
     { route: ScreenNames.ClientEvents, label: 'مناسباتي', type: Icons.MaterialIcons, activeIcon: 'event', inActiveIcon: 'event', component: ClientEvents },
     { route: ScreenNames.ClientProfile, label: 'بروفايل', type: Icons.FontAwesome, activeIcon: 'user', inActiveIcon: 'user-circle-o', component: ClientProfile },
