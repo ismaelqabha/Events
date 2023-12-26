@@ -1,79 +1,170 @@
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import React from "react";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { useEffect, useRef } from "react";
+import { StyleSheet, View,Text, TouchableOpacity } from 'react-native'
 import { ScreenNames } from "./ScreenNames";
-import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
-import TopTapNotificaNavig from './topTapNotificaNavig';
-import ProviderServiceShow from '../src/screens/ProviderScreens/ProviderServiceShow';
-import AntDesign from 'react-native-vector-icons/AntDesign'
-import Ionicons from 'react-native-vector-icons/Ionicons'
 import ProviderHome from '../src/screens/ProviderScreens/ProviderHome';
-import { colors } from '../src/assets/AppColors';
 import ProviderProfile from '../src/screens/ProviderScreens/ProviderProfile';
-import ProviderNotification from '../src/screens/ProviderScreens/ProviderNotification';
+import ProviderCalender from '../src/screens/ProviderScreens/ProviderCalender';
+import TopTapNotificaNavig from './topTapNotificaNavig';
 
+import { colors } from '../src/assets/AppColors';
+import Icon, { Icons } from "../src/components/Icons"
+import * as Animatable from 'react-native-animatable';
+
+const TabArr = [
+    { route: ScreenNames.ProviderProfile, label: 'بروفايل', type: Icons.AntDesign, icon: 'profile', component: ProviderProfile, color: colors.puprble, alphaClr: colors.BGScereen },
+    { route: ScreenNames.ProviderHome, label: 'خدماتي', type: Icons.Ionicons, icon: 'create-outline', component: ProviderHome, color: colors.puprble, alphaClr: colors.BGScereen },
+    { route: ScreenNames.ProviderCalender, label: 'التقويم', type: Icons.AntDesign, icon: 'calendar', component: ProviderCalender, color: colors.puprble, alphaClr: colors.BGScereen},
+    { route: "Notification", label: 'الحجوزات', type: Icons.AntDesign, icon: 'book', component: TopTapNotificaNavig, color: colors.puprble, alphaClr: colors.BGScereen},
+];
+
+const Tap = createBottomTabNavigator();
+
+const TabButton = (props) => {
+    const { item, onPress, accessibilityState } = props;
+    const focused = accessibilityState.selected;
+    const viewRef = useRef(null);
+    const textViewRef = useRef(null);
+  
+    useEffect(() => {
+      if (focused) { // 0.3: { scale: .7 }, 0.5: { scale: .3 }, 0.8: { scale: .7 },
+        viewRef.current.animate({ 0: { scale: 0 }, 1: { scale: 1 } });
+        textViewRef.current.animate({0: {scale: 0}, 1: {scale: 1}});
+      } else {
+        viewRef.current.animate({ 0: { scale: 1, }, 1: { scale: 0, } });
+        textViewRef.current.animate({0: {scale: 1}, 1: {scale: 0}});
+      }
+    }, [focused])
+  
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={1}
+        style={[styles.container, {flex: focused ? 1 : 0.65}]}>
+        <View>
+          <Animatable.View
+            ref={viewRef}
+            style={[StyleSheet.absoluteFillObject, { backgroundColor: item.color, borderRadius: 16 }]} />
+          <View style={[styles.btn, { backgroundColor: focused ? null : item.alphaClr }]}>
+            <Icon type={item.type} name={item.icon} color={focused ? 'lightgray' : 'gray'} />
+            <Animatable.View
+              ref={textViewRef}>
+              {focused && <Text style={{
+                color: 'lightgray', paddingHorizontal: 8
+              }}>{item.label}</Text>}
+            </Animatable.View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+  
 
 const ProviderTapNav = () => {
-    const Tap = createMaterialBottomTabNavigator();
+
 
     return (
         <Tap.Navigator
-            // initialRouteName='ProviderHome'
-            activeColor={colors.puprble}
-            inactiveColor={colors.darkGold}
-            barStyle={{ backgroundColor: 'snow' }}>
+            screenOptions={{
+                headerShown: false,
+                tabBarStyle: {
+                    height: 70,
+                    position: 'absolute',
+                    bottom: 16,
+                    right: 16,
+                    left: 16,
+                    borderRadius: 16,
+                    backgroundColor: colors.BGScereen
+                }
+            }}
 
-            <Tap.Screen name={ScreenNames.ProviderProfile} component={ProviderProfile}
-                options={{
-                    title: 'بروفايل',
-                    tapBarIcon: () => (
-                        <AntDesign
-                            name='profile'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
-                        />
-                    )
-                }}
-            />
-            <Tap.Screen name={ScreenNames.ProviderHome} component={ProviderHome}
-                options={{
-                    title: 'خدماتي',
-                    drawerIcon: () => (
-                        <Ionicons
-                            name='create-outline'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
-                        />
-                    )
-                }}
-            />
-           
-            <Tap.Screen name={ScreenNames.ProviderNotification} component={ProviderNotification}
-                options={{
-                    title: 'الاشعارات',
-                    drawerIcon: () => (
-                        <AntDesign
-                            name='notification'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
-                        />
-                    )
-                }}
-            />
-
-            <Tap.Screen name="Notification" component={TopTapNotificaNavig}
-                options={{
-                    title: 'الحجوزات',
-                    drawerIcon: () => (
-                        <AntDesign
-                            name='book'
-                            style={{ fontSize: 30, color: '#1e90ff' }}
-                        />
-                    )
-                }}
-            />
-
-
-
+        >
+            {TabArr.map((item, index) => {
+                return (
+                    <Tap.Screen key={index} name={item.route} component={item.component}
+                        options={{
+                            tabBarShowLabel: false,
+                            //tabBarLabel: item.label,
+                            // tabBarIcon: ({ color, focused }) => (
+                            //     <Icon type={item.type} name={item.route} color={color} />
+                            // ),
+                            tabBarButton: (props) => <TabButton {...props} item={item} />
+                        }}
+                    />
+                )
+            })}
         </Tap.Navigator>
+
+        // <Tap.Navigator
+        //     // initialRouteName='ProviderHome'
+        //     activeColor={colors.puprble}
+        //     inactiveColor={colors.darkGold}
+        //     barStyle={{ backgroundColor: 'snow' }}>
+
+        //     <Tap.Screen name={ScreenNames.ProviderProfile} component={ProviderProfile}
+        //         options={{
+        //             title: 'بروفايل',
+        //             tapBarIcon: () => (
+        //                 <AntDesign
+        //                     name='profile'
+        //                     style={{ fontSize: 30, color: '#1e90ff' }}
+        //                 />
+        //             )
+        //         }}
+        //     />
+        //     <Tap.Screen name={ScreenNames.ProviderHome} component={ProviderHome}
+        //         options={{
+        //             title: 'خدماتي',
+        //             drawerIcon: () => (
+        //                 <Ionicons
+        //                     name='create-outline'
+        //                     style={{ fontSize: 30, color: '#1e90ff' }}
+        //                 />
+        //             )
+        //         }}
+        //     />
+           
+        //     <Tap.Screen name={ScreenNames.ProviderNotification} component={ProviderNotification}
+        //         options={{
+        //             title: 'الاشعارات',
+        //             drawerIcon: () => (
+        //                 <AntDesign
+        //                     name='notification'
+        //                     style={{ fontSize: 30, color: '#1e90ff' }}
+        //                 />
+        //             )
+        //         }}
+        //     />
+
+        //     <Tap.Screen name="Notification" component={TopTapNotificaNavig}
+        //         options={{
+        //             title: 'الحجوزات',
+        //             drawerIcon: () => (
+        //                 <AntDesign
+        //                     name='book'
+        //                     style={{ fontSize: 30, color: '#1e90ff' }}
+        //                 />
+        //             )
+        //         }}
+        //     />
+
+
+
+        // </Tap.Navigator>
 
     )
 }
+const styles = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    btn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 8,
+      borderRadius: 16,
+    }
+  })
 
 export default ProviderTapNav

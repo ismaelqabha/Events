@@ -1,14 +1,14 @@
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, {useEffect,useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import ClientHomeAds from "../src/screens/ClientHomeAds";
 import ClientEvents from "../src/screens/ClientEvents";
 import FileFavorites from "../src/screens/FileFavorites";
-
-import { ScreenNames } from "./ScreenNames";
-import { colors } from '../src/assets/AppColors';
 import ClientProfile from '../src/screens/ClientProfile';
+import { ScreenNames } from "./ScreenNames";
+
+import { colors } from '../src/assets/AppColors';
 import Icon, { Icons } from "../src/components/Icons"
 import * as Animatable from 'react-native-animatable';
 
@@ -20,18 +20,30 @@ const TabArr = [
 ];
 const Tap = createBottomTabNavigator();
 
+const animate1 = { 0: { scale: .5, translateY: 7 }, .92: { translateY: -34 }, 1: { scale: 1.2, translateY: -24 } }
+const animate2 = { 0: { scale: 1.2, translateY: -24 }, 1: { scale: 1, translateY: 7 } }
+
+const circle1 = { 0: { scale: 0 }, 0.3: { scale: .9 }, 0.5: { scale: .2 }, 0.8: { scale: .7 }, 1: { scale: 1 } }
+const circle2 = { 0: { scale: 1 }, 1: { scale: 0 } }
+
 const TapButton = (props) => {
     const { item, onPress, accessibilityState } = props;
     const focused = accessibilityState.selected;
     const viewRef = useRef(null);
+    const circleRef = useRef(null);
+    const textRef = useRef(null);
 
     useEffect(() => {
         if (focused) {
-          viewRef.current.animate({0: {scale: .5, rotate: '0deg'}, 1: {scale: 1.5, rotate: '360deg'}});
+            viewRef.current.animate(animate1);
+            circleRef.current.animate(circle1);
+            textRef.current.transitionTo({ scale: 1 });
         } else {
-          viewRef.current.animate({0: {scale: 1.5, rotate: '360deg'}, 1: {scale: 1, rotate: '0deg'}});
+            viewRef.current.animate(animate2);
+            circleRef.current.animate(circle2);
+            textRef.current.transitionTo({ scale: 0 });
         }
-      }, [focused])
+    }, [focused])
 
     return (
         <TouchableOpacity
@@ -42,9 +54,18 @@ const TapButton = (props) => {
             <Animatable.View
                 ref={viewRef}
                 duration={1000}
-                style={styles.container}
-            >
-                <Icon type={item.type} name={item.activeIcon} color={focused ? colors.puprble : 'lightgray'} />
+                style={styles.container}>
+                <View style={styles.btn}>
+                    <Animatable.View
+                        ref={circleRef}
+                        style={styles.circle} />
+                    <Icon type={item.type} name={item.activeIcon} color={focused ? colors.BGScereen : 'lightgray'} />
+                </View>
+                <Animatable.Text
+                    ref={textRef}
+                    style={styles.text}>
+                    {item.label}
+                </Animatable.Text>
             </Animatable.View>
         </TouchableOpacity>
     )
@@ -174,7 +195,29 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    btn: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        borderWidth: 4,
+        borderColor: colors.BGScereen,
+        backgroundColor: colors.BGScereen,
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      circle: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.puprble,
+        borderRadius: 25,
+      },
+      text: {
+        fontSize: 10,
+        textAlign: 'center',
+        color: colors.puprble,
+      }
 })
 
 export default TabNavigator; 
