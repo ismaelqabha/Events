@@ -1,6 +1,6 @@
 import { BackgroundImage } from '@rneui/base';
 import React, { useContext, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View, Text, Pressable, Image, ImageBackground, FlatList } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, Pressable, Image, ImageBackground, FlatList, Animated } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import CampaignCard from '../components/CampaignCard';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +13,7 @@ import { colors } from "../assets/AppColors"
 import { servicesCategory } from '../resources/data';
 import ServiceCard from '../components/ServiceCard';
 import HomeServiceCard from '../components/HomeServiceCard';
+import Interactable from 'react-native-interactable';
 
 const ClientHomeAds = (props) => {
     const { cat, setCat,
@@ -24,6 +25,9 @@ const ClientHomeAds = (props) => {
 
     const [selectServiceType, setSelectServiceType] = useState('');
     const navigation = useNavigation();
+
+    const deltaX = new Animated.Value(0);
+    const deltaY = new Animated.Value(0);
 
     const queryCampaign = () => {
 
@@ -84,7 +88,7 @@ const ClientHomeAds = (props) => {
         const ServiceArray = data?.map(card => {
             return <HomeServiceCard {...card.serviceData}
                 images={card?.serviceImages}
-                isFromTopServicesClick={true}
+                isFromSugestServicesClick={true}
             />;
         })
         return ServiceArray
@@ -106,81 +110,85 @@ const ClientHomeAds = (props) => {
         )
     }
 
-    const photo = [
-        ("https://annlifestyle.com/wp-content/uploads/2018/11/mvpdecoration_43914656_692834574424375_5213177054772732757_n.jpg"),
-        ('https://i.ytimg.com/vi/o21N8hYhgpA/maxresdefault.jpg'),
-        ('https://i1.sndcdn.com/artworks-S0TyHTUkz9UGdPeB-ce8Cpg-t500x500.jpg'),
-        ('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSidf4Cc6xHlFYGAzdeR9MZw6_yVIUcSSaJzQ&usqp=CAU'),
-        ('https://htouches.com/wp-content/uploads/2021/10/r.png'),
-        ('https://i.ytimg.com/vi/8TE-BK89hHE/maxresdefault.jpg'),
-        ('https://api.mzadqatar.com/uploads/images/2019/03/18/8158896-4022558486.jpg'),
-        ("https://opensooq-images.os-cdn.com/previews/0x720/e9/48/e9485efd37c92c3002cadf210fe4b869a11432646d11a993195423b708d7f4f1.jpg.webp"),
-    ]
-
 
     return (
         <ImageBackground style={styles.bg} source={require('../assets/photos/backgroundMain.png')}>
             <View style={styles.header}>
-
-                <View style={styles.drawerView}>
-                    <Pressable
-                        style={styles.drawer}
-                        onPress={() => props.navigation.navigate(ScreenNames.ProviderNotification)}
-                    >
-                        <Ionicons
-                            //style={styles.menu}
-                            name={"notifications"}
-                            color={colors.gold}
-                            size={30} />
-                    </Pressable>
-                    <Image source={require('../assets/photos/arabicLogo.png')} style={styles.titleImg} />
-                    <Pressable
-                        style={styles.drawer}
-                        onPress={() => navigation.openDrawer()}
-                    >
-                        <Entypo
-                            //style={styles.menu}
-                            name={"menu"}
-                            color={colors.gold}
-                            size={30} />
-                    </Pressable>
-
-                </View>
-                <Pressable
-                    style={styles.search}
-                    onPress={() => navigation.navigate(ScreenNames.ClientSearch, { isFromSearchServiceClick: true })}
+                <Animated.View
+                    style={{
+                        transform: [
+                            {
+                                translateY: deltaY.interpolate({
+                                    inputRange: [-150, -150, 0, 0],
+                                    outputRange: [-58, -58, 0, 0]
+                                }),
+                            },
+                            {
+                                scale: deltaY.interpolate({
+                                    inputRange: [-150, -150, 0, 0],
+                                    outputRange: [0.35, 0.35, 1, 1]
+                                }),
+                            }
+                        ],
+                    }}
                 >
-                    <View>
-                        <Text style={styles.txt}>{'|  ' + 'بحث الخدمات'}</Text>
+                    <View style={styles.drawerView}>
+                        <Pressable
+                            style={styles.drawer}
+                            onPress={() => props.navigation.navigate(ScreenNames.ProviderNotification)}
+                        >
+                            <Ionicons
+                                //style={styles.menu}
+                                name={"notifications"}
+                                color={colors.gold}
+                                size={30} />
+                        </Pressable>
+                        <Image source={require('../assets/photos/arabicLogo.png')} style={styles.titleImg} />
+                        <Pressable
+                            style={styles.drawer}
+                            onPress={() => navigation.openDrawer()}
+                        >
+                            <Entypo
+                                //style={styles.menu}
+                                name={"menu"}
+                                color={colors.gold}
+                                size={30} />
+                        </Pressable>
+
                     </View>
-                    <AntDesign
-                        style={styles.icon}
-                        name={"search1"}
-                        size={20}
-                    />
-                </Pressable>
-            </View>
-            <View style={styles.CatView}>
-                <FlatList
-                    data={Categoryquery()}
-                    renderItem={renderCat}
-                    horizontal={true}
-                />
+                    <Pressable
+                        style={styles.search}
+                        onPress={() => navigation.navigate(ScreenNames.ClientSearch, { isFromSearchServiceClick: true })}
+                    >
+                        <View>
+                            <Text style={styles.txt}>{'|  ' + 'بحث الخدمات'}</Text>
+                        </View>
+                        <AntDesign
+                            style={styles.icon}
+                            name={"search1"}
+                            size={20}
+                        />
+                    </Pressable>
+                    <View style={styles.CatView}>
+                        <FlatList
+                            data={Categoryquery()}
+                            renderItem={renderCat}
+                            horizontal={true}
+                        />
+                    </View>
+                </Animated.View>
             </View>
 
+            {/* <Interactable.View
+                verticalOnly={true}
+                snapPoints={[{ y: 0 }, { y: -150 }]}
+                boundaries={{ tob: -150 }}
+                animatedValueY={deltaY}
+                animatedValueX={deltaX}
+            >
+                <Text>Test</Text>
+            </Interactable.View> */}
             <ScrollView contentContainerStyle={styles.home}>
-
-
-                {/* <View >
-                    <SliderBox
-                        sliderBoxHeight={250}
-                        images={photo}
-                        dotColor="blue"
-                        dotStyle={{ width: 8, height: 8, borderRadius: 50 }}
-                        autoplay={true}
-                    />
-                </View> */}
-
 
                 <Pressable
                     // style={styles.search}
@@ -189,7 +197,18 @@ const ClientHomeAds = (props) => {
                     <Text style={styles.txt}>Login</Text>
                 </Pressable>
 
+                <View style={styles.centents}>
+                    <View style={styles.itemView}>
+                        {renderSeeAll()}
+                        <Text style={styles.titleText}>{'الاكثر طلبا من' + ' ' + cat}</Text>
+                    </View>
+                    <View
+                    //style={{height: 360, borderWidth: 1}}
+                    >
+                        {renderTopServices()}
+                    </View>
 
+                </View>
 
                 <View style={styles.centents}>
                     <View style={styles.itemView}>
@@ -204,33 +223,15 @@ const ClientHomeAds = (props) => {
 
                 </View>
 
-                <View style={styles.centents}>
-                    <View style={styles.itemView}>
-                        {renderSeeAll()}
-                        <Text style={styles.titleText}>{'الاكثر طلبا من' + ' ' + cat}</Text>
-                    </View>
-                    
 
-                    <ScrollView
-
-                    // contentContainerStyle={styles.home1}
-                    // horizontal={true}
-                    // showsHorizontalScrollIndicator={false}
-                    >
-                        {renderTopServices()}
-                    </ScrollView>
-
-                </View>
 
                 <View style={styles.centents}>
                     <View style={styles.itemView}>
                         {renderSeeAll()}
                         <Text style={styles.titleText}>{'الاقرب لي من' + ' ' + cat}</Text>
                     </View>
-                
-
                     <ScrollView
-                    // horizontal={true} showsHorizontalScrollIndicator={false}
+                        horizontal={true} showsHorizontalScrollIndicator={false}
                     >
                         {renderNearestServices()}
                     </ScrollView>
@@ -242,19 +243,25 @@ const ClientHomeAds = (props) => {
                         {renderSeeAll()}
                         <Text style={styles.titleText}>{'نقترح عليك من' + ' ' + cat}</Text>
                     </View>
-                   
-                    <ScrollView style={styles.scroll}>{renderSuggestionServices()}</ScrollView>
-                </View>
 
+                    <ScrollView
+                     //horizontal={true} showsHorizontalScrollIndicator={false}
+                     >
+                        {renderSuggestionServices()}
+                    </ScrollView>
+                </View>
+                
+                <View style={{height: 100}}></View>
 
             </ScrollView>
+
         </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
     home: {
-        borderRadius: 40,
+        //borderRadius: 40,
 
     },
     scroll: {
@@ -284,12 +291,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
         color: colors.TitleFont,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
-        //marginBottom: 20
-        //backgroundColor: colors.BGScereen,
-        //width: 110,
-        // position: 'absolute',
-        // top: -18,
-        // right: 10
+        marginRight: 20
     },
     CatText: {
         fontSize: 15,
@@ -299,16 +301,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         justifyContent: 'flex-end',
         alignItems: 'center',
-
-        //height: 50,
-        //width: '90%',
-        //fontSize: 18,
-        //borderRadius: 10,
-        //fontWeight: 'bold',
-        //backgroundColor: 'white',
-        //elevation: 5,
-        //marginBottom: 30,
-        //alignSelf: 'center'
     },
     icon: {
         marginRight: 20,
@@ -327,19 +319,15 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
     centents: {
-        //borderWidth: 0.5,
-        borderColor: colors.darkGold,
-        marginBottom: 50,
-        paddingTop: 10,
-        marginRight: 20
+        marginVertical: 10
     },
     header: {
         width: "100%",
-        height: 150,
+        height: 200,
         alignSelf: 'center',
         backgroundColor: colors.puprble,
-        borderBottomLeftRadius: 60,
-        borderBottomRightRadius: 60
+        borderBottomLeftRadius: 40,
+        borderBottomRightRadius: 40
     },
     drawerView: {
         flexDirection: 'row',
@@ -359,7 +347,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     CatView: {
-        // marginTop: 10,
+        width: '100%',
+        alignSelf: 'center',
+        marginTop: 20,
+        // borderBottomLeftRadius: 60,
+        // borderBottomRightRadius: 60
         // marginBottom: 30
     },
     home1: {

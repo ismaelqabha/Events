@@ -58,7 +58,7 @@ const ServiceCard = (props) => {
         if (isFromChooseServiceClick === true) {
             const ServiceCard = props;
             const clicked = chickIfChecked(ServiceCard);
-            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody,styles.shadow]} onPress={() => onCatPress(ServiceCard)}>
+            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody, styles.shadow]} onPress={() => onCatPress(ServiceCard)}>
                 <Image
                     source={ServiceCard.img}
 
@@ -88,13 +88,14 @@ const ServiceCard = (props) => {
                 return <View style={clicked ? styles.HomeScreenViewPress : styles.HomeScreenView}>
                     <TouchableOpacity
                         onPress={() => onCatPress()}
-
+                        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                     >
+                        <Text style={styles.text}>{props.titleCategory}</Text>
                         <Image
                             source={props.img}
                             style={styles.HomeScreenimg}
                         />
-                        <Text style={styles.text}>{props.titleCategory}</Text>
+
                     </TouchableOpacity>
 
                 </View>;
@@ -144,28 +145,32 @@ const styles = StyleSheet.create({
         height: 100,
     },
     HomeScreenView: {
-        //alignItems: 'center',
+
+        alignItems: 'center',
         justifyContent: 'center',
-        margin: 15,
-        //height: 100,
-        width: 60,
+        margin: 5,
+        width: 120,
+        backgroundColor: colors.BGScereen,
+        borderRadius: 20,
+        elevation: 5
     },
     HomeScreenViewPress: {
+        alignItems: 'center',
         justifyContent: 'center',
-        margin: 15,
-        //height: 100,
-        width: 65,
-        borderWidth: 3,
-        borderColor: colors.darkGold,
-        borderRadius: 30,
+        margin: 5,
+        width: 120,
+        borderRadius: 20,
+        backgroundColor: colors.gold,
+        borderRadius: 20,
+        elevation: 5
     },
     HomeScreenimg: {
-        width: 60,
-        height: 60,
+        width: 40,
+        height: 40,
     },
     text: {
         textAlign: 'center',
-        fontSize: 17,
+        fontSize: 14,
         fontWeight: 'bold',
         color: colors.puprble,
         //fontFamily: 'Cairo-VariableFont_slnt,wght',

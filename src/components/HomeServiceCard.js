@@ -7,9 +7,8 @@ import { colors } from '../assets/AppColors';
 import { Pressable } from 'react-native';
 
 
-
 const HomeServiceCard = (props) => {
-    const { isFromNearestServicesClick, isFromTopServicesClick, subTitle, title } = props;
+    const { isFromNearestServicesClick, isFromTopServicesClick, isFromSugestServicesClick, subTitle, title, address } = props;
     const navigation = useNavigation();
     const { } = useContext(SearchContext);
 
@@ -23,47 +22,46 @@ const HomeServiceCard = (props) => {
         const logo = queryImg()
         const imageArray = logo?.map(photo => {
             if (isFromTopServicesClick === true) {
-                return (<View >
+                return (<View style={{ marginVertical: 10 }}>
                     <Image
                         style={styles.Topimg}
                         source={{ uri: photo.image }} />
                     <View style={styles.topInfoView}>
-                        <Text style={styles.txtTopTitle}>{title}</Text>
                         <Text style={styles.txtRankTop}>★5</Text>
+                        <Text style={styles.txtTopTitle}>{title}</Text>
                     </View>
                 </View>
                 );
-            } else {
-                if (isFromNearestServicesClick === true) {
-                    return (<View>
+            }
+            if (isFromNearestServicesClick === true) {
+                return (<View style={styles.nearest}>
+                    <Image
+                        style={styles.Nearestimg}
+                        source={{ uri: photo.image }} />
+                    <View style={styles.NearestInfoView}>
+                        <Text style={styles.txtNeraestTitle}>{title}</Text>
+                        <Text style={styles.txtNeraestTitle}>{address}</Text>
+                        <Text style={styles.txtNearestRank}>★5</Text>
+
+                    </View>
+                </View>
+                );
+            }
+            if (isFromSugestServicesClick === true) {
+                return (
+                    <View style={{ margin: 10, }}>
                         <Image
-                            style={styles.Nearestimg}
+                            style={styles.img}
                             source={{ uri: photo.image }} />
-                        <View style={styles.NearestInfoView}>
-                            <Text style={styles.txtNeraestTitle}>{title}</Text>
+                        <View style={styles.InfoView}>
+                            <Text style={styles.txt}>{title}</Text>
+
+                            <Text style={styles.txtRank}>★5</Text>
                         </View>
                     </View>
-                    );
-                }
-                else {
-                    return (
-                        <View>
-                            <Image
-                                style={styles.img}
-                                source={{ uri: photo.image }} />
-                            <View style={styles.InfoView}>
-                                <View style={styles.txtView}>
-                                    <Text style={styles.txtRank}>★5</Text>
-                                </View>
-                                <View style={styles.txtView}>
-                                    <Text style={styles.txt}>{title}</Text>
-                                </View>
-
-                            </View>
-                        </View>
-                    )
-                }
+                );
             }
+
         });
         return imageArray
 
@@ -132,9 +130,7 @@ export default HomeServiceCard
 
 const styles = StyleSheet.create({
     container: {
-        width: '95%',
-        height: 160,
-        margin: 10
+
     },
     suggestView: {
         height: 30,
@@ -143,56 +139,71 @@ const styles = StyleSheet.create({
     },
 
     topInfoView: {
-        width: '40%',
-        height: 45,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-        backgroundColor: 'white',
-        elevation: 5,
-    },
-    Topimg: {
-        width: '40%',
-        height: 100,
-    },
-    txtTopTitle: {
-        fontSize: 14,
-        color: 'bold',
-        color: colors.puprble
-    },
-    txtRankTop: {
-        fontSize: 12,
-        color: colors.darkGold,
-    },
-    NearestInfoView: {
-        width: '60%',
-        //height: 30,
-        position: 'absolute',
-        bottom: 10,
-    },
-    Nearestimg: {
-        width: '60%',
-        height: 160,
-        borderRadius: 20,
-    },
-    txtNeraestTitle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: 'white',
-        marginRight: 3
-    },
-    InfoView: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '90%',
-        height: 30,
-        position: 'absolute',
-        bottom: 10,
-        alignSelf: 'center',
         alignItems: 'center',
+        width: '100%',
+        height: 30,
+
+        //backgroundColor: 'white',
+        elevation: 5,
+        position: 'absolute',
+        bottom: 0,
+    },
+    Topimg: {
+        width: '100%',
+        height: 150,
+    },
+    txtTopTitle: {
+        fontSize: 20,
+        color: 'bold',
+        color: 'white',
+        marginRight: 20
+    },
+    txtRankTop: {
+        fontSize: 15,
+        color: 'white',
+        fontWeight: 'bold'
+    },
+    nearest: {
+        backgroundColor: colors.BGScereen,
+        width: 280,
+        height: 250,
+        borderRadius: 20,
+        elevation: 5,
+
+        margin: 10,
+        alignItems: 'center'
+    },
+    NearestInfoView: {
+        width: '90%',
+    },
+    Nearestimg: {
+        width: '90%',
+        height: '60%',
+        borderRadius: 20,
+        marginVertical: 10
+    },
+    txtNeraestTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        //color: 'white',
+        marginRight: 3
+    },
+    txtNearestRank: {
+
+    },
+    InfoView: {
+        width: '60%',
+        height: 50,
+        backgroundColor: 'white',
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
+        elevation: 5
     },
     img: {
-        width: '100%',
-        height: 160,
+        width: '60%',
+        height: 150,
     },
     txt: {
         fontSize: 16,
@@ -200,13 +211,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
 
-    txtView: {
-        backgroundColor: 'white',
-        borderRadius: 5
-    },
+    // txtView: {
+    //     backgroundColor: 'white',
+    //     borderRadius: 5,
+    //     //borderWidth: 1
+    // },
     txtRank: {
         fontSize: 16,
-        color: colors.darkGold,
+        //color: colors.darkGold,
         fontWeight: 'bold'
     },
     forHome: {
