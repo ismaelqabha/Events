@@ -197,7 +197,7 @@ const ClientProfile = (props) => {
 
                 <Text style={styles.txt}>الافعال</Text>
                 <View style={styles.viewSet}>
-                    {renderFavorite()}
+                    {/* {renderFavorite()} */}
                     {renderPayments()}
                     {renderFeedBack()}
                 </View>
