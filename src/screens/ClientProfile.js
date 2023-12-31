@@ -56,13 +56,14 @@ const ClientProfile = (props) => {
                         color={colors.puprble}
                         size={25} />
                 </View>
-
             </View>
+            <Pressable style={styles.more}>
+                <Text style={styles.moreTxt}>المزيد...</Text>
+            </Pressable>
         </View>)
     }
     const renderRelations = () => {
         return (<View>
-
             <View style={styles.item}>
                 <Pressable>
                     <Text style={styles.basicInfo}>اضافة علاقة</Text>
@@ -74,7 +75,6 @@ const ClientProfile = (props) => {
                         color={colors.puprble}
                         size={25} />
                 </View>
-
             </View>
             <View style={styles.item}>
                 <Pressable>
@@ -89,7 +89,6 @@ const ClientProfile = (props) => {
                         color={colors.puprble}
                         size={25} />
                 </View>
-
             </View>
             <View style={styles.item}>
                 <Pressable>
@@ -103,13 +102,14 @@ const ClientProfile = (props) => {
                         color={colors.puprble}
                         size={25} />
                 </View>
-
             </View>
+            <Pressable style={styles.more}>
+                <Text style={styles.moreTxt}>المزيد...</Text>
+            </Pressable>
         </View>)
     }
     const renderReservation = () => {
         return (<View>
-
             <Pressable style={styles.item}>
                 <View><Text style={styles.basicInfo}>عيد ميلاد أحمد</Text>
                     <Text style={styles.basicInfoTitle}>عيد ميلاد</Text>
@@ -121,6 +121,21 @@ const ClientProfile = (props) => {
                         color={colors.puprble}
                         size={25} />
                 </View>
+            </Pressable>
+            <Pressable style={styles.item}>
+                <View><Text style={styles.basicInfo}>ذكرى زواجنا</Text>
+                    <Text style={styles.basicInfoTitle}>عيد زواج</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={styles.icon}
+                        name={"cake"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
+            <Pressable style={styles.more}>
+                <Text style={styles.moreTxt}>المزيد...</Text>
             </Pressable>
         </View>)
     }
@@ -195,7 +210,7 @@ const ClientProfile = (props) => {
                 </View>
                 {seprator()}
 
-                <Text style={styles.txt}>الافعال</Text>
+                <Text style={styles.txt}>العمليات</Text>
                 <View style={styles.viewSet}>
                     {/* {renderFavorite()} */}
                     {renderPayments()}
@@ -216,7 +231,7 @@ const ClientProfile = (props) => {
                 <View style={styles.viewSet}>
                     {renderReservation()}
                 </View>
-
+                <View style={{ height: 110 }}></View>
             </ScrollView>
         </View>
     )
@@ -248,14 +263,14 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     imgView: {
-        width: "95%",
-        height: 100,
+         width: "95%",
+        // height: 100,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-around',
-        elevation: 5,
-        shadowColor: colors.puprble,
-        backgroundColor: 'white',
+        // elevation: 5,
+        // shadowColor: colors.puprble,
+        // backgroundColor: 'white',
         alignSelf: 'center',
         margin: 5
     },
@@ -314,4 +329,12 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         marginTop: 10
     },
+    more: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0
+    },
+    moreTxt: {
+        fontSize: 15
+    }
 })

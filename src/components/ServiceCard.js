@@ -145,32 +145,31 @@ const styles = StyleSheet.create({
         height: 100,
     },
     HomeScreenView: {
-
         alignItems: 'center',
         justifyContent: 'center',
         margin: 5,
-        width: 120,
+        width: 100,
         backgroundColor: colors.BGScereen,
-        borderRadius: 20,
+        borderRadius: 10,
         elevation: 5
     },
     HomeScreenViewPress: {
         alignItems: 'center',
         justifyContent: 'center',
         margin: 5,
-        width: 120,
+        width: 100,
         borderRadius: 20,
         backgroundColor: colors.gold,
-        borderRadius: 20,
+        borderRadius: 10,
         elevation: 5
     },
     HomeScreenimg: {
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
     },
     text: {
         textAlign: 'center',
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: 'bold',
         color: colors.puprble,
         //fontFamily: 'Cairo-VariableFont_slnt,wght',

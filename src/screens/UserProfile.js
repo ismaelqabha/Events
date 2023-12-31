@@ -45,9 +45,9 @@ const UserProfile = (props) => {
                     <Text style={styles.nameTxt}>اسماعيل كبها</Text>
                 </View>
                 <View style={styles.reviewView}>
-                   <View style={{}}><Text style={styles.txt}>3 شهور في مناسباتي</Text></View>
-                   <View style={{}}><Text>|</Text></View>
-                   <View style={{}}><Text style={styles.txt}>3 مراجعات</Text></View>
+                    <View style={{}}><Text style={styles.txt}>3 شهور في مناسباتي</Text></View>
+                    <View style={{}}><Text>|</Text></View>
+                    <View style={{}}><Text style={styles.txt}>3 مراجعات</Text></View>
                 </View>
             </View>
         )
@@ -55,13 +55,7 @@ const UserProfile = (props) => {
 
     const renderReviews = () => {
         return (
-            <View style={styles.reView}>
-                <Text style={styles.titleRevTxt}>ماذا قالوا عن اسماعيل كبها </Text>
-                <ScrollView
-                //horizontal={true} 
-                //showsHorizontalScrollIndicator={false}
-                >
-
+                <View style={styles.reView}>
                     <View style={styles.messageView}>
                         <Text style={styles.ReviewTxt}>زبون محترم وخلوق جدا كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير</Text>
                         <View style={styles.reviewClientInfo}>
@@ -83,10 +77,8 @@ const UserProfile = (props) => {
                             <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/almasa.png')} /></View>
                         </View>
                     </View>
-
-
-                </ScrollView>
-            </View>
+                </View>
+           
         )
     }
 
@@ -144,13 +136,29 @@ const UserProfile = (props) => {
         return cardsArray;
     }
 
+    const createRelation = () => {
+        return(
+            <View>
+                <Pressable style={styles.createrelation}>
+                    <Text style={styles.relationTxt}>طلب انشاء علاقة </Text>
+                </Pressable>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
             <ScrollView>
                 {header()}
                 {renderUserName()}
+                {createRelation()}
                 {renderUserContacts()}
-                {renderReviews()}
+                <Text style={styles.titleRevTxt}>ماذا قالوا عن اسماعيل كبها </Text>
+                <ScrollView
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                >{renderReviews()}</ScrollView>
+                
             </ScrollView>
         </View>
     )
@@ -180,7 +188,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         elevation: 5,
         marginTop: 20,
-       padding: 20,
+        padding: 20,
         justifyContent: 'space-between',
         alignSelf: 'center'
     },
@@ -243,18 +251,20 @@ const styles = StyleSheet.create({
     },
 
     reView: {
-        width: '90%',
+        flexDirection: 'row',
+        // width: '90%',
         //borderWidth: 1,
         alignSelf: 'center',
-        marginVertical: 20
+        margin: 10
     },
     titleRevTxt: {
         fontSize: 20,
         fontWeight: 'bold',
         color: colors.puprble,
+        marginRight: 20
     },
     messageView: {
-        width: '90%',
+        width: 300,
         height: 200,
         alignSelf: 'center',
         borderWidth: 1,
@@ -262,7 +272,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 30,
         justifyContent: 'space-between',
-        padding: 10
+        padding: 10,
+        margin: 10
     },
     reviewClientInfo: {
         flexDirection: 'row',
@@ -306,5 +317,20 @@ const styles = StyleSheet.create({
         margin: 10,
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    createrelation:{
+       height: 50,
+       width : "90%",
+       backgroundColor: colors.puprble,
+       elevation: 5,
+       borderRadius: 10,
+       marginVertical: 10,
+       alignItems: 'center',
+       justifyContent: 'center',
+       alignSelf: 'center'
+    },
+    relationTxt:{
+        fontSize: 20,
+        color: colors.BGScereen
     }
 })

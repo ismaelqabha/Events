@@ -105,7 +105,7 @@ const ClientHomeAds = (props) => {
                     name={"triangle-left"}
                     size={20}
                 />
-                <Text style={styles.CatText}>مشاهدة الكل</Text>
+                <Text style={styles.CatText}>مشاهدة المزيد</Text>
             </View>
         )
     }
@@ -140,10 +140,10 @@ const ClientHomeAds = (props) => {
                             <Ionicons
                                 //style={styles.menu}
                                 name={"notifications"}
-                                color={colors.gold}
+                                color={colors.puprble}
                                 size={30} />
                         </Pressable>
-                        <Image source={require('../assets/photos/arabicLogo.png')} style={styles.titleImg} />
+                        <Image source={require('../assets/photos/purpalearabiclogo.png')} style={styles.titleImg} />
                         <Pressable
                             style={styles.drawer}
                             onPress={() => navigation.openDrawer()}
@@ -151,7 +151,7 @@ const ClientHomeAds = (props) => {
                             <Entypo
                                 //style={styles.menu}
                                 name={"menu"}
-                                color={colors.gold}
+                                color={colors.puprble}
                                 size={30} />
                         </Pressable>
 
@@ -304,13 +304,13 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 20,
-        color: colors.gold,
+        color: colors.puprble,
         fontWeight: 'bold'
     },
     txt: {
         fontSize: 20,
         marginRight: 10,
-        color: colors.gold
+        color: colors.puprble
     },
     headerTxt: {
         fontSize: 20,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 200,
         alignSelf: 'center',
-        backgroundColor: colors.puprble,
+        backgroundColor: colors.BGScereen,
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40
     },

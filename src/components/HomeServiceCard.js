@@ -144,8 +144,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         height: 30,
-
-        //backgroundColor: 'white',
+        backgroundColor: 'rgba(0,0,0,0.4)',
         elevation: 5,
         position: 'absolute',
         bottom: 0,
@@ -166,14 +165,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     nearest: {
-        backgroundColor: colors.BGScereen,
+        backgroundColor: 'transparent',
         width: 280,
         height: 250,
         borderRadius: 20,
-        elevation: 5,
-
+        //elevation: 5,
         margin: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        borderWidth: 0.5,
+        borderColor: 'lightgray'
     },
     NearestInfoView: {
         width: '90%',

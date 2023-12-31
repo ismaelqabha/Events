@@ -60,7 +60,7 @@ const ProviderProfile = (props) => {
 
     const renderClients = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientScreen)} >
                 <View>
                     <Text style={styles.basicInfo}>الزبائن (10)</Text>
                 </View>
@@ -267,7 +267,7 @@ const ProviderProfile = (props) => {
                 </View>
                 {seprator()}
                 <View style={styles.viewSet}>
-                    {renderCalender()}
+                    {/* {renderCalender()} */}
                     {renderPayments()}
                     {renderClients()}
                 </View>
@@ -293,7 +293,7 @@ const ProviderProfile = (props) => {
                 <View style={styles.viewSet}>
                     {renderCreateService()}
                 </View>
-                
+                <View style={{height : 100}}></View>
 
             </ScrollView>
         </View>
@@ -324,6 +324,7 @@ const styles = StyleSheet.create({
     viewSet: {
         backgroundColor: 'white',
         width: '90%',
+        justifyContent:'center',
         alignSelf: 'center',
         borderRadius: 10,
         padding: 10

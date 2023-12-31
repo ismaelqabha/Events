@@ -39,7 +39,6 @@ const CalenderDayCard = (props) => {
         for (var day = 1; day <= daysInMonth; day++) {
             //day = day + 1
             const completeDate = day + '-' + currentMonth + '-' + currentYear
-
             fullDate.push(
                 {
                     currentDay: day,

@@ -53,6 +53,7 @@ export const ScreenNames = {
     ProviderContantPrice: 'ProviderContantPrice',
     ProviderSetEventType: 'ProviderSetEventType',
     ProviderNotification: 'ProviderNotification',
+    ProviderClientScreen: 'ProviderClientScreen',
 
 
 
