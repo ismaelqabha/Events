@@ -53,6 +53,7 @@ import ProviderSetEventType from "../src/screens/ProviderScreens/ProviderSetEven
 import UserProfile from "../src/screens/UserProfile";
 import ProviderNotification from "../src/screens/ProviderScreens/ProviderNotification";
 import ProviderClientScreen from "../src/screens/ProviderScreens/ProviderClientScreen";
+import ReviewsScreen from "../src/screens/ReviewsScreen";
 
 
 
@@ -112,6 +113,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
                 <Stack.Screen name={ScreenNames.Campaigns} component={Campaigns} />
                 <Stack.Screen name={ScreenNames.UserProfile} component={UserProfile} />
+                <Stack.Screen name={ScreenNames.ReviewsScreen} component={ReviewsScreen} />
                 
                 
 
