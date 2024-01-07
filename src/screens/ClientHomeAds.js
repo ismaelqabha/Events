@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 200,
         alignSelf: 'center',
-        backgroundColor: colors.BGScereen,
+        backgroundColor: 'white',
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40
     },
