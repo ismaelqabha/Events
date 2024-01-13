@@ -80,7 +80,6 @@ const ClientProfile = (props) => {
                 <Pressable>
                     <Text style={styles.basicInfo}>فادي</Text>
                     <Text style={styles.basicInfoTitle}>صديق</Text>
-
                 </Pressable>
                 <View style={styles.IconView}>
                     <AntDesign

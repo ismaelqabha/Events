@@ -115,22 +115,22 @@ const ClientHomeAds = (props) => {
         <ImageBackground style={styles.bg} source={require('../assets/photos/backgroundMain.png')}>
             <View style={styles.header}>
                 <Animated.View
-                    style={{
-                        transform: [
-                            {
-                                translateY: deltaY.interpolate({
-                                    inputRange: [-150, -150, 0, 0],
-                                    outputRange: [-58, -58, 0, 0]
-                                }),
-                            },
-                            {
-                                scale: deltaY.interpolate({
-                                    inputRange: [-150, -150, 0, 0],
-                                    outputRange: [0.35, 0.35, 1, 1]
-                                }),
-                            }
-                        ],
-                    }}
+                    // style={{
+                    //     transform: [
+                    //         {
+                    //             translateY: deltaY.interpolate({
+                    //                 inputRange: [-150, -150, 0, 0],
+                    //                 outputRange: [-58, -58, 0, 0]
+                    //             }),
+                    //         },
+                    //         {
+                    //             scale: deltaY.interpolate({
+                    //                 inputRange: [-150, -150, 0, 0],
+                    //                 outputRange: [0.35, 0.35, 1, 1]
+                    //             }),
+                    //         }
+                    //     ],
+                    // }}
                 >
                     <View style={styles.drawerView}>
                         <Pressable
@@ -325,9 +325,9 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 200,
         alignSelf: 'center',
-        backgroundColor: 'white',
-        borderBottomLeftRadius: 40,
-        borderBottomRightRadius: 40
+        backgroundColor: colors.BGScereen,
+        // borderBottomLeftRadius: 40,
+        // borderBottomRightRadius: 40
     },
     drawerView: {
         flexDirection: 'row',

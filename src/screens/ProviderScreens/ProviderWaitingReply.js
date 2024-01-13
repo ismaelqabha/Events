@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
 import React from 'react'
 import { colors } from '../../assets/AppColors'
+import Fontisto from "react-native-vector-icons/Fontisto"
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 
 const ProviderWaitingReply = () => {
 
@@ -12,16 +14,63 @@ const ProviderWaitingReply = () => {
       </View>
     )
   }
+  const renderRequestDate = () => {
+    return (
+      <View style={styles.dateview}>
+        <View>
+          <Text style={styles.dateTxt}>5/1/2024</Text>
+          <Text style={styles.labelDateTxt}>تاريخ الطلب</Text>
+        </View>
+        <View style={styles.IconView}>
+          <Fontisto
+            name={"date"}
+            color={colors.puprble}
+            size={15} />
+        </View>
+      </View>
+    )
+  }
+  const renderBookingDate = () => {
+    return (
+      <View style={styles.dateview}>
+        <View>
+          <Text style={styles.dateTxt}>10/8/2024</Text>
+          <Text style={styles.labelDateTxt}>تاريخ الحجز</Text>
+        </View>
+        <View style={styles.IconView}>
+          <Fontisto
+            name={"date"}
+            color={colors.puprble}
+            size={15} />
+        </View>
+      </View>
+    )
+  }
+  const renderPrice = () => {
+    return (
+      <View style={styles.dateview}>
+        <View>
+          <Text style={styles.dateTxt}>10000</Text>
+        </View>
+        <View style={styles.IconView}>
+          <MaterialIcons
+            name={"payments"}
+            color={colors.puprble}
+            size={15} />
+        </View>
+      </View>
+    )
+  }
   const renderRequestInfo = () => {
     return (
       <View style={styles.reqInfo}>
-        <Text style={styles.infoTxt}>تاريخ الطلب : 5/1/2024</Text>
-        <Text style={styles.infoTxt}>تاريخ الحجز : 10/8/2024</Text>
-        <Text style={styles.infoTxt}> السعر : 10000</Text>
+        {renderRequestDate()}
+        {renderBookingDate()}
+        {renderPrice()}
         <View style={styles.buttonView}>
-          <Pressable><Text>رفض</Text></Pressable>
-          <Pressable><Text>قبول</Text></Pressable>
-          <Pressable><Text>فحص الطلب</Text></Pressable>
+          <Pressable><Text style={styles.buttonTxt}>رفض</Text></Pressable>
+          <Pressable><Text style={styles.buttonTxt}>فحص الطلب</Text></Pressable>
+          <Pressable><Text style={styles.buttonTxt}>قبول</Text></Pressable>
         </View>
       </View>
     )
@@ -49,7 +98,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     width: '90%',
-    height: 150,
+    height: 190,
     alignSelf: 'center',
     margin: 10
   },
@@ -63,15 +112,16 @@ const styles = StyleSheet.create({
   },
   reqInfo: {
     width: '60%',
-    height: '90%',
+    height: '95%',
     alignSelf: 'center',
     backgroundColor: 'white',
     elevation: 5,
+    padding: 5
     //alignItems: 'center',
   },
   profilImg: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 80,
     borderRadius: 10,
     backgroundColor: colors.BGScereen,
     marginBottom: 10
@@ -89,11 +139,29 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0
   },
-  infoTxt:{
-    marginVertical: 5,
-    marginRight: 10,
+  buttonTxt: {
+    fontSize: 17
+  },
+  dateview: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+   marginBottom: 5
+  },
+  dateTxt: {
     color: colors.puprble,
+    fontSize: 20
+  },
+  labelDateTxt: {
     fontSize: 15
-  }
+  },
+  IconView: {
+    width: 30,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'lightgray',
+    borderRadius: 30,
+    marginLeft: 15
+  },
 })
 
