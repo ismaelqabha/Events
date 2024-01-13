@@ -11,11 +11,9 @@ import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
 
 const PersonalInfo = (props) => {
-    const { userId } = useContext(SearchContext);
-    const {  userInfo, setUserInfo } = useContext(UsersContext);
+    // const { userId } = useContext(U);
+    const {  userInfo, setUserInfo,userId } = useContext(UsersContext);
 
-    console.log(" userInfo", userInfo);
-    console.log(" userId", userId);
     const backPress = () => {
         props.navigation.goBack();
     }
@@ -35,11 +33,11 @@ const PersonalInfo = (props) => {
     }, [])
     const renderContactInfo = () => {
         const data = userInfo
-        const userData = data?.map(user => {
+        // const userData = data?.map(user => {
             return (<View>
                 <Text style={styles.txt}>معلومات التواصل </Text>
                 <View style={styles.item}>
-                    <View><Text style={styles.basicInfo}>{user.UserPhone}</Text>
+                    <View><Text style={styles.basicInfo}>{data.UserPhone}</Text>
                         <Text style={styles.basicInfoTitle}>الموبايل</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -52,7 +50,7 @@ const PersonalInfo = (props) => {
 
                 </View>
                 <View style={styles.item}>
-                    <View><Text style={styles.basicInfo}>{user.Email}</Text>
+                    <View><Text style={styles.basicInfo}>{data.Email}</Text>
                         <Text style={styles.basicInfoTitle}>Email</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -65,7 +63,7 @@ const PersonalInfo = (props) => {
 
                 </View>
             </View>)
-        })
+        // })
         return userData;
     }
     const renderBasicInfo = () => {
@@ -173,8 +171,8 @@ const PersonalInfo = (props) => {
         return userData;
     }
     const renderUserName = () => {
-        const data = userInfo
-        const userData = data?.map(user => {
+        const {user} = userInfo
+        // const userData = data?.map(user => {
             return (
                 <View style={styles.imgView}>
 
@@ -196,7 +194,7 @@ const PersonalInfo = (props) => {
                     </Pressable>
                 </View>
             )
-        })
+        // })
         return userData;
     }
 
@@ -218,10 +216,10 @@ const PersonalInfo = (props) => {
                 {renderUserName()}
 
                 <View style={styles.content}>
-                    {renderBasicInfo()}
+                    {/* {renderBasicInfo()} */}
                 </View>
                 {seprator()}
-                <View style={styles.content}>
+                {/* <View style={styles.content}>
                     {renderContactInfo()}
                 </View>
                 {seprator()}
@@ -231,7 +229,7 @@ const PersonalInfo = (props) => {
                 {seprator()}
                 <View style={styles.content}>
                     {renderSoialDetail()}
-                </View>
+                </View> */}
 
             </ScrollView>
 

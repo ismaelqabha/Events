@@ -72,7 +72,10 @@ const CreatePassword = (props) => {
       let UsersArr = userInfo || [];
       UsersArr.push(AddNewUser);
       setUserInfo([...UsersArr])
+      
       console.log("UsersArr", UsersArr);
+
+      console.log("res", res);
 
       if (res.message === 'User Created') {
         ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',

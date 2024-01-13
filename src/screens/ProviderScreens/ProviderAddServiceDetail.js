@@ -22,7 +22,7 @@ import SearchContext from '../../../store/SearchContext';
 import { mandoteryOptions } from '../../resources/data';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { showMessage } from '../../resources/Functions';
-import { addServiceImages } from '../../resources/API';
+import { addService, addServiceImages } from '../../resources/API';
 
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);

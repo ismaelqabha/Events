@@ -18,18 +18,11 @@ import { useNavigation } from '@react-navigation/native';
 const ProviderProfile = (props) => {
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
     const { userId, setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } = useContext(SearchContext);
-    const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
+    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const navigation = useNavigation();
 
 
-    const getServiceInfofromApi = () => {
-        getServiceInfoById({ userID: userId }).then(res => {
-            setServiceInfoAccorUser(res)
-        })
-    }
-    useEffect(() => {
-        getServiceInfofromApi()
-    }, [])
+
 
     const renderMyService = () => {
         const data = serviceInfoAccorUser || [];
@@ -309,7 +302,7 @@ const ProviderProfile = (props) => {
                 <View style={styles.viewSet}>
                     {renderCreateService()}
                 </View>
-                <View style={{height : 100}}></View>
+                <View style={{ height: 100 }}></View>
 
             </ScrollView>
         </View>
@@ -340,7 +333,7 @@ const styles = StyleSheet.create({
     viewSet: {
         backgroundColor: 'white',
         width: '90%',
-        justifyContent:'center',
+        justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 10,
         padding: 10

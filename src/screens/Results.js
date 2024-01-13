@@ -124,6 +124,7 @@ const Results = (props) => {
         if (!cat) {
             return ServiceDataInfo || [];
         }
+
         return ServiceDataInfo?.filter(nameItem => {
             return nameItem.serviceData.servType == cat;
 
@@ -158,17 +159,17 @@ const Results = (props) => {
 
     const findFirstDateAvailable = (serviceDates) => {
         const requestedDate = moment(new Date())
-
+        console.log("serviceDates" , serviceDates);
         const Resultwithoutfilter = serviceDates?.filter?.(sevice => {
-            const { bookDate, serviceStutes } = sevice;
-            const bookDateMoment = moment(bookDate);
+            const { time, busy } = sevice;
+            const bookDateMoment = moment(time);
             const res1 = bookDateMoment.isAfter(requestedDate)
-            const res2 = serviceStutes == 'true'
-            //console.log("serviceStutes",serviceStutes , "res1", res1);
+            const res2 = busy == 'true'
+            console.log("serviceStutes",busy , "res1", res1);
             return res1 && res2
         })
         const dateArray = Resultwithoutfilter[0]
-        //console.log("dateArray", dateArray);
+        console.log("dateArray", dateArray);
         return dateArray;
     };
 
@@ -176,10 +177,10 @@ const Results = (props) => {
 
         const requestedDate = moment(new Date(objectResult.selectDateforSearch)).startOf('day')
         const isAvilable = serviceDates?.find(sevice => {
-            const { bookDate, serviceStutes } = sevice;
-            const bookDateMoment = moment(bookDate).startOf('day');
+            const { time, busy } = sevice;
+            const bookDateMoment = moment(time).startOf('day');
             const res1 = bookDateMoment.isSame(requestedDate)
-            const res2 = serviceStutes == 'true'
+            const res2 = busy == 'true'
             return res1 && res2
         })
         return !!isAvilable;
@@ -199,15 +200,17 @@ const Results = (props) => {
     }
     const comparingData = (dateAviable, monthAvailble, source) => {
         if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
+            console.log("dateAviable", dateAviable);
+            console.log("monthAvailble", monthAvailble);
             return dateAviable || monthAvailble
         } else {
+
             return findFirstDateAvailable(source)
         }
     }
 
     const dataSearchResult = () => {
         const data = query();
-
         const filtered = data?.filter(item => {
             const isAvilable = checkDateIsAvilable(item.serviceDates);
             const AvilableMonth = checkMonthAvailableDate(item.serviceDates);
@@ -215,8 +218,9 @@ const Results = (props) => {
 
             const isCitySelect = objectResult.cityselected == '' ? true : item.serviceData.address == objectResult.cityselected
             const isRiogenSelect = objectResult.regionselect == '' ? true : item.serviceData.region == objectResult.regionselect
+
             const ResultQuery = isCitySelect && isRiogenSelect && result
-            //console.log("ResultQuery", ResultQuery);
+            // console.log("ResultQuery", ResultQuery);
             return ResultQuery;
         })
         return filtered
@@ -224,7 +228,7 @@ const Results = (props) => {
     }
     const renderCard = () => {
         const data = dataSearchResult();
-        
+        console.log("data ", data);
         const cardsArray = data?.map(card => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
@@ -566,7 +570,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignSelf: 'center'
     },
-    Date:{
+    Date: {
         width: '85%',
         height: 50,
         borderRadius: 10,
@@ -580,7 +584,7 @@ const styles = StyleSheet.create({
     icoon: {
         width: 35,
         height: 35,
-       // marginLeft: 50
+        // marginLeft: 50
     },
     Capacityinput: {
         alignContent: 'center',
@@ -611,7 +615,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 25,
         borderRadius: 5,
-        
+
     },
     TypeText: {
         fontSize: 18,
