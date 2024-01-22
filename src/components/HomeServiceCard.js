@@ -19,13 +19,13 @@ const HomeServiceCard = (props) => {
     };
 
     const renderImages = () => {
-        const logo = queryImg()
+        const logo = props.images[0].serviceImages
         const imageArray = logo?.map(photo => {
             if (isFromTopServicesClick === true) {
                 return (<View style={{ marginVertical: 10 }}>
                     <Image
                         style={styles.Topimg}
-                        source={{ uri: photo.image }} />
+                        source={{ uri: photo }} />
                     <View style={styles.topInfoView}>
                         <Text style={styles.txtRankTop}>★5</Text>
                         <Text style={styles.txtTopTitle}>{title}</Text>
@@ -37,7 +37,7 @@ const HomeServiceCard = (props) => {
                 return (<View style={styles.nearest}>
                     <Image
                         style={styles.Nearestimg}
-                        source={{ uri: photo.image }} />
+                        source={{ uri: photo }} />
                     <View style={styles.NearestInfoView}>
                         <Text style={styles.txtNeraestTitle}>{title}</Text>
                         <Text style={styles.txtNeraestTitle}>{address}</Text>
@@ -52,7 +52,7 @@ const HomeServiceCard = (props) => {
                     <View style={{ margin: 10, }}>
                         <Image
                             style={styles.img}
-                            source={{ uri: photo.image }} />
+                            source={{ uri: photo }} />
                         <View style={styles.InfoView}>
                             <Text style={styles.txt}>{title}</Text>
 

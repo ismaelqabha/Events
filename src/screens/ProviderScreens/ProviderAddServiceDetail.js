@@ -39,12 +39,13 @@ const ProviderAddServiceDetail = props => {
     SuTitle,
     description,
     selectServiceType,
-    workAreas,
     additionalServices,
     setAdditionalServices,
     photoArray,
-    socialMediaArray
-
+    socialMediaArray,
+    hallCapacity,
+    hallType,
+ 
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(UsersContext);
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
@@ -79,7 +80,7 @@ const ProviderAddServiceDetail = props => {
     },
   };
 
-  console.log("userId",userId);
+ 
   const onPublishPress = async () => {
     const body = {
       userID: userId,
@@ -90,9 +91,10 @@ const ProviderAddServiceDetail = props => {
       region: serviceRegion,
       address: serviceAddress,
       servicePrice: price,
-      workingRegion: workAreas,
       additionalServices: additionalServices,
-      socialMedia:socialMediaArray
+      socialMedia:socialMediaArray,
+      maxCapasity: hallCapacity,
+      hallType: hallType
     };
     await addService(body)
       .then(async res => {

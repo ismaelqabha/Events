@@ -133,7 +133,8 @@ const styles = StyleSheet.create({
         height,
         resizeMode: 'contain',
         borderTopLeftRadius: 15,
-        borderTopRightRadius: 15
+        borderTopRightRadius: 15,
+        resizeMode: 'stretch'
     },
     heartFavo: {
         position: 'absolute',

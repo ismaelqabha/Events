@@ -147,7 +147,7 @@ const ProviderAddInfo = props => {
         })
         if (!(index === -1)) {
           setAddress(region?.regionName)
-          setserviceAddress(region?.regionName)
+          setserviceRegion(region?.regionName)
         }
       })
     }
@@ -360,7 +360,6 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
-
   const renderHallCapacity = () => {
     return (
       <View style={{ marginBottom: 30 }}>
@@ -445,11 +444,10 @@ const ProviderAddInfo = props => {
         <SelectList
           data={regionData}
           setSelected={val => {
-            setserviceRegion(val)
-
+            setserviceAddress(val)
             searchRegion(val)
           }}
-          placeholder={serviceRegion || language.chooseLocation}
+          placeholder={serviceAddress || language.chooseLocation}
           boxStyles={styles.dropdown}
           inputstyles={styles.droptext}
           dropdownTextstyles={styles.dropstyle}
