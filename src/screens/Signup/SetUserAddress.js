@@ -150,7 +150,7 @@ const SetUserAddress = (props) => {
   const showMissingCity = () => { };
 
   useEffect(() => {
-    getCityFromApi()
+    //getCityFromApi()
     setAddressError(!checkStrings(userCity));
   }, [userCity]);
 

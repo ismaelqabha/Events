@@ -23,6 +23,7 @@ import { mandoteryOptions } from '../../resources/data';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { showMessage } from '../../resources/Functions';
 import { addService, addServiceImages } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
 
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
@@ -45,8 +46,9 @@ const ProviderAddServiceDetail = props => {
     socialMediaArray
 
   } = useContext(ServiceProviderContext);
-  const { userId } = useContext(SearchContext);
+  const { userId } = useContext(UsersContext);
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
+
 
   useEffect(() => {
     var man = filterData(additionalServices, "Mandatory")
@@ -77,6 +79,7 @@ const ProviderAddServiceDetail = props => {
     },
   };
 
+  console.log("userId",userId);
   const onPublishPress = async () => {
     const body = {
       userID: userId,

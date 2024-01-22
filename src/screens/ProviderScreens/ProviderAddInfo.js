@@ -41,6 +41,8 @@ const ProviderAddInfo = props => {
   const [regions, setRegions] = useState(null)
   const [address, setAddress] = useState(null)
 
+  const [serviceDesc, setServiceDesc] = useState([])
+
   //   service Data
   const {
     serviceAddress,
@@ -78,7 +80,7 @@ const ProviderAddInfo = props => {
     getRegionsfromApi()
   }, [])
 
-  
+
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -134,7 +136,7 @@ const ProviderAddInfo = props => {
     allData.sort()
     setRegionData(allData)
   }
-  
+
   const searchRegion = (val) => {
     if (!regions) {
       return;
@@ -145,6 +147,7 @@ const ProviderAddInfo = props => {
         })
         if (!(index === -1)) {
           setAddress(region?.regionName)
+          setserviceAddress(region?.regionName)
         }
       })
     }
@@ -196,11 +199,13 @@ const ProviderAddInfo = props => {
   };
 
   const checkStrings = val => {
+   
     if (!val) {
       return false;
     } else if (val.trim().length <= 0) {
       return false;
     }
+
     return true;
   };
 
@@ -213,12 +218,8 @@ const ProviderAddInfo = props => {
     checkLength(description, 300) ? null : showMissingTitle("length")
   };
 
-  const showMissingTitle = (val) => {
-
-  };
-
+  const showMissingTitle = (val) => { };
   const showMissingSubTitle = (val) => { };
-
   const showMissingDescription = (val) => { };
 
 
@@ -226,7 +227,6 @@ const ProviderAddInfo = props => {
   const RenderHeaderTitle = () => {
     return <Text style={styles.headText}>{language.SubHeader}</Text>;
   };
-
   const RenderTitleBox = () => {
     return (
       <View>
@@ -249,9 +249,9 @@ const ProviderAddInfo = props => {
         <TextInput
           style={styles.titleInput}
           keyboardType="default"
-          maxLength={30}
+          maxLength={50}
           onChangeText={value => {
-            value.trim().length < 30 ?
+            value.trim().length < 50 ?
               setTitle(value) &&
               setTitleLengthError(false)
               :
@@ -262,7 +262,6 @@ const ProviderAddInfo = props => {
       </View>
     );
   };
-
   const RenderSubTitleBox = () => {
     return (<View>
       <View style={styles.viewwholeInput}>
@@ -284,10 +283,10 @@ const ProviderAddInfo = props => {
       <TextInput
         style={styles.subtitleInput}
         keyboardType="default"
-        maxLength={50}
+        maxLength={25}
         multiline
         onChangeText={value => {
-          value.trim().length < 50 ?
+          value.trim().length < 25 ?
             setSuTitle(value) &&
             setSubTitleLengthError(false)
             :
@@ -298,7 +297,6 @@ const ProviderAddInfo = props => {
     </View>
     );
   };
-
   const RenderDescription = () => {
     return (
       <View>
@@ -335,6 +333,33 @@ const ProviderAddInfo = props => {
       </View>
     );
   };
+  const RenderServiceDescr = () => {
+    return (
+      <View style={styles.serviceDesc}>
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
+              color={colors.puprble}
+              size={20} />
+          </View>
+          <View style={styles.itemView}>
+            <Text style={styles.text}> {language.description}</Text>
+          </View>
+        </View>
+        {renderdescItem()}
+        <Pressable style={styles.descLabel} onPress={addDescrTextInput}>
+          <Text style={styles.AddDesctxt}>اضافة شرح عن مصلحتك</Text>
+          <View style={styles.IconAdd}>
+            <Entypo
+              name={"plus"}
+              color={colors.puprble}
+              size={25} />
+          </View>
+        </Pressable>
+      </View>
+    )
+  }
 
   const renderHallCapacity = () => {
     return (
@@ -373,6 +398,7 @@ const ProviderAddInfo = props => {
         {RenderHeaderTitle()}
         {RenderTitleBox()}
         {RenderSubTitleBox()}
+        {RenderServiceDescr()}
         {RenderDescription()}
       </View>
     );
@@ -415,11 +441,12 @@ const ProviderAddInfo = props => {
           <Text> {address || language.address}</Text>
         </View>
 
-       
+
         <SelectList
           data={regionData}
           setSelected={val => {
             setserviceRegion(val)
+
             searchRegion(val)
           }}
           placeholder={serviceRegion || language.chooseLocation}
@@ -453,6 +480,59 @@ const ProviderAddInfo = props => {
       </Pressable>
     );
   };
+
+  // description part 
+  const addDescrTextInput = () => {
+    setServiceDesc([...serviceDesc, { empty: "empty" }])
+  }
+  const renderdescItem = () => {
+    const fields = serviceDesc?.map((val, index) => {
+      return <DescrriptionComponent val={val} index={index} />
+    })
+    return fields
+  }
+
+  const DescrriptionComponent = (props) => {
+    const [descriptionItem, setDescriptionItem] = useState(null)
+
+    useEffect(() => {
+      if (props.val) {
+        setDescriptionItem(props?.val?.descItem)
+      }
+    }, [])
+
+    return (
+      <View style={styles.contentItemView}>
+        <TextInput
+          style={styles.descriptionInput}
+          keyboardType='default'
+          placeholder='أضف وصف جديد'
+          value={descriptionItem}
+          onChangeText={(val) => setDescriptionItem(val)}
+          onSubmitEditing={(val) => {
+            const data = {
+              descItem: descriptionItem
+            }
+            updateDescrArray(data)
+          }}
+        />
+      </View>)
+  }
+  const updateDescrArray = (data) => {
+    var i = serviceDesc.findIndex((val) => val.descItem === data.descItem)
+    console.log("i ", i);
+    if (i == -1) {
+      var temp = serviceDesc.findIndex((val) => val.empty === "empty")
+      var newArr = serviceDesc
+      newArr[temp] = data
+      setServiceDesc(newArr)
+    } else {
+      var current = description
+      current[i] = data
+      setServiceDesc(current)
+    }
+    console.log("updated -> ", serviceDesc);
+  }
 
   return (
     <View style={AppStyles.container}>
@@ -522,17 +602,17 @@ const styles = StyleSheet.create({
   },
 
   borderTitleView: {
-    height: 520,
+    // height: 520,
     width: "90%",
     borderRadius: 20,
     marginBottom: 30,
-    marginTop: 5,
+    // marginTop: 5,
     alignItems: 'center',
     backgroundColor: 'white',
-    elevation: 5
+    elevation: 5,
+    paddingVertical: 20
   },
   borderAddressView: {
-    //height: 350,
     width: "90%",
     borderRadius: 15,
     marginBottom: 30,
@@ -603,7 +683,7 @@ const styles = StyleSheet.create({
   },
   subtitleInput: {
     textAlign: 'right',
-    height: 60,
+    height: 40,
     width: 315,
     borderWidth: 1.5,
     borderRadius: 10,
@@ -623,6 +703,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'black',
     backgroundColor: 'white',
+  },
+  descriptionInput: {
+    textAlign: 'right',
+    height: 40,
+    width: 315,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    borderColor: "darkgray",
+    fontSize: 18,
+    color: 'black',
+    backgroundColor: 'white',
+    marginBottom: 20
   },
   capsityInput: {
     textAlign: 'right',
@@ -659,6 +751,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgray',
     borderRadius: 30,
     marginLeft: 15
+  },
+  serviceDesc: {
+    width: 315,
+    marginVertical: 20
+  },
+  descLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderWidth: 1,
+    justifyContent: 'flex-end'
+  },
+  AddDesctxt: {
+    fontSize: 15,
+    textAlign: 'right',
+    color: colors.puprble
+  },
+  IconAdd: {
+    // width: 50,
+    // height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // backgroundColor: 'lightgray',
+    // borderRadius: 30,
+    // marginLeft: 15
   },
 })
 

@@ -44,6 +44,7 @@ const ProviderSetPrice = props => {
       Text: langauge.Header,
     },
   };
+  
 
   const onPublishPress = async () => {
     const body = {

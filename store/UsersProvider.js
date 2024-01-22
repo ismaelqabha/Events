@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import UsersContext from './UsersContext';
 
 const UsersProvider = (props) => {
-    const [userId, setuserId] = useState(1);
+    const [userId, setuserId] = useState();
     const [userInfo, setUserInfo] = useState([]);
     const [userName, setUserName] = useState(null);
     const [userEmail, setUserEmail] = useState(null);

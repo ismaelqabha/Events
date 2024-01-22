@@ -10,8 +10,9 @@ import UsersContext from '../../store/UsersContext';
 
 
 const SignIn = (props) => {
-    const { userId,setuserId, } = useContext(SearchContext);
+    //const { userId,setuserId, } = useContext(SearchContext);
         const {
+            setuserId,
             userEmail,
             password,
             setPassword,
@@ -51,9 +52,7 @@ const SignIn = (props) => {
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
             setUserInfo(res)
-           // console.log("user data", res);
-            renderUserId()
-           
+            setuserId(res.user[0].USER_ID)
         })
     }
 
@@ -65,7 +64,9 @@ const SignIn = (props) => {
     }
 
     const renderUserId = () => {
+        console.log("userInfo", userInfo);
         const UserArray = userInfo.map(id => {
+            console.log("id.USER_ID", id.USER_ID);
             return setuserId(id.USER_ID)
         });
         return UserArray;

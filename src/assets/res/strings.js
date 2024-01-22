@@ -27,7 +27,7 @@ const strings = {
       },
       ProviderAddInfo: {
         HeadText: ' إنشاء خدمة جديدة',
-        title: 'أسم الخدمة',
+        title: 'أسم المصلحة',
         subTitle: 'العنوان الترويجي',
         description: 'الوصف ',
         LocationHeadText: 'قم بأضافة تفاصيل الموقع :',

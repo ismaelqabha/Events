@@ -30,9 +30,13 @@ const ClientHomeAds = (props) => {
     const deltaY = new Animated.Value(0);
 
     const queryCampaign = () => {
+        if(campInfo){
+            return null
+        }
 
         return campInfo?.filter(res => {
-            return res.campRigon == userRegion && res.campCatType == cat;
+                return res.campRigon == userRegion && res.campCatType == cat;
+            
         })
     }
 

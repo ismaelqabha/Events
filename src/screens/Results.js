@@ -96,15 +96,6 @@ const Results = (props) => {
         });
         return cityName;
     };
-    // const renderRiegon = () => {
-    //     const data = regionData;
-
-    //     const regionName = data.map(Rname => {
-    //         return Rname.city;
-    //     });
-    //     return regionName;
-    // };
-
 
     const onPressHandler = () => {
         objectResult.cityselected = ''
@@ -159,20 +150,19 @@ const Results = (props) => {
 
     const findFirstDateAvailable = (serviceDates) => {
         const requestedDate = moment(new Date())
-        console.log("serviceDates" , serviceDates);
+        //console.log("serviceDates" , serviceDates);
         const Resultwithoutfilter = serviceDates?.filter?.(sevice => {
             const { time, busy } = sevice;
             const bookDateMoment = moment(time);
             const res1 = bookDateMoment.isAfter(requestedDate)
             const res2 = busy == 'true'
-            console.log("serviceStutes",busy , "res1", res1);
+            //console.log("serviceStutes",busy , "res1", res1);
             return res1 && res2
         })
         const dateArray = Resultwithoutfilter[0]
-        console.log("dateArray", dateArray);
+        //console.log("dateArray", dateArray);
         return dateArray;
     };
-
     const checkDateIsAvilable = (serviceDates) => {
 
         const requestedDate = moment(new Date(objectResult.selectDateforSearch)).startOf('day')
@@ -200,8 +190,8 @@ const Results = (props) => {
     }
     const comparingData = (dateAviable, monthAvailble, source) => {
         if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
-            console.log("dateAviable", dateAviable);
-            console.log("monthAvailble", monthAvailble);
+            // console.log("dateAviable", dateAviable);
+            // console.log("monthAvailble", monthAvailble);
             return dateAviable || monthAvailble
         } else {
 
@@ -219,7 +209,7 @@ const Results = (props) => {
             const isCitySelect = objectResult.cityselected == '' ? true : item.serviceData.address == objectResult.cityselected
             const isRiogenSelect = objectResult.regionselect == '' ? true : item.serviceData.region == objectResult.regionselect
 
-            const ResultQuery = isCitySelect && isRiogenSelect && result
+            const ResultQuery = isCitySelect && isRiogenSelect //&& result
             // console.log("ResultQuery", ResultQuery);
             return ResultQuery;
         })
@@ -228,7 +218,7 @@ const Results = (props) => {
     }
     const renderCard = () => {
         const data = dataSearchResult();
-        console.log("data ", data);
+        // console.log("data ", data);
         const cardsArray = data?.map(card => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
@@ -335,7 +325,7 @@ const Results = (props) => {
                 <View style={styles.insideView}>
                     <SelectList
                         setSelected={(val) => setSelectedCity(val)}
-                        data={renderCity()}
+                        //data={renderCity()}
                         save="value"
                         placeholder='اختر المدينة'
                         boxStyles={styles.dropdown}
