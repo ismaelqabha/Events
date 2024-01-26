@@ -196,7 +196,7 @@ const MonthCom = (props) => {
         <Pressable style={({pressed}) =>[ styles.monthView,
             pressed ? styles.monthViewPress : styles.monthView]} onPress={() => {onCardPress(month.monNum,month.year)}}>
             <View style={styles.MView}>
-                <Text style={styles.monthText}>
+                <Text style={styles.yearText}>
                     {month.year}
                 </Text>
             </View>
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     },
     monthViewPress: {
         alignItems: 'center',
-        borderWidth: 2,
+        borderWidth: 3,
         borderColor: colors.darkGold,
         backgroundColor: 'white',
         width: 110,
@@ -248,8 +248,12 @@ const styles = StyleSheet.create({
     monthText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: colors.darkGold,
-        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        color: colors.puprble,
+    },
+    yearText:{
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: colors.BGScereen,
     },
     MView: {
         alignItems: 'center',

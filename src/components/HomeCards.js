@@ -6,18 +6,18 @@ import SearchContext from '../../store/SearchContext';
 import SliderImage from '../components/SliderImage';
 import { colors } from "../assets/AppColors"
 import SIZES from '../resources/sizes';
+import moment from 'moment';
 
 const HomeCards = (props) => {
 
     const navigation = useNavigation();
-    const { subTitle, address } = props;
+    const { subTitle, address, availableDates } = props;
     const { setSType } = useContext(SearchContext);
-
 
 
     const onCaardPress = () => {
         setSType((props.servType))
-        navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props } })
+        navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props , availableDates}} )
     }
 
     return (
@@ -25,12 +25,15 @@ const HomeCards = (props) => {
             <SliderImage  {...props} />
             <TouchableOpacity onPress={onCaardPress}  >
                 <View style={styles.info}>
-                    <View style={{marginRight: 20, marginLeft: 10}}>
+                    <View style={{ marginRight: 20, marginLeft: 10 }}>
                         <View style={styles.nestedView}>
                             <Text style={styles.text}>★5</Text>
-                            <Text style={styles.text} numberOfLines={2}>{subTitle}....</Text>
+                            <Text style={styles.text} numberOfLines={2}>{subTitle}</Text>
                         </View>
-                        <Text style={styles.text}>{address}</Text>
+                        <View style={styles.nestedView}>
+                            <Text style={styles.text}>{availableDates.length == 9 ? availableDates : availableDates.length + "  تاريخ متاح "}</Text>
+                            <Text style={styles.text}>{address}</Text>
+                        </View>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -47,8 +50,8 @@ const styles = StyleSheet.create({
         width: SIZES.screenWidth - 10,
         height: 70,
         backgroundColor: colors.puprble,
-        borderBottomLeftRadius: 20, 
-        borderBottomRightRadius: 20, 
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
         elevation: 5,
 
     },

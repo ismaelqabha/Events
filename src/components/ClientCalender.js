@@ -8,40 +8,70 @@ import { colors } from '../assets/AppColors';
 import { Pressable } from 'react-native';
 
 const ClientCalender = (props) => {
-    const { selectDateforSearch, setselectDateforSearch } = useContext(SearchContext);
+    const { setselectDateforSearch, setperiodDatesforSearch } = useContext(SearchContext);
     const [selected, setSelected] = useState('')
     const [date, setDate] = useState(new Date())
 
+    const [oneDay, setOneDay] = useState(false)
+    const [threeDay, setThreeDay] = useState(false)
+    const [sevenDay, setSevenDay] = useState(false)
 
     useEffect(() => {
         setselectDateforSearch(null)
     }, [])
 
-    return (
-        <View style={styles.container}>
-            <View style={ styles.dayView}>
-                <Pressable style={ styles.dayRange}>
+    const onOnedayPress = () =>{
+        setOneDay(true)
+        setThreeDay(false)
+        setSevenDay(false)
+        setperiodDatesforSearch(1)
+    }
+    const onThreedayPress = () =>{
+        setOneDay(false)
+        setThreeDay(true)
+        setSevenDay(false)
+        setperiodDatesforSearch(3)
+    }
+    const onSevendayPress = () =>{
+        setOneDay(false)
+        setThreeDay(false)
+        setSevenDay(true)
+        setperiodDatesforSearch(7)
+    }
+    const renderPeriod = () => {
+        return (
+            <View style={styles.dayView}>
+                <Pressable style={[styles.dayRange, oneDay ? styles.dayRangeSelected : styles.dayRange]} 
+                onPress={() => onOnedayPress() }>
                     <View style={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: 20, lineHeight: 20 }}>+</Text>
-                        <Text style={{ fontSize: 20, lineHeight: 12 }}>-</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
                     </View>
-                    <Text style={{ fontSize: 16 }}>1 ايام</Text>
+                    <Text style={{ fontSize: 16, color: colors.puprble }}>1 ايام</Text>
                 </Pressable>
-                <Pressable style={ styles.dayRange}>
+                <Pressable style={[styles.dayRange, threeDay ? styles.dayRangeSelected : styles.dayRange]} 
+                onPress={() => onThreedayPress()}>
                     <View style={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: 20, lineHeight: 20 }}>+</Text>
-                        <Text style={{ fontSize: 20, lineHeight: 12 }}>-</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
                     </View>
-                    <Text style={{ fontSize: 16 }}>3 ايام</Text>
+                    <Text style={{ fontSize: 16, color: colors.puprble }}>3 ايام</Text>
                 </Pressable>
-                <Pressable style={ styles.dayRange}>
+                <Pressable style={[styles.dayRange, sevenDay ? styles.dayRangeSelected : styles.dayRange]} 
+                onPress={() => onSevendayPress()}>
                     <View style={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: 20, lineHeight: 20 }}>+</Text>
-                        <Text style={{ fontSize: 20, lineHeight: 12 }}>-</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
                     </View>
-                    <Text style={{ fontSize: 16 }}>7 ايام</Text>
+                    <Text style={{ fontSize: 16, color: colors.puprble }}>7 ايام</Text>
                 </Pressable>
             </View>
+        )
+    }
+
+    return (
+        <View style={styles.container}>
+            {renderPeriod()}
             <Calendar
                 style={{
                     borderColor: 'gray',
@@ -58,8 +88,8 @@ const ClientCalender = (props) => {
                     calendarBackground: '#ffffff',
                     textSectionTitleColor: '#b6c1cd',
                     selectedDayBackgroundColor: colors.puprble,
-                    selectedDayTextColor: 'green',
-                    todayTextColor: '#00adf5',
+                    selectedDayTextColor: 'white',
+                    todayTextColor: 'black',
                     dayTextColor: colors.gold,
                     textDisabledColor: '#d9e1e8',
                     dotColor: 'red',
@@ -95,7 +125,7 @@ const ClientCalender = (props) => {
                 monthFormat={'MM yyyy'}
                 // Handler which gets executed when visible month changes in calendar. Default = undefined
                 onMonthChange={month => {
-                    console.log('month changed', month);
+                    // console.log('month changed', month);
                 }}
                 // Do not show days of other months in month page. Default = false
                 hideExtraDays={false}
@@ -129,22 +159,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: 80, height: 40,
         borderRadius: 15,
-        marginHorizontal :10
+        marginHorizontal: 10
     },
     dayRangeSelected: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: colors.puprble,
         alignItems: 'center',
         width: 80, height: 40,
         borderRadius: 15,
-        marginHorizontal :10
+        marginHorizontal: 10
     },
-    dayView:{
+    dayView: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        alignItems: 'center', 
+        alignItems: 'center',
         marginTop: 10,
     }
 })

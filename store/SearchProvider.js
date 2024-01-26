@@ -71,6 +71,7 @@ const SearchProvider = props => {
   const [Categorychozen, setCategorychozen] = useState(false)
   const [userRegion, setUserRegion] = useState('المثلث الشمالي');
   const [requestedDate, setrequestedDate] = useState()
+  const [periodDatesforSearch, setperiodDatesforSearch] = useState(0)
 
 
   //Booking
@@ -175,6 +176,8 @@ const SearchProvider = props => {
         setYearforSearch,
         datesforBooking,
         setDatesforBooking,
+        periodDatesforSearch, 
+        setperiodDatesforSearch,
         ServiceImages,
         setServiceImages,
         ServiceDatesforBooking,

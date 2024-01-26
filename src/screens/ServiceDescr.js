@@ -19,32 +19,15 @@ const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
     const [date, setDate] = useState(new Date())
-    const [currentDate, setcurrentDate] = useState(date.getDate() + 1)
-    const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
-    const [currentYear, setcurrentYear] = useState(date.getFullYear())
 
     const { userId,
-        setServiceDatesforBooking, ServiceDatesforBooking,
-        setDetailOfServ,
         campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
-        selectDateforSearch,
-        selectMonthforSearch,
         requestedDate, setrequestedDate,
         requestInfo, setRequestInfo,
         setReachCampaignfrom } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
 
-    const getDatesfromApi = () => {
-        getbookingDates({ serviceID: 'testing' }).then(res => {
-            setServiceDatesforBooking(res)
-        })
-    }
-    const getDetailFromApi = () => {
-        getServiceDetail({ SDserviceID: data?.service_id }).then(res => {
-            setDetailOfServ(res)
-        })
-    }
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
             setRequestInfo(res)
@@ -57,12 +40,9 @@ const ServiceDescr = (props) => {
     }
 
     useEffect(() => {
-        getDatesfromApi()
-        // getDetailFromApi()
         getRequestfromApi()
         getCampeignsfromApi()
         setrequestedDate(0)
-
     }, [])
 
     const checkIfInEvent = () => {
@@ -106,126 +86,51 @@ const ServiceDescr = (props) => {
     }
 
 
-    const queryfirstDates = () => {
-        const requestedDate = moment(new Date())
-        console.log("ServiceDatesforBooking", ServiceDatesforBooking);
-
-        const DateFiltered = ServiceDatesforBooking.filter(datee => {
-            const { bookDate, serviceStutes } = datee;
-            const bookDateMoment = moment(bookDate);
-            const res1 = bookDateMoment.isAfter(requestedDate)
-            const res2 = serviceStutes == 'true'
-            return res1 && res2
-        });
-        const firstDateAvailable = DateFiltered[0]
-        return firstDateAvailable;
-    };
-    const queryDatesAccorMonth = () => {
-        const requestedMonth = selectMonthforSearch;
-        return ServiceDatesforBooking.filter(datee => {
-            const { bookDate, serviceStutes } = datee;
-            const wholeDate = moment(bookDate);
-            const gittingMonth = wholeDate.format('M')
-            const res1 = gittingMonth == requestedMonth
-            return res1 && serviceStutes == 'true'
-        })
-    }
-    const querySpacificDate = () => {
-        const requestedDate = moment(new Date(selectDateforSearch)).startOf('day')
-        return ServiceDatesforBooking.filter(datee => {
-            const { bookDate, serviceStutes } = datee;
-            const bookDateMoment = moment(bookDate).startOf('day');
-            const res1 = bookDateMoment.isSame(requestedDate)
-            const res2 = serviceStutes == 'true'
-            return res1 && res2
-        })
-    }
-
-
     const renderImg = () => {
         const imageArray = data.images[0].serviceImages.map(photos => {
             return photos;
         });
         return imageArray;
     };
-    const checkDate = (D) => {
-        const unavailableDate = data.dates[0].dates
-        const DateFiltered = unavailableDate.find(dat => {
-            return dat.time === D
-        });
-        if(DateFiltered == undefined){
-            return true
-        }else{
-            return false
-        }
-    }
-    const getFirstDateAvailable = () => {
-        const daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
-        let completeDate = ''
-        for (var day = currentDate; day <= daysInMonth; day++) {
-            completeDate = day + '-' + currentMonth + '-' + currentYear
-            if (checkDate(completeDate)) {
-                break
-            }
-        }
-        return completeDate
-    }
 
     const renderDates = () => {
         moment.locale('ar-dz');
-        // if (selectMonthforSearch) {
-        //     //const pressableStyle = isPressed ? styles.pressablePressed : styles.pressableDefault;
+        if (Array.isArray(data.availableDates)) {
+            //const pressableStyle = isPressed ? styles.pressablePressed : styles.pressableDefault;
 
-        //     const DatesAvailable = queryDatesAccorMonth()
-        //     const dateArray = DatesAvailable?.map(dat => {
+            const DatesAvailable = data.availableDates
+            const dateArray = DatesAvailable?.map(dat => {
 
-        //         return <View style={styles.dateView}>
-        //             <Pressable style={({ pressed }) =>
-        //                 [styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
-        //                 onPress={() => SelectDatePressed(dat.bookDate)}
+                return <View style={styles.dateView}>
+                    <Pressable style={({ pressed }) =>
+                        [styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
+                        onPress={() => SelectDatePressed(dat)}
+                    >
+                        <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
+                        <Text style={styles.datetext}>{dat}</Text>
+                    </Pressable>
+                </View>;
+            });
+            return dateArray;
+        } else {
+            const firstAvilableDate = data.availableDates
+            setrequestedDate(firstAvilableDate)
+            return <View style={styles.dateformat}>
+                <View>
+                    <Text style={styles.datetxt}>{firstAvilableDate}</Text>
+                    <Text style={styles.Daytex}>{`${moment(firstAvilableDate).format('dddd')}`}</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={{ alignSelf: 'center' }}
+                        name={"calendar"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
+            </View>;
 
-        //             >
-        //                 <Text style={styles.tex}>{moment(dat.bookDate).format('dddd')}</Text>
-        //                 <Text style={styles.tex}>{moment(dat.bookDate).format('LL')}</Text>
-        //             </Pressable>
-        //         </View>;
-        //     });
-        //     return dateArray;
-        // }
-        // if (selectDateforSearch) {
-        //     const DatesAvailable = querySpacificDate()
-        //     const dateArray = DatesAvailable?.map(dat => {
-        //         setrequestedDate(dat.bookDate)
-        //         return <View style={styles.dateView}>
-        //             <Text style={styles.tex}>{`${moment(dat.bookDate).format('LL')}`}</Text>
-        //             <Text style={styles.tex}>{`${moment(dat.bookDate).format('dddd')}`}</Text>
-        //         </View>;
-        //     });
-        //     return dateArray;
-        // } else {
-
-        const firstAvilableDate = getFirstDateAvailable()
-
-        setrequestedDate(firstAvilableDate)
-        return <View style={styles.dateView}>
-            <View>
-                <Text style={styles.datetxt}>{firstAvilableDate} 
-                {/* {`${moment(firstAvilableDate).format('l')}`} */}
-                </Text>
-                <Text style={styles.Daytex}>{`${moment(firstAvilableDate).format('dddd')}`}</Text>
-            </View>
-            <View style={styles.IconView}>
-                <Entypo
-                    style={{ alignSelf: 'center' }}
-                    name={"calendar"}
-                    color={colors.puprble}
-                    size={30} />
-            </View>
-        </View>;
-
-        // }
+        }
     };
-
 
     const renderTitle = () => {
         return <View style={styles.titleInfo}>
@@ -246,8 +151,8 @@ const ServiceDescr = (props) => {
     const renderDatesAvailable = () => {
         return (
             <View style={styles.DatesZone}>
-                <Text style={styles.text}>{selectMonthforSearch ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
-                {renderDates()}
+                <Text style={styles.text}>{Array.isArray(data.availableDates) ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
+                <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>{renderDates()}</ScrollView>
             </View>
         )
     }
@@ -430,7 +335,7 @@ const ServiceDescr = (props) => {
     return (
         <View style={styles.container}>
             {renderHeader()}
-            <ScrollView contentContainerStyle={styles.home}>
+            <ScrollView >
                 {renderSlider()}
                 {renderBody()}
             </ScrollView>
@@ -457,17 +362,14 @@ const styles = StyleSheet.create({
         //width: '100%',
         //height: 420,
     },
+    home: {
+        flexDirection: 'row',
+        flexWrap: 'wrap'
+    },
     InfoView: {
 
     },
-    dateView: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        width: '80%',
-        alignSelf: 'center',
-        marginVertical: 10,
-        alignItems: 'center'
-    },
+    
     IconView: {
         width: 50,
         height: 50,
@@ -520,6 +422,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: colors.puprble,
+        marginBottom: 10
     },
     changDatetext: {
         fontSize: 15,
@@ -591,22 +494,46 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 10,
-        marginRight: 20,
+        borderRadius: 8,
         elevation: 5
     },
-    viewselectdate: {
-        flexDirection: 'row',
+    dateView: {
         justifyContent: 'center',
-        margin: 2
+        alignItems: 'center',
+    },
+    dateformat:{
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        width: "100%",
+    },
+    viewselectdate: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 110,
+        height: 70,
+        margin: 4,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        elevation: 5,
     },
     viewselectdatepress: {
-        flexDirection: 'row',
         justifyContent: 'center',
-        backgroundColor: 'gray'
+        alignItems: 'center',
+        width: 110,
+        height: 70,
+        margin: 4,
+        backgroundColor: colors.gold,
+        borderRadius: 8,
+        elevation: 5,
     },
     datetxt: {
         fontSize: 18,
+        color: colors.puprble,
+        marginLeft: 20
+    },
+    datetext:{
+        fontSize: 16,
         color: colors.puprble,
     },
     priceView: {
