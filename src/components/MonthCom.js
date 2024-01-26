@@ -5,7 +5,7 @@ import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 
 const MonthCom = (props) => {
-    const { setselectMonthforSearch, selectMonthforSearch } = useContext(SearchContext);
+    const { setselectMonthforSearch, setYearforSearch } = useContext(SearchContext);
     const {onMonthSelected} = props
     const [date, setDate] = useState(new Date())
     const [monthPressed, setMonthPress] = useState(false)
@@ -179,9 +179,10 @@ const MonthCom = (props) => {
 
    
 
-    const onCardPress = (num) => {
+    const onCardPress = (mon, year) => {
         setMonthPress(true)
-        onMonthSelected?.(num)
+        setYearforSearch(year)
+        onMonthSelected?.(mon)
     }
     const cleanSearchState = () => {
         setselectMonthforSearch(null)
@@ -193,7 +194,7 @@ const MonthCom = (props) => {
 
     const renderMonth = () => months.map(month =>
         <Pressable style={({pressed}) =>[ styles.monthView,
-            pressed ? styles.monthViewPress : styles.monthView]} onPress={() => {onCardPress(month.monNum)}}>
+            pressed ? styles.monthViewPress : styles.monthView]} onPress={() => {onCardPress(month.monNum,month.year)}}>
             <View style={styles.MView}>
                 <Text style={styles.monthText}>
                     {month.year}

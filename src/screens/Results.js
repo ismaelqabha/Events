@@ -22,10 +22,18 @@ const Results = (props) => {
         cat,
         ServiceDataInfo,
         town, setTown, DateText,
-        setDateText, TimeText, setTimeText, cityselected, regionselect,
-        setselectDateforSearch, selectDateforSearch, selectMonthforSearch, setselectMonthforSearch } = useContext(SearchContext);
+        setDateText, TimeText, setTimeText,
+        cityselected, regionselect,
+        setselectDateforSearch, selectDateforSearch,
+        selectMonthforSearch,
+        yearforSearch,
+    } = useContext(SearchContext);
 
     const [date, setDate] = useState(new Date());
+    const [currentDate, setcurrentDate] = useState(date.getDate() + 1)
+    const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
+    const [currentYear, setcurrentYear] = useState(date.getFullYear())
+
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -85,7 +93,8 @@ const Results = (props) => {
         })
     }
     useEffect(() => {
-        getCityFromApi()
+        // getCityFromApi()
+
     }, [])
 
     const renderCity = () => {
@@ -115,12 +124,60 @@ const Results = (props) => {
         if (!cat) {
             return ServiceDataInfo || [];
         }
-
         return ServiceDataInfo?.filter(nameItem => {
             return nameItem.serviceData.servType == cat;
 
         })
     }
+
+    // check available date part 
+    const checkDate = (dataforReservation, source) => {
+        const servicedata = source
+        console.log("servicedata[0].dates", servicedata[0].dates);
+        const DateFiltered = servicedata[0].dates?.find(dat => {
+
+            console.log("dat.time", dat.time);
+            console.log("dataforReservation", dataforReservation);
+
+            return dat.time === dataforReservation
+        });
+        return !!DateFiltered
+    }
+    const comparingData = (dateAviable, monthAvailble, source) => {
+        if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
+            return dateAviable || monthAvailble
+        } else {
+            return findFirstDateAvailable(source)
+        }
+    }
+    const findFirstDateAvailable = (serviceDates) => {
+        const daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
+        let completeDate = ''
+        for (var day = currentDate; day <= daysInMonth; day++) {
+            completeDate = day + '-' + currentMonth + '-' + currentYear
+            if (!checkDate(completeDate, serviceDates)) {
+                break
+            }
+        }
+        return completeDate
+    };
+    const checkMonthAvailableDate = (serviceDates) => {
+        const requestedMonth = objectResult.selectMonthforSearch;
+        const daysInMonth = moment(yearforSearch + '-' + requestedMonth).daysInMonth()
+        let completeDate = ''
+        const datesOfSelectedMonth = []
+        for (var day = 1; day <= daysInMonth; day++) {
+            completeDate = day + '-' + requestedMonth + '-' + yearforSearch
+            if (!checkDate(completeDate, serviceDates)) {
+                datesOfSelectedMonth.push(completeDate)
+            }
+        }
+        return datesOfSelectedMonth
+    }
+    const checkDateIsAvilable = (serviceDates) => {
+
+    }
+
 
     const checkSelect = (nameItem) => {
         return objectFilter.selectRigon == "" ? true : nameItem.serviceData.region == objectFilter.selectRigon
@@ -148,7 +205,8 @@ const Results = (props) => {
         return cardsArray;
     };
 
-    const findFirstDateAvailable = (serviceDates) => {
+
+    const findFirstDateAvailable1 = (serviceDates) => {
         const requestedDate = moment(new Date())
         //console.log("serviceDates" , serviceDates);
         const Resultwithoutfilter = serviceDates?.filter?.(sevice => {
@@ -163,7 +221,7 @@ const Results = (props) => {
         //console.log("dateArray", dateArray);
         return dateArray;
     };
-    const checkDateIsAvilable = (serviceDates) => {
+    const checkDateIsAvilable1 = (serviceDates) => {
 
         const requestedDate = moment(new Date(objectResult.selectDateforSearch)).startOf('day')
         const isAvilable = serviceDates?.find(sevice => {
@@ -175,7 +233,7 @@ const Results = (props) => {
         })
         return !!isAvilable;
     }
-    const checkMonthAvailableDate = (serviceDates) => {
+    const checkMonthAvailableDate1 = (serviceDates) => {
         const requestedMonth = objectResult.selectMonthforSearch;
         const AvilableMonth = serviceDates?.find(sevice => {
             const { bookDate, serviceStutes } = sevice;
@@ -188,29 +246,22 @@ const Results = (props) => {
 
         return !!AvilableMonth;
     }
-    const comparingData = (dateAviable, monthAvailble, source) => {
-        if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
-            // console.log("dateAviable", dateAviable);
-            // console.log("monthAvailble", monthAvailble);
-            return dateAviable || monthAvailble
-        } else {
 
-            return findFirstDateAvailable(source)
-        }
-    }
+   
 
     const dataSearchResult = () => {
         const data = query();
         const filtered = data?.filter(item => {
+            //console.log("item.serviceDates", item.serviceDates);
             const isAvilable = checkDateIsAvilable(item.serviceDates);
-            const AvilableMonth = checkMonthAvailableDate(item.serviceDates);
-            const result = comparingData(isAvilable, AvilableMonth, item.serviceDates)
+            const AvilableDaysInMonth = checkMonthAvailableDate(item.serviceDates);
+            const result = comparingData(isAvilable, AvilableDaysInMonth, item.serviceDates)
 
             const isCitySelect = objectResult.cityselected == '' ? true : item.serviceData.address == objectResult.cityselected
             const isRiogenSelect = objectResult.regionselect == '' ? true : item.serviceData.region == objectResult.regionselect
 
-            const ResultQuery = isCitySelect && isRiogenSelect //&& result
-            // console.log("ResultQuery", ResultQuery);
+            const ResultQuery = isCitySelect && isRiogenSelect && result
+            //console.log("ResultQuery", ResultQuery);
             return ResultQuery;
         })
         return filtered
@@ -218,7 +269,7 @@ const Results = (props) => {
     }
     const renderCard = () => {
         const data = dataSearchResult();
-        // console.log("data ", data);
+        //console.log("data ", data);
         const cardsArray = data?.map(card => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
