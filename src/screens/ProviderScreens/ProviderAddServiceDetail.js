@@ -29,6 +29,9 @@ const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
   const [Dtitle, setDTitle] = useState('');
   const [nec, setNec] = useState("Mandatory");
+  const [perPerson, setPerPerson] = useState(false);
+  const [yesPerPerson, setYesPerPerson] = useState(false);
+  const [noPerPerson, setNoPerPerson] = useState(false);
   const [isMan, setIsMan] = useState(false);
   const [isOpt, setIsOpt] = useState(false);
   const {
@@ -45,7 +48,7 @@ const ProviderAddServiceDetail = props => {
     socialMediaArray,
     hallCapacity,
     hallType,
- 
+
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(UsersContext);
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
@@ -80,7 +83,7 @@ const ProviderAddServiceDetail = props => {
     },
   };
 
- 
+
   const onPublishPress = async () => {
     const body = {
       userID: userId,
@@ -92,15 +95,15 @@ const ProviderAddServiceDetail = props => {
       address: serviceAddress,
       servicePrice: price,
       additionalServices: additionalServices,
-      socialMedia:socialMediaArray,
+      socialMedia: socialMediaArray,
       maxCapasity: hallCapacity,
       hallType: hallType
     };
     await addService(body)
       .then(async res => {
         console.log(' service res ->', res.serviceID);
-        await addServiceImages(photoArray,res?.serviceID).then((res)=>{
-          console.log("images res -> ",res );
+        await addServiceImages(photoArray, res?.serviceID).then((res) => {
+          console.log("images res -> ", res);
           showMessage("تم حفظ البيانات")
         })
       })
@@ -116,6 +119,7 @@ const ProviderAddServiceDetail = props => {
         detail_Id: Did,
         detailTitle: Dtitle,
         necessity: nec,
+        isPerPerson: perPerson,
         subDetailArray: []
       };
       setAdditionalServices([...additionalServices, AddNewDetail]);
@@ -226,9 +230,38 @@ const ProviderAddServiceDetail = props => {
             dropdownTextStyles={styles.dropstyle}
           />
         </View>
+        {renderIsPerPerson()}
       </View>
     );
   };
+
+  const yesIsPerson = () => {
+    setYesPerPerson(true)
+    setNoPerPerson(false)
+    setPerPerson(true)
+  }
+  const noIsPerson = () => {
+    setYesPerPerson(false)
+    setNoPerPerson(true)
+    setPerPerson(false)
+  }
+
+  const renderIsPerPerson = () => {
+    return (
+      <View style={styles.perPersoneView}>
+        <Text style={styles.perPersoneText}>هل يتم تحديد السعر  لهذة الخدمة حسب الشخص ؟</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+          <Pressable style={[noPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={noIsPerson}>
+            <Text style={styles.perPersoneText}>لا</Text>
+          </Pressable>
+
+          <Pressable style={[yesPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={yesIsPerson}>
+            <Text style={styles.perPersoneText}>نعم</Text>
+          </Pressable>
+        </View>
+      </View>
+    )
+  }
   const RenderButtons = () => {
     return (
       <View style={styles.Modalbtn}>
@@ -426,7 +459,7 @@ const styles = StyleSheet.create({
   },
   detailModal: {
     width: '100%',
-    height: 300,
+    height: 400,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -456,17 +489,18 @@ const styles = StyleSheet.create({
   Modalbtn: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 50,
+    position: 'absolute', 
+    bottom: 10, 
+    width: '100%'
   },
   titleInput: {
     textAlign: 'right',
     height: 50,
-    width: 315,
+    width: '80%',
     borderWidth: 2,
     borderRadius: 10,
     borderColor: '#dcdcdc',
     fontSize: 18,
-    // color: 'black',
     backgroundColor: 'white',
   },
   MandatoryView: {
@@ -474,7 +508,6 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    // maxWidth: '60%',
     minWidth: '60%',
     fontSize: 17,
     borderColor: '#dcdcdc',
@@ -494,12 +527,44 @@ const styles = StyleSheet.create({
     textAlign: 'right'
   },
   listView: {
-    alignItems: 'center'
+    alignItems: 'center',
+  
   },
   list: {
-    width: '70%',
-    marginTop: 5
+    width: '80%',
+    marginTop: 20
+  },
+  perPersoneView: {
+    marginTop: 20,
+    width: '80%',
+  },
+  itemPersonView: {
+    borderWidth: 2,
+    borderColor: '#dcdcdc',
+    width: 60,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 30,
+    borderRadius: 5,
+    marginTop: 20
+  },
+  itemPersonViewPressed: {
+    borderWidth: 3,
+    borderColor: colors.puprble,
+    width: 60,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 30,
+    borderRadius: 5,
+    marginTop: 20
+  },
+  perPersoneText: {
+    fontSize: 18,
+    color: colors.puprble
   }
+
 });
 
 export default ProviderAddServiceDetail;

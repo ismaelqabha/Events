@@ -9,7 +9,7 @@ import { colors } from '../assets/AppColors';
 
 const ServiceCard = (props) => {
     const { isFromChooseServiceClick, isFromSearchServiceClick, isChecked } = props;
-    const { cat, setCat, ServiceDataInfo, setServiceDataInfo, ServId, userId, setCategorychozen } = useContext(SearchContext);
+    const { setCat, ServiceDataInfo, setServiceDataInfo, ServId, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
 
     const [pressed, setPressed] = useState(true)

@@ -96,16 +96,16 @@ const strings = {
         Back: 'رجوع',
         mandotryText: 'الخدمات الاجبارية',
         optionalText: 'الخدمات الاختيارية',
-        dropdownText: 'خدمة اجبارية'
+        dropdownText: 'اختيار نوع الخدمة'
       },
       ProviderSubDetail: {
-        Header: 'ما هي تفاصيل الخدمات التي تقدمها ؟',
+        Header: 'ما هو مبنى تفاصيل الخدمة ؟',
         CreateNew: 'انشاء جديد',
         Back: 'رجوع',
         Save: 'حفظ',
         Cancel: 'الغاء',
         ServDetailes: 'تفاصيل الخدمة',
-        Price: 'السعر المقترح',
+        Price: 'السعر',
         ModalHeader: 'أدخل تفاصيل الخدمة',
       },
       ProviderSocialMediaScreen: {

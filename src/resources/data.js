@@ -75,8 +75,8 @@ export const socialMediaList = [
     { key: '4', value: 'X' },
 ];
 export const mandoteryOptions = [
-    { key: '0', value: 'اجباري', alt: "Mandatory" },
-    { key: '1', value: 'اختياري', alt: "Optional" }
+    { key: '0', value: 'اجبارية', alt: "Mandatory" },
+    { key: '1', value: 'اختيارية', alt: "Optional" }
 ];
 export const subDetailData = [
     {

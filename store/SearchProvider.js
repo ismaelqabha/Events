@@ -7,29 +7,13 @@ const SearchProvider = props => {
 
   //user
   const [userId, setuserId] = useState(1);
-  // const [userInfo, setUserInfo] = useState([]);
-  // const [userName, setUserName] = useState(null);
-  // const [userEmail, setUserEmail] = useState(null);
-  // const [userPhone, setUserPhone] = useState(null);
-  // const [userBD, setUserBD] = useState(null);
-  // const [userGender, setUserGender] = useState(null);
-  // const [userStatus, setUserStatus] = useState(null);
-  // const [userCity, setUserCity] = useState(null);
-  // const [createUserRegion, setCreateUserRegion] = useState(null);
-  // const [userSpecialDate, setUserSpecialDate] = useState([]);
-  // const [password, setPassword] = useState(null);
-  // const [confirmPassword, setconfirmPassword] = useState(null);
-  // const [profilePhoto, setProfilePhoto] = useState(null);
-
 
   const [cat, setCat] = useState('');
-  const [isFirst, setIsfirst] = useState ()
-  const [serviceTitle, setserviceTitle] = useState ()
+  const [isFirst, setIsfirst] = useState()
+  const [serviceTitle, setserviceTitle] = useState()
   const [serviceCat, setServiceCat] = useState();
   const [sType, setSType] = useState();
   const [ServId, setServId] = useState('');
-
-
 
   // Data service favorites
   const [userFavorates, setUserFavorates] = useState([])
@@ -48,7 +32,7 @@ const SearchProvider = props => {
 
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
-  const [town, setTown] = useState([])
+  
   const [serviceSubDetail, setserviceSubDetail] = useState([])
   const [detailIdState, setdetailIdState] = useState();
 
@@ -70,9 +54,9 @@ const SearchProvider = props => {
   const [yearforSearch, setYearforSearch] = useState();
   const [Categorychozen, setCategorychozen] = useState(false)
   const [userRegion, setUserRegion] = useState('المثلث الشمالي');
-  const [requestedDate, setrequestedDate] = useState()
+  const [requestedDate, setrequestedDate] = useState([])
   const [periodDatesforSearch, setperiodDatesforSearch] = useState(0)
-
+  const [regionData, setRegionData] = useState([])
 
   //Booking
 
@@ -82,58 +66,23 @@ const SearchProvider = props => {
   const [isDateAvailable, setisDateAvailable] = useState(false)
 
 
-
-
-
   return (
     <SearchContext.Provider
       value={{
         userId,
         setuserId,
-        // userName, 
-        // setUserName,
-        // userEmail, 
-        // setUserEmail,
-        // userPhone, 
-        // setUserPhone,
-        // userBD, 
-        // setUserBD,
-        // userInfo,
-        // setUserInfo,
-        // userGender, 
-        // setUserGender,
-        // userStatus, 
-        // setUserStatus,
-        // userCity, 
-        // setUserCity,
-        // createUserRegion, 
-        // setCreateUserRegion,
-        // userSpecialDate, 
-        // setUserSpecialDate,
-        // password, 
-        // setPassword,
-        // confirmPassword, 
-        // setconfirmPassword,
-        // profilePhoto, 
-        // setProfilePhoto,
         cat,
         setCat,
         isFirst,
         setIsfirst,
         serviceTitle,
         setserviceTitle,
-        serviceCat, 
+        serviceCat,
         setServiceCat,
         sType,
         setSType,
-        // Service: Service,
-        // setService,
-        // city: city,
-        // setCity,
-        // fId,
-        // setFId,
-         ServId,
-         setServId,
+        ServId,
+        setServId,
         userFavorates,
         setUserFavorates,
         fileFavoriteState,
@@ -162,8 +111,6 @@ const SearchProvider = props => {
         setCampInfo,
         userRegion,
         setUserRegion,
-        town,
-        setTown,
         cityselected,
         setcityselected,
         regionselect,
@@ -172,11 +119,11 @@ const SearchProvider = props => {
         setselectDateforSearch,
         selectMonthforSearch,
         setselectMonthforSearch,
-        yearforSearch, 
+        yearforSearch,
         setYearforSearch,
         datesforBooking,
         setDatesforBooking,
-        periodDatesforSearch, 
+        periodDatesforSearch,
         setperiodDatesforSearch,
         ServiceImages,
         setServiceImages,
@@ -198,7 +145,8 @@ const SearchProvider = props => {
         setCampiegnsAccordingServiceId,
         reachCampaignfrom,
         setReachCampaignfrom,
-       
+        regionData, 
+        setRegionData
 
       }}>
       {props.children}

@@ -6,9 +6,11 @@ import { colors } from '../assets/AppColors';
 
 const MonthCom = (props) => {
     const { setselectMonthforSearch, setYearforSearch } = useContext(SearchContext);
-    const {onMonthSelected} = props
+    const { onMonthSelected } = props
     const [date, setDate] = useState(new Date())
-    const [monthPressed, setMonthPress] = useState(false)
+
+    const [allMonths, setAllMonths] = useState[months]
+
     let nextMonth = date.getMonth() + 1
     let monthtext = ''
 
@@ -19,61 +21,11 @@ const MonthCom = (props) => {
     let thirdyear = 24 - (firstyear + secondyear)
     let allyear = firstyear + secondyear + thirdyear
 
-
-    for (var i = 0; i < allyear; i++) {
-        if (firstyear >= 1) {
-            nextMonth = nextMonth + 1
-            firstyear = firstyear - 1
-            if (nextMonth == 1) {
-                monthtext = 'كانون ثاني'
-            }
-            if (nextMonth == 2) {
-                monthtext = 'شباط'
-            }
-            if (nextMonth == 3) {
-                monthtext = 'أذار'
-            }
-            if (nextMonth == 4) {
-                monthtext = 'نيسان'
-            }
-            if (nextMonth == 5) {
-                monthtext = 'أيار'
-            }
-            if (nextMonth == 6) {
-                monthtext = 'حزيران'
-            }
-            if (nextMonth == 7) {
-                monthtext = 'تموز'
-            }
-            if (nextMonth == 8) {
-                monthtext = 'أب'
-            }
-            if (nextMonth == 9) {
-                monthtext = 'أيلول'
-            }
-            if (nextMonth == 10) {
-                monthtext = 'تشرين أول'
-            }
-            if (nextMonth == 11) {
-                monthtext = 'تشرين ثاني'
-            }
-            if (nextMonth == 12) {
-                monthtext = 'كانون أول'
-            }
-            months.push(
-                {
-                    mon: monthtext,
-                    year: date.getFullYear(),
-                    monNum: nextMonth
-                }
-            )
-        } else if (firstyear == 0) {
-            if (nextMonth == 12) {
-                nextMonth = 0
-            }
-            if (secondyear >= 1) {
+    useEffect(() => {
+        for (var i = 0; i < allyear; i++) {
+            if (firstyear >= 1) {
                 nextMonth = nextMonth + 1
-                secondyear = secondyear - 1
+                firstyear = firstyear - 1
                 if (nextMonth == 1) {
                     monthtext = 'كانون ثاني'
                 }
@@ -110,106 +62,169 @@ const MonthCom = (props) => {
                 if (nextMonth == 12) {
                     monthtext = 'كانون أول'
                 }
-
                 months.push(
                     {
                         mon: monthtext,
-                        year: date.getFullYear() + 1,
+                        year: date.getFullYear(),
                         monNum: nextMonth
                     }
                 )
-            }
-
-        }
-        if (secondyear == 0) {
-
-            if (nextMonth == 12) {
-                nextMonth = 0
-            }
-            if (thirdyear >= 1) {
-                nextMonth = nextMonth + 1
-                thirdyear = thirdyear - 1
-                if (nextMonth == 1) {
-                    monthtext = 'كانون ثاني'
-                }
-                if (nextMonth == 2) {
-                    monthtext = 'شباط'
-                }
-                if (nextMonth == 3) {
-                    monthtext = 'أذار'
-                }
-                if (nextMonth == 4) {
-                    monthtext = 'نيسان'
-                }
-                if (nextMonth == 5) {
-                    monthtext = 'أيار'
-                }
-                if (nextMonth == 6) {
-                    monthtext = 'حزيران'
-                }
-                if (nextMonth == 7) {
-                    monthtext = 'تموز'
-                }
-                if (nextMonth == 8) {
-                    monthtext = 'أب'
-                }
-                if (nextMonth == 9) {
-                    monthtext = 'أيلول'
-                }
-                if (nextMonth == 10) {
-                    monthtext = 'تشرين أول'
-                }
-                if (nextMonth == 11) {
-                    monthtext = 'تشرين ثاني'
-                }
+            } else if (firstyear == 0) {
                 if (nextMonth == 12) {
-                    monthtext = 'كانون أول'
+                    nextMonth = 0
+                }
+                if (secondyear >= 1) {
+                    nextMonth = nextMonth + 1
+                    secondyear = secondyear - 1
+                    if (nextMonth == 1) {
+                        monthtext = 'كانون ثاني'
+                    }
+                    if (nextMonth == 2) {
+                        monthtext = 'شباط'
+                    }
+                    if (nextMonth == 3) {
+                        monthtext = 'أذار'
+                    }
+                    if (nextMonth == 4) {
+                        monthtext = 'نيسان'
+                    }
+                    if (nextMonth == 5) {
+                        monthtext = 'أيار'
+                    }
+                    if (nextMonth == 6) {
+                        monthtext = 'حزيران'
+                    }
+                    if (nextMonth == 7) {
+                        monthtext = 'تموز'
+                    }
+                    if (nextMonth == 8) {
+                        monthtext = 'أب'
+                    }
+                    if (nextMonth == 9) {
+                        monthtext = 'أيلول'
+                    }
+                    if (nextMonth == 10) {
+                        monthtext = 'تشرين أول'
+                    }
+                    if (nextMonth == 11) {
+                        monthtext = 'تشرين ثاني'
+                    }
+                    if (nextMonth == 12) {
+                        monthtext = 'كانون أول'
+                    }
+
+                    months.push(
+                        {
+                            mon: monthtext,
+                            year: date.getFullYear() + 1,
+                            monNum: nextMonth
+                        }
+                    )
                 }
 
-                months.push(
-                    {
-                        mon: monthtext,
-                        year: date.getFullYear() + 2,
-                        monNum: nextMonth
+            }
+            if (secondyear == 0) {
+
+                if (nextMonth == 12) {
+                    nextMonth = 0
+                }
+                if (thirdyear >= 1) {
+                    nextMonth = nextMonth + 1
+                    thirdyear = thirdyear - 1
+                    if (nextMonth == 1) {
+                        monthtext = 'كانون ثاني'
                     }
-                )
+                    if (nextMonth == 2) {
+                        monthtext = 'شباط'
+                    }
+                    if (nextMonth == 3) {
+                        monthtext = 'أذار'
+                    }
+                    if (nextMonth == 4) {
+                        monthtext = 'نيسان'
+                    }
+                    if (nextMonth == 5) {
+                        monthtext = 'أيار'
+                    }
+                    if (nextMonth == 6) {
+                        monthtext = 'حزيران'
+                    }
+                    if (nextMonth == 7) {
+                        monthtext = 'تموز'
+                    }
+                    if (nextMonth == 8) {
+                        monthtext = 'أب'
+                    }
+                    if (nextMonth == 9) {
+                        monthtext = 'أيلول'
+                    }
+                    if (nextMonth == 10) {
+                        monthtext = 'تشرين أول'
+                    }
+                    if (nextMonth == 11) {
+                        monthtext = 'تشرين ثاني'
+                    }
+                    if (nextMonth == 12) {
+                        monthtext = 'كانون أول'
+                    }
+
+                    months.push(
+                        {
+                            mon: monthtext,
+                            year: date.getFullYear() + 2,
+                            monNum: nextMonth
+                        }
+                    )
+                }
             }
         }
-    }
+    }, [])
 
-   
 
-    const onCardPress = (mon, year) => {
-        setMonthPress(true)
-        setYearforSearch(year)
-        onMonthSelected?.(mon)
+
+
+    const onCardPress = (mon, year, month , monthPressed, setMonthPress) => {
+        // if (monthPressed) {
+        //     setMonthPress(false)
+        //     const index = months.findIndex((m) => m.mon === month.mon)
+        //     const New = months.slice(index, 1)
+        //     // months.push(New)
+
+        // } else {
+            setYearforSearch(year)
+            onMonthSelected?.(mon)
+            setMonthPress(true)
+            // months.push([...months, month])
+        // }
+
+
     }
     const cleanSearchState = () => {
         setselectMonthforSearch(null)
     }
-    useEffect(()=> {
-  
-    },[])
 
 
-    const renderMonth = () => months.map(month =>
-        <Pressable style={({pressed}) =>[ styles.monthView,
-            pressed ? styles.monthViewPress : styles.monthView]} onPress={() => {onCardPress(month.monNum,month.year)}}>
-            <View style={styles.MView}>
-                <Text style={styles.yearText}>
-                    {month.year}
-                </Text>
-            </View>
-            <View style={styles.m2View}>
-                <Text style={styles.monthText}>
-                    {month.monNum}
-                </Text>
-                <Text style={styles.monthText}>
-                    {month.mon}
-                </Text>
-            </View>
-        </Pressable>
-    )
+
+    const renderMonth = () => months.map(month => {
+        const [monthPressed, setMonthPress] = useState(false)
+        return (
+            <Pressable style={[styles.monthView, monthPressed ? styles.monthViewPress : styles.monthView]}
+                onPress={() => { onCardPress(month.monNum, month.year, month, monthPressed, setMonthPress) }}>
+                <View style={styles.MView}>
+                    <Text style={styles.yearText}>
+                        {month.year}
+                    </Text>
+                </View>
+                <View style={styles.m2View}>
+                    <Text style={styles.monthText}>
+                        {month.monNum}
+                    </Text>
+                    <Text style={styles.monthText}>
+                        {month.mon}
+                    </Text>
+                </View>
+            </Pressable>)
+    })
 
     return (
         <View style={styles.container}>
@@ -250,7 +265,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.puprble,
     },
-    yearText:{
+    yearText: {
         fontSize: 20,
         fontWeight: 'bold',
         color: colors.BGScereen,

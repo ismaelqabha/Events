@@ -2,33 +2,59 @@ import { StyleSheet, Text, View, Pressable, Image } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { colors } from '../assets/AppColors'
 import ServiceProviderContext from '../../store/ServiceProviderContext'
+import SearchContext from '../../store/SearchContext'
 
 
-const HallTypeCard = (props) => {   
+const HallTypeCard = (props) => {
+    const { isChecked } = props;
+    const { setHallType } = useContext(ServiceProviderContext)
+    const { ServiceDataInfo, setServiceDataInfo, ServId } = useContext(SearchContext);
 
-    const {hallType,setHallType} = useContext(ServiceProviderContext)
 
-    const [HallPress, setHallPress] = useState(false)
-
-    const onHallTypePress=  () => {
-      setHallType(props.hallType)
+    const chickIfChecked = () => {
+        return isChecked
     }
-    useEffect(()=>{
-        if (hallType !== props.hallType) {
-            setHallPress(false)
-        }else{
-            setHallPress(true)
+
+
+    const onHallTypePress = (item) => {
+        setHallType(props.hallType)
+        props.onHallTypePress(props.hallType);
+        let ServiceArr = ServiceDataInfo;
+        const isChecked = chickIfChecked(item);
+        if (!isChecked) {
+            let serviceIndex = ServiceArr.findIndex(ser => ser.service_id === ServId)
+
+            if (serviceIndex != -1) {
+                ServiceArr[serviceIndex].hallType = props.hallType;
+            }
+            setServiceDataInfo([...ServiceArr])
         }
-    },[hallType])
-    
-    return (
-        <View style={styles.container}>
-            <Pressable style={[HallPress ? styles.typePress : styles.typeNotPres]}
-                onPress={() => onHallTypePress()}
-                >
-                    <Image style={styles.img} source={props.img}/>
+
+    }
+    useEffect(() => {
+        // if (hallType !== props.hallType) {
+        //     setHallPress(false)
+        // } else {
+        //     setHallPress(true)
+        // }
+    }, [])
+
+    const renderHallTypeCard = () => {
+        const HallCard = props;
+        const clicked = chickIfChecked(HallCard);
+        return (
+            <Pressable style={[clicked ? styles.typePress : styles.typeNotPres]}
+                onPress={() => onHallTypePress(HallCard)}
+            >
+                <Image style={styles.img} source={props.img} />
                 <Text style={styles.typetxt}>{props.hallType}</Text>
             </Pressable>
+        )
+    }
+
+    return (
+        <View style={styles.container}>
+            {renderHallTypeCard()}
         </View>
     )
 }
@@ -65,7 +91,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: colors.puprble
     },
-    img:{
+    img: {
         width: 50,
         height: 50
     }

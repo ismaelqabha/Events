@@ -74,8 +74,7 @@ const ProviderSetPhotos = props => {
     try {
           let options = {
           mediaType: 'photo',
-          includeBase64: false,
-            
+          includeBase64: false, 
         };
 
         launchImageLibrary(options, response => GalleryImageResponse(response));
@@ -84,8 +83,7 @@ const ProviderSetPhotos = props => {
       console.error(error);
     }
   };
-
-
+  
   const GalleryImageResponse = response => {
     if (response.didCancel) {
       console.log('User Cancelled');
