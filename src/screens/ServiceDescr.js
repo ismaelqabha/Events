@@ -11,34 +11,23 @@ import DetailComp from '../components/DetailComp';
 import CampaignCard from '../components/CampaignCard';
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from "../assets/AppColors"
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
 
-    const { userId, 
-        setServiceDatesforBooking, ServiceDatesforBooking, 
-        setDetailOfServ, 
+    const [date, setDate] = useState(new Date())
+
+    const { userId,
         campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
-        selectDateforSearch, 
-        selectMonthforSearch, 
-        requestedDate, setrequestedDate, 
-        requestInfo, setRequestInfo, 
+        requestedDate, setrequestedDate,
+        requestInfo, setRequestInfo,
         setReachCampaignfrom } = useContext(SearchContext);
 
     const [select, setSelect] = useState(false)
 
-    const getDatesfromApi = () => {
-        getbookingDates({ serviceID: 'testing' }).then(res => {
-            setServiceDatesforBooking(res)
-        })
-    }
-    const getDetailFromApi = () => {
-        getServiceDetail({ SDserviceID: data?.service_id }).then(res => {
-            setDetailOfServ(res)
-        })
-    }
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
             setRequestInfo(res)
@@ -51,8 +40,6 @@ const ServiceDescr = (props) => {
     }
 
     useEffect(() => {
-        getDatesfromApi()
-        // getDetailFromApi()
         getRequestfromApi()
         getCampeignsfromApi()
         setrequestedDate(0)
@@ -73,7 +60,7 @@ const ServiceDescr = (props) => {
 
     const onPressHandler = () => {
         // if (!checkIfInEvent()) {
-            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
+        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
         // } else {
         //     Alert.alert(
         //         'تنبية',
@@ -94,115 +81,145 @@ const ServiceDescr = (props) => {
         setSelect(true)
         setrequestedDate(dat)
     }
+    const onPressBack = () => {
+        props.navigation.goBack();
+    }
 
-    const queryfirstDates = () => {
-        const requestedDate = moment(new Date())
-        console.log("ServiceDatesforBooking",ServiceDatesforBooking);
-        const DateFiltered = ServiceDatesforBooking.filter(datee => {
-            const { bookDate, serviceStutes } = datee;
-            const bookDateMoment = moment(bookDate);
-            const res1 = bookDateMoment.isAfter(requestedDate)
-            const res2 = serviceStutes == 'true'
-            return res1 && res2
+
+    const renderImg = () => {
+        const imageArray = data.images[0].serviceImages.map(photos => {
+            return photos;
         });
-        const firstDateAvailable = DateFiltered[0]
-        return firstDateAvailable;
+        return imageArray;
     };
 
-    const queryDatesAccorMonth = () => {
-        const requestedMonth = selectMonthforSearch;
-        return ServiceDatesforBooking.filter(datee => {
-            const { bookDate, serviceStutes } = datee;
-            const wholeDate = moment(bookDate);
-            const gittingMonth = wholeDate.format('M')
-            const res1 = gittingMonth == requestedMonth
-            return res1 && serviceStutes == 'true'
-        })
-    }
-    const querySpacificDate = () => {
-        const requestedDate = moment(new Date(selectDateforSearch)).startOf('day')
-        return ServiceDatesforBooking.filter(datee => {
-            const { bookDate, serviceStutes } = datee;
-            const bookDateMoment = moment(bookDate).startOf('day');
-            const res1 = bookDateMoment.isSame(requestedDate)
-            const res2 = serviceStutes == 'true'
-            return res1 && res2
-        })
-    }
-
     const renderDates = () => {
-
-        if (selectMonthforSearch) {
+        moment.locale('ar-dz');
+        if (Array.isArray(data.availableDates)) {
             //const pressableStyle = isPressed ? styles.pressablePressed : styles.pressableDefault;
-            moment.locale('ar-dz');
-            const DatesAvailable = queryDatesAccorMonth()
+
+            const DatesAvailable = data.availableDates
             const dateArray = DatesAvailable?.map(dat => {
 
                 return <View style={styles.dateView}>
                     <Pressable style={({ pressed }) =>
                         [styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
-                        onPress={() => SelectDatePressed(dat.bookDate)}
-
+                        onPress={() => SelectDatePressed(dat)}
                     >
-                        <Text style={styles.tex}>{moment(dat.bookDate).format('dddd')}</Text>
-                        <Text style={styles.tex}>{moment(dat.bookDate).format('LL')}</Text>
+                        <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
+                        <Text style={styles.datetext}>{dat}</Text>
                     </Pressable>
                 </View>;
             });
             return dateArray;
-        }
-        if (selectDateforSearch) {
-            const DatesAvailable = querySpacificDate()
-            const dateArray = DatesAvailable?.map(dat => {
-                setrequestedDate(dat.bookDate)
-                return <View style={styles.dateView}>
-                    <Text style={styles.tex}>{`${moment(dat.bookDate).format('LL')}`}</Text>
-                    <Text style={styles.tex}>{`${moment(dat.bookDate).format('dddd')}`}</Text>
-                </View>;
-            });
-            return dateArray;
         } else {
-            const firstAvilableDate = queryfirstDates()
-            setrequestedDate(firstAvilableDate?.bookDate)
-            return <View style={styles.dateView}>
-                <Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('dddd')}`}</Text>
-                <Text style={styles.tex}>{`${moment(firstAvilableDate?.bookDate).format('LL')}`}</Text>
+            const firstAvilableDate = data.availableDates
+            setrequestedDate(firstAvilableDate)
+            return <View style={styles.dateformat}>
+                <View>
+                    <Text style={styles.datetxt}>{firstAvilableDate}</Text>
+                    <Text style={styles.Daytex}>{`${moment(firstAvilableDate).format('dddd')}`}</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={{ alignSelf: 'center' }}
+                        name={"calendar"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
             </View>;
 
         }
     };
 
-    const renderImg = () => {
-        const imageArray = data.images.map(photos => {
-            return photos.image;
-        });
-        return imageArray;
-    };
-
-    const renderHederInfo = () => {
-        return <View style={styles.headerInfo}>
+    const renderTitle = () => {
+        return <View style={styles.titleInfo}>
             <Text style={styles.title}>{data?.title || 'no event'}</Text>
-
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
                 <Text style={styles.feedback}>5★</Text>
                 <Text style={styles.address}>{data.address}</Text>
-                {/* <Text style={styles.feedback}>التغذيه الراجعة 13</Text> */}
-            </View>
-            <View>
-                <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن المزود </Text>
             </View>
         </View>
     }
-
-    const renderServiceDetail = () => {
+    const renderDescription = () => {
         return (
-            <View style={styles.HallView}>
-                <DetailComp service_id={data.service_id} />
+            <View style={styles.description}>
+                <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن المزود </Text>
             </View>
         )
-
     }
-
+    const renderDatesAvailable = () => {
+        return (
+            <View style={styles.DatesZone}>
+                <Text style={styles.text}>{Array.isArray(data.availableDates) ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
+                <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>{renderDates()}</ScrollView>
+            </View>
+        )
+    }
+    const selectMandatoryDetail = () => {
+        return data.additionalServices.filter(item => {
+            return item.necessity == 'Mandatory'
+        })
+    }
+    const renderMandatoryDetail = () => {
+        const data = selectMandatoryDetail()
+        const serviceDetailInfo = data.map((item) => {
+            return (
+                <View style={styles.detailItem}>
+                    <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
+                    <View style={styles.detailTypeView}>
+                        <Text style={styles.detailTxt}>{item.detailTitle}</Text>
+                        <AntDesign
+                            style={{ alignSelf: 'center' }}
+                            name={"check"}
+                            color={colors.puprble}
+                            size={20} />
+                    </View>
+                </View>
+            )
+        })
+        return serviceDetailInfo
+    }
+    const selectOptionalDetail = () => {
+        return data.additionalServices.filter(item => {
+            return item.necessity == 'Optional'
+        })
+    }
+    const renderOptionalDetail = () => {
+        const data = selectOptionalDetail()
+        const serviceDetailInfo = data.map((item) => {
+            return (
+                <View style={styles.detailItem}>
+                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+                    <View style={styles.detailTypeView}>
+                        <Text style={styles.detailTxt}>{item.detailTitle}</Text>
+                        <AntDesign
+                            style={{ alignSelf: 'center' }}
+                            name={"check"}
+                            color={colors.puprble}
+                            size={20} />
+                    </View>
+                </View>
+            )
+        })
+        return serviceDetailInfo
+    }
+    const renderClientReview = () => {
+        return (
+            <View style={styles.ReviewView}>
+                <Text style={styles.text}>عرض التغذية الراجعة عن الخدمة المختارة</Text>
+            </View>
+        )
+    }
+    const renderserviceLocation = () => {
+        return (
+            <View style={styles.locationView}>
+                <Image
+                    style={styles.mapImage}
+                    source={require('../assets/photos/location.png')} />
+            </View>
+        )
+    }
     const renderCampeigns = () => {
         setReachCampaignfrom('fromServiceDescr')
         const CampData = campiegnsAccordingServiceId;
@@ -223,7 +240,7 @@ const ServiceDescr = (props) => {
             >
                 <Entypo
                     name={"facebook"}
-                    color={"blue"}
+                    color={colors.gold}
                     size={35} />
             </Pressable>
 
@@ -232,7 +249,7 @@ const ServiceDescr = (props) => {
             >
                 <Entypo
                     name={"instagram"}
-                    color={"blue"}
+                    color={colors.gold}
                     size={35} />
             </Pressable>
 
@@ -241,7 +258,7 @@ const ServiceDescr = (props) => {
             >
                 <FontAwesome
                     name={"phone-square"}
-                    color={"blue"}
+                    color={colors.gold}
                     size={35} />
             </Pressable>
         </View>
@@ -251,12 +268,8 @@ const ServiceDescr = (props) => {
             <View style={styles.seperaView}></View>
         )
     }
-    const onPressBack = () => {
-        props.navigation.goBack();
-    }
-
-    return (
-        <View style={styles.container}>
+    const renderHeader = () => {
+        return (
             <View style={styles.head}>
                 <Pressable onPress={onPressBack}
                 >
@@ -267,68 +280,65 @@ const ServiceDescr = (props) => {
                         size={25} />
                 </Pressable>
             </View>
-            <ScrollView contentContainerStyle={styles.home}>
-                <View style={styles.screenView}>
-
-                    <SliderBox
-                        sliderBoxHeight={300}
-                        images={renderImg()}
-                        dotColor={colors.puprble}
-                        dotStyle={{ width: 8, height: 8, borderRadius: 50 }}
-                        autoplay={true}
-                    />
-                    {/* <View style={styles.InfoView}> */}
-                    <View style={styles.logo}></View>
-                    {renderHederInfo()}
-
-                    {seperator()}
-
-                    <View style={{ height: 100, margin: 20 }}>
-                        <Text style={styles.text}>{selectMonthforSearch ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
-                        {renderDates()}
-                        <Pressable
-                            style={{ position: 'absolute', bottom: 0, justifyContent: 'center' }}
-                        //onPress={}
-                        >
-                            <Text style={styles.changDatetext}>تغيير التاريح</Text>
-                        </Pressable>
-                    </View>
-
-                    {seperator()}
-
-                    <View style={styles.ditailView}>
-                        <Text style={styles.text}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
-                        {renderServiceDetail()}
-                        {renderCampeigns()}
-                    </View >
-
-                    {seperator()}
-
-                    <View style={styles.ReviewView}>
-                        <Text style={styles.text}>عرض التغذية الراجعة عن الخدمة المختارة</Text>
-                    </View>
-
-                    {seperator()}
-
-                    <View style={styles.locationView}>
-                        <Image
-                            style={styles.mapImage}
-                            source={require('../assets/photos/location.png')} />
-                    </View>
-                    {seperator()}
-
-                    {renderSoialMedia()}
-                    {/* </View> */}
-                </View >
-            </ScrollView>
-
-            <View style={styles.foter}>
-                <Pressable style={styles.btnview}
-                    onPress={() => onPressHandler()}
-                >
-                    <Text style={styles.btntext}>طلب حجز</Text>
-                </Pressable>
+        )
+    }
+    const renderSlider = () => {
+        return (
+            <View style={styles.sliderView}>
+                <SliderBox
+                    sliderBoxHeight={300}
+                    images={renderImg()}
+                    dotColor={colors.puprble}
+                    dotStyle={{ width: 8, height: 8, borderRadius: 50 }}
+                    autoplay={true}
+                />
             </View>
+        )
+    }
+    const renderBody = () => {
+        return (
+            <View style={styles.body}>
+                <View style={styles.logo}></View>
+                {renderTitle()}
+                {seperator()}
+                {renderDescription()}
+                {seperator()}
+                {renderDatesAvailable()}
+                {seperator()}
+
+                <View style={styles.ditailView}>
+                    <Text style={styles.text}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
+                    {renderMandatoryDetail()}
+                    {renderOptionalDetail()}
+                    {renderCampeigns()}
+                </View >
+                {seperator()}
+                {renderClientReview()}
+                {seperator()}
+
+                {renderserviceLocation()}
+
+                {seperator()}
+
+                {renderSoialMedia()}
+                <View style={styles.foter}>
+                    <Pressable style={styles.btnview}
+                        onPress={() => onPressHandler()}
+                    >
+                        <Text style={styles.btntext}>طلب حجز</Text>
+                    </Pressable>
+                </View>
+            </View >
+        )
+    }
+
+    return (
+        <View style={styles.container}>
+            {renderHeader()}
+            <ScrollView >
+                {renderSlider()}
+                {renderBody()}
+            </ScrollView>
         </View>
 
     );
@@ -337,59 +347,87 @@ const ServiceDescr = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.BGScereen
+        backgroundColor: 'white',
     },
-    screenView: {
+    sliderView: {
 
     },
-    InfoView: {
+    body: {
         borderTopLeftRadius: 60,
         borderTopRightRadius: 60,
-        backgroundColor: 'snow',
+        paddingHorizontal: 10,
+        backgroundColor: colors.BGScereen,
         //position: 'absolute',
-        //top: 200
+        //top: 200,
+        //width: '100%',
+        //height: 420,
     },
-    dateView: {
+    home: {
         flexDirection: 'row',
-        justifyContent: 'center'
+        flexWrap: 'wrap'
+    },
+    InfoView: {
+
+    },
+    
+    IconView: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginLeft: 15
     },
     logo: {
-        borderRadius: 50,
+        borderRadius: 30,
         width: 70,
         height: 70,
         position: 'absolute',
-        top: 260,
+        top: -40,
         left: 50,
-        backgroundColor: colors.puprble,
+        backgroundColor: colors.gold,
     },
     seperaView: {
         borderWidth: 0.5,
         borderColor: 'lightgray'
     },
-    headerInfo: {
-        height: 150,
-        margin: 20,
+    titleInfo: {
+        marginTop: 50
+    },
+    description: {
+        marginVertical: 10,
+    },
+    DatesZone: {
+        marginVertical: 10,
     },
     ditailView: {
-        margin: 20
+        marginVertical: 10,
+    },
+    ReviewView: {
+        marginVertical: 10,
+    },
+    locationView: {
+        marginVertical: 10,
+    },
+    detailItem: {
+        marginVertical: 10,
+    },
+    detailTypeView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end'
     },
     text: {
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: 'bold',
-        color: 'black',
+        color: colors.puprble,
+        marginBottom: 10
     },
     changDatetext: {
         fontSize: 15,
         color: 'blue',
         fontWeight: 'bold'
-    },
-    ReviewView: {
-        height: 150,
-        margin: 20,
-    },
-    locationView: {
-        height: 150,
-        margin: 20,
     },
     mapImage: {
         alignSelf: 'center'
@@ -405,6 +443,31 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignSelf: 'center'
     },
+
+    title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: colors.puprble,
+    },
+    feedback: {
+        fontSize: 15,
+        color: 'black',
+    },
+    address: {
+        fontSize: 15,
+        color: 'black',
+        marginBottom: 20,
+    },
+    descText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.puprble,
+    },
+    detailTxt: {
+        fontSize: 16,
+        color: colors.puprble,
+    },
+
     icon: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
@@ -414,29 +477,6 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
     },
-
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'black',
-    },
-    feedback: {
-        fontSize: 12,
-        color: 'black',
-    },
-
-    descText: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: 'black',
-    },
-
-    address: {
-        fontSize: 16,
-        color: 'black',
-        marginBottom: 20,
-    },
-
     foter: {
         height: 80,
         justifyContent: 'center',
@@ -454,25 +494,47 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 10,
-        marginRight: 20,
+        borderRadius: 8,
         elevation: 5
     },
-    viewselectdate: {
-        flexDirection: 'row',
+    dateView: {
         justifyContent: 'center',
-        margin: 2
+        alignItems: 'center',
+    },
+    dateformat:{
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        width: "100%",
+    },
+    viewselectdate: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 110,
+        height: 70,
+        margin: 4,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        elevation: 5,
     },
     viewselectdatepress: {
-        flexDirection: 'row',
         justifyContent: 'center',
-        backgroundColor: 'gray'
+        alignItems: 'center',
+        width: 110,
+        height: 70,
+        margin: 4,
+        backgroundColor: colors.gold,
+        borderRadius: 8,
+        elevation: 5,
     },
-    tex: {
-        fontSize: 15,
-        margin: 5,
-        color: 'black',
-        fontWeight: 'bold'
+    datetxt: {
+        fontSize: 18,
+        color: colors.puprble,
+        marginLeft: 20
+    },
+    datetext:{
+        fontSize: 16,
+        color: colors.puprble,
     },
     priceView: {
         backgroundColor: 'snow',
@@ -482,10 +544,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         elevation: 5
     },
-    HallView: {
-        marginTop: 20,
-        //alignItems: 'center'
-    },
+
     txt: {
         fontSize: 15,
         margin: 10,

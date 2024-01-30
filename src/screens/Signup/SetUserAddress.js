@@ -150,7 +150,7 @@ const SetUserAddress = (props) => {
   const showMissingCity = () => { };
 
   useEffect(() => {
-    getCityFromApi()
+    //getCityFromApi()
     setAddressError(!checkStrings(userCity));
   }, [userCity]);
 
@@ -187,6 +187,7 @@ const SetUserAddress = (props) => {
       })
     }
   }
+  
   const requestLocationPermission = async () => {
     setDisbaleLocation(true)
     if (Platform.OS === 'android') {
@@ -195,7 +196,6 @@ const SetUserAddress = (props) => {
         getLocation()
       } else {
         showMessage("permission denide")
-
       }
     } else if (Platform.OS === 'ios') {
       const permission = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
@@ -203,7 +203,6 @@ const SetUserAddress = (props) => {
         getLocation()
       } else {
         showMessage("permission denide")
-
       }
     }
   };

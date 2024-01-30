@@ -53,16 +53,14 @@ const SliderImage = (props) => {
         }
     }
     const onImagesPress = () => {
-
         setSType((props.servType))
         navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props } })
     }
 
 
     const renderImages = () => {
-        const imageArray = props.images?.map(photo => {
-            return photo.image;
-        });
+        const imageArray = props.images[0].serviceImages
+
         return imageArray?.map((image, index) => {
             return (
                 <Pressable onPress={onImagesPress}>
@@ -135,7 +133,8 @@ const styles = StyleSheet.create({
         height,
         resizeMode: 'contain',
         borderTopLeftRadius: 15,
-        borderTopRightRadius: 15
+        borderTopRightRadius: 15,
+        resizeMode: 'stretch'
     },
     heartFavo: {
         position: 'absolute',

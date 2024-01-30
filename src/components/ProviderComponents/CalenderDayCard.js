@@ -4,6 +4,7 @@ import moment from "moment";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames';
+import { colors } from '../../assets/AppColors';
 
 const CalenderDayCard = (props) => {
     const [date, setDate] = useState(new Date())
@@ -12,7 +13,7 @@ const CalenderDayCard = (props) => {
 
 
     const navigation = useNavigation();
-   
+
     const daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
 
     const pressNextMonth = () => {
@@ -37,9 +38,7 @@ const CalenderDayCard = (props) => {
         const fullDate = []
 
         for (var day = 1; day <= daysInMonth; day++) {
-            //day = day + 1
             const completeDate = day + '-' + currentMonth + '-' + currentYear
-
             fullDate.push(
                 {
                     currentDay: day,
@@ -56,21 +55,24 @@ const CalenderDayCard = (props) => {
     const oneDay = fillMonthDays();
 
     const onDayPress = (fulDate) => {
-        navigation.navigate(ScreenNames.ProviderBookingRequest,  {fulDate})
-        
+        navigation.navigate(ScreenNames.ProviderBookingRequest, { fulDate })
+
     }
     const renderDaysInMonth = ({ item }) => (
         <Pressable
             style={({ pressed }) => [styles.card, pressed ? styles.monthcardPress : styles.card]}
             onPress={() => onDayPress(item.wholeDate)}
         >
+            <View style={styles.head}>
+                <Text style={styles.datetxt}>
+                    {item.dayInWord}
+                </Text>
+            </View>
             <View style={styles.body}>
                 <Text style={styles.text}>
                     {item.currentDay}
                 </Text>
-                <Text style={styles.text}>
-                    {item.dayInWord}
-                </Text>
+                <Text style={styles.resText}>الحجوزات (2)</Text>
             </View>
         </Pressable>
     )
@@ -83,7 +85,7 @@ const CalenderDayCard = (props) => {
                 <AntDesign
                     style={styles.iconNext}
                     name={"left"}
-                    color={"black"}
+                    color={"gray"}
                     size={25} /></Pressable>
             <Pressable style={{ flexDirection: 'row' }}>
                 <Text style={styles.txtYear}>{currentMonth + '/'}</Text>
@@ -95,7 +97,7 @@ const CalenderDayCard = (props) => {
                 <AntDesign
                     style={styles.iconBack}
                     name={"right"}
-                    color={"black"}
+                    color={"gray"}
                     size={25} />
             </Pressable>
         </View>);
@@ -143,12 +145,32 @@ const styles = StyleSheet.create({
     title: {
         backgroundColor: 'snow',
     },
+    head: {
+        alignItems: 'center',
+        backgroundColor: 'green',
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8
+    },
     body: {
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: 'lightgray'
     },
     text: {
+        fontSize: 18,
+        //color: 'black',
+        fontWeight: 'bold',
+        marginTop: 10
+    },
+    resText: {
+        marginTop: 10,
         fontSize: 15,
-        color: 'black',
+       
+        //color: colors.puprble,
+    },
+    datetxt: {
+        fontSize: 15,
+        color: 'white',
+        fontWeight: 'bold'
     },
     iconNext: {
         //marginRight: 20,
@@ -159,7 +181,7 @@ const styles = StyleSheet.create({
     txtYear: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#00bfff'
+        color: colors.puprble
     },
     viewYear: {
         //backgroundColor: 'white'

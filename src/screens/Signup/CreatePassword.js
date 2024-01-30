@@ -63,23 +63,27 @@ const CreatePassword = (props) => {
       UserCity: userCity,
       Userstatus: userStatus,
       SpecialDates: userSpecialDate,
-      
       //UserLocation: req.body.UserLocation,
       Userstatus: userStatus,
-      // UserPhoto: profilePhoto,
-      // SpecialDates: userSpecialDate,
+      //UserPhoto: profilePhoto,
       // UserRelations: ''
     }
-    addUser(AddNewUser , profilePhoto).then(res => {
+    addUser(AddNewUser, profilePhoto).then(res => {
       let UsersArr = userInfo || [];
       UsersArr.push(AddNewUser);
       setUserInfo([...UsersArr])
+      
       console.log("UsersArr", UsersArr);
-      ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
-      )
-      props.navigation.navigate(ScreenNames.ClientHomeAds)
+
+      console.log("res", res);
+
+      if (res.message === 'User Created') {
+        ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+        )
+        props.navigation.navigate(ScreenNames.ClientHomeAds)
+      }
     })
   }
 

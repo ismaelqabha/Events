@@ -1,29 +1,81 @@
 import React, { useContext, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { useState } from 'react';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
+import { Pressable } from 'react-native';
 
 const ClientCalender = (props) => {
-    const {selectDateforSearch, setselectDateforSearch} = useContext(SearchContext);
+    const { setselectDateforSearch, setperiodDatesforSearch } = useContext(SearchContext);
     const [selected, setSelected] = useState('')
     const [date, setDate] = useState(new Date())
 
+    const [oneDay, setOneDay] = useState(false)
+    const [threeDay, setThreeDay] = useState(false)
+    const [sevenDay, setSevenDay] = useState(false)
 
-    useEffect(()=> {
-         setselectDateforSearch(null)   
-    },[])
-    
+    useEffect(() => {
+        setselectDateforSearch(null)
+    }, [])
+
+    const onOnedayPress = () =>{
+        setOneDay(true)
+        setThreeDay(false)
+        setSevenDay(false)
+        setperiodDatesforSearch(1)
+    }
+    const onThreedayPress = () =>{
+        setOneDay(false)
+        setThreeDay(true)
+        setSevenDay(false)
+        setperiodDatesforSearch(3)
+    }
+    const onSevendayPress = () =>{
+        setOneDay(false)
+        setThreeDay(false)
+        setSevenDay(true)
+        setperiodDatesforSearch(7)
+    }
+    const renderPeriod = () => {
+        return (
+            <View style={styles.dayView}>
+                <Pressable style={[styles.dayRange, oneDay ? styles.dayRangeSelected : styles.dayRange]} 
+                onPress={() => onOnedayPress() }>
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
+                    </View>
+                    <Text style={{ fontSize: 16, color: colors.puprble }}>1 ايام</Text>
+                </Pressable>
+                <Pressable style={[styles.dayRange, threeDay ? styles.dayRangeSelected : styles.dayRange]} 
+                onPress={() => onThreedayPress()}>
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
+                    </View>
+                    <Text style={{ fontSize: 16, color: colors.puprble }}>3 ايام</Text>
+                </Pressable>
+                <Pressable style={[styles.dayRange, sevenDay ? styles.dayRangeSelected : styles.dayRange]} 
+                onPress={() => onSevendayPress()}>
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
+                    </View>
+                    <Text style={{ fontSize: 16, color: colors.puprble }}>7 ايام</Text>
+                </Pressable>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
+            {renderPeriod()}
             <Calendar
-                
                 style={{
-
                     borderColor: 'gray',
-                    height: 250,
+                    height: 240,
                     width: 300,
                     borderRadius: 20,
                     //padding: 10,
@@ -36,14 +88,14 @@ const ClientCalender = (props) => {
                     calendarBackground: '#ffffff',
                     textSectionTitleColor: '#b6c1cd',
                     selectedDayBackgroundColor: colors.puprble,
-                    selectedDayTextColor: '#ffffff',
-                    todayTextColor: '#00adf5',
-                    dayTextColor: 'red',
+                    selectedDayTextColor: 'white',
+                    todayTextColor: 'black',
+                    dayTextColor: colors.gold,
                     textDisabledColor: '#d9e1e8',
                     dotColor: 'red',
-                    selectedDotColor: '#ffffff',
+                    selectedDotColor: 'red',
                     arrowColor: colors.puprble,
-                    monthTextColor: 'black',
+                    monthTextColor: colors.puprble,
                     textDayFontFamily: 'monospace',
                     textMonthFontFamily: 'monospace',
                     textDayHeaderFontFamily: 'monospace',
@@ -54,11 +106,11 @@ const ClientCalender = (props) => {
                 }}
 
                 minDate={date}
-                maxDate='2023-12-31'
+                //maxDate='2023-12-31'
                 onDayPress={day => {
                     setselectDateforSearch(day.dateString);
                     setSelected(day.dateString)
-                   console.log('selected da **', day.dateString);
+                    console.log('selected da **', day.dateString);
                 }}
                 markedDates={{
                     [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' }
@@ -73,7 +125,7 @@ const ClientCalender = (props) => {
                 monthFormat={'MM yyyy'}
                 // Handler which gets executed when visible month changes in calendar. Default = undefined
                 onMonthChange={month => {
-                    console.log('month changed', month);
+                    // console.log('month changed', month);
                 }}
                 // Do not show days of other months in month page. Default = false
                 hideExtraDays={false}
@@ -99,6 +151,32 @@ const styles = StyleSheet.create({
         alignItems: 'center',
 
     },
+    dayRange: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        borderWidth: 1,
+        borderColor: 'lightgray',
+        alignItems: 'center',
+        width: 80, height: 40,
+        borderRadius: 15,
+        marginHorizontal: 10
+    },
+    dayRangeSelected: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        borderWidth: 2,
+        borderColor: colors.puprble,
+        alignItems: 'center',
+        width: 80, height: 40,
+        borderRadius: 15,
+        marginHorizontal: 10
+    },
+    dayView: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        marginTop: 10,
+    }
 })
 
 export default ClientCalender;

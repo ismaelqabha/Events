@@ -5,7 +5,7 @@ import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 
 const MonthCom = (props) => {
-    const { setselectMonthforSearch, selectMonthforSearch } = useContext(SearchContext);
+    const { setselectMonthforSearch, setYearforSearch } = useContext(SearchContext);
     const {onMonthSelected} = props
     const [date, setDate] = useState(new Date())
     const [monthPressed, setMonthPress] = useState(false)
@@ -179,9 +179,10 @@ const MonthCom = (props) => {
 
    
 
-    const onCardPress = (num) => {
+    const onCardPress = (mon, year) => {
         setMonthPress(true)
-        onMonthSelected?.(num)
+        setYearforSearch(year)
+        onMonthSelected?.(mon)
     }
     const cleanSearchState = () => {
         setselectMonthforSearch(null)
@@ -193,9 +194,9 @@ const MonthCom = (props) => {
 
     const renderMonth = () => months.map(month =>
         <Pressable style={({pressed}) =>[ styles.monthView,
-            pressed ? styles.monthViewPress : styles.monthView]} onPress={() => {onCardPress(month.monNum)}}>
+            pressed ? styles.monthViewPress : styles.monthView]} onPress={() => {onCardPress(month.monNum,month.year)}}>
             <View style={styles.MView}>
-                <Text style={styles.monthText}>
+                <Text style={styles.yearText}>
                     {month.year}
                 </Text>
             </View>
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
     },
     monthViewPress: {
         alignItems: 'center',
-        borderWidth: 2,
+        borderWidth: 3,
         borderColor: colors.darkGold,
         backgroundColor: 'white',
         width: 110,
@@ -247,8 +248,12 @@ const styles = StyleSheet.create({
     monthText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: colors.darkGold,
-        fontFamily: 'Cairo-VariableFont_slnt,wght',
+        color: colors.puprble,
+    },
+    yearText:{
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: colors.BGScereen,
     },
     MView: {
         alignItems: 'center',

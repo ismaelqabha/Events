@@ -18,18 +18,26 @@ import { colors } from '../assets/AppColors';
 
 
 const ClientSearch = (props) => {
-    const {isFromSearchServiceClick} = props.route?.params || {};
-    const { town, setTown, cityselected, setcityselected, regionselect, setregionselect, setselectMonthforSearch, selectMonthforSearch, setselectDateforSearch
-        , selectDateforSearch, Categorychozen, setCategorychozen } = useContext(SearchContext);
+    const { isFromSearchServiceClick } = props.route?.params || {};
     const navigation = useNavigation();
+
+    const { town, setTown,
+        cityselected, setcityselected,
+        regionselect, setregionselect,
+        setselectMonthforSearch, selectMonthforSearch,
+        setselectDateforSearch, selectDateforSearch,
+        Categorychozen, setCategorychozen,
+
+    } = useContext(SearchContext);
+
     // Determine which view is open
     const [isPressed, setIsPressed] = useState(true);
     const [dateViewPressed, setdateViewIsPressed] = useState(false);
     const [placeViewPressed, setplaceViewIsPressed] = useState(false);
     // Determine the date
 
-    const [monthly, setMonthly] = useState(true)
-    const [spacificDate, setspacificDate] = useState(false)
+    const [monthly, setMonthly] = useState(false)
+    const [spacificDate, setspacificDate] = useState(true)
     // Determine the place
 
     const [myriogen, setMyriogen] = useState(true)
@@ -69,7 +77,6 @@ const ClientSearch = (props) => {
         setspacificDate(true)
         setselectMonthforSearch(null)
     }
-
     const handlePress = () => {
         if (isPressed == true && dateViewPressed == false && placeViewPressed == false) {
 
@@ -88,6 +95,7 @@ const ClientSearch = (props) => {
             setplaceViewIsPressed(!placeViewPressed)
         }
     };
+
     // Screen Views Content
     const categoryPress = () => {
         setIsPressed(true)
@@ -144,7 +152,7 @@ const ClientSearch = (props) => {
 
 
     useEffect(() => {
-        getCityFromApi()
+        // getCityFromApi()
         setcityselected("")
         setregionselect("")
 
@@ -235,7 +243,8 @@ const ClientSearch = (props) => {
             <View style={[styles.dateView, dateViewPressed ? styles.dateView : styles.pressDateView]}>
                 <TouchableOpacity onPress={calenderPress}>
                     <View style={{ flexDirection: 'row', marginBottom: 50 }}>
-                        {!dateViewPressed && <Text style={styles.headerTextL}>{showDate()}</Text>}
+                        {!dateViewPressed &&
+                            <Text style={styles.headerTextL}>{showDate()}</Text>}
                         <Text style={styles.headerTextR}>في أي تاريخ ؟</Text>
                     </View>
                 </TouchableOpacity>
@@ -364,7 +373,9 @@ const styles = StyleSheet.create({
     },
     title: {
         flexDirection: 'row',
-        margin: 20,
+        marginLeft: 20,
+        height: 40,
+        alignItems: 'center'
     },
     icon: {
         justifyContent: 'flex-start'
@@ -388,11 +399,11 @@ const styles = StyleSheet.create({
     },
     dateView: {
         width: '90%',
-        height: 490,
+        height: 540,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
-        margin: 10,
+        margin: 5,
         alignSelf: 'center',
     },
     pressDateView: {
@@ -406,20 +417,20 @@ const styles = StyleSheet.create({
     },
     placeView: {
         width: '90%',
-        height: 350,
-        backgroundColor: 'snow',
+        height: 200,
+        backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
-        margin: 10,
+        margin: 5,
         alignSelf: 'center'
     },
     pressplaceView: {
         width: '90%',
         height: 60,
-        backgroundColor: 'snow',
+        backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
-        margin: 10,
+        margin: 5,
         alignSelf: 'center'
     },
     icon: {
@@ -517,7 +528,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: colors.puprble,
         width: 220,
-        height: 60,
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 35
@@ -526,8 +537,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignSelf: 'center',
         backgroundColor: colors.puprble,
-        width: 210,
-        height: 60,
+        width: 200,
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 35
@@ -535,8 +546,8 @@ const styles = StyleSheet.create({
     Dview: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 90,
-        height: 50,
+        width: 100,
+        height: 40,
         backgroundColor: colors.puprble,
         borderRadius: 35,
         //elevation: 5,
@@ -545,8 +556,8 @@ const styles = StyleSheet.create({
     DviewPress: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 110,
-        height: 50,
+        width: 120,
+        height: 40,
         backgroundColor: colors.gold,
         borderRadius: 35,
         elevation: 5,
@@ -555,8 +566,8 @@ const styles = StyleSheet.create({
     PDviewPress: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 90,
-        height: 50,
+        width: 100,
+        height: 40,
         backgroundColor: colors.gold,
         borderRadius: 35,
         elevation: 5,

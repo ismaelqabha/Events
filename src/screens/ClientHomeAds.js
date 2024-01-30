@@ -30,9 +30,13 @@ const ClientHomeAds = (props) => {
     const deltaY = new Animated.Value(0);
 
     const queryCampaign = () => {
+        if(campInfo){
+            return null
+        }
 
         return campInfo?.filter(res => {
-            return res.campRigon == userRegion && res.campCatType == cat;
+                return res.campRigon == userRegion && res.campCatType == cat;
+            
         })
     }
 
@@ -105,7 +109,7 @@ const ClientHomeAds = (props) => {
                     name={"triangle-left"}
                     size={20}
                 />
-                <Text style={styles.CatText}>مشاهدة الكل</Text>
+                <Text style={styles.CatText}>مشاهدة المزيد</Text>
             </View>
         )
     }
@@ -115,22 +119,22 @@ const ClientHomeAds = (props) => {
         <ImageBackground style={styles.bg} source={require('../assets/photos/backgroundMain.png')}>
             <View style={styles.header}>
                 <Animated.View
-                    style={{
-                        transform: [
-                            {
-                                translateY: deltaY.interpolate({
-                                    inputRange: [-150, -150, 0, 0],
-                                    outputRange: [-58, -58, 0, 0]
-                                }),
-                            },
-                            {
-                                scale: deltaY.interpolate({
-                                    inputRange: [-150, -150, 0, 0],
-                                    outputRange: [0.35, 0.35, 1, 1]
-                                }),
-                            }
-                        ],
-                    }}
+                    // style={{
+                    //     transform: [
+                    //         {
+                    //             translateY: deltaY.interpolate({
+                    //                 inputRange: [-150, -150, 0, 0],
+                    //                 outputRange: [-58, -58, 0, 0]
+                    //             }),
+                    //         },
+                    //         {
+                    //             scale: deltaY.interpolate({
+                    //                 inputRange: [-150, -150, 0, 0],
+                    //                 outputRange: [0.35, 0.35, 1, 1]
+                    //             }),
+                    //         }
+                    //     ],
+                    // }}
                 >
                     <View style={styles.drawerView}>
                         <Pressable
@@ -140,10 +144,10 @@ const ClientHomeAds = (props) => {
                             <Ionicons
                                 //style={styles.menu}
                                 name={"notifications"}
-                                color={colors.gold}
+                                color={colors.puprble}
                                 size={30} />
                         </Pressable>
-                        <Image source={require('../assets/photos/arabicLogo.png')} style={styles.titleImg} />
+                        <Image source={require('../assets/photos/purpalearabiclogo.png')} style={styles.titleImg} />
                         <Pressable
                             style={styles.drawer}
                             onPress={() => navigation.openDrawer()}
@@ -151,7 +155,7 @@ const ClientHomeAds = (props) => {
                             <Entypo
                                 //style={styles.menu}
                                 name={"menu"}
-                                color={colors.gold}
+                                color={colors.puprble}
                                 size={30} />
                         </Pressable>
 
@@ -304,13 +308,13 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 20,
-        color: colors.gold,
+        color: colors.puprble,
         fontWeight: 'bold'
     },
     txt: {
         fontSize: 20,
         marginRight: 10,
-        color: colors.gold
+        color: colors.puprble
     },
     headerTxt: {
         fontSize: 20,
@@ -325,9 +329,9 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 200,
         alignSelf: 'center',
-        backgroundColor: colors.puprble,
-        borderBottomLeftRadius: 40,
-        borderBottomRightRadius: 40
+        backgroundColor: colors.BGScereen,
+        // borderBottomLeftRadius: 40,
+        // borderBottomRightRadius: 40
     },
     drawerView: {
         flexDirection: 'row',

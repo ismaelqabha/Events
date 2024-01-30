@@ -22,10 +22,20 @@ const Results = (props) => {
         cat,
         ServiceDataInfo,
         town, setTown, DateText,
-        setDateText, TimeText, setTimeText, cityselected, regionselect,
-        setselectDateforSearch, selectDateforSearch, selectMonthforSearch, setselectMonthforSearch } = useContext(SearchContext);
+        setDateText, TimeText, setTimeText,
+        cityselected, regionselect,
+        setselectDateforSearch, selectDateforSearch,
+        selectMonthforSearch,
+        yearforSearch,
+        periodDatesforSearch,setperiodDatesforSearch
+    } = useContext(SearchContext);
 
     const [date, setDate] = useState(new Date());
+    const [currentDate, setcurrentDate] = useState(date.getDate() + 1)
+    const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
+    const [currentYear, setcurrentYear] = useState(date.getFullYear())
+    var readyDates = ''
+
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -85,7 +95,8 @@ const Results = (props) => {
         })
     }
     useEffect(() => {
-        getCityFromApi()
+
+
     }, [])
 
     const renderCity = () => {
@@ -96,19 +107,11 @@ const Results = (props) => {
         });
         return cityName;
     };
-    // const renderRiegon = () => {
-    //     const data = regionData;
-
-    //     const regionName = data.map(Rname => {
-    //         return Rname.city;
-    //     });
-    //     return regionName;
-    // };
-
 
     const onPressHandler = () => {
         objectResult.cityselected = ''
         objectResult.regionselect = ''
+        setperiodDatesforSearch(0)
         props.navigation.goBack();
     }
     const modalPress = () => {
@@ -129,6 +132,108 @@ const Results = (props) => {
 
         })
     }
+
+    // check available date part 
+    const checkDate = (dataforReservation, source) => {
+        const servicedata = source
+        // console.log("servicedata[0].dates", servicedata[0].dates);
+        const DateFiltered = servicedata[0].dates?.find(dat => {
+
+            // console.log("dat.time", dat.time);
+            // console.log("dataforReservation", dataforReservation);
+
+            return dat.time === dataforReservation
+        });
+        return !!DateFiltered
+    }
+    const comparingData = (dateAviable, monthAvailble, source) => {
+        if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
+            return !!objectResult.selectMonthforSearch ?  monthAvailble : dateAviable
+        } else {
+            return findFirstDateAvailable(source)
+        }
+    }
+    const findFirstDateAvailable = (serviceDates) => {
+        const daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
+        let completeDate = ''
+        for (var day = currentDate; day <= daysInMonth; day++) {
+            completeDate = day + '-' + currentMonth + '-' + currentYear
+            if (!checkDate(completeDate, serviceDates)) {
+                break
+            }
+        }
+        return completeDate
+    };
+    const checkMonthAvailableDate = (serviceDates) => {
+        const requestedMonth = objectResult.selectMonthforSearch;
+        const daysInMonth = moment(yearforSearch + '-' + requestedMonth).daysInMonth()
+        let completeDate = ''
+        const datesOfSelectedMonth = []
+        for (var day = 1; day <= daysInMonth; day++) {
+            completeDate = day + '-' + requestedMonth + '-' + yearforSearch
+            if (!checkDate(completeDate, serviceDates)) {
+                datesOfSelectedMonth.push(completeDate)
+            }
+        }
+        return datesOfSelectedMonth
+    }
+    const checkDateIsAvilable = (serviceDates) => {
+        const requestedDate = moment(objectResult.selectDateforSearch, "YYYY-MM-DD")
+        
+        let startingDay = requestedDate.format('D')
+        let month = requestedDate.format('M')
+        let year = requestedDate.format('YYYY')
+        let daysInMonth = 0
+
+        let completeDate = startingDay + '-' + month + '-' + year
+        let startingDate = ''
+        const dateswithinPeriod = []
+        let day = startingDay
+        let period = (periodDatesforSearch * 2) + 1
+
+        if (periodDatesforSearch < 1) {
+            if (!checkDate(completeDate, serviceDates)) {
+                return completeDate
+            }
+        } else {
+            for (var index = 0; index < periodDatesforSearch; index++) {
+                if (day == 0) {
+                    month--
+                    if (month < 1) {
+                        year--
+                        month = 12
+                    }
+                    daysInMonth = moment(year + '-' + month).daysInMonth()
+                    day = daysInMonth
+                }
+                startingDate = day + '-' + month + '-' + year
+                day--
+            }
+        
+            let Day =  day 
+            let Month = month
+            let Year = year
+            for (var index = 0; index < period; index++) {
+                daysInMonth = moment(Year + '-' + Month).daysInMonth()
+                if (Day > daysInMonth) {
+                    Month++
+                    if (Month >= 12) {
+                        Year++
+                        Month = 1
+                    }
+                    daysInMonth = moment(Year + '-' + Month).daysInMonth()
+                    Day = 1
+                }
+                completeDate = Day + '-' + Month + '-' + Year
+                if (!checkDate(completeDate, serviceDates)) {
+                    dateswithinPeriod.push(completeDate)
+                }
+                Day++
+            }
+            return dateswithinPeriod
+        }
+    }
+
 
     const checkSelect = (nameItem) => {
         return objectFilter.selectRigon == "" ? true : nameItem.serviceData.region == objectFilter.selectRigon
@@ -156,79 +261,40 @@ const Results = (props) => {
         return cardsArray;
     };
 
-    const findFirstDateAvailable = (serviceDates) => {
-        const requestedDate = moment(new Date())
 
-        const Resultwithoutfilter = serviceDates?.filter?.(sevice => {
-            const { bookDate, serviceStutes } = sevice;
-            const bookDateMoment = moment(bookDate);
-            const res1 = bookDateMoment.isAfter(requestedDate)
-            const res2 = serviceStutes == 'true'
-            //console.log("serviceStutes",serviceStutes , "res1", res1);
-            return res1 && res2
-        })
-        const dateArray = Resultwithoutfilter[0]
-        //console.log("dateArray", dateArray);
-        return dateArray;
-    };
 
-    const checkDateIsAvilable = (serviceDates) => {
-
-        const requestedDate = moment(new Date(objectResult.selectDateforSearch)).startOf('day')
-        const isAvilable = serviceDates?.find(sevice => {
-            const { bookDate, serviceStutes } = sevice;
-            const bookDateMoment = moment(bookDate).startOf('day');
-            const res1 = bookDateMoment.isSame(requestedDate)
-            const res2 = serviceStutes == 'true'
-            return res1 && res2
-        })
-        return !!isAvilable;
-    }
-    const checkMonthAvailableDate = (serviceDates) => {
-        const requestedMonth = objectResult.selectMonthforSearch;
-        const AvilableMonth = serviceDates?.find(sevice => {
-            const { bookDate, serviceStutes } = sevice;
-            const wholeDate = moment(bookDate);
-            const gittingMonth = wholeDate.format('M')
-            // console.log("gittingMonth", gittingMonth, "requestedMonth", requestedMonth);
-            const isSameMonth = gittingMonth == requestedMonth
-            return isSameMonth && serviceStutes == 'true'
-        })
-
-        return !!AvilableMonth;
-    }
-    const comparingData = (dateAviable, monthAvailble, source) => {
-        if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
-            return dateAviable || monthAvailble
-        } else {
-            return findFirstDateAvailable(source)
-        }
-    }
 
     const dataSearchResult = () => {
         const data = query();
-
         const filtered = data?.filter(item => {
-            const isAvilable = checkDateIsAvilable(item.serviceDates);
-            const AvilableMonth = checkMonthAvailableDate(item.serviceDates);
-            const result = comparingData(isAvilable, AvilableMonth, item.serviceDates)
+            //console.log("item.serviceDates", item.serviceDates);
+            const avaiablespecificDate = checkDateIsAvilable(item.serviceDates);
+            
+            const AvilableDaysInMonth = checkMonthAvailableDate(item.serviceDates);
+            
+            const result = comparingData(avaiablespecificDate, AvilableDaysInMonth, item.serviceDates)
+
 
             const isCitySelect = objectResult.cityselected == '' ? true : item.serviceData.address == objectResult.cityselected
             const isRiogenSelect = objectResult.regionselect == '' ? true : item.serviceData.region == objectResult.regionselect
-            const ResultQuery = isCitySelect && isRiogenSelect && result
-            //console.log("ResultQuery", ResultQuery);
-            return ResultQuery;
+
+            const datesAvailable = isCitySelect && isRiogenSelect && result
+             console.log("datesAvailable", datesAvailable);
+            readyDates = datesAvailable
+            return datesAvailable;
         })
+
         return filtered
 
     }
     const renderCard = () => {
         const data = dataSearchResult();
-        
+        //console.log("data ", data);
         const cardsArray = data?.map(card => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
+                availableDates={readyDates}
             />;
         });
         return cardsArray;
@@ -331,7 +397,7 @@ const Results = (props) => {
                 <View style={styles.insideView}>
                     <SelectList
                         setSelected={(val) => setSelectedCity(val)}
-                        data={renderCity()}
+                        //data={renderCity()}
                         save="value"
                         placeholder='اختر المدينة'
                         boxStyles={styles.dropdown}
@@ -566,7 +632,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignSelf: 'center'
     },
-    Date:{
+    Date: {
         width: '85%',
         height: 50,
         borderRadius: 10,
@@ -580,7 +646,7 @@ const styles = StyleSheet.create({
     icoon: {
         width: 35,
         height: 35,
-       // marginLeft: 50
+        // marginLeft: 50
     },
     Capacityinput: {
         alignContent: 'center',
@@ -611,7 +677,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 25,
         borderRadius: 5,
-        
+
     },
     TypeText: {
         fontSize: 18,

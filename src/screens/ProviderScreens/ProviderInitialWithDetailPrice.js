@@ -21,6 +21,7 @@ import { addService, addServiceImages } from '../../resources/API';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { colors } from '../../assets/AppColors';
 import { showMessage } from '../../resources/Functions';
+import UsersContext from '../../../store/UsersContext';
 
 const ProviderInitialWithDetailPrice = props => {
     const langauge = strings.arabic.ProviderScreens.ProviderInitialWithDetailPrice;
@@ -38,7 +39,7 @@ const ProviderInitialWithDetailPrice = props => {
         additionalServices,
         socialMediaArray
     } = useContext(ServiceProviderContext);
-    const { userId } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
 
     const params = {
         ScreenHeader: {

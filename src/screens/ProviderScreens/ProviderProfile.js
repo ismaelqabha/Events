@@ -18,18 +18,11 @@ import { useNavigation } from '@react-navigation/native';
 const ProviderProfile = (props) => {
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
     const { userId, setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } = useContext(SearchContext);
-    const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
+    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const navigation = useNavigation();
 
 
-    const getServiceInfofromApi = () => {
-        getServiceInfoById({ userID: userId }).then(res => {
-            setServiceInfoAccorUser(res)
-        })
-    }
-    useEffect(() => {
-        getServiceInfofromApi()
-    }, [])
+
 
     const renderMyService = () => {
         const data = serviceInfoAccorUser || [];
@@ -60,7 +53,7 @@ const ProviderProfile = (props) => {
 
     const renderClients = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientScreen)} >
                 <View>
                     <Text style={styles.basicInfo}>الزبائن (10)</Text>
                 </View>
@@ -243,6 +236,21 @@ const ProviderProfile = (props) => {
             </View>
         </View>)
     }
+    const renderFeedBack = () => {
+        return (<View>
+            <Pressable style={styles.reviewitem} onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen)}>
+                <View>
+                    <Text style={styles.reviewtxt}>التغذية الراجعة (2)</Text>
+                </View>
+                <View style={styles.reviewIconView}>
+                    <MaterialIcons
+                        name={"notes"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
+        </View>)
+    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -267,9 +275,10 @@ const ProviderProfile = (props) => {
                 </View>
                 {seprator()}
                 <View style={styles.viewSet}>
-                    {renderCalender()}
+                    {/* {renderCalender()} */}
                     {renderPayments()}
                     {renderClients()}
+                    {renderFeedBack()}
                 </View>
 
                 <Text style={styles.txt}>معلومات التواصل </Text>
@@ -293,7 +302,7 @@ const ProviderProfile = (props) => {
                 <View style={styles.viewSet}>
                     {renderCreateService()}
                 </View>
-                
+                <View style={{ height: 100 }}></View>
 
             </ScrollView>
         </View>
@@ -324,6 +333,7 @@ const styles = StyleSheet.create({
     viewSet: {
         backgroundColor: 'white',
         width: '90%',
+        justifyContent: 'center',
         alignSelf: 'center',
         borderRadius: 10,
         padding: 10
@@ -384,5 +394,25 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
+    },
+    reviewitem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+        marginTop: 10
+    },
+    reviewtxt: {
+        fontSize: 18,
+        color: colors.puprble,
+        fontWeight: 'bold'
+    },
+    reviewIconView: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginLeft: 15
     },
 })

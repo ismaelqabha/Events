@@ -19,6 +19,7 @@ import SearchContext from '../../../store/SearchContext';
 import { addService } from '../../resources/API';
 import { colors } from '../../assets/AppColors';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
+import UsersContext from '../../../store/UsersContext';
 
 const ProviderSetPrice = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderSetPrice;
@@ -35,7 +36,7 @@ const ProviderSetPrice = props => {
     workAreas,
     additionalServices,
   } = useContext(ServiceProviderContext);
-  const { userId } = useContext(SearchContext);
+  const { userId } = useContext(UsersContext);
 
   const params = {
     ScreenHeader: {
@@ -44,6 +45,7 @@ const ProviderSetPrice = props => {
       Text: langauge.Header,
     },
   };
+  
 
   const onPublishPress = async () => {
     const body = {

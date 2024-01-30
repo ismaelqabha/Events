@@ -26,9 +26,9 @@ const ProviderCalender = (props) => {
             </View>
 
             <View style={styles.body}>
-
                 <CalenderDayCard />
             </View>
+            <View style={{height : 100}}></View>
         </View>
     )
 }
