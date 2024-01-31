@@ -52,6 +52,12 @@ const ContactComp = () => {
         youtube: 'red'
     }
 
+    const removeSocialComp = (index) => {
+        const newArray = [...socialMediaArray]; 
+        newArray.splice(index, 1);
+        setSocialMediaArray(newArray); 
+    };
+
     const SocialMediaComp = (props) => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
@@ -66,6 +72,9 @@ const ContactComp = () => {
         return (
             <View key={props?.index} style={styles.mediaItem}>
                 <View style={styles.mediaList}>
+                    <Pressable onPress={()=>removeSocialComp(index)} style={{width:'10%', padding: 5 , alignItems:'center'}}>
+                    <FontAwesome name="remove" size={15} />
+                    </Pressable>
                     <SelectList
                         data={socialMediaList}
                         setSelected={val => {
@@ -261,7 +270,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
         borderRadius: 10,
         fontWeight: 'bold',
-        marginTop: 30,
+        marginTop: 10,
     },
     dropstyle: {
         textAlign: 'left',
