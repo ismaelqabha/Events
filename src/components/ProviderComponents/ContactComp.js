@@ -22,22 +22,13 @@ const ContactComp = () => {
         email,
         setEmail } = useContext(ServiceProviderContext)
 
-    const updateArray = (data) => {
-        var i = socialMediaArray.findIndex((val) => val.social === data.social || val.link === data.link)
-        //console.log("i ",i);
-        if (i == -1) {
-            var temp = socialMediaArray.findIndex((val) => val.empty === "empty")
-            var newArr = socialMediaArray
-            newArr[temp] = data
-            setSocialMediaArray(newArr)
-        } else {
-            var current = socialMediaArray
-            current[i] = data
-            setSocialMediaArray(current)
-        }
-        //console.log("updated -> ",socialMediaArray);
-
-    }
+    const updateArray = (data, index) => {
+        setSocialMediaArray(prevArray => {
+            const newArray = [...prevArray];
+            newArray[index] = data;
+            return newArray;
+        });
+    };
 
 
 
@@ -64,6 +55,7 @@ const ContactComp = () => {
     const SocialMediaComp = (props) => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
+        const index = props.index
         useEffect(() => {
             if (props.val) {
                 setContactType(props?.val?.social)
@@ -82,7 +74,7 @@ const ContactComp = () => {
                                 social: socialMediaList[val].value,
                                 link: contactVal,
                             }
-                            updateArray(data)
+                            updateArray(data, index)
                         }}
 
                         placeholder={contactType || language.socialType}
@@ -98,12 +90,13 @@ const ContactComp = () => {
                         placeholder={'حمل رابط الشبكة'}
                         value={contactVal}
                         onChangeText={(val) => setContactVal(val)}
-                        onSubmitEditing={(val) => {
+                        onEndEditing={(event) => {
+                            const text = event.nativeEvent.text
                             const data = {
                                 social: contactType,
-                                link: val,
+                                link: text,
                             }
-                            updateArray(data)
+                            updateArray(data, index)
                         }}
                     />
                 </View>
