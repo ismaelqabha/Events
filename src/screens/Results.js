@@ -13,6 +13,7 @@ import { hallData } from '../resources/data';
 import HallTypeCard from '../components/HallTypeCard';
 import ClientCalender from '../components/ClientCalender';
 import ServiceProviderContext from '../../store/ServiceProviderContext';
+import { logProfileData } from 'react-native-calendars/src/Profiler';
 
 
 
@@ -30,7 +31,7 @@ const Results = (props) => {
     const { hallType } = useContext(ServiceProviderContext)
 
     const [date, setDate] = useState(new Date());
-    const [currentDate, setcurrentDate] = useState(date.getDate())
+    const [currentDate, setcurrentDate] = useState(date.getDate() + 1)
     const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
     const [currentYear, setcurrentYear] = useState(date.getFullYear())
 
@@ -114,11 +115,12 @@ const Results = (props) => {
     const checkDate = (dataforReservation, source) => {
         const servicedata = source
         if (servicedata.length < 1) {
-            return true
+            return 0
         }
         const DateFiltered = servicedata[0].dates?.find(dat => {
             return dat.time === dataforReservation
         });
+        console.log("DateFiltered", DateFiltered);
         return !!DateFiltered
     }
     const comparingDates = (dateAviable, monthAvailble, source) => {
@@ -129,12 +131,34 @@ const Results = (props) => {
         }
     }
     const findFirstDateAvailable = (serviceDates) => {
-        const daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
+        var daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
         let completeDate = ''
-        for (var day = currentDate; day <= daysInMonth; day++) {
-            completeDate = day + '-' + currentMonth + '-' + currentYear
-            if (!checkDate(completeDate, serviceDates)) {
-                break
+        if(currentDate > daysInMonth)
+        {
+            if((currentMonth + 1) > 12){
+                daysInMonth = moment((currentYear + 1) + '-' + (currentMonth - 11)).daysInMonth()
+                for (var day = 1; day <= daysInMonth; day++) {
+                    completeDate = day + '-' + (currentMonth + 1) + '-' + currentYear
+                    if (!checkDate(completeDate, serviceDates)) {
+                        break
+                    }
+                }
+            }else{
+               
+                 daysInMonth = moment(currentYear + '-' + (currentMonth + 1)).daysInMonth()
+                for (var day = 1; day <= daysInMonth; day++) {
+                    completeDate = day + '-' + (currentMonth + 1) + '-' + currentYear
+                    if (!checkDate(completeDate, serviceDates)) {
+                        break
+                    }
+                }
+            }
+        }else{
+            for (var day = currentDate; day <= daysInMonth; day++) {
+                completeDate = day + '-' + currentMonth + '-' + currentYear
+                if (!checkDate(completeDate, serviceDates)) {
+                    break
+                }
             }
         }
         return completeDate
