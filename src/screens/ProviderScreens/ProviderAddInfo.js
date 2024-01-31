@@ -8,6 +8,7 @@ import {
   ScrollView,
   Animated,
   Platform,
+  Keyboard,
 } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { ScreenNames } from '../../../route/ScreenNames';
@@ -40,6 +41,9 @@ const ProviderAddInfo = props => {
   const [regionData, setRegionData] = useState([])
   const [regions, setRegions] = useState(null)
   const [address, setAddress] = useState(null)
+  const opacity = useRef(new Animated.Value(1)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
+
   //   service Data
   const {
     serviceAddress,
@@ -74,7 +78,31 @@ const ProviderAddInfo = props => {
     getRegionsfromApi()
   }, [])
 
+  useEffect(() => {  // Keyboard Listeners 
+    const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const keyboardHideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
 
+    const keyboardDidShowListener = Keyboard.addListener(keyboardShowEvent, () => {
+      Animated.timing(translateY, {
+        toValue: 100, // Adjust slide distance as needed
+        duration: 200, // Adjust duration as needed
+        useNativeDriver: true,
+      }).start();
+    });
+
+    const keyboardDidHideListener = Keyboard.addListener(keyboardHideEvent, () => {
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 200, // Adjust duration as needed
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -424,7 +452,11 @@ const ProviderAddInfo = props => {
   };
 
   const RenderFooter = () => {
-    return <View style={styles.footer}>{RenderNextButton()}</View>;
+    return (
+        <Animated.View style={[styles.footer, { transform: [{ translateY: translateY }] }]}>
+          <View style={styles.footer}>{RenderNextButton()}</View>
+        </Animated.View>
+    )
   };
   const RenderNextButton = () => {
     return (
