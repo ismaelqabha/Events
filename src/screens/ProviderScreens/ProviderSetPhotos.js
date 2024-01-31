@@ -94,21 +94,33 @@ const ProviderSetPhotos = props => {
     } else if (response.customButton) {
       console.log('User tapped custom Button ', response.customButton);
     } else {
-      let imageUri = response.uri || response.assets?.[0]?.uri;
-      SaveImg(imageUri);
+      if (Array.isArray(response.assets)) {
+        response.assets.forEach(asset => {
+          SaveImg(asset.uri);
+        });
+      } else if (response.uri) {
+        SaveImg(response.uri);
+      }
     }
   };
 
-  const SaveImg = source => {
-    if (source) {
+  const SaveImg = sources => {
+    if (Array.isArray(sources)) {
+      const newImages = sources.map(uri => ({
+        imgId: uuidv4(),
+        uri: uri,
+        logo: true,
+      }));
+      setPhotoArray(prevArray => [...prevArray, ...newImages]);
+    } else if (sources) {
       const AddNewImg = {
         imgId: uuidv4(),
-        uri: source,
+        uri: sources,
         logo: true,
       };
-      setPhotoArray([AddNewImg, ...photoArray]);
+      setPhotoArray(prevArray => [...prevArray, AddNewImg]);
     } else {
-      console.log('error source isnt legable, source is :', source);
+      console.log('Error: Source is not valid.');
     }
   };
 
@@ -228,7 +240,7 @@ const ProviderSetPhotos = props => {
   const deletePhotos = () => {
     try {
       const newArray = photoArray.filter((photo) => {
-        return !selectedPhotos.includes(photo.image)
+        return !selectedPhotos.includes(photo.uri)
       })
       setPhotoArray(newArray);
       setIsDeleteMode(false)
