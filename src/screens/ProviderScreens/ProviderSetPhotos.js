@@ -6,9 +6,12 @@ import {
   Text,
   TouchableOpacity,
   Platform,
-  Linking
+  Linking,
+  Modal,
+  Dimensions,
+  Image
 } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
@@ -25,32 +28,35 @@ import { colors } from '../../assets/AppColors';
 import { ToastAndroid } from 'react-native';
 import { Alert } from 'react-native';
 import { servicesCategory } from '../../resources/data';
+import { Button } from 'react-native-elements';
 
 const ProviderSetPhotos = props => {
-  const { selectServiceType,photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
+  const { selectServiceType, photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
   const [selectedPhotos, setSelectedPhotos] = useState([])
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
-  
+
+
   const onNextPress = () => {
     // photoArray.length <5 ? showMessage() :
     checkServiceType()
   };
-  
-  useEffect(()=>{
-    console.log("photoArray -> ",photoArray);
-  },[photoArray])
 
-  const checkServiceType=()=>{
-    selectServiceType === servicesCategory[0].titleCategory ? 
-    props.navigation.navigate(ScreenNames.ProviderSocialMediaScreen, {
-      data: { ...props },
-      data: { ...props },
-    })
-    :
-    props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
-      data: { ...props },
-      data: { ...props },
-    });
+  useEffect(() => {
+    console.log("photoArray -> ", photoArray);
+  }, [photoArray])
+
+  const checkServiceType = () => {
+    selectServiceType === servicesCategory[0].titleCategory ?
+      props.navigation.navigate(ScreenNames.ProviderSocialMediaScreen, {
+        data: { ...props },
+        data: { ...props },
+      })
+      :
+      props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
+        data: { ...props },
+        data: { ...props },
+      });
   }
   const openAppSettings = () => {
     Platform.OS === 'ios' ?
@@ -72,15 +78,15 @@ const ProviderSetPhotos = props => {
 
   const onAddImgPress = async () => {
     try {
-          let options = {
-          mediaType: 'photo',
-          includeBase64: false,
-          selectionLimit:0,
-        };
+      let options = {
+        mediaType: 'photo',
+        includeBase64: false,
+        selectionLimit: 0,
+      };
 
-        launchImageLibrary(options, response => GalleryImageResponse(response));
-      }
-     catch (error) {
+      launchImageLibrary(options, response => GalleryImageResponse(response));
+    }
+    catch (error) {
       console.error(error);
     }
   };
@@ -95,10 +101,9 @@ const ProviderSetPhotos = props => {
       console.log('User tapped custom Button ', response.customButton);
     } else {
       if (Array.isArray(response.assets)) {
-        response.assets.forEach(asset => {
-          SaveImg(asset.uri);
-        });
-      } else if (response.uri) {
+        SaveImg(response.assets);
+      }
+      else if (response.uri) {
         SaveImg(response.uri);
       }
     }
@@ -106,17 +111,17 @@ const ProviderSetPhotos = props => {
 
   const SaveImg = sources => {
     if (Array.isArray(sources)) {
-      const newImages = sources.map(uri => ({
+      const newImages = sources.map((photo, i) => ({
         imgId: uuidv4(),
-        uri: uri,
-        logo: true,
+        uri: photo.uri,
+        logo: photoArray.length === 0 && i === 0 ? true : false,
       }));
       setPhotoArray(prevArray => [...prevArray, ...newImages]);
     } else if (sources) {
       const AddNewImg = {
         imgId: uuidv4(),
         uri: sources,
-        logo: true,
+        logo: photoArray.length === 0 ? true : false,
       };
       setPhotoArray(prevArray => [...prevArray, AddNewImg]);
     } else {
@@ -168,7 +173,14 @@ const ProviderSetPhotos = props => {
   };
 
   const renderServiceImg = ({ item }) => {
-    return <ProviderAddPhotoComp uri={item?.uri} selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} />;
+    const providerAddPhotoProps = {
+      uri: item?.uri,
+      selectedPhotos: selectedPhotos,
+      setSelectedPhotos: setSelectedPhotos,
+      isModalVisible: isModalVisible,
+      setIsModalVisible: setIsModalVisible,
+    };
+    return <ProviderAddPhotoComp {...providerAddPhotoProps} />;
   };
 
   const RenderMainHeader = () => {
@@ -227,6 +239,68 @@ const ProviderSetPhotos = props => {
     );
   };
 
+  const RenderModal = () => {
+
+    const setAsLogo = (uri) => {
+      setPhotoArray((prevPhotoArray) => {
+        return prevPhotoArray.map((photo) => {
+          if (photo.uri === uri) {
+            return { ...photo, logo: true };
+          } else if (photo.logo) {
+            return { ...photo, logo: false };
+          }
+          return photo;
+        });
+      });
+    };
+
+    const renderPhoto = (photo, index) => {
+      const providerAddPhotoProps = {
+        uri: photo?.uri,
+        selectedPhotos: selectedPhotos,
+        setSelectedPhotos: setSelectedPhotos,
+        isFromModal: true
+      };
+      return (
+        <View key={index}>
+          <Pressable onPress={() => setAsLogo(photo.uri)} disabled={isDeleteMode}>
+            <ProviderAddPhotoComp {...providerAddPhotoProps} />
+          </Pressable>
+        </View>
+
+      );
+    };
+
+    return (
+      <Modal
+        animationType='fade'
+        transparent={false}
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
+          <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+            <View style={{ width: '100%', paddingHorizontal: 10 }}>
+              {photoArray.map((photo, index) => (
+                <View key={index}>
+                  {renderPhoto(photo, index)}
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+          <View style={[styles.footer, isDeleteMode ?
+            { justifyContent: 'space-between' } :
+            { justifyContent: 'flex-end' }]}>
+            {isDeleteMode && renderCancelButton()}
+            {RenderNextButton(true)}
+          </View>
+        </View>
+
+      </Modal>
+    );
+  };
+
+
   const showMessage = () => {
     Platform.OS === 'android'
       ? ToastAndroid.show(language.showDeleteMessage, ToastAndroid.SHORT)
@@ -261,9 +335,15 @@ const ProviderSetPhotos = props => {
     )
   }
 
-  const RenderNextButton = () => {
+  const RenderNextButton = (isFromModal = false) => {
     return (
-      !isDeleteMode ? <Pressable style={AppStyles.next} onPress={onNextPress}>
+      !isDeleteMode ? <Pressable style={AppStyles.next} onPress={() => {
+        if (isFromModal) {
+          setIsModalVisible(false);
+        } else {
+          onNextPress();
+        }
+      }}>
         <Text style={AppStyles.nextText}>{language.Next}</Text>
       </Pressable> :
         <Pressable style={AppStyles.next} onPress={onConfirmDelete}>
@@ -280,6 +360,7 @@ const ProviderSetPhotos = props => {
         {RenderCapturePhoto()}
         {RenderSelectedImages()}
       </View>
+      {RenderModal()}
       <View style={[styles.footer, isDeleteMode ?
         { justifyContent: 'space-between' } :
         { justifyContent: 'flex-end' }]}>
@@ -320,8 +401,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     paddingHorizontal: '10%',
-    position:'absolute',
-    bottom:0
+    position: 'absolute',
+    bottom: 0
 
   },
   backText: {
