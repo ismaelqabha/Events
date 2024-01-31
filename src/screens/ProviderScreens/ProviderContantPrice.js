@@ -11,12 +11,16 @@ import { ActivityIndicator } from 'react-native';
 import { onPublishPress } from '../../resources/Functions'
 
 
+
 const ProviderContantPrice = (props) => {
 
-  const context = useContext(ServiceProviderContext);
+   const context = useContext(ServiceProviderContext);
   const [loading, setLoading] = useState(false)
   const langauge = strings.arabic.ProviderScreens.ProviderContantPrice;
   const translateY = useRef(new Animated.Value(0)).current;
+  const {
+    setPrice,
+  } = useContext(ServiceProviderContext);
 
   useEffect(() => {  // Keyboard Listeners 
     const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
@@ -96,7 +100,7 @@ const ProviderContantPrice = (props) => {
           keyboardType="numeric"
           maxLength={5}
           onChangeText={value => {
-
+            setPrice(value);
           }}
         />
       </View>

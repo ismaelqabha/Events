@@ -69,6 +69,12 @@ const ClientCalender = (props) => {
         )
     }
 
+    const selectDate = (day) => {
+        setselectDateforSearch(day.dateString);
+        setSelected(day.dateString)
+        console.log('selected da **', day.dateString);
+    }
+
     return (
         <View style={styles.container}>
             {renderPeriod()}
@@ -108,9 +114,7 @@ const ClientCalender = (props) => {
                 minDate={date}
                 //maxDate='2023-12-31'
                 onDayPress={day => {
-                    setselectDateforSearch(day.dateString);
-                    setSelected(day.dateString)
-                    console.log('selected da **', day.dateString);
+                    selectDate(day)
                 }}
                 markedDates={{
                     [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' }

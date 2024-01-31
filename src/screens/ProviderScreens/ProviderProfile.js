@@ -11,18 +11,14 @@ import strings from '../../assets/res/strings';
 import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
-import { getServiceInfoById } from '../../resources/API';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
 
 const ProviderProfile = (props) => {
     const language = strings.arabic.ProviderScreens.ProviderCreateListing
-    const { userId, setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } = useContext(SearchContext);
+    const { setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const navigation = useNavigation();
-
-
-
 
     const renderMyService = () => {
         const data = serviceInfoAccorUser || [];
@@ -36,8 +32,6 @@ const ProviderProfile = (props) => {
         });
         return cardsArray;
     };
-
-
 
     const seprator = () => {
         return (

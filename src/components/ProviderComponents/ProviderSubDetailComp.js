@@ -1,48 +1,75 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text,Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { colors } from '../../assets/AppColors';
+
 
 const ProviderSubDetailComp = (props) => {
+
+
+    const renderCard = () => {
+        return (
+            <View style={styles.cardHeader}>
+                
+                <View style={styles.imgView}>
+                    <Image source={props.imgSrc} style={styles.img} />
+                </View>
+                <View style={styles.txtView}>
+                    <Text style={styles.textTitle}>{props.detailSubtitle}</Text>
+                    <Text style={styles.textTitle}>₪{props.detailSubtitleCost}</Text>
+                </View>
+
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.cardHeader}
-               // onPress={onCaardPress}
-            >
-                <Text style={styles.textTitle}>₪{props.detailSubtitleCost}</Text>
-                <Text style={styles.textTitle}>{props.detailSubtitle}</Text>
-                <Image source={props.imgSrc} style={styles.img}/>
-            </TouchableOpacity>
+            {renderCard()}
+           
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        //flex: 1,
     },
     cardHeader: {
-        flexDirection:'row',
-        height: 80,
+        flexDirection: 'row',
+        height: 150,
         elevation: 3,
-        shadowOffset: { width: 1, height: 1 },
-        shadowOpacity: 0.1,
         marginBottom: 20,
         backgroundColor: 'white',
-        width: 300,
-        borderRadius: 25,
-        justifyContent:'space-around',
-        alignItems: 'center'
-        
+        width: 350,
+        borderRadius: 5,
+        justifyContent: 'space-between',
+        //alignItems: 'center',
+        margin: 5,
+        alignSelf: 'center'
     },
-    textTitle:{
-        fontSize:25,
-        fontWeight: 'bold',
-        color:'#483d8b'
+    txtView:{
+        alignItems: 'flex-end',
+        margin: 10,
+        width: "55%",
+        justifyContent: 'space-between'
     },
-    img:{
+    textTitle: {
+        fontSize: 18,
+        color: colors.puprble,
+    },
+    img: {
         height: 60,
-        width:60,
+        width: 60,
         borderRadius: 20,
     },
+    imgView: {
+        height: 120,
+        width: '30%',
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#dcdcdc',
+        margin: 10
+    }
 })
 
 export default ProviderSubDetailComp;

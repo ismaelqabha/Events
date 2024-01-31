@@ -7,11 +7,10 @@ import { servicesCategory } from '../resources/data';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from '@react-navigation/native';
 import { FlatList } from 'react-native-gesture-handler';
-
 import MonthCom from '../components/MonthCom';
 import { SelectList } from 'react-native-dropdown-select-list'
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { getCities } from '../resources/API';
+import { getCities, getRegions } from '../resources/API';
 import ClientCalender from '../components/ClientCalender';
 import AddNewDates from '../components/AddNewDates';
 import { colors } from '../assets/AppColors';
@@ -21,13 +20,13 @@ const ClientSearch = (props) => {
     const { isFromSearchServiceClick } = props.route?.params || {};
     const navigation = useNavigation();
 
-    const { town, setTown,
+    const {
         cityselected, setcityselected,
         regionselect, setregionselect,
         setselectMonthforSearch, selectMonthforSearch,
         setselectDateforSearch, selectDateforSearch,
         Categorychozen, setCategorychozen,
-
+        regionData, setRegionData
     } = useContext(SearchContext);
 
     // Determine which view is open
@@ -40,6 +39,7 @@ const ClientSearch = (props) => {
     const [spacificDate, setspacificDate] = useState(true)
     // Determine the place
 
+    const [citiesNames, setCitiesNames] = useState([])
     const [myriogen, setMyriogen] = useState(true)
     const [spacificPlace, setspacificPlace] = useState(false)
 
@@ -64,6 +64,30 @@ const ClientSearch = (props) => {
         setMyriogen(false)
         setspacificPlace(true)
     }
+    const getRegionsfromApi = async () => {
+        getRegions().then((res) => {
+            setRegionData(res?.regions)
+            fillCities(res?.regions)
+            // console.log("res", res?.regions);
+        }).catch((e) => {
+            console.log("error fetching -> ", e);
+        })
+    }
+    const fillCities = (regions) => {
+        const allData = []
+        regions?.forEach(region => {
+            allData.push(...region.regionCities)
+        });
+        allData.sort()
+        setCitiesNames(allData)
+    }
+    const renderRegion = () => {
+        const region = regionData.map(item => {
+            return item.regionName
+        })
+        return region.sort()
+    }
+   
     // Functions for determine the date
 
     const monthlyPress = () => {
@@ -117,6 +141,7 @@ const ClientSearch = (props) => {
     const Categoryquery = () => {
         return servicesCategory || [];
     }
+
     const renderCat = ({ item }) => {
         return (
             <ServiceCard
@@ -127,32 +152,9 @@ const ClientSearch = (props) => {
             />
         )
     };
-
-    const onChangeDate = (event, selectedDate) => {
-        setShow(false)
-        const currentDate = selectedDate || date;
-        setDate(currentDate);
-
-        let tempDate = new Date(currentDate);
-        let fDate = tempDate.getFullYear() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getDate()
-        let fTime = tempDate.getHours() + ':' + tempDate.getMinutes();
-
-        // setDateText(fDate);
-        // setTimeText(fTime);
-        console.log(fDate);
-
-    }
-
-    const getCityFromApi = () => {
-        getCities().then(res => {
-            setTown(res)
-        })
-    }
-
-
-
+   
     useEffect(() => {
-        // getCityFromApi()
+        getRegionsfromApi()
         setcityselected("")
         setregionselect("")
 
@@ -163,22 +165,7 @@ const ClientSearch = (props) => {
         }
     }, [])
 
-    const renderCity = () => {
-        const data = town;
 
-        const cityName = data.map(Cname => {
-            return Cname.city;
-        });
-        return cityName;
-    };
-    const regionData = [
-        { key: '2', value: 'الجليل' },
-        { key: '3', value: 'النقب ' },
-        { key: '5', value: 'الساحل' },
-        { key: '0', value: 'المثلث الشمالي' },
-        { key: '1', value: 'المثلث الجنوبي' },
-        { key: '4', value: 'الضفة الغربية' },
-    ]
     const showDate = () => {
         if (selectMonthforSearch != null) {
             if (monthly) {
@@ -289,17 +276,17 @@ const ClientSearch = (props) => {
                     <View style={{ flex: 1 }}>
                         <View style={styles.choicesPView}>
                             <Pressable style={[styles.Dview, spacificPlace ? styles.PDviewPress : styles.Dview]} onPress={spacificPlacePress}>
-                                <Text style={styles.te}>حسب المنطقة</Text></Pressable>
-                            <Pressable style={[styles.Dview, myriogen ? styles.PDviewPress : styles.Dview]} onPress={myriogenPress}>
                                 <Text style={styles.te}>حسب المدينة</Text></Pressable>
+                            <Pressable style={[styles.Dview, myriogen ? styles.PDviewPress : styles.Dview]} onPress={myriogenPress}>
+                                <Text style={styles.te}>حسب المنطقة</Text></Pressable>
                         </View>
                         <View style={styles.insideView}>
                             {myriogen &&
                                 <SelectList
                                     setSelected={(val) => setregionselect(val)}
-                                    data={renderCity()}
+                                    data={renderRegion()}
                                     save="value"
-                                    placeholder='اختر المدينة'
+                                    placeholder='اختر المنطقة'
                                     boxStyles={styles.dropdown}
                                     inputStyles={styles.droptext}
                                     dropdownTextStyles={styles.dropstyle}
@@ -310,10 +297,10 @@ const ClientSearch = (props) => {
                                     setSelected={(val) =>
                                         setcityselected(val)
                                     }
-                                    data={regionData}
+                                    data={citiesNames}
                                     save="value"
                                     // onSelect={() => console.log(select)}
-                                    placeholder='اختر المنطقة'
+                                    placeholder='اختر المدينة'
                                     boxStyles={styles.dropdown}
                                     inputStyles={styles.droptext}
                                     dropdownTextStyles={styles.dropstyle}
@@ -337,8 +324,7 @@ const ClientSearch = (props) => {
     return (
         <View style={styles.container} >
             <View style={styles.title}>
-                <Pressable onPress={onPressHandler}
-                >
+                <Pressable onPress={onPressHandler}>
                     <Ionicons
                         style={styles.icon}
                         name={"arrow-back"}
@@ -417,7 +403,7 @@ const styles = StyleSheet.create({
     },
     placeView: {
         width: '90%',
-        height: 200,
+        height: 450,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,

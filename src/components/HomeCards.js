@@ -17,7 +17,19 @@ const HomeCards = (props) => {
 
     const onCaardPress = () => {
         setSType((props.servType))
-        navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props , availableDates}} )
+        navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props, availableDates } })
+    }
+
+    const checkDateStyle = () => {
+        if (Array.isArray(availableDates)) {
+            if (availableDates.length <= 10) {
+                return "(" + availableDates.length + ")" + "  تواريخ متاحه "
+            } else {
+                return "(" + availableDates.length + ")" + "  تاريخ متاح "
+            }
+        } else {
+            return availableDates
+        }
     }
 
     return (
@@ -31,7 +43,7 @@ const HomeCards = (props) => {
                             <Text style={styles.text} numberOfLines={2}>{subTitle}</Text>
                         </View>
                         <View style={styles.nestedView}>
-                            <Text style={styles.text}>{availableDates.length == 9 ? availableDates : availableDates.length + "  تاريخ متاح "}</Text>
+                            <Text style={styles.text}>{checkDateStyle()}</Text>
                             <Text style={styles.text}>{address}</Text>
                         </View>
                     </View>
@@ -53,13 +65,12 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
         elevation: 5,
-
+        alignSelf: 'center'
     },
     nestedView: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 10,
-        marginTop: 5
     },
     text: {
         fontSize: 18,

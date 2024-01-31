@@ -90,8 +90,7 @@ const ProviderSetPhotos = props => {
       console.error(error);
     }
   };
-
-
+  
   const GalleryImageResponse = response => {
     if (response.didCancel) {
       console.log('User Cancelled');

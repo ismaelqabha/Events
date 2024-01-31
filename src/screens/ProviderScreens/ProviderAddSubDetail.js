@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,22 +8,26 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Image
 } from 'react-native';
 import SearchContext from '../../../store/SearchContext';
+import { launchImageLibrary } from 'react-native-image-picker';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProviderSubDetailComp from '../../components/ProviderComponents/ProviderSubDetailComp';
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { colors } from '../../assets/AppColors';
 
 const ProviderAddSubDetail = props => {
-  const {data} = props?.route.params;
+  const { data } = props?.route.params;
   const [showModal, setShowModal] = useState(false);
   const [SDtitle, setSDTitle] = useState('');
   const [SPricetitle, setSPricetitle] = useState('');
-  const {additionalServices, setAdditionalServices} = useContext(
+  const [subDetailImg, setSubDetailImg] = useState();
+  const { additionalServices, setAdditionalServices } = useContext(
     ServiceProviderContext,
   );
   const langauge = strings.arabic.ProviderScreens.ProviderSubDetail;
@@ -38,6 +42,7 @@ const ProviderAddSubDetail = props => {
           id: SubDid,
           detailSubtitle: SDtitle,
           detailSubtitleCost: SPricetitle,
+          subDetailPhoto: subDetailImg
         };
         const temp = additionalServices;
         let index = temp.findIndex(val => val.detail_Id === data.detail_Id);
@@ -85,24 +90,17 @@ const ProviderAddSubDetail = props => {
   const RenderCreateNew = () => {
     return (
       <TouchableOpacity style={styles.AddButton} onPress={onStartPress}>
-      <View style={styles.textView}>
-        <Text style={styles.footText}>{langauge.CreateNew}</Text>
-      </View>
-      <View style={styles.iconView}>
-        <Entypo
-          name="plus"
-          color={colors.puprble}
-          size={30}
-        />
-      </View>
-    </TouchableOpacity>
-      // <TouchableOpacity style={styles.AddButton} onPress={onStartPress}>
-      //   <AntDesign
-      //     name="plussquareo"
-      //     style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
-      //   />
-      //   <Text style={styles.footText}>{langauge.CreateNew}</Text>
-      // </TouchableOpacity>
+        <View style={styles.textView}>
+          <Text style={styles.footText}>{langauge.CreateNew}</Text>
+        </View>
+        <View style={styles.iconView}>
+          <Entypo
+            name="plus"
+            color={colors.puprble}
+            size={30}
+          />
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -137,9 +135,44 @@ const ProviderAddSubDetail = props => {
       </View>
     );
   };
+  const onAddImgPress = async () => {
+    try {
+          let options = {
+          mediaType: 'photo',
+          includeBase64: false, 
+        };
+
+        launchImageLibrary(options, response => GalleryImageResponse(response));
+      }
+     catch (error) {
+      console.error(error);
+    }
+  };
+  
+  const GalleryImageResponse = response => {
+    if (response.didCancel) {
+      console.log('User Cancelled');
+    } else if (response.error) {
+      console.log('Gallery Error : ', response.error);
+    } else if (response.customButton) {
+      console.log('User tapped custom Button ', response.customButton);
+    } else {
+      let imageUri = response.uri || response.assets?.[0]?.uri;
+      SaveImg(imageUri);
+    }
+  };
   const RenderInputDetailes = () => {
     return (
       <View style={styles.body}>
+        <View style={styles.subImg}>
+          <Pressable onPress={onAddImgPress}>
+            <MaterialIcons
+              style={{ alignSelf: 'center' }}
+              name={"add-photo-alternate"}
+              color={'#dcdcdc'}
+              size={100} />
+          </Pressable>
+        </View>
         <TextInput
           style={styles.titleInput}
           placeholder={langauge.ServDetailes}
@@ -267,7 +300,7 @@ const styles = StyleSheet.create({
   },
   detailModal: {
     width: '100%',
-    height: 300,
+    height: 450,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -297,20 +330,35 @@ const styles = StyleSheet.create({
   Modalbtn: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 60,
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 10,
+    width: '100%'
+    //marginTop: 60,
   },
   titleInput: {
     textAlign: 'right',
     height: 50,
-    width: 315,
+    width: '80%',
     borderWidth: 2,
-    borderRadius: 15,
+    borderRadius: 10,
     borderColor: '#dcdcdc',
     fontSize: 18,
     color: 'black',
     backgroundColor: 'white',
     marginBottom: 20,
   },
+  subImg: {
+    borderWidth: 1,
+    borderColor: '#dcdcdc',
+    width: '60%',
+    height: 150,
+    borderRadius: 10,
+    marginBottom: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
 });
 
 export default ProviderAddSubDetail;
