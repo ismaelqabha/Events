@@ -11,11 +11,15 @@ import { ActivityIndicator } from 'react-native';
 import {onPublishPress} from '../../resources/Functions'
 
 
+
 const ProviderContantPrice = (props) => {
 
-  const context = useContext(ServiceProviderContext);
+   const context = useContext(ServiceProviderContext);
   const [loading, setLoading] = useState(false)
   const langauge = strings.arabic.ProviderScreens.ProviderContantPrice;
+  const {
+    setPrice,
+  } = useContext(ServiceProviderContext);
 
   const params = {
     ScreenHeader: {
@@ -61,7 +65,7 @@ const ProviderContantPrice = (props) => {
           keyboardType="numeric"
           maxLength={5}
           onChangeText={value => {
-
+            setPrice(value);
           }}
         />
       </View>

@@ -47,43 +47,7 @@ const ProviderSetPrice = props => {
   };
   
 
-  const onPublishPress = async () => {
-    const body = {
-      userID: userId,
-      servType: selectServiceType,
-      title: title,
-      subTitle: SuTitle,
-      desc: description,
-      region: serviceRegion,
-      address: serviceAddress,
-      servicePrice: price,
-      workingRegion: workAreas,
-      additionalServices: additionalServices,
-    };
-    await addService(body)
-      .then(res => {
-        console.log('res ->', res);
-        showMessage("تم حفظ البيانات")
-
-      })
-      .catch(e => {
-        console.log('create new event error : ', e);
-      });
-    // console.log('--------------------------------------');
-    // console.log('Service detailes -> ');
-    // console.log('User ID -> ', userId);
-    // console.log('Price -> ', price);
-    // console.log('address -> ', serviceAddress);
-    // console.log('Region -> ', serviceRegion);
-    // console.log('title -> ', title);
-    // console.log('subTitle -> ', SuTitle);
-    // console.log('description -> ', description);
-    // console.log('selectServiceType -> ', selectServiceType);
-    // console.log('photoArray -> ', photoArray);
-    // console.log('workAreas -> ', workAreas);
-    // console.log('additional services  -> ', additionalServices);
-    // console.log('--------------------------------------');
-  };
+  
 
   const addServiceImages = async (ID) => {
     var base64Images = photoArray?.map((image, index) => {

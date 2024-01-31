@@ -30,7 +30,7 @@ const Results = (props) => {
     const { hallType } = useContext(ServiceProviderContext)
 
     const [date, setDate] = useState(new Date());
-    const [currentDate, setcurrentDate] = useState(date.getDate() + 1)
+    const [currentDate, setcurrentDate] = useState(date.getDate())
     const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
     const [currentYear, setcurrentYear] = useState(date.getFullYear())
 
@@ -113,8 +113,8 @@ const Results = (props) => {
     // check available date part 
     const checkDate = (dataforReservation, source) => {
         const servicedata = source
-        if(servicedata.length == 0){
-            return 0
+        if (servicedata.length < 1) {
+            return true
         }
         const DateFiltered = servicedata[0].dates?.find(dat => {
             return dat.time === dataforReservation
@@ -205,17 +205,16 @@ const Results = (props) => {
                 }
                 Day++
             }
+            
             return dateswithinPeriod
         }
     }
     const dataSearchResult = () => {
         const data = query();
         const filtered = data?.filter(item => {
-            //console.log("item.serviceDates", item.serviceDates);
             const avaiablespecificDate = checkDateIsAvilable(item.serviceDates);
             const AvilableDaysInMonth = checkMonthAvailableDate(item.serviceDates);
             const result = comparingDates(avaiablespecificDate, AvilableDaysInMonth, item.serviceDates)
-
 
             const isCitySelect = objectResult.cityselected === '' ? true : item.serviceData.address == objectResult.cityselected
             const isRiogenSelect = objectResult.regionselect === '' ? true : item.serviceData.region == objectResult.regionselect
@@ -231,7 +230,7 @@ const Results = (props) => {
     }
     const renderCard = () => {
         const data = dataSearchResult();
-        //console.log("data ", data);
+        // console.log("data ", data);
         const cardsArray = data?.map(card => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
@@ -244,7 +243,7 @@ const Results = (props) => {
     // Check available services using Filter
     const comparingDatesinFilter = (dateAviable, source) => {
         if ((!!objectResult.selectDateforSearch || !!objectResult.selectMonthforSearch)) {
-            return  dateAviable
+            return dateAviable
         } else {
             return findFirstDateAvailable(source)
         }
@@ -253,7 +252,7 @@ const Results = (props) => {
         const data = query();
         return data?.filter(nameItem => {
             const selectedDate = checkDateIsAvilable(nameItem.serviceDates);
-            const dateResult = comparingDatesinFilter(selectedDate,nameItem.serviceDates )
+            const dateResult = comparingDatesinFilter(selectedDate, nameItem.serviceDates)
             const isSeletedCity = objectFilter.selectedCity ? nameItem.serviceData.address == objectFilter.selectedCity : true
             const isRegonSelected = objectFilter.selectRigon == "" ? true : nameItem.serviceData.region == objectFilter.selectRigon
             const isCpicitInrange = objectFilter.guestNum ? nameItem.serviceData.maxCapasity >= objectFilter.guestNum : true
@@ -262,7 +261,7 @@ const Results = (props) => {
 
             const filterQury = dateResult && isPriceinRange && isRegonSelected && isCpicitInrange && isSeletedCity && isHallType
             readyDates = dateResult
-           
+
             return filterQury;
         })
     }
@@ -278,7 +277,7 @@ const Results = (props) => {
         return cardsArray;
     };
 
-/// Filter Components
+    /// Filter Components
     const renderHallTypes = () => {
         return hallData?.map((item) => {
             return <HallTypeCard {...item}

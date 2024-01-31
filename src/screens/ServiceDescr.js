@@ -219,8 +219,8 @@ const ServiceDescr = (props) => {
                         <View style={styles.subDetailItem}>
                             <Text style={styles.SupDetTxt}>{subItem.detailSubtitle}</Text>
                         </View>
-                        <View style={styles.SubDImg}><Image source={{uri: subItem.subDetailPhoto}} /></View>
-                        
+                        <View style={styles.SubDImg}><Image source={{ uri: subItem.subDetailPhoto }} /></View>
+
                     </View>
                 )
             })
@@ -236,7 +236,67 @@ const ServiceDescr = (props) => {
         return subInfo
     }
 
-    // render Detail Info 
+    // render Pricing and Detail Info 
+    const renderServiceDetail = () => {
+        if (!!data.servicePrice && data.additionalServices.length > 0) {
+            return (
+                <View>
+                    {renderInitialPrice()}
+                    {renderMandatoryDetail()}
+                    {renderOptionalDetail()}
+                </View>
+            )
+        }
+        if (!!data.servicePrice && data.additionalServices.length < 1) {
+            return (
+                <View>
+                    {renderFinalPrice()}
+                </View>
+            )
+        }
+        if (!!data.servicePrice || data.additionalServices.length > 0) {
+            return (
+                <View>
+                    {renderMandatoryDetail()}
+                    {renderOptionalDetail()}
+                </View>
+            )
+        }
+    }
+    const renderInitialPrice = () => {
+        return (
+            <View style={styles.dateformat}>
+                <View>
+                    <Text style={styles.datetxt}>{data.servicePrice}</Text>
+                    <Text style={styles.Daytex}>السعر المبدئي</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={{ alignSelf: 'center' }}
+                        name={"price-tag"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
+            </View>
+        )
+    }
+    const renderFinalPrice = () => {
+        return (
+            <View style={styles.dateformat}>
+                <View>
+                    <Text style={styles.datetxt}>{data.servicePrice}</Text>
+                    <Text style={styles.Daytex}>السعر الشامل</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={{ alignSelf: 'center' }}
+                        name={"price-tag"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
+            </View>
+        )
+    }
     const selectMandatoryDetail = () => {
         return data.additionalServices.filter(item => {
             return item.necessity == 'Mandatory'
@@ -364,6 +424,7 @@ const ServiceDescr = (props) => {
             </View>
         )
     }
+
     const renderBody = () => {
         return (
             <View style={styles.body}>
@@ -377,8 +438,7 @@ const ServiceDescr = (props) => {
 
                 <View style={styles.ditailView}>
                     <Text style={styles.text}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
-                    {renderMandatoryDetail()}
-                    {renderOptionalDetail()}
+                    {renderServiceDetail()}
                     {renderCampeigns()}
                 </View >
                 {seperator()}
