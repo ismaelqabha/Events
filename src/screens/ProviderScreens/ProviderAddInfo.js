@@ -40,9 +40,6 @@ const ProviderAddInfo = props => {
   const [regionData, setRegionData] = useState([])
   const [regions, setRegions] = useState(null)
   const [address, setAddress] = useState(null)
-
-  const [serviceDesc, setServiceDesc] = useState([])
-
   //   service Data
   const {
     serviceAddress,
@@ -69,11 +66,8 @@ const ProviderAddInfo = props => {
   useEffect(() => {
     setSubTitleError(!checkStrings(SuTitle));
     setTitleError(!checkStrings(title));
-    setDesError(!checkStrings(description));
     setSubTitleLengthError(!checkLength(SuTitle, 50));
     setTitleLengthError(!checkLength(title, 30));
-    setDesLengthError(!checkLength(description, 300));
-
   }, [title, SuTitle, description]);
 
   useEffect(() => {
@@ -156,10 +150,8 @@ const ProviderAddInfo = props => {
   const checkRequestedData = () => {
     return checkStrings(title) &&
       checkStrings(SuTitle) &&
-      checkStrings(description) &&
       checkLength(title, 30) &&
-      checkLength(SuTitle, 50) &&
-      checkLength(description, 300)
+      checkLength(SuTitle, 50)
       ? true
       : false;
   };
@@ -199,8 +191,9 @@ const ProviderAddInfo = props => {
   };
 
   const checkStrings = val => {
-   
     if (!val) {
+      return false;
+    } else if (val.length == 0) {
       return false;
     } else if (val.trim().length <= 0) {
       return false;
@@ -297,45 +290,10 @@ const ProviderAddInfo = props => {
     </View>
     );
   };
-  const RenderDescription = () => {
+
+  const Renderdescriptionr = () => {
     return (
-      <View>
-        <View style={styles.viewwholeInput}>
-          <View>
-            <AntDesign
-              name={"question"}
-              color={colors.puprble}
-              size={20} />
-          </View>
-          <View style={styles.itemView}>
-            {(desError || desLengthError) && (
-              <Text style={styles.textRequired}>
-                {desError ? language.titleRequired : language.titleLengthError}
-              </Text>
-            )}
-            <Text style={styles.text}> {language.description}</Text>
-          </View>
-        </View>
-        <TextInput
-          style={styles.descInput}
-          keyboardType="default"
-          maxLength={300}
-          multiline
-          onChangeText={value => {
-            value.trim().length < 300 ?
-              setDescription(value) &&
-              setDesLengthError(false)
-              :
-              setDesLengthError(true)
-          }}
-          value={description}
-        />
-      </View>
-    );
-  };
-  const RenderServiceDescr = () => {
-    return (
-      <View style={styles.serviceDesc}>
+      <View style={styles.description}>
         <View style={styles.viewwholeInput}>
           <View>
             <AntDesign
@@ -397,8 +355,7 @@ const ProviderAddInfo = props => {
         {RenderHeaderTitle()}
         {RenderTitleBox()}
         {RenderSubTitleBox()}
-        {RenderServiceDescr()}
-        {RenderDescription()}
+        {Renderdescriptionr()}
       </View>
     );
   };
@@ -481,13 +438,25 @@ const ProviderAddInfo = props => {
 
   // description part 
   const addDescrTextInput = () => {
-    setServiceDesc([...serviceDesc, { empty: "empty" }])
+    setDescription([...description, { empty: "empty" }])
   }
   const renderdescItem = () => {
-    const fields = serviceDesc?.map((val, index) => {
+    const fields = description?.map((val, index) => {
       return <DescrriptionComponent val={val} index={index} />
     })
     return fields
+  }
+
+  const removeDescription = (desToRemove) => {
+    var i = description.findIndex((val) => val.descItem === desToRemove)
+    if (i === -1) {
+      console.log("tjere is no such desc to remove ");
+      return
+    } else {
+      const updatedDescription = [...description];
+      updatedDescription.splice(i, 1);
+      setDescription(updatedDescription)
+    }
   }
 
   const DescrriptionComponent = (props) => {
@@ -501,6 +470,9 @@ const ProviderAddInfo = props => {
 
     return (
       <View style={styles.contentItemView}>
+        <Pressable onPress={() => removeDescription(descriptionItem)}>
+          <AntDesign name='delete' size={15} />
+        </Pressable>
         <TextInput
           style={styles.descriptionInput}
           keyboardType='default'
@@ -517,19 +489,17 @@ const ProviderAddInfo = props => {
       </View>)
   }
   const updateDescrArray = (data) => {
-    var i = serviceDesc.findIndex((val) => val.descItem === data.descItem)
-    console.log("i ", i);
+    var i = description.findIndex((val) => val.descItem === data.descItem)
     if (i == -1) {
-      var temp = serviceDesc.findIndex((val) => val.empty === "empty")
-      var newArr = serviceDesc
+      var temp = description.findIndex((val) => val.empty === "empty")
+      var newArr = description
       newArr[temp] = data
-      setServiceDesc(newArr)
+      setDescription(newArr)
     } else {
       var current = description
       current[i] = data
-      setServiceDesc(current)
+      setDescription(current)
     }
-    console.log("updated -> ", serviceDesc);
   }
 
   return (
@@ -703,16 +673,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   descriptionInput: {
+    flex: 1,
     textAlign: 'right',
+    fontSize: 18,
+    color: 'black',
     height: 40,
-    width: 315,
+    width: '90%',
+    marginLeft: 10
+  },
+  contentItemView: {
     borderWidth: 1.5,
     borderRadius: 10,
     borderColor: "darkgray",
-    fontSize: 18,
-    color: 'black',
-    backgroundColor: 'white',
-    marginBottom: 20
+    width: 315,
+    padding: 5,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   capsityInput: {
     textAlign: 'right',
@@ -750,7 +728,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginLeft: 15
   },
-  serviceDesc: {
+  description: {
     width: 315,
     marginVertical: 20
   },

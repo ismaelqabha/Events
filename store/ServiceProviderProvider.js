@@ -11,7 +11,7 @@ const ProviderProvider = props => {
   const [serviceRegion, setserviceRegion] = useState(null);
   const [title, setTitle] = useState(null);
   const [SuTitle, setSuTitle] = useState(null);
-  const [description, setDescription] = useState(null);
+  const [description, setDescription] = useState([]);
   const [selectServiceType, setSelectServiceType] = useState(null);
   const [photoArray, setPhotoArray] = useState([]);
   const [workAreas, setWorkAreas] = useState([]);
