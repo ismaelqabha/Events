@@ -41,7 +41,6 @@ const ProviderAddInfo = props => {
   const [regionData, setRegionData] = useState([])
   const [regions, setRegions] = useState(null)
   const [address, setAddress] = useState(null)
-  const opacity = useRef(new Animated.Value(1)).current;
   const translateY = useRef(new Animated.Value(0)).current;
 
   //   service Data

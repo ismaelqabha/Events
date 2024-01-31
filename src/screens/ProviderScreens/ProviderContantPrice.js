@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, TextInput } from 'react-native'
-import React, { useContext, useState } from 'react'
+import { StyleSheet, Text, View, TextInput, Animated, Keyboard } from 'react-native'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { colors } from '../../assets/AppColors'
 import strings from '../../assets/res/strings';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
@@ -8,7 +8,7 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { ActivityIndicator } from 'react-native';
-import {onPublishPress} from '../../resources/Functions'
+import { onPublishPress } from '../../resources/Functions'
 
 
 const ProviderContantPrice = (props) => {
@@ -16,7 +16,33 @@ const ProviderContantPrice = (props) => {
   const context = useContext(ServiceProviderContext);
   const [loading, setLoading] = useState(false)
   const langauge = strings.arabic.ProviderScreens.ProviderContantPrice;
+  const translateY = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {  // Keyboard Listeners 
+    const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const keyboardHideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const keyboardDidShowListener = Keyboard.addListener(keyboardShowEvent, () => {
+      Animated.timing(translateY, {
+        toValue: 100, // Adjust slide distance as needed
+        duration: 200, // Adjust duration as needed
+        useNativeDriver: true,
+      }).start();
+    });
+
+    const keyboardDidHideListener = Keyboard.addListener(keyboardHideEvent, () => {
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 200, // Adjust duration as needed
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
   const params = {
     ScreenHeader: {
       HeaderStyle: styles.header,
@@ -39,6 +65,15 @@ const ProviderContantPrice = (props) => {
 
   const onBackPress = () => {
     props.navigation.goBack();
+  };
+
+  const RenderFooter = () => {
+    return (
+      <Animated.View style={[styles.footer, { transform: [{ translateY: translateY }] }]}>
+        <ScreenBack ScreenBack={params.ScreenBack} />
+        <ScreenNext ScreenNext={params.ScreenNext} />
+      </Animated.View>
+    )
   };
 
   return (
@@ -65,10 +100,8 @@ const ProviderContantPrice = (props) => {
           }}
         />
       </View>
-      <View style={styles.footer}>
-        <ScreenBack ScreenBack={params.ScreenBack} />
-        <ScreenNext ScreenNext={params.ScreenNext} />
-      </View>
+      {RenderFooter()}
+
 
     </View>
   )
