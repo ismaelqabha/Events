@@ -1,24 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, StyleSheet, Image, View } from 'react-native';
-import strings from '../../assets/res/strings'
-import { Alert } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
 import LottieView from 'lottie-react-native';
 
 const ProviderAddPhotoComp = props => {
-  const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
   const [isSelected, setIsSelected] = useState(false)
-  const { photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext)
+  const { isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext)
   const tickRef = useRef(null)
   const { selectedPhotos, setSelectedPhotos } = props
-  const removeSelectedPhoto = () => {
-    let newArray = photoArray.filter(Imageobj => Imageobj.image !== props.uri);
-    setPhotoArray(newArray);
-  };
 
-  //   confirmation popup for removing the selected photo
   const ShowImagePopUp = () => {
     setIsDeleteMode(true)
   };
@@ -27,19 +19,8 @@ const ProviderAddPhotoComp = props => {
     isSelected ? tickRef.current?.play(10,50) : tickRef.current?.play(50, 10)
   }, [isSelected])
 
-  const setCoverPhoto = () => {
-    let warningButtons = [
-      {
-        text: language.cancelButton,
-        onPress: () => null,
-      },
-      {
-        text: language.confirmButton,
-        onPress: () => removeSelectedPhoto(),
-      },
-    ];
-
-    return Alert.alert(language.warning, language.backWarning, warningButtons);
+  const showImagesModal = () => {
+   
   }
   const setSelected = () => {
     selectedPhotos.includes(props.uri) ? removeFromSelected() : addToSelected();
@@ -62,7 +43,7 @@ const ProviderAddPhotoComp = props => {
   try {
     return (
       <TouchableOpacity
-        onPress={() => setCoverPhoto()}
+        onPress={() => showImagesModal()}
         onLongPress={() => ShowImagePopUp()}
         style={[styles.container, AppStyles.shadow]}
         disabled={isDeleteMode}
