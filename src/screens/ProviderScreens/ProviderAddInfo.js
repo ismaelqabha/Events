@@ -502,7 +502,7 @@ const ProviderAddInfo = props => {
     return (
       <View style={styles.contentItemView}>
         <Pressable onPress={() => removeDescription(descriptionItem)}>
-          <AntDesign name='delete' size={15} />
+          <AntDesign name='delete' size={15} color={'gray'} />
         </Pressable>
         <TextInput
           style={styles.descriptionInput}
@@ -510,27 +510,21 @@ const ProviderAddInfo = props => {
           placeholder='أضف وصف جديد'
           value={descriptionItem}
           onChangeText={(val) => setDescriptionItem(val)}
-          onSubmitEditing={(val) => {
+          onEndEditing={(val) => {
             const data = {
               descItem: descriptionItem
             }
-            updateDescrArray(data)
+            updateDescrArray(data,props.index)
           }}
         />
       </View>)
   }
-  const updateDescrArray = (data) => {
-    var i = description.findIndex((val) => val.descItem === data.descItem)
-    if (i == -1) {
-      var temp = description.findIndex((val) => val.empty === "empty")
-      var newArr = description
-      newArr[temp] = data
-      setDescription(newArr)
-    } else {
-      var current = description
-      current[i] = data
-      setDescription(current)
-    }
+  const updateDescrArray = (data , index) => {
+      setDescription(prevArray => {
+          const newArray = [...prevArray];
+          newArray[index] = data;
+          return newArray;
+      });
   }
 
   return (
