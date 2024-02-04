@@ -40,7 +40,7 @@ const SignIn = (props) => {
                         ToastAndroid.BOTTOM
                     )
                 } else {
-                    ToastAndroid.showWithGravity('',
+                    ToastAndroid.showWithGravity('there has been an erro '+ res.message,
                         ToastAndroid.SHORT,
                         ToastAndroid.BOTTOM
                     )
