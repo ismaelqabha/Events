@@ -32,7 +32,7 @@ const ProviderProfile = props => {
     },
   ];
   const [socialData, setSocialData] = useState([...SocialData]);
-  const [socialMediaEditing, setSocialMediaEditing] = useState([...SocialData]);
+  const [socialMediaEditing, setSocialMediaEditing] = useState(false);
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
