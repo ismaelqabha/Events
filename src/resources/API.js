@@ -76,6 +76,14 @@ export const updateEvent = async body => {
   const url = 'Events/updateByid';
   return await AppFetch(url, 'PATCH', body);
 };
+// export const getEventLogo = async body => {
+//   const url = 'EventList/getEventIconById';
+//   return await AppFetch(url, 'POST', body);
+// };
+export const getEventList = async body => {
+  const url = 'EventList/getEventItem';
+  return await AppFetch(url, 'POST', body);
+};
 // Request
 
 export const getRequestInfoWithservice = async (body) => {

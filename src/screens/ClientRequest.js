@@ -2,46 +2,48 @@ import React, { useContext, useEffect, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
 import SearchContext from '../../store/SearchContext';
+import UsersContext from '../../store/UsersContext';
 import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { addNewRequest, deleteRequestbyId, getServiceImages } from '../resources/API';
+import Entypo from "react-native-vector-icons/Entypo";
+import { addNewRequest, deleteRequestbyId, getEventLogo, getEventsInfo } from '../resources/API';
 import DetailComp from '../components/DetailComp';
 import { v4 as uuidv4 } from 'uuid';
+import { colors } from '../assets/AppColors';
+import RequestDetail from '../components/RequestDetail';
 
 
 
 
 const ClientRequest = (props) => {
     const { data } = props?.route.params
-    const { sType, userId, ServiceImages, setServiceImages, requestedDate, TimeText, setTimeText,
-        setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState, setRequestIdState } = useContext(SearchContext);
-    const [textValue, setTextValue] = useState('');
-    const [selectTime, setSelectTime] = useState(false);
-    const [detailViewPressed, setDetailViewPressed] = useState(false);
-    const [campaignViewPressed, setCampaignViewPressed] = useState(false);
-    const idReq = uuidv4()
-
+    const { userId } = useContext(UsersContext);
+    const {
+        requestedDate,
+        TimeText, setTimeText,
+        setisFromRequestScreen,
+        requestInfo, setRequestInfo,
+        detailIdState, setRequestIdState,
+        eventInfo, setEventInfo,
+        eventTypeInfo } = useContext(SearchContext);
 
     const [date, setDate] = useState(new Date());
-    const [mode, setMode] = useState('time');
-    const [show, setShow] = useState(false);
+    const [requestedEvent, setRequestedEvent] = useState([]);
+    const [IveEvent, setIveEvent] = useState(false);
 
+    const [selectTime, setSelectTime] = useState(true);
 
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    }
-    const onChange = (event, selectedDate) => {
-        setShow(false)
-        const currentDate = selectedDate || date;
-        setDate(currentDate);
+    const idReq = uuidv4()
+    let EId = ''
 
-        let tempDate = new Date(currentDate);
-        let fTime = tempDate.getHours() + ':' + tempDate.getMinutes();
-        setTimeText(fTime);
+    const currentDate = moment(date, "YYYY-MM-DD")
+    let day = currentDate.format('D')
+    let month = currentDate.format('M')
+    let year = currentDate.format('YYYY')
+    let completeDate = day + '/' + month + '/' + year
 
-    }
+    //console.log("userId", userId);
+    //console.log("requestedDate", requestedDate);
 
     const onPressRequest = () => {
         props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
@@ -55,15 +57,21 @@ const ClientRequest = (props) => {
     const removeRequest = () => {
         deleteRequestbyId({ RequestId: idReq }).then(res => {
             setRequestInfo(res)
-            console.log("Request Deleted");
+            //console.log("Request Deleted");
         })
     }
-    const getImagesfromApi = () => {
-        getServiceImages({ serviceID: data?.service_id }).then(res => {
-            setServiceImages(res)
+    const getEventsfromApi = () => {
+        getEventsInfo({ userId: userId }).then(res => {
+            //console.log("res", res);
+            if (res.message == 'No Event') {
+                setIveEvent(false)
+            } else {
+                setIveEvent(true)
+                setEventInfo(res)
+            }
+        })
+    }
 
-        })
-    }
     const creatNewRequest = () => {
         setRequestIdState(idReq)
         const newRequestItem = {
@@ -102,226 +110,86 @@ const ClientRequest = (props) => {
     }
 
     useEffect(() => {
-        getImagesfromApi()
+        getEventsfromApi()
         setisFromRequestScreen(true)
-        creatNewRequest()
+        //getEventLogofromApi('65bfea90ed6965ed8854aec2')
+        //creatNewRequest()
     }, [])
 
+const d = '2024-6-5'
+    const renderHeader = () => {
+        return (
+            <View style={styles.header}>
+                <Pressable onPress={onPressHandler}
+                >
+                    <Ionicons
+                        style={styles.icon}
+                        name={"arrow-back"}
+                        color={"black"}
+                        size={25} />
+                </Pressable>
+                <Text style={styles.txt}>طلب حجز</Text>
+            </View>
+        )
+    }
+    const renderRequestedDates = () => {
+        if (Array.isArray(requestedDate)) {
+            return requestedDate.map(item => {
+                return (
+                    <View style={styles.dateItem}>
+                        <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
+                        <Text style={styles.dateTxt}>{moment(d).format('L')}</Text>
+                    </View>
+                )
+            })
+        } else {
+            return (
+                <View style={styles.dateItem1}>
+                    <Text style={styles.dateTxt}>{moment(requestedDate).format('dddd')}</Text>
+                    <Text style={styles.dateTxt}>{requestedDate}</Text>
+                </View>
+            )
+        }
+    }
     const queryImg = () => {
-        return ServiceImages?.filter(photo => {
-            return photo.coverPhoto == true
+        const imageArray = data.images[0].serviceImages.map(photos => {
+            return photos;
         });
+        return imageArray;
     };
-
     const renderServiceImage = () => {
         const logo = queryImg();
         const coverphoto = logo.map(img => {
             return <Image
-                source={{ uri: img.image }}
+                source={{ uri: img }}
                 style={styles.img}
             />
         })
 
         return coverphoto
     }
-
     const renderServiceinfo = () => {
-        return <View style={styles.DateView}><View style={styles.imgTitle}>
-            <View style={{ margin: 10, alignItems: 'flex-end' }}>
-                <Text style={styles.text}>{data?.title}</Text>
-                <Text style={styles.text}>{data?.address}</Text>
-                <Text style={{}}>5★</Text>
-            </View>
-            {/* {renderServiceImage()} */}
-        </View></View>;
-    }
-
-    const renderDateTime = () => {
-        return <View style={styles.DateView}>
-            <Text style={styles.t1}> الزمان </Text>
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-                <Text style={styles.t3}>{moment(requestedDate).format('LL')}</Text>
-                <Text style={styles.t3}>{moment(requestedDate).format('dddd')}</Text>
-            </View>
-            <Pressable onPress={() => checkavailblity()} >
-                <View style={styles.viewDate}>
-                    <Text style={styles.text}>{TimeText || "00:00"}</Text>
-                    <Image
-                        style={styles.icoon}
-                        source={require('../assets/photos/time.png')}
-                    />
+        return <View >
+            <View style={styles.titleView}>
+                <View style={{ margin: 10, alignItems: 'flex-end' }}>
+                    <Text style={styles.titleText}>{data?.title}</Text>
+                    <Text style={styles.titleText}>{data?.address}</Text>
+                    <Text style={styles.titleText}>5★</Text>
                 </View>
-            </Pressable>
-            {show && (
-                <DateTimePicker
-                    testID='dateTimePicker'
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    display='clock'
-                    onChange={onChange}
-                />
-            )}
-        </View>
-    }
-    const detailPress = () => {
-        setDetailViewPressed(true)
-        setCampaignViewPressed(false)
-    }
-    const campaignPress = () => {
-        setDetailViewPressed(false)
-        setCampaignViewPressed(true)
-    }
-    const handleClosePress = () => {
-        setDetailViewPressed(false)
-        setCampaignViewPressed(false)
-    }
-
-    const renderDetail = () => {
-        return (
-            <View style={[styles.detailView, detailViewPressed ? styles.detailView : styles.pressDetailView]}>
-                <TouchableOpacity onPress={detailPress}>
-                    <Text style={styles.detailViewText}>تحديد التفاصيل</Text>
-                </TouchableOpacity>
-                {detailViewPressed &&
-                    <View style={{ flex: 1 }}>
-                        <View style={{ alignItems: 'center', marginTop: 30 }}>
-                            <ScrollView>
-                                <DetailComp service_id={data.service_id} />
-                            </ScrollView>
-                        </View>
-                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
+                {renderServiceImage()}
             </View>
-        )
+        </View>;
     }
-    const renderCampaighn = () => {
-        return (
-            <View style={[styles.detailView, campaignViewPressed ? styles.detailView : styles.pressDetailView]}>
-                <TouchableOpacity onPress={campaignPress}>
-                    <Text style={styles.detailViewText}>اختيار احد العروض</Text>
-                </TouchableOpacity>
-                {campaignViewPressed &&
-                    <View style={{ flex: 1 }}>
-                        <View style={{ alignItems: 'center', marginTop: 30 }}>
-
-                        </View>
-                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
-            </View>
-        )
-    }
-    const renderServiceDetail = () => {
-        return <View style={styles.HallView}>
-            <Text style={styles.desc1}>تفاصيل الحجز</Text>
-            <View style={{}}>
-                {checkType()}
-                {renderDetail()}
-                {renderCampaighn()}
+    const renderRequestInfo = () => {
+        return <View style={styles.requestDetailView}>
+            <Text style={styles.detailText}>تفاصيل الحجز</Text>
+            <View>
+                <RequestDetail   {...data} />
             </View>
         </View>
     }
-    const CatOfService = {
-        'قاعات': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد المدعوين',
-        }],
-        'تصوير': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد الكاميرات',
-        }],
-        'Makeup': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد الايام',
-        }],
-        'شيف': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد الايام',
-        }],
-        'تصفيف شعر': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد الايام',
-        }],
-        'بطاقات دعوة': [
-            {
-                style: styles.input,
-                placeholder: 'ادخل عدد النسخ',
-            },
-            {
-                style: styles.input,
-                placeholder: 'نص البطاقة',
-            }
-        ],
-        'حلويات': [{
-            style: styles.input,
-            placeholder: 'ادخل الكمية',
-        }]
-    }
-    const renderInput = () => {
-        return CatOfService[sType].map(type => {
-            return (<TextInput
-                {...type}
-                value={textValue}
-                onChangeText={setTextValue} />)
-        })
-    }
-
-    const checkType = () => {
+    const renderFoter = () => {
         return (
-            <View style={styles.VHall}>
-                {renderInput()}
-            </View>
-        )
-    }
-    const pricingPress = () => {
-        props.navigation.navigate(ScreenNames.ServiceDetail, { data: { ...data } })
-    }
-
-    return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.title}>
-                    <Pressable onPress={onPressHandler}
-                    >
-                        <Ionicons
-                            style={styles.icon}
-                            name={"arrow-back"}
-                            color={"black"}
-                            size={25} />
-                    </Pressable>
-                    <Text style={styles.txt}>Request</Text>
-                </View>
-
-            </View>
-
-            <ScrollView contentContainerStyle={styles.home}>
-                {renderServiceinfo()}
-
-                {renderDateTime()}
-
-                {renderServiceDetail()}
-
-                {/* <View style={styles.body}>
-                    <Pressable style={styles.priceView} onPress={pricingPress}>
-                        <Text style={styles.descText}>تحديد الرزمة</Text>
-                    </Pressable>
-                </View> */}
-
-                <View style={styles.body}>
-                    <Text style={styles.t1}>سياسة الغاء الحجز</Text>
-
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.t1}>لن يتم تأكيد الحجز حتى يقوم صاحب الخدمة بقبول الطلب خلال 24 ساعة</Text>
-
-                </View>
-            </ScrollView>
             <View style={styles.foter}>
                 <Pressable onPress={() => onPressRequest()}
                     disabled={selectTime ? false : true}
@@ -330,6 +198,95 @@ const ClientRequest = (props) => {
                     <Text style={styles.btntext}>ارسال طلب</Text>
                 </Pressable>
             </View>
+        )
+    }
+    // Event Section
+    const renderEvents = () => {
+        return (<View style={styles.eventView}>
+            <Text style={styles.detailText}>اِضغط على المناسبة التي تنوي ارفاق الطلب لها</Text>
+            {IveEvent &&
+                <Pressable style={styles.eventItem}>
+                    {renderEventInfo()}
+                </Pressable>
+            }
+            <Pressable style={styles.eventItem}>
+                <Text style={styles.detailText}>اِنشاء مناسبة جديدة</Text>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={{ alignSelf: 'center' }}
+                        name={"plus"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
+            </Pressable>
+        </View>
+        )
+    }
+    const getEventLogo = (id) => {
+
+        const logo = eventTypeInfo.filter(item => item.Id === id)
+        return logo
+    }
+    const renderEventLogo = () => {
+        //console.log("requestedEvent", requestedEvent);
+        return requestedEvent.map(item => {
+            return (
+                <View style={styles.IconView}>
+                    <Image style={styles.iconImg} source={{ uri: item.eventImg }} />
+                </View>
+            )
+        })
+    }
+    const filtereventInfo = () => {
+        return eventInfo.filter(item => {
+            const EDate = item.eventDate
+            const CDate = completeDate
+            // console.log("item.eventDate", EDate);
+            // console.log("currentDate", CDate);
+            const result = EDate > CDate
+            // console.log("result", result);
+            return result
+        })
+    }
+    const renderEventInfo = () => {
+        const eventData = filtereventInfo()
+        //console.log("eventData", eventData);
+        return eventInfo.map(item => {
+
+            //console.log(">>", item.eventTitleId);
+            const document = getEventLogo(item.eventTitleId)
+            return (<View>
+                <View style={styles.IconView}>
+                    <Image style={styles.iconImg} source={{ uri: document.eventImg }} />
+                </View>
+                <View>
+                    <Text style={styles.detailText}>{item.eventName}</Text>
+                </View>
+            </View>
+            )
+        })
+
+    }
+
+    return (
+        <View style={styles.container}>
+            {renderHeader()}
+
+            <ScrollView contentContainerStyle={styles.home}>
+                {renderServiceinfo()}
+                <View style={styles.DateView}>
+                    <ScrollView horizontal={true}>
+                        {renderRequestedDates()}
+                    </ScrollView>
+                </View>
+                {renderRequestInfo()}
+                {renderEvents()}
+                <View style={styles.body}>
+                    <Text style={styles.text}>لن يتم تأكيد الحجز حتى يقوم صاحب الخدمة بقبول الطلب خلال 24 ساعة</Text>
+                </View>
+                {renderFoter()}
+            </ScrollView>
+
         </View>
     );
 }
@@ -339,209 +296,174 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#dcdcdc',
     },
-    VHall: {
-        flexDirection: 'row',
-        alignSelf: 'center',
-        marginBottom: 10,
-    },
-    HallView: {
+    header: {
         backgroundColor: 'white',
-        height: 730,
-        borderRadius: 5,
-        margin: 5,
-
+        flexDirection: 'row',
+        width: '100%',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    titleView: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        backgroundColor: 'white',
+        marginVertical: 2.5,
+        height: 150,
+        alignItems: 'center',
+        paddingRight: 10
     },
     DateView: {
         backgroundColor: 'white',
-        height: 200,
         justifyContent: 'center',
-        borderRadius: 5,
-        margin: 5,
-    },
-    descText: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: 'black',
-    },
-    detailViewText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        margin: 10,
-        position: 'absolute',
-        right: 0,
-        top: 0
-    },
-    detailView: {
-        width: '90%',
-        height: 500,
-        backgroundColor: 'snow',
-        elevation: 5,
-        borderRadius: 8,
-        margin: 10,
-        alignSelf: 'center',
-
-    },
-    pressDetailView: {
-        width: 350,
-        height: 60,
-        backgroundColor: 'snow',
-        elevation: 5,
-        borderRadius: 8,
-        margin: 10,
-        alignSelf: 'center',
-    },
-    closeView: {
-        height: 30,
-        width: 80,
-        borderRadius: 5,
-        backgroundColor: '#ffff',
-        elevation: 5,
+        marginVertical: 2.5,
+        width: "100%",
+        height: 80,
         alignItems: 'center',
-        justifyContent: 'center',
-        margin: 10,
-        position: 'absolute',
-        bottom: 0,
-        right: 0
     },
-
-    priceView: {
-        backgroundColor: 'snow',
+    dateItem: {
+        borderWidth: 2,
+        borderColor: '#dcdcdc',
+        borderRadius: 5,
+        width: 120,
         height: 50,
-        width: 200,
+        marginHorizontal: 3,
+        // flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        alignSelf: 'center'
+    },
+    dateItem1: {
+        borderWidth: 2,
+        borderColor: '#dcdcdc',
         borderRadius: 5,
-        elevation: 5
+        width: 120,
+        height: 50,
+        marginHorizontal: 3,
+        justifyContent: 'center',
+        alignSelf: 'center'
+    },
+    dateTxt: {
+        fontSize: 15,
+        color: 'black',
+        textAlign: 'center'
     },
 
-    t1: {
-        fontSize: 20,
-        //marginTop: 10,
-        marginRight: 20,
-        color: 'black',
-        fontWeight: 'bold',
+    requestDetailView: {
+        backgroundColor: 'white',
+        marginVertical: 2.5,
+        width: '100%',
+        paddingRight: 10
     },
-    t2: {
-        fontSize: 15,
-        //marginTop: 10,
-        marginRight: 20,
-        color: 'black',
-        fontWeight: 'bold',
+
+    detailText: {
+        fontSize: 18,
+        color: colors.puprble,
     },
-    t3: {
-        fontSize: 15,
-        color: 'black',
-        margin: 10
+    titleText: {
+        fontSize: 16,
+        color: colors.puprble,
+
     },
-    viewDate: {
+    eventView: {
+        backgroundColor: 'white',
+        marginVertical: 2.5,
+        width: '100%',
+        paddingRight: 10
+    },
+    eventItem: {
         flexDirection: 'row',
-        alignSelf: 'center',
-        width: 200,
-        height: 50,
-        borderRadius: 5,
+        justifyContent: 'flex-end',
         alignItems: 'center',
-        backgroundColor: 'snow',
-        justifyContent: 'space-evenly',
-        elevation: 5
+        width: "100%",
+        marginVertical: 5
     },
-    icoon: {
-        width: 35,
-        height: 35,
+    IconView: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginLeft: 15
     },
+    iconImg: {
+        alignItems: 'center',
+        width: 25,
+        height: 25
+    },
+
+
+
+    // priceView: {
+    //     backgroundColor: 'snow',
+    //     height: 50,
+    //     width: 200,
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     borderRadius: 5,
+    //     elevation: 5
+    // },
+
+
+
+
+
     text: {
         fontSize: 20,
         color: 'black'
     },
     txt: {
         fontSize: 20,
-        marginLeft: 120
+        marginRight: 20,
+        color: colors.puprble
     },
-    header: {
-        backgroundColor: 'white',
-        //height: 200,
-        // marginBottom: 10,
-    },
+
     body: {
         backgroundColor: 'white',
-        height: 100,
-        margin: 5,
-
-        borderRadius: 5,
-        margin: 5,
-        //alignItems: 'center',
-
+        width: '100%',
+        marginVertical: 2.5,
+        paddingHorizontal: 5
     },
-    title: {
-        flexDirection: 'row',
-        marginTop: 20,
-    },
+
     icon: {
-        alignSelf: 'flex-start',
         marginLeft: 10,
     },
     img: {
         width: 150,
         height: 120,
         borderRadius: 15,
-        backgroundColor: 'black',
+        // backgroundColor: 'black',
         justifyContent: 'flex-end'
     },
-    imgTitle: {
-        flexDirection: 'row',
-        //marginTop: 20,
-        justifyContent: 'space-around'
-    },
 
-    desc1: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
-        marginRight: 20,
-        marginTop: 10,
-    },
-    input: {
-        textAlign: 'center',
-        height: 50,
-        width: 200,
-        borderWidth: 1,
-        borderRadius: 10,
-        borderColor: 'black',
-        fontSize: 15,
-        fontWeight: 'bold',
-        marginTop: 20,
-        marginRight: 10,
-        color: 'black',
-        backgroundColor: '#fffaf0',
-    },
     foter: {
-        height: 80,
-        justifyContent: 'center',
         alignItems: 'flex-end',
-        backgroundColor: '#fffaf0',
+        width: '100%'
     },
     btntext: {
         fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
+        // fontWeight: 'bold',
+        color: 'white',
     },
     btnview: {
-        backgroundColor: '#f0ffff',
+        backgroundColor: colors.puprble,
         width: 150,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
-        marginRight: 20,
-        elevation: 5
+        elevation: 5,
+        margin: 10
     },
     btnRequestApproved: {
-        backgroundColor: '#f0ffff',
+        backgroundColor: colors.puprble,
         width: 150,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
-        marginRight: 20,
+        margin: 10,
         elevation: 5,
         opacity: 0.3
     },

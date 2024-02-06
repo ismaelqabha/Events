@@ -53,6 +53,7 @@ const SignIn = (props) => {
         getUserData({ Email: userEmail }).then(res => {
             setUserInfo(res)
             setuserId(res.user[0].USER_ID)
+            console.log("res.user[0].USER_ID",res.user[0].USER_ID);
         })
     }
 

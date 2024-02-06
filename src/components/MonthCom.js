@@ -184,18 +184,14 @@ const MonthCom = (props) => {
 
 
     const onCardPress = (mon, year, month , monthPressed, setMonthPress) => {
-        // if (monthPressed) {
-        //     setMonthPress(false)
-        //     const index = months.findIndex((m) => m.mon === month.mon)
-        //     const New = months.slice(index, 1)
-        //     // months.push(New)
+        if (monthPressed) {
+            setMonthPress(false)
 
-        // } else {
+        } else {
             setYearforSearch(year)
             onMonthSelected?.(mon)
             setMonthPress(true)
-            // months.push([...months, month])
-        // }
+        }
 
 
     }
@@ -209,7 +205,8 @@ const MonthCom = (props) => {
         const [monthPressed, setMonthPress] = useState(false)
         return (
             <Pressable style={[styles.monthView, monthPressed ? styles.monthViewPress : styles.monthView]}
-                onPress={() => { onCardPress(month.monNum, month.year, month, monthPressed, setMonthPress) }}>
+                //onPress={() => { onCardPress(month.monNum, month.year, month, monthPressed, setMonthPress) }}
+                >
                 <View style={styles.MView}>
                     <Text style={styles.yearText}>
                         {month.year}

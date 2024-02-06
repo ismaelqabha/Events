@@ -36,6 +36,7 @@ const ProviderAddInfo = props => {
   const [titleLengthError, setTitleLengthError] = useState(null);
   const [subTitleLengthError, setSubTitleLengthError] = useState(null);
   const [desLengthError, setDesLengthError] = useState(null);
+  const [selectHallType, setSelectHallType] = useState('')
 
   const [disableLocation, setDisbaleLocation] = useState(false);
   const [regionData, setRegionData] = useState([])
@@ -388,7 +389,9 @@ const ProviderAddInfo = props => {
   };
   const renderHallTyes = () => {
     return hallData?.map((item) => {
-      return <HallTypeCard {...item} />
+      return <HallTypeCard {...item} 
+      isChecked={item.hallType === selectHallType}
+      onHallTypePress={(value) => setSelectHallType(value)}/>
     })
   }
   const RenderHallDetails = () => {

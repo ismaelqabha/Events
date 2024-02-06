@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
+import UsersContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
 import { getCampaignsByServiceId, getRequestbyUserId } from '../resources/API';
@@ -18,10 +19,11 @@ const ServiceDescr = (props) => {
     const { data } = props?.route.params
     const [showModal, setShowModal] = useState(false);
     const [subDetArray, setSubDetArray] = useState([]);
-    const { userId,
+    const { userId } = useContext(UsersContext);
+    const {
         campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
-        requestedDate, setrequestedDate,
         requestInfo, setRequestInfo,
+        requestedDate, setrequestedDate,
         setReachCampaignfrom } = useContext(SearchContext);
 
     const getRequestfromApi = () => {
@@ -58,9 +60,9 @@ const ServiceDescr = (props) => {
         return !!isinEvent;
     }
 
-    const onPressHandler = () => {
+    const onRequestPressHandler = () => {
         // if (!checkIfInEvent()) {
-        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data, requestedDate } })
+        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
         // } else {
         //     Alert.alert(
         //         'تنبية',
@@ -112,32 +114,49 @@ const ServiceDescr = (props) => {
         </View>
     }
     const renderDescription = () => {
-        return (
-            <View style={styles.description}>
-                <Text style={styles.descText}>تحتوي هذة الخانة على شرح  عن المزود </Text>
-            </View>
-        )
+        const serviceDescription = data.desc.map(item => {
+            return (
+                <View style={styles.description}>
+                    <Text style={styles.descText}>{item[0]}</Text>
+                    <View style={styles.IconView}>
+                        <AntDesign
+                            style={{ alignSelf: 'center' }}
+                            name={"checksquareo"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                </View>
+            )
+        })
+        return serviceDescription
     }
 
     // render Service Dates Info
     const SelectDatePressed = (dat, setIsPressed, pressed) => {
-        // console.log("requestedDate",requestedDate);
+
         if (pressed) {
             setIsPressed(false)
-            const index = requestedDate.findIndex((date) => date.time === dat.time)
+            const index = requestedDate.findIndex((date) => {
+                date === dat
+            })
             const newDates = requestedDate.slice(index, 1)
             setrequestedDate(newDates)
+            //setselectedDates(dat)
+
         } else {
             setIsPressed(true)
             setrequestedDate([...requestedDate, dat])
         }
+
     }
+   
+   
+    //console.log("requestedDate",requestedDate);
     const renderDates = () => {
         moment.locale('ar-dz');
         if (Array.isArray(data.availableDates)) {
-            //const pressableStyle = isPressed ? styles.pressablePressed : styles.pressableDefault;
-
             const DatesAvailable = data.availableDates
+            //setrequestedDate(DatesAvailable)
             const dateArray = DatesAvailable?.map(dat => {
                 const [pressed, setIsPressed] = useState(false)
                 return <View style={styles.dateView}>
@@ -312,7 +331,7 @@ const ServiceDescr = (props) => {
                         <Text style={styles.detailTxt}>{item.detailTitle}</Text>
                         <AntDesign
                             style={{ marginLeft: 10 }}
-                            name={"check"}
+                            name={"enter"}
                             color={colors.puprble}
                             size={20} />
                     </Pressable>
@@ -336,7 +355,7 @@ const ServiceDescr = (props) => {
                         <Text style={styles.detailTxt}>{item.detailTitle}</Text>
                         <AntDesign
                             style={{ marginLeft: 10 }}
-                            name={"check"}
+                            name={"enter"}
                             color={colors.puprble}
                             size={20} />
                     </Pressable>
@@ -412,14 +431,25 @@ const ServiceDescr = (props) => {
     }
     const renderHeader = () => {
         return (
-            <View style={styles.head}>
+            <View style={styles.header}>
                 <Pressable onPress={onPressBack}
                 >
                     <Ionicons
-                        //style={styles.icon}
+                        style={{ marginLeft: 10 }}
                         name={"arrow-back"}
                         color={"black"}
                         size={25} />
+                </Pressable>
+            </View>
+        )
+    }
+    const renderFoter = () => {
+        return (
+            <View style={styles.foter}>
+                <Pressable style={styles.btnview}
+                    onPress={() => onRequestPressHandler()}
+                >
+                    <Text style={styles.btntext}>طلب حجز</Text>
                 </Pressable>
             </View>
         )
@@ -431,32 +461,22 @@ const ServiceDescr = (props) => {
                 <View style={styles.logo}></View>
                 {renderTitle()}
                 {seperator()}
-                {renderDescription()}
-                {seperator()}
                 {renderDatesAvailable()}
                 {seperator()}
-
+                {renderDescription()}
+                {seperator()}
                 <View style={styles.ditailView}>
                     <Text style={styles.text}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
                     {renderServiceDetail()}
                     {renderCampeigns()}
                 </View >
                 {seperator()}
+                {renderserviceLocation()}
+                {seperator()}
                 {renderClientReview()}
                 {seperator()}
-
-                {renderserviceLocation()}
-
-                {seperator()}
-
                 {renderSoialMedia()}
-                <View style={styles.foter}>
-                    <Pressable style={styles.btnview}
-                        onPress={() => onPressHandler()}
-                    >
-                        <Text style={styles.btntext}>طلب حجز</Text>
-                    </Pressable>
-                </View>
+
             </View >
         )
     }
@@ -469,6 +489,7 @@ const ServiceDescr = (props) => {
                 {renderBody()}
             </ScrollView>
             {renderSubDetailModal()}
+            {renderFoter()}
         </View>
 
     );
@@ -478,6 +499,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
+    },
+    header: {
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        width: '100%',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
     sliderView: {
 
@@ -527,6 +556,8 @@ const styles = StyleSheet.create({
     },
     description: {
         marginVertical: 10,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
     DatesZone: {
         marginVertical: 10,
