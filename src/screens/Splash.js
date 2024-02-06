@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useContext, useEffect } from 'react'
-import { getCampaigns, getFavoritesforUser, getHomePageData } from '../resources/API';
+import { getCampaigns, getEventList, getFavoritesforUser, getHomePageData } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ImageBackground } from 'react-native';
 
 
 export default function Splash(props) {
-    const { setServiceDataInfo, setUserFavorates, servType, userId , setCampInfo, userRegion} = useContext(SearchContext);
+    const { setServiceDataInfo, setUserFavorates, servType, userId , setCampInfo, userRegion, setEventTypeInfo} = useContext(SearchContext);
 
     const getFavoritesFromApi = () => {
         getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
@@ -25,9 +25,20 @@ export default function Splash(props) {
             getCampaignfromApi()
         })
     }
+    const getEventListfromApi = () => {
+        getEventList().then(res => {
+            //console.log("res", res);
+            if (res.message == 'No EventLog') {
+
+            } else {
+                setEventTypeInfo(res)
+            }
+        })
+    }
 
     useEffect(() => {
         getDataFromApi()
+        getEventListfromApi()
     }, [servType])
 
     

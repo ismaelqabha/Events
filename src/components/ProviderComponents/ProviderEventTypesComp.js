@@ -9,7 +9,7 @@ const ProviderEventTypesComp = (props) => {
     return (
         <View style={styles.container}>
             <Pressable style={styles.eventCard}>
-                <Image style={styles.eventImg} source={props.img} />
+                <Image style={styles.eventImg} source={{uri : props.img}} />
                 <Text style={styles.txt}>{props.eventTitle}</Text>
             </Pressable>
         </View>

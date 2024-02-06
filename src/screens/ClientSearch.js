@@ -316,7 +316,7 @@ const ClientSearch = (props) => {
 
     const onBtnSearchPress = () => {
         if (Categorychozen) {
-            props.navigation.navigate(ScreenNames.Results, { data: { ...props } });
+            props.navigation.navigate(ScreenNames.Results, { data: { ...props }});
         }
     }
 

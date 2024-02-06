@@ -6,7 +6,7 @@ import SearchContext from '../store/SearchContext';
 const SearchProvider = props => {
 
   //user
-  const [userId, setuserId] = useState(1);
+  //const [userId, setuserId] = useState(1);
 
   const [cat, setCat] = useState('');
   const [isFirst, setIsfirst] = useState()
@@ -45,6 +45,7 @@ const SearchProvider = props => {
 
   // Event 
   const [eventInfo, setEventInfo] = useState([])
+  const [eventTypeInfo, setEventTypeInfo] = useState([]);
 
   // ClientSearch
   const [cityselected, setcityselected] = useState("");
@@ -69,8 +70,8 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
-        userId,
-        setuserId,
+        // userId,
+        // setuserId,
         cat,
         setCat,
         isFirst,
@@ -139,14 +140,15 @@ const SearchProvider = props => {
         setOrderSubdetail,
         eventInfo,
         setEventInfo,
+        eventTypeInfo, 
+        setEventTypeInfo,
         TimeText,
         setTimeText,
         campiegnsAccordingServiceId,
         setCampiegnsAccordingServiceId,
         reachCampaignfrom,
         setReachCampaignfrom,
-        regionData, 
-        setRegionData
+        regionData, setRegionData
 
       }}>
       {props.children}

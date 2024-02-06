@@ -1,11 +1,16 @@
 import { StyleSheet, Text, View, Pressable, FlatList, ScrollView } from 'react-native'
-import React from 'react'
+import React, {useState, useContext, useEffect} from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../../assets/AppColors';
 import { EventType } from '../../resources/data';
 import ProviderEventTypesComp from '../../components/ProviderComponents/ProviderEventTypesComp';
+import SearchContext from '../../../store/SearchContext';
 
 const ProviderSetEventType = (props) => {
+
+    const { eventTypeInfo} = useContext(SearchContext);
+
+    
 
     const onBackPress = () => {
         props.navigation.goBack();
@@ -28,7 +33,7 @@ const ProviderSetEventType = (props) => {
     }
 
     const renderEventsType = () => {
-        const eventsList = EventType?.map((eventItem) => {
+        const eventsList = eventTypeInfo?.map((eventItem) => {
             return (
                 <ProviderEventTypesComp {...eventItem} />
             )
@@ -78,7 +83,7 @@ const styles = StyleSheet.create({
     },
     body: {
         width: '90%',
-       
+
         alignSelf: 'center',
         //marginVertical: 20
     },
