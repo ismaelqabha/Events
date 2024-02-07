@@ -3,18 +3,19 @@ import React, { useState, useContext } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
-import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
 
 const RequestDetail = (props) => {
     // const { data } = props?.route.params
     const { TimeText, setTimeText, cat } = useContext(SearchContext);
     const [textValue, setTextValue] = useState('');
+    const SubDetailArray = []
+    const [selectedSupDet, setSelectedSupDet] = useState([]);
     const [detailViewPressed, setDetailViewPressed] = useState(false);
     const [campaignViewPressed, setCampaignViewPressed] = useState(false);
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('time');
     const [show, setShow] = useState(false);
-
 
     const showMode = (currentMode) => {
         setShow(true);
@@ -30,6 +31,24 @@ const RequestDetail = (props) => {
         setTimeText(fTime);
 
     }
+    const checkavailblity = () => {
+        showMode('time')
+        if (TimeText != "00:00") {
+            setSelectTime(true)
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء اختيار الوقت الزمني للحجز',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
+    }
 
     const detailPress = () => {
         setDetailViewPressed(true)
@@ -42,6 +61,18 @@ const RequestDetail = (props) => {
     const handleClosePress = () => {
         setDetailViewPressed(false)
         setCampaignViewPressed(false)
+    }
+    const whenSupDetailPress = (item, SubId, setSelectedSubDetail, selectedSubDetail) => {
+        const SubDetail = item
+        if (selectedSubDetail) {
+            setSelectedSubDetail(false)
+            // SubDetail.pop(SubId)
+            // setSelectedSupDet([...SubDetail])
+        } else {
+            setSelectedSubDetail(true)
+            // SubDetail.push(SubId)
+            // setSelectedSupDet([...SubDetail])
+        }
     }
 
     const renderSetTime = () => {
@@ -120,6 +151,7 @@ const RequestDetail = (props) => {
     }
 
     const renderServiceDetail = () => {
+
         const detail = props.additionalServices
         return detail.map(element => {
             return (<View>
@@ -127,14 +159,17 @@ const RequestDetail = (props) => {
                     <Text style={styles.detailViewText}>{element.detailTitle}</Text>
                 </View>
                 {element.subDetailArray.map(item => {
+                    const [selectedSubDetail, setSelectedSubDetail] = useState(false);
                     return (
                         <View style={styles.subDetail}>
-                            <Text style={styles.detailViewText}>{item.detailSubtitle}</Text>
-                            <AntDesign
-                                style={{ alignSelf: 'center' }}
-                                name={"checksquareo"}
-                                color={colors.puprble}
-                                size={30} />
+                            <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
+                            <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item, item.subDetail_Id, setSelectedSubDetail, selectedSubDetail)}>
+                                {selectedSubDetail && <Entypo
+                                    style={{ alignSelf: 'center' }}
+                                    name={"check"}
+                                    color={colors.puprble}
+                                    size={30} />}
+                            </Pressable>
                         </View>
                     )
                 })
@@ -147,7 +182,7 @@ const RequestDetail = (props) => {
     const renderReservationDet = () => {
         return (
             <ScrollView style={styles.scroll} horizontal pagingEnabled>
-                <View style={{flex:1, backgroundColor: 'green', width: Dimensions.get('window').width}}>
+                <View style={{ alignItems: 'center', backgroundColor: 'green', width: Dimensions.get('window').width, }}>
                     <View style={styles.serviceDetBooking}>
                         <Text style={styles.detailViewText}>الخدمات</Text>
                         {renderServiceDetail()}
@@ -155,9 +190,6 @@ const RequestDetail = (props) => {
                     <View style={styles.serviceDetBooking}>
                         <Text style={styles.detailViewText}>العروض</Text>
                         {renderServiceDetail()}
-                    </View>
-                    <View style={styles.serviceDetBooking}>
-
                     </View>
                 </View>
             </ScrollView>
@@ -215,7 +247,7 @@ const RequestDetail = (props) => {
     }
 
     return (
-        <View>
+        <View >
             {renderRequestInfo()}
         </View>
     )
@@ -231,9 +263,9 @@ const styles = StyleSheet.create({
         padding: 10
     },
     scroll: {
-        flex: 1,
-        height: 300,
-        width: '100%'
+        // flex: 1,
+        // height: 300,
+        // width: '100%'
     },
     serviceDetBooking: {
         width: '90%',
@@ -242,7 +274,7 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray',
         padding: 5,
         marginTop: 10,
-        backgroundColor: 'blue'
+        backgroundColor: 'white'
         //margin: 5
     },
     detailView: {
@@ -266,12 +298,14 @@ const styles = StyleSheet.create({
     },
     detailViewText: {
         fontSize: 18,
-        //color: 'white'
-        // fontWeight: 'bold',
-        margin: 10,
-        // position: 'absolute',
-        // right: 0,
-        // top: 0
+        color: colors.puprble,
+        fontWeight: 'bold',
+        //margin: 5,
+    },
+    subDetText: {
+        fontSize: 15,
+        color: colors.puprble,
+        marginRight: 10
     },
     closeView: {
         height: 30,
@@ -292,26 +326,25 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     invitView: {
-        alignSelf: 'center'
+        alignSelf: 'center',
+        width: '90%',
+
     },
     input: {
         textAlign: 'center',
         height: 50,
-        width: 200,
         borderWidth: 1,
         borderRadius: 5,
         borderColor: 'lightgray',
         fontSize: 15,
         fontWeight: 'bold',
-        marginTop: 20,
-        marginRight: 10,
+        marginVertical: 20,
         color: 'black',
-        // backgroundColor: '#fffaf0',
     },
     viewDate: {
         flexDirection: 'row',
         alignSelf: 'center',
-        width: 200,
+        width: '90%',
         height: 50,
         borderRadius: 5,
         alignItems: 'center',
@@ -328,14 +361,14 @@ const styles = StyleSheet.create({
         height: 35,
     },
     detailItem: {
-        backgroundColor: colors.gold,
-        borderRadius: 5,
-        height: 50,
-        width: '80%',
-        margin: 5,
+        backgroundColor: 'lightgray',
+        borderRadius: 10,
+        height: 40,
+        width: '100%',
+        marginVertical: 10,
         justifyContent: 'center',
         paddingRight: 10,
-        elevation: 5,
+        // elevation: 5,
         alignSelf: 'flex-end'
 
     },
@@ -343,6 +376,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
+        marginVertical: 5
+    },
+    subPressable: {
+        width: 30,
+        height: 30,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 
 })

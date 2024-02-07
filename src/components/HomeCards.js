@@ -28,7 +28,7 @@ const HomeCards = (props) => {
                 return "(" + availableDates.length + ")" + "  تاريخ متاح "
             }
         } else {
-            return availableDates
+            return moment(availableDates).format('L')
         }
     }
 

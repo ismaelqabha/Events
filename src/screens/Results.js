@@ -155,7 +155,7 @@ const Results = (props) => {
             }
         }else{
             for (var day = currentDate; day <= daysInMonth; day++) {
-                completeDate = day + '-' + currentMonth + '-' + currentYear
+                completeDate = currentYear + '-' + currentMonth + '-' + day
                 if (!checkDate(completeDate, serviceDates)) {
                     break
                 }
@@ -169,7 +169,7 @@ const Results = (props) => {
         let completeDate = ''
         const datesOfSelectedMonth = []
         for (var day = 1; day <= daysInMonth; day++) {
-            completeDate = day + '-' + requestedMonth + '-' + yearforSearch
+            completeDate = yearforSearch + '-' + requestedMonth + '-' + day
             if (!checkDate(completeDate, serviceDates)) {
                 datesOfSelectedMonth.push(completeDate)
             }
@@ -184,7 +184,7 @@ const Results = (props) => {
         let year = requestedDate.format('YYYY')
         let daysInMonth = 0
 
-        let completeDate = startingDay + '-' + month + '-' + year
+        let completeDate = year + '-' + month + '-' + startingDay
         let startingDate = ''
         const dateswithinPeriod = []
         let day = startingDay
@@ -205,7 +205,7 @@ const Results = (props) => {
                     daysInMonth = moment(year + '-' + month).daysInMonth()
                     day = daysInMonth
                 }
-                startingDate = day + '-' + month + '-' + year
+                startingDate = year + '-' + month + '-' + day
                 day--
             }
 
@@ -223,7 +223,7 @@ const Results = (props) => {
                     daysInMonth = moment(Year + '-' + Month).daysInMonth()
                     Day = 1
                 }
-                completeDate = Day + '-' + Month + '-' + Year
+                completeDate = Year + '-' + Month + '-' + Day
                 if (!checkDate(completeDate, serviceDates)) {
                     dateswithinPeriod.push(completeDate)
                 }

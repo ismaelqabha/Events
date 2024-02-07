@@ -117,13 +117,13 @@ const ServiceDescr = (props) => {
         const serviceDescription = data.desc.map(item => {
             return (
                 <View style={styles.description}>
-                    <Text style={styles.descText}>{item[0]}</Text>
+                    <Text style={styles.descText}>{item.descItem}</Text>
                     <View style={styles.IconView}>
                         <AntDesign
                             style={{ alignSelf: 'center' }}
                             name={"checksquareo"}
                             color={colors.puprble}
-                            size={30} />
+                            size={20} />
                     </View>
                 </View>
             )
@@ -141,7 +141,6 @@ const ServiceDescr = (props) => {
             })
             const newDates = requestedDate.slice(index, 1)
             setrequestedDate(newDates)
-            //setselectedDates(dat)
 
         } else {
             setIsPressed(true)
@@ -149,14 +148,10 @@ const ServiceDescr = (props) => {
         }
 
     }
-   
-   
-    //console.log("requestedDate",requestedDate);
     const renderDates = () => {
         moment.locale('ar-dz');
         if (Array.isArray(data.availableDates)) {
             const DatesAvailable = data.availableDates
-            //setrequestedDate(DatesAvailable)
             const dateArray = DatesAvailable?.map(dat => {
                 const [pressed, setIsPressed] = useState(false)
                 return <View style={styles.dateView}>
@@ -164,7 +159,7 @@ const ServiceDescr = (props) => {
                         onPress={() => SelectDatePressed(dat, setIsPressed, pressed)}
                     >
                         <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
-                        <Text style={styles.datetext}>{dat}</Text>
+                        <Text style={styles.datetext}>{moment(dat).format('L')}</Text>
                     </Pressable>
                 </View>;
             });
@@ -174,7 +169,7 @@ const ServiceDescr = (props) => {
             setrequestedDate(firstAvilableDate)
             return <View style={styles.dateformat}>
                 <View>
-                    <Text style={styles.datetxt}>{firstAvilableDate}</Text>
+                    <Text style={styles.datetxt}>{`${moment(firstAvilableDate).format('L')}`}</Text>
                     <Text style={styles.Daytex}>{`${moment(firstAvilableDate).format('dddd')}`}</Text>
                 </View>
                 <View style={styles.IconView}>
@@ -182,7 +177,7 @@ const ServiceDescr = (props) => {
                         style={{ alignSelf: 'center' }}
                         name={"calendar"}
                         color={colors.puprble}
-                        size={30} />
+                        size={20} />
                 </View>
             </View>;
 
@@ -190,9 +185,11 @@ const ServiceDescr = (props) => {
     };
     const renderDatesAvailable = () => {
         return (
-            <View style={styles.DatesZone}>
+            <View>
                 <Text style={styles.text}>{Array.isArray(data.availableDates) ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
-                <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>{renderDates()}</ScrollView>
+                <View style={styles.DatesZone}>
+                    <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>{renderDates()}</ScrollView>
+                </View>
             </View>
         )
     }
@@ -294,7 +291,7 @@ const ServiceDescr = (props) => {
                         style={{ alignSelf: 'center' }}
                         name={"price-tag"}
                         color={colors.puprble}
-                        size={30} />
+                        size={20} />
                 </View>
             </View>
         )
@@ -311,7 +308,7 @@ const ServiceDescr = (props) => {
                         style={{ alignSelf: 'center' }}
                         name={"price-tag"}
                         color={colors.puprble}
-                        size={30} />
+                        size={20} />
                 </View>
             </View>
         )
@@ -395,34 +392,66 @@ const ServiceDescr = (props) => {
         }
     }
     const renderSoialMedia = () => {
-        return <View style={styles.icon}>
-            <Pressable
-            //onPress={() => onPressModalHandler()}
-            >
-                <Entypo
-                    name={"facebook"}
-                    color={colors.gold}
-                    size={35} />
-            </Pressable>
+        return data.socialMedia.map(item => {
+            if (item.social == "facebook") {
+                return <View>
+                    <Pressable
+                    >
+                        <Entypo
+                            name={"facebook"}
+                            color={'blue'}
+                            size={35} />
+                    </Pressable>
+                </View>
+            }
+            if (item.social == "instagram") {
+                return <View>
+                    <Pressable
+                    //onPress={() => onPressModalHandler()}
+                    >
+                        <Entypo
+                            name={"instagram"}
+                            color={'black'}
+                            size={35} />
+                    </Pressable>
+                </View>
+            }
+            if (item.social == "tiktok") {
+                return <View>
+                    <Pressable
+                    //onPress={() => onPressModalHandler()}
+                    >
+                        <Ionicons
+                            name={"logo-tiktok"}
+                            color={'black'}
+                            size={35} />
+                    </Pressable>
+                </View>
+            }
+            if (item.social == "youtube") {
+                return <View>
+                    <Pressable
+                    //onPress={() => onPressModalHandler()}
+                    >
+                        <Entypo
+                            name={"youtube"}
+                            color={'red'}
+                            size={35} />
+                    </Pressable>
+                </View>
+            }
+            if (item.social == "X") {
+                return <View>
+                    <Pressable
+                    //onPress={() => onPressModalHandler()}
+                    >
+                        <Text>{item.social}</Text>
+                        <Image style={styles.Xstyle} source={require('../assets/photos/X-Logo.png')} />
+                    </Pressable>
+                </View>
+            }
+        })
 
-            <Pressable
-            //onPress={() => onPressModalHandler()}
-            >
-                <Entypo
-                    name={"instagram"}
-                    color={colors.gold}
-                    size={35} />
-            </Pressable>
-
-            <Pressable
-            //onPress={() => onPressModalHandler()}
-            >
-                <FontAwesome
-                    name={"phone-square"}
-                    color={colors.gold}
-                    size={35} />
-            </Pressable>
-        </View>
     }
     const seperator = () => {
         return (
@@ -440,6 +469,7 @@ const ServiceDescr = (props) => {
                         color={"black"}
                         size={25} />
                 </Pressable>
+                <Text style={styles.title}>تفاصيل المصلحة</Text>
             </View>
         )
     }
@@ -454,6 +484,18 @@ const ServiceDescr = (props) => {
             </View>
         )
     }
+    const renderPhoneContact = () => {
+        return (
+            <Pressable
+            //onPress={() => onPressModalHandler()}
+            >
+                <FontAwesome
+                    name={"phone-square"}
+                    color={colors.puprble}
+                    size={35} />
+            </Pressable>
+        )
+    }
 
     const renderBody = () => {
         return (
@@ -463,19 +505,25 @@ const ServiceDescr = (props) => {
                 {seperator()}
                 {renderDatesAvailable()}
                 {seperator()}
-                {renderDescription()}
+                <View>
+                    <Text style={styles.text}>وصف الخدمات المقدمة</Text>
+                    {renderDescription()}
+                </View>
                 {seperator()}
                 <View style={styles.ditailView}>
-                    <Text style={styles.text}>تفاصيل الخدمات لتحديد تكلفة الحجز</Text>
+                    <Text style={styles.text}>التفاصيل لتحديد تكلفة الحجز</Text>
                     {renderServiceDetail()}
-                    {renderCampeigns()}
+                    {/* {renderCampeigns()} */}
                 </View >
                 {seperator()}
                 {renderserviceLocation()}
                 {seperator()}
                 {renderClientReview()}
                 {seperator()}
-                {renderSoialMedia()}
+                <View style={styles.icon}>
+                    {renderSoialMedia()}
+                    {renderPhoneContact()}
+                </View>
 
             </View >
         )
@@ -512,8 +560,8 @@ const styles = StyleSheet.create({
 
     },
     body: {
-        borderTopLeftRadius: 60,
-        borderTopRightRadius: 60,
+        // borderTopLeftRadius: 60,
+        // borderTopRightRadius: 60,
         paddingHorizontal: 10,
         backgroundColor: colors.BGScereen,
         //position: 'absolute',
@@ -530,8 +578,8 @@ const styles = StyleSheet.create({
     },
 
     IconView: {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'lightgray',
@@ -552,15 +600,17 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray'
     },
     titleInfo: {
-        marginTop: 50
+        marginTop: 30
     },
     description: {
-        marginVertical: 10,
+        marginVertical: 5,
         flexDirection: 'row',
         justifyContent: 'flex-end',
+        alignItems: 'center'
     },
     DatesZone: {
         marginVertical: 10,
+        alignItems: 'center'
     },
     ditailView: {
         marginVertical: 10,
@@ -590,7 +640,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: colors.puprble,
-        marginBottom: 10
+        marginVertical: 10
     },
     changDatetext: {
         fontSize: 15,
@@ -613,7 +663,7 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
         color: colors.puprble,
     },
@@ -628,17 +678,21 @@ const styles = StyleSheet.create({
     },
     descText: {
         fontSize: 16,
-        fontWeight: 'bold',
         color: colors.puprble,
     },
     detailTxt: {
         fontSize: 16,
         color: colors.puprble,
     },
+    Xstyle: {
+        width: 30,
+        height: 30
+    },
 
     icon: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
+        alignItems: 'center',
         margin: 50
     },
     insicon: {
@@ -684,6 +738,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         elevation: 5,
+
     },
     viewselectdatepress: {
         justifyContent: 'center',

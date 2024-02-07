@@ -20,7 +20,6 @@ const ClientRequest = (props) => {
     const { userId } = useContext(UsersContext);
     const {
         requestedDate,
-        TimeText, setTimeText,
         setisFromRequestScreen,
         requestInfo, setRequestInfo,
         detailIdState, setRequestIdState,
@@ -28,41 +27,27 @@ const ClientRequest = (props) => {
         eventTypeInfo } = useContext(SearchContext);
 
     const [date, setDate] = useState(new Date());
-    const [requestedEvent, setRequestedEvent] = useState([]);
     const [IveEvent, setIveEvent] = useState(false);
-
     const [selectTime, setSelectTime] = useState(true);
 
     const idReq = uuidv4()
-    let EId = ''
-
-    const currentDate = moment(date, "YYYY-MM-DD")
-    let day = currentDate.format('D')
-    let month = currentDate.format('M')
-    let year = currentDate.format('YYYY')
-    let completeDate = day + '/' + month + '/' + year
-
-    //console.log("userId", userId);
-    //console.log("requestedDate", requestedDate);
 
     const onPressRequest = () => {
         props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
 
     const onPressHandler = () => {
-        setisFromRequestScreen(false)
-        removeRequest()
+        // setisFromRequestScreen(false)
+        // removeRequest()
         props.navigation.goBack();
     }
     const removeRequest = () => {
         deleteRequestbyId({ RequestId: idReq }).then(res => {
             setRequestInfo(res)
-            //console.log("Request Deleted");
         })
     }
     const getEventsfromApi = () => {
         getEventsInfo({ userId: userId }).then(res => {
-            //console.log("res", res);
             if (res.message == 'No Event') {
                 setIveEvent(false)
             } else {
@@ -73,7 +58,7 @@ const ClientRequest = (props) => {
     }
 
     const creatNewRequest = () => {
-        setRequestIdState(idReq)
+        // setRequestIdState(idReq)
         const newRequestItem = {
             RequestId: idReq,
             ReqServId: data?.service_id,
@@ -90,33 +75,11 @@ const ClientRequest = (props) => {
         })
     }
 
-    const checkavailblity = () => {
-        showMode('time')
-        if (TimeText != "00:00") {
-            setSelectTime(true)
-        } else {
-            Alert.alert(
-                'تنبية',
-                'الرجاء اختيار الوقت الزمني للحجز',
-                [
-                    {
-                        text: 'Ok',
-                        style: 'cancel',
-                    },
-                ],
-                { cancelable: false } // Prevent closing the alert by tapping outside
-            );
-        }
-    }
-
     useEffect(() => {
         getEventsfromApi()
-        setisFromRequestScreen(true)
-        //getEventLogofromApi('65bfea90ed6965ed8854aec2')
-        //creatNewRequest()
     }, [])
 
-const d = '2024-6-5'
+
     const renderHeader = () => {
         return (
             <View style={styles.header}>
@@ -138,7 +101,7 @@ const d = '2024-6-5'
                 return (
                     <View style={styles.dateItem}>
                         <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
-                        <Text style={styles.dateTxt}>{moment(d).format('L')}</Text>
+                        <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
                     </View>
                 )
             })
@@ -146,7 +109,7 @@ const d = '2024-6-5'
             return (
                 <View style={styles.dateItem1}>
                     <Text style={styles.dateTxt}>{moment(requestedDate).format('dddd')}</Text>
-                    <Text style={styles.dateTxt}>{requestedDate}</Text>
+                    <Text style={styles.dateTxt}>{moment(requestedDate).format('L')}</Text>
                 </View>
             )
         }
@@ -205,7 +168,7 @@ const d = '2024-6-5'
         return (<View style={styles.eventView}>
             <Text style={styles.detailText}>اِضغط على المناسبة التي تنوي ارفاق الطلب لها</Text>
             {IveEvent &&
-                <Pressable style={styles.eventItem}>
+                <Pressable >
                     {renderEventInfo()}
                 </Pressable>
             }
@@ -223,45 +186,34 @@ const d = '2024-6-5'
         )
     }
     const getEventLogo = (id) => {
-
         const logo = eventTypeInfo.filter(item => item.Id === id)
         return logo
     }
-    const renderEventLogo = () => {
-        //console.log("requestedEvent", requestedEvent);
-        return requestedEvent.map(item => {
-            return (
-                <View style={styles.IconView}>
-                    <Image style={styles.iconImg} source={{ uri: item.eventImg }} />
-                </View>
-            )
-        })
-    }
     const filtereventInfo = () => {
+        const currentDate = moment(date, "YYYY-MM-DD")
+        let day = currentDate.format('D')
+        let month = currentDate.format('M')
+        let year = currentDate.format('YYYY')
+        let completeDate = year + '-' + month + '-' + day
         return eventInfo.filter(item => {
             const EDate = item.eventDate
             const CDate = completeDate
-            // console.log("item.eventDate", EDate);
-            // console.log("currentDate", CDate);
-            const result = EDate > CDate
-            // console.log("result", result);
+            const result = EDate >= CDate
             return result
         })
     }
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
-        //console.log("eventData", eventData);
-        return eventInfo.map(item => {
-
-            //console.log(">>", item.eventTitleId);
+        return eventData.map(item => {
             const document = getEventLogo(item.eventTitleId)
-            return (<View>
-                <View style={styles.IconView}>
-                    <Image style={styles.iconImg} source={{ uri: document.eventImg }} />
-                </View>
+            return (<View style={styles.eventItem}>
                 <View>
                     <Text style={styles.detailText}>{item.eventName}</Text>
                 </View>
+                <View style={styles.IconView}>
+                    <Image style={styles.iconImg} source={{uri: document.eventImg}} />
+                </View>
+
             </View>
             )
         })
@@ -353,7 +305,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         marginVertical: 2.5,
         width: '100%',
-        paddingRight: 10
+        paddingRight: 10,
+        paddingVertical: 10
     },
 
     detailText: {
@@ -369,7 +322,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         marginVertical: 2.5,
         width: '100%',
-        paddingRight: 10
+        paddingRight: 10,
+        paddingVertical: 10
     },
     eventItem: {
         flexDirection: 'row',
