@@ -40,7 +40,7 @@ const ServiceDescr = (props) => {
     useEffect(() => {
         getRequestfromApi()
         getCampeignsfromApi()
-        // setrequestedDate(0)
+        
     }, [])
 
     const modalDeletePress = () => {
@@ -133,33 +133,41 @@ const ServiceDescr = (props) => {
 
     // render Service Dates Info
     const SelectDatePressed = (dat, setIsPressed, pressed) => {
-
-        if (pressed) {
-            setIsPressed(false)
-            const index = requestedDate.findIndex((date) => {
-                date === dat
-            })
-            const newDates = requestedDate.slice(index, 1)
-            setrequestedDate(newDates)
-
-        } else {
+        const index = requestedDate.findIndex((date) => date === dat)
+        if (index === -1) {
             setIsPressed(true)
             setrequestedDate([...requestedDate, dat])
+            return;
         }
+        setIsPressed(false)
+        const newDates = requestedDate.slice(index, 1)
+        setrequestedDate([...newDates])
 
     }
     const renderDates = () => {
+        console.log("requested Date from service desc ", requestedDate);
         moment.locale('ar-dz');
         if (Array.isArray(data.availableDates)) {
+            console.log("dates available ", data.availableDates);
             const DatesAvailable = data.availableDates
             const dateArray = DatesAvailable?.map(dat => {
                 const [pressed, setIsPressed] = useState(false)
+                useEffect(() => {
+                    const found = requestedDate.find((date) => date === dat)
+                    if (found) {
+                        setIsPressed(true)
+                    } else {
+                        setIsPressed(false)
+                    }
+                }, [])
                 return <View style={styles.dateView}>
                     <Pressable style={[styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
                         onPress={() => SelectDatePressed(dat, setIsPressed, pressed)}
                     >
                         <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
-                        <Text style={styles.datetext}>{moment(dat).format('L')}</Text>
+                        <Text style={styles.datetext}>
+                            {moment(dat).format('L')}
+                        </Text>
                     </Pressable>
                 </View>;
             });

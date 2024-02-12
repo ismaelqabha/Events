@@ -38,10 +38,13 @@ const SearchProvider = props => {
 
   // Request
   const [requestInfo, setRequestInfo] = useState([])
+  const [resDetail, setResDetail] = useState([])
+
+
   const [orderSubdetail, setOrderSubdetail] = useState([])
-  const [isFromRequestScreen, setisFromRequestScreen] = useState()
-  const [RequestIdState, setRequestIdState] = useState();
-  const [TimeText, setTimeText] = useState()
+  // const [isFromRequestScreen, setisFromRequestScreen] = useState()
+  // const [RequestIdState, setRequestIdState] = useState();
+  // const [TimeText, setTimeText] = useState()
 
   // Event 
   const [eventInfo, setEventInfo] = useState([])
@@ -90,6 +93,8 @@ const SearchProvider = props => {
         setFileFavoriteState,
         requestInfo,
         setRequestInfo,
+        resDetail, 
+        setResDetail,
         ImgOfServeice,
         setImgOfServeice,
         userPayment,
@@ -104,8 +109,8 @@ const SearchProvider = props => {
         setServiceDataInfo,
         detailIdState,
         setdetailIdState,
-        RequestIdState,
-        setRequestIdState,
+        // RequestIdState,
+        // setRequestIdState,
         serviceImg,
         setserviceImg,
         campInfo,
@@ -134,16 +139,16 @@ const SearchProvider = props => {
         setrequestedDate,
         Categorychozen,
         setCategorychozen,
-        isFromRequestScreen,
-        setisFromRequestScreen,
+        // isFromRequestScreen,
+        // setisFromRequestScreen,
         orderSubdetail,
         setOrderSubdetail,
         eventInfo,
         setEventInfo,
         eventTypeInfo, 
         setEventTypeInfo,
-        TimeText,
-        setTimeText,
+        // TimeText,
+        // setTimeText,
         campiegnsAccordingServiceId,
         setCampiegnsAccordingServiceId,
         reachCampaignfrom,

@@ -101,10 +101,10 @@ const ProviderAddServiceDetail = props => {
     };
     await addService(body)
       .then(async res => {
-        console.log(' service res ->', res.serviceID);
+        //console.log(' service res ->', res.serviceID);
         await addServiceImages(photoArray, res?.serviceID).then((res) => {
-          console.log("images res -> ", res);
-          showMessage("تم حفظ البيانات")
+          // console.log("images res -> ", res);
+          // showMessage("تم حفظ البيانات")
         })
       })
       .catch(e => {

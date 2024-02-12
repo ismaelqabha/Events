@@ -23,9 +23,7 @@ const CreateUpersonalInfo = (props) => {
         setUserPhone,
         userBD,
         setUserBD,
-        userGender,
         setUserGender,
-        userStatus,
         setUserStatus,
         profilePhoto,
         setProfilePhoto
@@ -67,10 +65,7 @@ const CreateUpersonalInfo = (props) => {
 
     const onNextPress = () => {
         true
-            ? props.navigation.navigate(ScreenNames.SetUserAddress
-                , {
-                    data: { ...props },
-                })
+            ? props.navigation.navigate(ScreenNames.SetUserAddress, {data: { ...props }})
             : missingData();
     };
 

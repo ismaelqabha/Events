@@ -34,6 +34,7 @@ const ProviderSetEventType = (props) => {
 
     const renderEventsType = () => {
         const eventsList = eventTypeInfo?.map((eventItem) => {
+            console.log("event item ",eventItem);
             return (
                 <ProviderEventTypesComp {...eventItem} />
             )

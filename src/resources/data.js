@@ -94,6 +94,24 @@ export const subDetailData = [
         UserID: 1,
     },
 ];
+export const requst =[
+    {
+        requestID:'',
+        ReqEventId: 1,
+        ReqServId: 1,
+        ReqUserId: 1,
+        ReqStatus: '',
+        ReqDate: '10/1/2023',
+        Cost: 5000,
+        reqDetail: [
+            {
+                reservationDate: '12/1/2023',
+                reservationTime: '14:30',
+                subDetailId: []
+            }
+        ]
+    }
+]
 export const subDetail = [
     {
         subDetail_Id: 1,

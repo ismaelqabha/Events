@@ -5,11 +5,11 @@ import { colors } from '../../assets/AppColors'
 
 
 const ProviderEventTypesComp = (props) => {
-
+    
     return (
         <View style={styles.container}>
             <Pressable style={styles.eventCard}>
-                <Image style={styles.eventImg} source={{uri : props.img}} />
+                <Image style={styles.eventImg} source={{ uri: props.eventImg }} />
                 <Text style={styles.txt}>{props.eventTitle}</Text>
             </Pressable>
         </View>
@@ -20,7 +20,7 @@ export default ProviderEventTypesComp
 
 const styles = StyleSheet.create({
     container: {
-        
+
     },
     eventCard: {
         width: 150,
@@ -50,8 +50,8 @@ const styles = StyleSheet.create({
         width: 120,
         height: 120,
     },
-    txt:{
-      fontSize: 18,
-      color: colors.puprble
+    txt: {
+        fontSize: 18,
+        color: colors.puprble
     }
 })

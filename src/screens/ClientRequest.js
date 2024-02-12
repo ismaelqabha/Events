@@ -7,7 +7,6 @@ import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
 import Entypo from "react-native-vector-icons/Entypo";
 import { addNewRequest, deleteRequestbyId, getEventLogo, getEventsInfo } from '../resources/API';
-import DetailComp from '../components/DetailComp';
 import { v4 as uuidv4 } from 'uuid';
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
@@ -20,9 +19,8 @@ const ClientRequest = (props) => {
     const { userId } = useContext(UsersContext);
     const {
         requestedDate,
-        setisFromRequestScreen,
+        resDetail,
         requestInfo, setRequestInfo,
-        detailIdState, setRequestIdState,
         eventInfo, setEventInfo,
         eventTypeInfo } = useContext(SearchContext);
 
@@ -30,7 +28,32 @@ const ClientRequest = (props) => {
     const [IveEvent, setIveEvent] = useState(false);
     const [selectTime, setSelectTime] = useState(true);
 
-    const idReq = uuidv4()
+    const [requestStatus, setRequestStatus] = useState('')
+    const [requestCost, setRequestCost] = useState()
+    const [requestDiscount, setRequestDiscount] = useState()
+    // const [selectedDate, setselectedDate] = useState()
+
+
+
+    const creatNewRequest = () => {
+        const newRequestItem = {
+            ReqServId: data?.service_id,
+            ReqUserId: userId,
+            ReqStatus: requestStatus,
+            ReqDate: moment(date).format('L'),
+            Cost: requestCost,
+            discountPercentage: requestDiscount,
+            reservationDetail: resDetail
+        }
+        addNewRequest(newRequestItem).then(res => {
+            const req = requestInfo || [];
+            req.push(newRequestItem)
+            setRequestInfo([...req])
+            console.log("Request Created");
+        })
+    }
+
+
 
     const onPressRequest = () => {
         props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
@@ -57,24 +80,6 @@ const ClientRequest = (props) => {
         })
     }
 
-    const creatNewRequest = () => {
-        // setRequestIdState(idReq)
-        const newRequestItem = {
-            RequestId: idReq,
-            ReqServId: data?.service_id,
-            ReqUserId: userId,
-            ReqStatus: 'false',
-            ReqDate: moment(date).format('L'),
-            reservationDate: moment(requestedDate).format('L')
-        }
-        addNewRequest(newRequestItem).then(res => {
-            const req = requestInfo || [];
-            req.push(newRequestItem)
-            setRequestInfo([...req])
-            console.log("Request Created");
-        })
-    }
-
     useEffect(() => {
         getEventsfromApi()
     }, [])
@@ -95,25 +100,33 @@ const ClientRequest = (props) => {
             </View>
         )
     }
+   
     const renderRequestedDates = () => {
         if (Array.isArray(requestedDate)) {
-            return requestedDate.map(item => {
+            console.log("requested dates ", requestedDate);
+           
+            return requestedDate.map((item) => {
                 return (
-                    <View style={styles.dateItem}>
-                        <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
-                        <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
-                    </View>
+                    <Pressable style={styles.dateItem}
+                    >
+                        <Text style={styles.dateTxt}>
+                            {moment(item).format('dddd')}</Text>
+                        <Text style={styles.dateTxt}>
+                            {moment(item).format('L')}
+                        </Text>
+                    </Pressable>
                 )
             })
         } else {
             return (
                 <View style={styles.dateItem1}>
-                    <Text style={styles.dateTxt}>{moment(requestedDate).format('dddd')}</Text>
-                    <Text style={styles.dateTxt}>{moment(requestedDate).format('L')}</Text>
+                    <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('dddd')}</Text>
+                    <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('L')}</Text>
                 </View>
             )
         }
     }
+
     const queryImg = () => {
         const imageArray = data.images[0].serviceImages.map(photos => {
             return photos;
@@ -145,10 +158,7 @@ const ClientRequest = (props) => {
     }
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
-            <Text style={styles.detailText}>تفاصيل الحجز</Text>
-            <View>
-                <RequestDetail   {...data} />
-            </View>
+            <RequestDetail {...data} />
         </View>
     }
     const renderFoter = () => {
@@ -211,7 +221,7 @@ const ClientRequest = (props) => {
                     <Text style={styles.detailText}>{item.eventName}</Text>
                 </View>
                 <View style={styles.IconView}>
-                    <Image style={styles.iconImg} source={{uri: document.eventImg}} />
+                    <Image style={styles.iconImg} source={{ uri: document.eventImg }} />
                 </View>
 
             </View>
@@ -227,6 +237,7 @@ const ClientRequest = (props) => {
             <ScrollView contentContainerStyle={styles.home}>
                 {renderServiceinfo()}
                 <View style={styles.DateView}>
+                    <Text style={styles.detailText}>تفاصيل الحجز</Text>
                     <ScrollView horizontal={true}>
                         {renderRequestedDates()}
                     </ScrollView>
@@ -268,42 +279,52 @@ const styles = StyleSheet.create({
     DateView: {
         backgroundColor: 'white',
         justifyContent: 'center',
-        marginVertical: 2.5,
+        marginTop: 2.5,
         width: "100%",
         height: 80,
-        alignItems: 'center',
+        alignItems: 'flex-end',
     },
     dateItem: {
-        borderWidth: 2,
-        borderColor: '#dcdcdc',
-        borderRadius: 5,
         width: 120,
         height: 50,
         marginHorizontal: 3,
-        // flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        alignSelf: 'center'
+        alignSelf: 'flex-end',
+        backgroundColor: colors.BGScereen
     },
-    dateItem1: {
-        borderWidth: 2,
-        borderColor: '#dcdcdc',
-        borderRadius: 5,
+    dateItemPressed: {
         width: 120,
         height: 50,
         marginHorizontal: 3,
+        alignItems: 'center',
         justifyContent: 'center',
-        alignSelf: 'center'
+        alignSelf: 'flex-end',
+        backgroundColor: colors.puprble
+    },
+    dateItem1: {
+        borderTopLeftRadius: 5,
+        //borderTopRightRadius:5,
+        width: 120,
+        height: 50,
+        justifyContent: 'center',
+        alignSelf: 'flex-end',
+        backgroundColor: colors.puprble
     },
     dateTxt: {
         fontSize: 15,
-        color: 'black',
+        color: colors.puprble,
+        textAlign: 'center'
+    },
+    dateTxtPressed: {
+        fontSize: 15,
+        color: colors.BGScereen,
         textAlign: 'center'
     },
 
     requestDetailView: {
-        backgroundColor: 'white',
-        marginVertical: 2.5,
+        backgroundColor: colors.puprble,
+        marginBottom: 2.5,
         width: '100%',
         paddingRight: 10,
         paddingVertical: 10
@@ -312,6 +333,7 @@ const styles = StyleSheet.create({
     detailText: {
         fontSize: 18,
         color: colors.puprble,
+        marginRight: 10
     },
     titleText: {
         fontSize: 16,
@@ -342,6 +364,7 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
     iconImg: {
+        flex: 1,
         alignItems: 'center',
         width: 25,
         height: 25
