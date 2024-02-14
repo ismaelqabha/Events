@@ -100,11 +100,11 @@ const ClientRequest = (props) => {
             </View>
         )
     }
-   
+
     const renderRequestedDates = () => {
         if (Array.isArray(requestedDate)) {
             console.log("requested dates ", requestedDate);
-           
+
             return requestedDate.map((item) => {
                 return (
                     <Pressable style={styles.dateItem}
@@ -239,7 +239,7 @@ const ClientRequest = (props) => {
                 <View style={styles.DateView}>
                     <Text style={styles.detailText}>تفاصيل الحجز</Text>
                     <ScrollView horizontal={true}>
-                        {renderRequestedDates()}
+                    {renderRequestedDates()}
                     </ScrollView>
                 </View>
                 {renderRequestInfo()}

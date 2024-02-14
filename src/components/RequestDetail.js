@@ -5,6 +5,8 @@ import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import moment from 'moment';
+import Footer from './Footers/Footer';
+import { AppStyles } from '../assets/res/AppStyles';
 
 const RequestDetail = (props) => {
     // const { requestedDate } = props
@@ -148,19 +150,6 @@ const RequestDetail = (props) => {
                 break;
         }
     }
-
-    const addSubDetail = (id) => {
-        const selectedSubDetail = {
-            subD_id: id
-        }
-        const sub = resDetail
-        let index = sub.findIndex(val => val.reservationDate == resivedDate)
-        console.log("sub", sub);
-        sub[index].subDetailId.push(selectedSubDetail)
-        console.log("subDetailId", subDetailId);
-    }
-
-
 
     const detailPress = () => {
         setDetailViewPressed(true)
@@ -360,18 +349,36 @@ const RequestDetail = (props) => {
     }
     const renderReservationDet = () => {
         return (
-            <ScrollView style={styles.scroll} horizontal pagingEnabled>
-                <View style={{ alignItems: 'center', backgroundColor: 'white', width: Dimensions.get('window').width, }}>
-                    <View style={styles.serviceDetBooking}>
-                        <Text style={styles.detailViewText}>الخدمات</Text>
-                        {renderServiceDetail()}
+            <View>
+                <ScrollView
+                    horizontal={true}
+                    pagingEnabled
+                    nestedScrollEnabled
+                    showsHorizontalScrollIndicator={false}
+                    decelerationRate={'fast'}
+                    snapToInterval={0}
+                    snapToAlignment={'start'}
+
+                >
+                    <View style={{ width: Dimensions.get('screen').width }}>
+                        <View style={styles.serviceDetBooking}>
+                            <Text style={styles.detailViewText}>الخدمات</Text>
+                            {renderServiceDetail()}
+                        </View>
                     </View>
-                    <View style={styles.serviceDetBooking}>
-                        <Text style={styles.detailViewText}>العروض</Text>
-                        {/* {renderServiceDetail()} */}
+                    <View style={{ width: Dimensions.get('screen').width }}>
+                        <View style={styles.serviceDetBooking}>
+                            <Text style={styles.detailViewText}>العروض</Text>
+                            {/* {renderServiceDetail()} */}
+                        </View>
                     </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+                {/* <View style={AppStyles.createuserDots}>
+                    <View style={AppStyles.dots}></View>
+                    <View style={AppStyles.dots}></View>
+                </View> */}
+            </View>
+
         )
     }
     const renderModal = () => {
@@ -453,9 +460,9 @@ const RequestDetail = (props) => {
     console.log("requestedDate", requestedDate);
     const chooseButton = () => {
         if (Array.isArray(requestedDate) && requestedDate.length > 1) {
-            {renderNextBack()}
+            { renderNextBack() }
         } else {
-            {renderSaveButton()}
+            { renderSaveButton() }
         }
     }
 
@@ -499,14 +506,11 @@ const styles = StyleSheet.create({
         // width: '100%'
     },
     serviceDetBooking: {
-        width: '90%',
+        width: Dimensions.get('screen').width * 0.9,
         height: 300,
-        // borderWidth: 1,
-        // borderColor: 'lightgray',
         padding: 5,
         marginTop: 10,
-        backgroundColor: colors.puprble
-        //margin: 5
+        backgroundColor: colors.puprble,
     },
     detailView: {
         width: '90%',
