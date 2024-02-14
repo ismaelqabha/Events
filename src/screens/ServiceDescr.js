@@ -81,7 +81,9 @@ const ServiceDescr = (props) => {
 
 
     const onPressBack = () => {
+        setrequestedDate([])
         props.navigation.goBack();
+
     }
 
 
