@@ -40,7 +40,7 @@ const ServiceDescr = (props) => {
     useEffect(() => {
         getRequestfromApi()
         getCampeignsfromApi()
-        
+
     }, [])
 
     const modalDeletePress = () => {
@@ -133,22 +133,19 @@ const ServiceDescr = (props) => {
 
     // render Service Dates Info
     const SelectDatePressed = (dat, setIsPressed, pressed) => {
-        const index = requestedDate.findIndex((date) => date === dat)
+        const index = requestedDate.findIndex((date) => date === dat);
         if (index === -1) {
-            setIsPressed(true)
-            setrequestedDate([...requestedDate, dat])
-            return;
+            setIsPressed(true);
+            setrequestedDate([...requestedDate, dat]);
+        } else {
+            setIsPressed(false);
+            const newDates = [...requestedDate.slice(0, index), ...requestedDate.slice(index + 1)];
+            setrequestedDate(newDates);
         }
-        setIsPressed(false)
-        const newDates = requestedDate.slice(index, 1)
-        setrequestedDate([...newDates])
-
-    }
+    };
     const renderDates = () => {
-        console.log("requested Date from service desc ", requestedDate);
         moment.locale('ar-dz');
         if (Array.isArray(data.availableDates)) {
-            console.log("dates available ", data.availableDates);
             const DatesAvailable = data.availableDates
             const dateArray = DatesAvailable?.map(dat => {
                 const [pressed, setIsPressed] = useState(false)
