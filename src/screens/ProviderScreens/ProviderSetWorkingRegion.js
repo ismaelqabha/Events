@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
-import { regionData } from '../../resources/data';
 import ProviderWorkRegionComp from '../../components/ProviderComponents/ProviderWorkRegionComp';
-import { ScreenNames } from '../../../route/ScreenNames';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
 import strings from '../../assets/res/strings';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
@@ -30,9 +28,10 @@ const ProviderSetWorkingRegion = props => {
     },
   };
   const getRegionsfromApi = () => {
-    getRegions().then(res => {
-      SetRegion(res)
+    getRegions({}).then(res => {
       console.log("res", res);
+      SetRegion(res)
+      
     })
   }
 
@@ -42,12 +41,9 @@ const ProviderSetWorkingRegion = props => {
   const onBackPress = () => {
     props.navigation.goBack();
   };
-  const query = () => {
-    return regionData || [];
-  };
+ 
   const renderCard = () => {
-    const data = query();
-    const cardsArray = data.map(card => {
+    const cardsArray = Region.regions.map(card => {
       return <ProviderWorkRegionComp {...card} />;
     });
     return cardsArray;

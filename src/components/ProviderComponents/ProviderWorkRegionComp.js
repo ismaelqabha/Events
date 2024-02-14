@@ -4,7 +4,7 @@ import LocationComp from './LocationComp';
 
 const ProviderWorkRegionComp = props => {
   const RenderLocations = () => {
-    return <LocationComp value={props.value} />;
+    return <LocationComp value={props.regionName} />;
   };
   return <View style={{flex: 1}}>{RenderLocations()}</View>;
 };

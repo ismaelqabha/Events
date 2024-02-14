@@ -45,6 +45,12 @@ export const addService = async body => {
   const url = 'servicesData/create';
   return await AppFetch(url, 'POST', body);
 };
+export const updateService = async body => {
+  const url = 'servicesData/updateByid';
+  return await AppFetch(url, 'PATCH', body);
+};
+
+
 //Service Detail
 export const getServiceDetail = async body => {
   const url = 'serviceDetail/getServiceDetailByServID';
