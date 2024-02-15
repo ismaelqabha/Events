@@ -131,14 +131,32 @@ const ProviderAddInfo = props => {
       return true
     }
   }
+  const checkStrings = val => {
+    if (!val) {
+      return false;
+    } else if (val.length == 0) {
+      return false;
+    } else if (val.trim().length <= 0) {
+      return false;
+    }
 
-  const onNextPress = () => {
-    true
-      ? props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
-        data: { ...props },
-      })
-      : missingData();
+    return true;
   };
+
+  const missingData = () => {
+    checkStrings(title) ? showMissingTitle() : null;
+    checkStrings(SuTitle) ? showMissingSubTitle() : null;
+    checkStrings(description) ? showMissingDescription() : null;
+    checkLength(title, 30) ? null : showMissingTitle("length")
+    checkLength(SuTitle, 50) ? null : showMissingSubTitle("length")
+    checkLength(description, 300) ? null : showMissingTitle("length")
+  };
+
+  const showMissingTitle = (val) => { };
+  const showMissingSubTitle = (val) => { };
+  const showMissingDescription = (val) => { };
+
+  
 
   const getRegionsfromApi = async () => {
     getRegions().then((res) => {
@@ -148,7 +166,7 @@ const ProviderAddInfo = props => {
     })
 
   }
-
+// region part
   const updateData = (regions) => {
     setRegions(regions)
     const allData = []
@@ -158,7 +176,6 @@ const ProviderAddInfo = props => {
     allData.sort()
     setRegionData(allData)
   }
-
   const searchRegion = (val) => {
     if (!regions) {
       return;
@@ -184,6 +201,7 @@ const ProviderAddInfo = props => {
       : false;
   };
 
+  // Address and location part
   const requestLocationPermission = async () => {
     setDisbaleLocation(true)
     if (Platform.OS === 'android') {
@@ -204,7 +222,6 @@ const ProviderAddInfo = props => {
       }
     }
   };
-
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
@@ -217,31 +234,41 @@ const ProviderAddInfo = props => {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   };
+  const RenderLocationDetails = () => {
+    return (
+      <View style={[styles.borderAddressView, AppStyles.shadow]}>
+        <Text style={styles.headText}>{language.LocationHeadText}</Text>
+        <View style={styles.region}>
+          <Text> {address || language.address}</Text>
+        </View>
 
-  const checkStrings = val => {
-    if (!val) {
-      return false;
-    } else if (val.length == 0) {
-      return false;
-    } else if (val.trim().length <= 0) {
-      return false;
-    }
 
-    return true;
+        <SelectList
+          data={regionData}
+          setSelected={val => {
+            setserviceAddress(val)
+            searchRegion(val)
+          }}
+          placeholder={serviceAddress || language.chooseLocation}
+          boxStyles={styles.dropdown}
+          inputstyles={styles.droptext}
+          dropdownTextstyles={styles.dropstyle}
+        />
+
+        <Pressable disabled={disableLocation} style={styles.location} onPress={requestLocationPermission}>
+          <Text style={styles.locationTitle}>أضف موقع</Text>
+          <View style={styles.IconView}>
+            <Entypo
+              name={"location-pin"}
+              color={colors.puprble}
+              size={25} />
+          </View>
+        </Pressable>
+      </View>
+    );
   };
 
-  const missingData = () => {
-    checkStrings(title) ? showMissingTitle() : null;
-    checkStrings(SuTitle) ? showMissingSubTitle() : null;
-    checkStrings(description) ? showMissingDescription() : null;
-    checkLength(title, 30) ? null : showMissingTitle("length")
-    checkLength(SuTitle, 50) ? null : showMissingSubTitle("length")
-    checkLength(description, 300) ? null : showMissingTitle("length")
-  };
-
-  const showMissingTitle = (val) => { };
-  const showMissingSubTitle = (val) => { };
-  const showMissingDescription = (val) => { };
+  
 
 
 
@@ -318,34 +345,6 @@ const ProviderAddInfo = props => {
     </View>
     );
   };
-
-  const Renderdescriptionr = () => {
-    return (
-      <View style={styles.description}>
-        <View style={styles.viewwholeInput}>
-          <View>
-            <AntDesign
-              name={"question"}
-              color={colors.puprble}
-              size={20} />
-          </View>
-          <View style={styles.itemView}>
-            <Text style={styles.text}> {language.description}</Text>
-          </View>
-        </View>
-        {renderdescItem()}
-        <Pressable style={styles.descLabel} onPress={addDescrTextInput}>
-          <Text style={styles.AddDesctxt}>اضافة شرح عن مصلحتك</Text>
-          <View style={styles.IconAdd}>
-            <Entypo
-              name={"plus"}
-              color={colors.puprble}
-              size={25} />
-          </View>
-        </Pressable>
-      </View>
-    )
-  }
   const renderHallCapacity = () => {
     return (
       <View style={{ marginBottom: 30 }}>
@@ -377,16 +376,6 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
-  const RenderMainDetails = () => {
-    return (
-      <View style={[styles.borderTitleView, AppStyles.shadow]}>
-        {RenderHeaderTitle()}
-        {RenderTitleBox()}
-        {RenderSubTitleBox()}
-        {Renderdescriptionr()}
-      </View>
-    );
-  };
   const renderHallTyes = () => {
     return hallData?.map((item) => {
       return <HallTypeCard {...item} 
@@ -419,40 +408,7 @@ const ProviderAddInfo = props => {
     )
   }
 
-  const RenderLocationDetails = () => {
-    return (
-      <View style={[styles.borderAddressView, AppStyles.shadow]}>
-        <Text style={styles.headText}>{language.LocationHeadText}</Text>
-        <View style={styles.region}>
-          <Text> {address || language.address}</Text>
-        </View>
-
-
-        <SelectList
-          data={regionData}
-          setSelected={val => {
-            setserviceAddress(val)
-            searchRegion(val)
-          }}
-          placeholder={serviceAddress || language.chooseLocation}
-          boxStyles={styles.dropdown}
-          inputstyles={styles.droptext}
-          dropdownTextstyles={styles.dropstyle}
-        />
-
-        <Pressable disabled={disableLocation} style={styles.location} onPress={requestLocationPermission}>
-          <Text style={styles.locationTitle}>أضف موقع</Text>
-          <View style={styles.IconView}>
-            <Entypo
-              name={"location-pin"}
-              color={colors.puprble}
-              size={25} />
-          </View>
-        </Pressable>
-      </View>
-    );
-  };
-
+ // footer part
   const RenderFooter = () => {
     return (
         <Animated.View style={[styles.footer, { transform: [{ translateY: translateY }] }]}>
@@ -469,6 +425,13 @@ const ProviderAddInfo = props => {
       </Pressable>
     );
   };
+  const onNextPress = () => {
+    true
+      ? props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
+        data: { ...props },
+      })
+      : missingData();
+  };
 
   // description part 
   const addDescrTextInput = () => {
@@ -484,7 +447,7 @@ const ProviderAddInfo = props => {
   const removeDescription = (desToRemove) => {
     var i = description.findIndex((val) => val.descItem === desToRemove)
     if (i === -1) {
-      console.log("tjere is no such desc to remove ");
+      console.log("there is no such desc to remove ");
       return
     } else {
       const updatedDescription = [...description];
@@ -522,6 +485,7 @@ const ProviderAddInfo = props => {
         />
       </View>)
   }
+
   const updateDescrArray = (data , index) => {
       setDescription(prevArray => {
           const newArray = [...prevArray];
@@ -529,6 +493,44 @@ const ProviderAddInfo = props => {
           return newArray;
       });
   }
+  const Renderdescriptionr = () => {
+    return (
+      <View style={styles.description}>
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
+              color={colors.puprble}
+              size={20} />
+          </View>
+          <View style={styles.itemView}>
+            <Text style={styles.text}> {language.description}</Text>
+          </View>
+        </View>
+        {renderdescItem()}
+        <Pressable style={styles.descLabel} onPress={addDescrTextInput}>
+          <Text style={styles.AddDesctxt}>اضافة شرح عن مصلحتك</Text>
+          <View style={styles.IconAdd}>
+            <Entypo
+              name={"plus"}
+              color={colors.puprble}
+              size={25} />
+          </View>
+        </Pressable>
+      </View>
+    )
+  }
+
+  const RenderMainDetails = () => {
+    return (
+      <View style={[styles.borderTitleView, AppStyles.shadow]}>
+        {RenderHeaderTitle()}
+        {RenderTitleBox()}
+        {RenderSubTitleBox()}
+        {Renderdescriptionr()}
+      </View>
+    );
+  };
 
   return (
     <View style={AppStyles.container}>
