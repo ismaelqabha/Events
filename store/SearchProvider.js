@@ -21,6 +21,7 @@ const SearchProvider = props => {
 
   // service Info
   const [ServiceDataInfo, setServiceDataInfo] = useState([])
+  const [ServiceInfoById, setServiceInfoById] = useState([])
   const [ServiceImages, setServiceImages] = useState([])
   const [ServiceDatesforBooking, setServiceDatesforBooking] = useState([])
   const [datesforBooking, setDatesforBooking] = useState([])
@@ -107,6 +108,8 @@ const SearchProvider = props => {
         setserviceSubDetail,
         ServiceDataInfo,
         setServiceDataInfo,
+        ServiceInfoById, 
+        setServiceInfoById,
         detailIdState,
         setdetailIdState,
         // RequestIdState,

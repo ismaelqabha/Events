@@ -521,7 +521,7 @@ const ServiceDescr = (props) => {
                 <View style={styles.ditailView}>
                     <Text style={styles.text}>التفاصيل لتحديد تكلفة الحجز</Text>
                     {renderServiceDetail()}
-                    {/* {renderCampeigns()} */}
+                    {renderCampeigns()}
                 </View >
                 {seperator()}
                 {renderserviceLocation()}

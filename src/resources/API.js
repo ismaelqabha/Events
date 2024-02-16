@@ -37,6 +37,10 @@ export const getHomePageData = async body => {
   const url = 'servicesData/getServiceAccordingCategory';
   return await AppFetch(url, 'POST', body);
 };
+export const getServiceBySerId = async body => {
+  const url = 'servicesData/getServiceAccordingServiceId';
+  return await AppFetch(url, 'POST', body);
+};
 export const getServiceInfoById = async body => {
   const url = 'servicesData/getServiceById';
   return await AppFetch(url, 'POST', body);

@@ -44,12 +44,9 @@ export default function Splash(props) {
     
 
     const getCampaignfromApi = () => {
-      
-        getCampaigns({campRigon : userRegion}) .then (res => {
+        getCampaigns({}) .then (res => {
             setCampInfo(res)
-           
         })
-       
     }
 
     return (

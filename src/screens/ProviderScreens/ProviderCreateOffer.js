@@ -12,9 +12,9 @@ import { createNewOffer, getRegions } from '../../resources/API';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ProviderCreateOffer = (props) => {
-    const { isFirst, serviceCat } = props.route?.params || {}
+    const { isFirst, serviceCat, Region } = props.route?.params || {}
     const { userId, campInfo, setCampInfo } = useContext(SearchContext);
-    const [Region, SetRegion] = useState([])
+
     const [noPerPerson, setNoPerPerson] = useState(false);
     const [yesPerPerson, setYesPerPerson] = useState(false);
     const [isPriceperPersone, setIsPriceperPersone] = useState(false);
@@ -27,6 +27,7 @@ const ProviderCreateOffer = (props) => {
     const [OfferPrice, setOfferPrice] = useState(null)
     const [OfferExpireDate, setOfferExpireDate] = useState(null)
     const [OfferContent, setOfferContent] = useState([])
+    const [OfferWorkingRegion, setOfferWorkingRegion] = useState([])
     const [offerImg, setOfferImg] = useState(null)
     const [isPerPerson, setIsPerPerson] = useState(false)
 
@@ -38,15 +39,10 @@ const ProviderCreateOffer = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    const getRegionsfromApi = () => {
-        getRegions({}).then(res => {
-            console.log("res", res);
-            SetRegion(res)
-        })
-    }
+
     useEffect(() => {
-        // getRegionsfromApi()
-    }, [Region]);
+
+    }, []);
 
     const sperator = () => {
         return <View style={styles.seperator}></View>
@@ -123,22 +119,49 @@ const ProviderCreateOffer = (props) => {
         }
     };
 
+
     // Region Part
+    const whenSetWorkingRegion = (regionTitle, setSelectedRegion, selectedRegion) => {
+        if(selectedRegion){
+            setSelectedRegion(false)
+            updateSetRegion(regionTitle, setSelectedRegion)
+        }else {
+            setSelectedRegion(true)
+            updateSetRegion(regionTitle, setSelectedRegion)
+        }
+        
+    }
+
+    const updateSetRegion = (regionTitle, setSelectedRegion) => {
+        OfferWorkingRegion.includes(regionTitle) ? removeRegion(regionTitle, setSelectedRegion) : addRegion(regionTitle, setSelectedRegion);
+    }
+    const removeRegion = (regionTitle, setSelectedRegion) => {
+        const newList = OfferWorkingRegion.filter((item) => item !== regionTitle)
+        setSelectedRegion(false)
+        setOfferWorkingRegion(newList);
+    }
+    const addRegion = (regionTitle, setSelectedRegion) => {
+        const list = OfferWorkingRegion;
+        list.push(regionTitle);
+        setSelectedRegion(true)
+        setOfferWorkingRegion(list);
+    }
+
     const renderOfferWorkingRegion = () => {
+        const [selectedRegion, setSelectedRegion] = useState(false);
+
         const cardsArray = Region.regions.map(item => {
-            // const [selectedRegion, setSelectedRegion] = useState(false);
             return <View style={styles.regionView}>
                 <Text style={styles.regionText}>{item.regionName}</Text>
                 <Pressable style={styles.regionPressable}
-                //onPress={() => whenSupDetailPress(item.subDetail_Id, setSelectedSubDetail, selectedSubDetail)}
-                >
-                    {/* {selectedRegion && */}
-                    <Entypo
-                        style={{ alignSelf: 'center' }}
-                        name={"check"}
-                        color={colors.BGScereen}
-                        size={30} />
-                    {/* } */}
+                    onPress={() => whenSetWorkingRegion(item.regionName, setSelectedRegion, selectedRegion)}>
+                    {selectedRegion &&
+                        <Entypo
+                            style={{ alignSelf: 'center' }}
+                            name={"check"}
+                            color={colors.BGScereen}
+                            size={30} />
+                    }
                 </Pressable>
             </View>
         });
@@ -338,9 +361,9 @@ const ProviderCreateOffer = (props) => {
                         style={styles.input}
                         keyboardType='default'
                         placeholder='السعر المقترح'
-                        onChangeText={ val => {
+                        onChangeText={val => {
                             setOfferPrice(val)
-                            if(val < 500){
+                            if (val < 500) {
                                 setIsPriceperPersone(true)
                             }
                         }}
@@ -354,7 +377,7 @@ const ProviderCreateOffer = (props) => {
                 {sperator()}
                 <View style={styles.inputView}>
                     <Text style={styles.regiontxt}>تحديد مناطق ترويج الحملة</Text>
-                    {/* {renderOfferWorkingRegion()} */}
+                    {renderOfferWorkingRegion()}
                 </View>
 
                 {sperator()}

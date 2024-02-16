@@ -9,7 +9,7 @@ import moment from 'moment';
 const RequestDetail = (props) => {
     // const { requestedDate } = props
 
-    const { cat, setResDetail, resDetail, requestedDate } = useContext(SearchContext);
+    const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
     const resivedDate = moment(requestedDate).format('L')
     const [selectTime, setSelectTime] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -358,6 +358,21 @@ const RequestDetail = (props) => {
             )
         })
     }
+    const renderCampaighn = () => {
+        const CampData = campiegnsAccordingServiceId;
+        if (CampData.message !== 'No Campaigns') {
+            const campArray = CampData?.map(camp => {
+                return <View style={styles.campaignView}>
+                    <View>
+                        <Text style={styles.campText}>{camp.campTitle}</Text>
+                        {/* <Text style={styles.campText}>{camp.campCost}</Text> */}
+                    </View>
+                    <Image style={styles.campImg} source={{ uri: camp.campImag }} />
+                </View>
+            });
+            return campArray;
+        }
+    }
     const renderReservationDet = () => {
         return (
             <ScrollView style={styles.scroll} horizontal pagingEnabled>
@@ -368,7 +383,7 @@ const RequestDetail = (props) => {
                     </View>
                     <View style={styles.serviceDetBooking}>
                         <Text style={styles.detailViewText}>العروض</Text>
-                        {/* {renderServiceDetail()} */}
+                        {renderCampaighn()}
                     </View>
                 </View>
             </ScrollView>
@@ -410,25 +425,7 @@ const RequestDetail = (props) => {
             </View>
         )
     }
-    const renderCampaighn = () => {
-        return (
-            <View style={[styles.detailView, campaignViewPressed ? styles.detailView : styles.pressDetailView]}>
-                <TouchableOpacity onPress={campaignPress}>
-                    <Text style={styles.detailViewText}>اختيار احد العروض</Text>
-                </TouchableOpacity>
-                {campaignViewPressed &&
-                    <View style={{ flex: 1 }}>
-                        <View style={{ alignItems: 'center', marginTop: 30 }}>
 
-                        </View>
-                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
-            </View>
-        )
-    }
     const renderNextBack = () => {
         return (
             <View style={styles.nextBackView}>
@@ -453,9 +450,9 @@ const RequestDetail = (props) => {
     console.log("requestedDate", requestedDate);
     const chooseButton = () => {
         if (Array.isArray(requestedDate) && requestedDate.length > 1) {
-            {renderNextBack()}
+            { renderNextBack() }
         } else {
-            {renderSaveButton()}
+            { renderSaveButton() }
         }
     }
 
@@ -677,5 +674,24 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'flex-end'
     },
+    campaignView: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: '100%',
+        alignSelf: 'center',
+        padding: 5,
+        marginTop: 30
+        //borderWidth: 1
+    },
+    campText: {
+        fontSize: 18,
+        color: colors.BGScereen
+    },
+    campImg: {
+        width: 100,
+        height: 100,
+        borderRadius: 10
+    }
 
 })

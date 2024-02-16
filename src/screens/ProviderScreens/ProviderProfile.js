@@ -13,6 +13,7 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
+import { getRegions } from '../../resources/API';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
@@ -35,6 +36,7 @@ const ProviderProfile = props => {
   const [serviceItem, setServiceItem] = useState([]);
   const [socialData, setSocialData] = useState([...SocialData]);
   const [socialMediaEditing, setSocialMediaEditing] = useState(false);
+  const [Region, SetRegion] = useState([])
 
 
 
@@ -50,11 +52,15 @@ const ProviderProfile = props => {
     });
     return cardsArray;
   };
-
-
+  const getRegionsfromApi = () => {
+    getRegions({}).then(res => {
+      console.log("res", res);
+      SetRegion(res)
+    })
+  }
 
   useEffect(() => {
-
+    getRegionsfromApi()
   }, [isFirst])
 
   const filterService = () => {
@@ -74,6 +80,7 @@ const ProviderProfile = props => {
     props.navigation.navigate(ScreenNames.ProviderCreateOffer, {
       isFirst,
       serviceCat,
+      Region
     });
   };
 
@@ -181,8 +188,7 @@ const ProviderProfile = props => {
         <Pressable
           style={styles.item}
           onPress={() =>
-            props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion)
-          }>
+            props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion)}>
           <View>
             <Text style={styles.basicInfo}>تحديد مناطق العمل</Text>
           </View>
@@ -324,38 +330,38 @@ const ProviderProfile = props => {
   const renderContactInfo = () => {
     // const data = filterService()
     // return data.map(item => {
-      return (
-        <View>
-          <View style={styles.item}>
-            <View>
-              <Text style={styles.basicInfo}>0546126692</Text>
-              <Text style={styles.basicInfoTitle}>الموبايل</Text>
-            </View>
-            <View style={styles.IconView}>
-              <Ionicons
-                style={styles.icon}
-                name={'call'}
-                color={colors.puprble}
-                size={25}
-              />
-            </View>
+    return (
+      <View>
+        <View style={styles.item}>
+          <View>
+            <Text style={styles.basicInfo}>0546126692</Text>
+            <Text style={styles.basicInfoTitle}>الموبايل</Text>
           </View>
-          <View style={styles.item}>
-            <View>
-              <Text style={styles.basicInfo}>exsample@gmail.com</Text>
-              <Text style={styles.basicInfoTitle}>Email</Text>
-            </View>
-            <View style={styles.IconView}>
-              <Entypo
-                style={styles.icon}
-                name={'email'}
-                color={colors.puprble}
-                size={25}
-              />
-            </View>
+          <View style={styles.IconView}>
+            <Ionicons
+              style={styles.icon}
+              name={'call'}
+              color={colors.puprble}
+              size={25}
+            />
           </View>
         </View>
-      );
+        <View style={styles.item}>
+          <View>
+            <Text style={styles.basicInfo}>exsample@gmail.com</Text>
+            <Text style={styles.basicInfoTitle}>Email</Text>
+          </View>
+          <View style={styles.IconView}>
+            <Entypo
+              style={styles.icon}
+              name={'email'}
+              color={colors.puprble}
+              size={25}
+            />
+          </View>
+        </View>
+      </View>
+    );
     // })
   };
   const renderFeedBack = () => {
