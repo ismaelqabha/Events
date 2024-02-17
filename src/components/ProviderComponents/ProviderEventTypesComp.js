@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { colors } from '../../assets/AppColors'
 import { updateService } from '../../resources/API'
 import SearchContext from '../../../store/SearchContext'
@@ -13,6 +13,7 @@ const ProviderEventTypesComp = (props) => {
     const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
     const [selectEvent, setSelectEvent] = useState(false)
 
+    
 
     const updateServiceEvents = () => {
         const serviceIndex = serviceInfoAccorUser.findIndex(item => item.service_id == isFirst)

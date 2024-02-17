@@ -8,12 +8,14 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { ScrollView } from 'react-native-gesture-handler';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
-import { createNewOffer, getRegions } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
+import { createNewOffer} from '../../resources/API';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ProviderCreateOffer = (props) => {
     const { isFirst, serviceCat, Region } = props.route?.params || {}
-    const { userId, campInfo, setCampInfo } = useContext(SearchContext);
+    const { campInfo, setCampInfo } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
 
     const [noPerPerson, setNoPerPerson] = useState(false);
     const [yesPerPerson, setYesPerPerson] = useState(false);
@@ -131,7 +133,6 @@ const ProviderCreateOffer = (props) => {
         }
         
     }
-
     const updateSetRegion = (regionTitle, setSelectedRegion) => {
         OfferWorkingRegion.includes(regionTitle) ? removeRegion(regionTitle, setSelectedRegion) : addRegion(regionTitle, setSelectedRegion);
     }
@@ -146,7 +147,6 @@ const ProviderCreateOffer = (props) => {
         setSelectedRegion(true)
         setOfferWorkingRegion(list);
     }
-
     const renderOfferWorkingRegion = () => {
         const [selectedRegion, setSelectedRegion] = useState(false);
 
@@ -408,17 +408,31 @@ const ProviderCreateOffer = (props) => {
             campTitle: OfferTitle,
             campContents: OfferContent,
             campCost: OfferPrice,
-            campImag: offerImg,
+            //campImag: offerImg,
             campRigon: '',
             campExpirDate: OfferExpireDate,
             isPerPerson: isPerPerson
         }
 
-        createNewOffer(addNewOffer).then(res => {
+        createNewOffer(addNewOffer, offerImg).then(res => {
             let OfferArr = campInfo || [];
-            OfferArr.push(addNewOffer);
             setCampInfo([...OfferArr])
-            console.log("OfferArr", OfferArr);
+            // console.log("OfferArr", OfferArr);
+            // console.log("addNewOffer", addNewOffer);
+            if (res.message === 'newCampaign Created') {
+                OfferArr.push(addNewOffer);
+                ToastAndroid.showWithGravity(
+                  'تم اٍنشاء العرض بنجاح',
+                  ToastAndroid.SHORT,
+                  ToastAndroid.BOTTOM,
+                );
+              }else{
+                ToastAndroid.showWithGravity(
+                  'there has been an error'+res.message,
+                  ToastAndroid.SHORT,
+                  ToastAndroid.BOTTOM,
+                );
+              }
         })
     }
 

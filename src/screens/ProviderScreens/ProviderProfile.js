@@ -54,7 +54,6 @@ const ProviderProfile = props => {
   };
   const getRegionsfromApi = () => {
     getRegions({}).then(res => {
-      console.log("res", res);
       SetRegion(res)
     })
   }

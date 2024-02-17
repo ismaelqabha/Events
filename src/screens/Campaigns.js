@@ -19,7 +19,7 @@ const Campaigns = (props) => {
     const getServiceDataFromApi = () => {
         getServiceBySerId({ service_id: data.serviceId }).then(res => {
             setServiceInfoById(res)
-            console.log("res", res);
+            // console.log("res", res);
         })
     }
     useEffect(() => {
