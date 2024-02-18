@@ -34,7 +34,6 @@ const ClientRequest = (props) => {
     const [requestCost, setRequestCost] = useState()
     const [requestDiscount, setRequestDiscount] = useState()
     const [selectedDate, setSelectedDate] = useState()
-    // const [selectedDate, setselectedDate] = useState()
 
 
 
