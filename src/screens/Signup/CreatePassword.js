@@ -76,10 +76,10 @@ const CreatePassword = props => {
     addUser(AddNewUser, profilePhoto).then(res => {
       setUserInfo([...UsersArr]);
       let UsersArr = userInfo || [];
-      console.log("res ");
-      console.log('UsersArr', UsersArr);
+      // console.log("res ");
+      // console.log('UsersArr', UsersArr);
 
-      console.log('res', res);
+      // console.log('res', res);
 
       if (res.message === 'User Created') {
         UsersArr.push(AddNewUser);

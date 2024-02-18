@@ -3,14 +3,23 @@ import React, { useState, useEffect, useContext } from 'react'
 import { colors } from '../../assets/AppColors';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { ScrollView } from 'react-native-gesture-handler';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
-import { createNewOffer } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
+import { createNewOffer} from '../../resources/API';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ProviderCreateOffer = (props) => {
-    const { isFirst,serviceCat } = props.route?.params || {}
-    const { userId, campInfo, setCampInfo } = useContext(SearchContext);
+    const { isFirst, serviceCat, Region } = props.route?.params || {}
+    const { campInfo, setCampInfo } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
+
+    const [noPerPerson, setNoPerPerson] = useState(false);
+    const [yesPerPerson, setYesPerPerson] = useState(false);
+    const [isPriceperPersone, setIsPriceperPersone] = useState(false);
 
     const [OfferTitleError, setOfferTitleError] = useState(false)
     const [OfferPriceError, setOOfferPriceError] = useState(false)
@@ -20,42 +29,62 @@ const ProviderCreateOffer = (props) => {
     const [OfferPrice, setOfferPrice] = useState(null)
     const [OfferExpireDate, setOfferExpireDate] = useState(null)
     const [OfferContent, setOfferContent] = useState([])
-    
+    const [OfferWorkingRegion, setOfferWorkingRegion] = useState([])
     const [offerImg, setOfferImg] = useState(null)
+    const [isPerPerson, setIsPerPerson] = useState(false)
+
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
 
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
+    useEffect(() => {
+
+    }, []);
+
     const sperator = () => {
         return <View style={styles.seperator}></View>
     }
-    const renderheader = () => {
+    const yesIsPerson = () => {
+        setYesPerPerson(true)
+        setNoPerPerson(false)
+        setIsPerPerson(true)
+    }
+    const noIsPerson = () => {
+        setYesPerPerson(false)
+        setNoPerPerson(true)
+        setIsPerPerson(false)
+    }
+
+
+    // uploade Photo Part
+    const renderDefualtImg = () => {
         return (
-            <View style={styles.header}>
-                <Pressable onPress={onPressHandler}
-                >
-                    <AntDesign
-                        style={styles.icon}
-                        name={"left"}
-                        color={"black"}
-                        size={20} />
-
-                </Pressable>
-                <Text style={styles.headerTxt}>انشاء عرض ترويجي</Text>
-
+            <View style={styles.imgView}>
+                <FontAwesome
+                    // style={{ borderWidth: 1 }}
+                    name={"photo"}
+                    color={'lightgray'}
+                    size={150} />
             </View>
         )
     }
     const renderOfferImg = () => {
         return (
             <View style={styles.imgView}>
-                <Image style={styles.offerImg} source={offerImg ? { uri: offerImg } : require('../../assets/photos/user.png')} />
+                {offerImg ? <Image style={styles.offerImg} source={{ uri: offerImg }} />
+                    : renderDefualtImg()}
+
                 <Pressable style={styles.editImg} onPress={onAddImgPress}>
-                    <Entypo
-                        name={"camera"}
-                        color={colors.puprble}
-                        size={25} />
+                    <MaterialIcons
+                        style={{ alignSelf: 'center' }}
+                        name={"add-photo-alternate"}
+                        color={'#dcdcdc'}
+                        size={30} />
                 </Pressable>
             </View>
         )
@@ -91,13 +120,55 @@ const ProviderCreateOffer = (props) => {
             console.log('error source isnt legable, source is :', source);
         }
     };
-    const renderOfferWorkingRegion = () => {
-        return (
-            <View style={styles.regionView}>
-                <Text style={styles.regionText}>تحديد أماكن الترويج</Text>
-            </View>
-        )
+
+
+    // Region Part
+    const whenSetWorkingRegion = (regionTitle, setSelectedRegion, selectedRegion) => {
+        if(selectedRegion){
+            setSelectedRegion(false)
+            updateSetRegion(regionTitle, setSelectedRegion)
+        }else {
+            setSelectedRegion(true)
+            updateSetRegion(regionTitle, setSelectedRegion)
+        }
+        
     }
+    const updateSetRegion = (regionTitle, setSelectedRegion) => {
+        OfferWorkingRegion.includes(regionTitle) ? removeRegion(regionTitle, setSelectedRegion) : addRegion(regionTitle, setSelectedRegion);
+    }
+    const removeRegion = (regionTitle, setSelectedRegion) => {
+        const newList = OfferWorkingRegion.filter((item) => item !== regionTitle)
+        setSelectedRegion(false)
+        setOfferWorkingRegion(newList);
+    }
+    const addRegion = (regionTitle, setSelectedRegion) => {
+        const list = OfferWorkingRegion;
+        list.push(regionTitle);
+        setSelectedRegion(true)
+        setOfferWorkingRegion(list);
+    }
+    const renderOfferWorkingRegion = () => {
+        const [selectedRegion, setSelectedRegion] = useState(false);
+
+        const cardsArray = Region.regions.map(item => {
+            return <View style={styles.regionView}>
+                <Text style={styles.regionText}>{item.regionName}</Text>
+                <Pressable style={styles.regionPressable}
+                    onPress={() => whenSetWorkingRegion(item.regionName, setSelectedRegion, selectedRegion)}>
+                    {selectedRegion &&
+                        <Entypo
+                            style={{ alignSelf: 'center' }}
+                            name={"check"}
+                            color={colors.BGScereen}
+                            size={30} />
+                    }
+                </Pressable>
+            </View>
+        });
+        return cardsArray;
+    }
+
+    // Offer Content Part
     const addOfferContent = () => {
         setOfferContent([...OfferContent, { empty: "empty" }])
     }
@@ -110,28 +181,49 @@ const ProviderCreateOffer = (props) => {
     const ContentComponent = (props) => {
         const [ContentDescr, setContentDescr] = useState(null)
 
-        useEffect(()=>{
+        useEffect(() => {
             if (props.val) {
                 setContentDescr(props?.val?.contentItem)
             }
-        },[])
+        }, [])
 
         return (
             <View style={styles.contentItemView}>
+                <Pressable onPress={() => removeOfferContent(ContentDescr)}>
+                    <AntDesign name='delete' size={20} color={'gray'} style={styles.deleteIcon} />
+                </Pressable>
                 <TextInput
                     style={styles.contentinput}
                     keyboardType='default'
                     placeholder='الوصف'
                     value={ContentDescr}
                     onChangeText={(val) => setContentDescr(val)}
-                    onSubmitEditing={(val) => {
+                    onEndEditing={(val) => {
                         const data = {
                             contentItem: ContentDescr
                         }
-                        updateContentsArray(data)
+                        addContent(data, props.index)
                     }}
                 />
             </View>)
+    }
+    const removeOfferContent = (contentToRemove) => {
+        var i = OfferContent.findIndex((val) => val.contentItem === contentToRemove)
+        if (i === -1) {
+            console.log("there is no such Content to remove ");
+            return
+        } else {
+            const updateContent = [...OfferContent];
+            updateContent.splice(i, 1);
+            setOfferContent(updateContent)
+        }
+    }
+    const addContent = (data, index) => {
+        setOfferContent(prevArray => {
+            const newArray = [...prevArray];
+            newArray[index] = data;
+            return newArray;
+        });
     }
     const updateContentsArray = (data) => {
         var i = OfferContent.findIndex((val) => val.contentItem === data.contentItem)
@@ -151,6 +243,8 @@ const ProviderCreateOffer = (props) => {
     const renderOfferContent = () => {
         return (
             <View style={styles.ContentView}>
+                <Text style={styles.regiontxt}>قائمة المحتويات</Text>
+                {renderContents()}
                 <Pressable style={styles.item}
                     onPress={addOfferContent}
                 >
@@ -162,7 +256,80 @@ const ProviderCreateOffer = (props) => {
                             size={30} />
                     </View>
                 </Pressable>
-                {renderContents()}
+            </View>
+        )
+    }
+
+    // Expire date part
+    const onChange = (event, selectedDate) => {
+        setShow(false)
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+        setOfferExpireDate(fDate);
+    }
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    }
+    const renderExpireDate = () => {
+        return (
+            <View>
+                <Pressable onPress={() => showMode('date')} >
+                    <View style={styles.viewDate}>
+                        <Text style={styles.datetxt}>{OfferExpireDate || "صلاحية العرض"}</Text>
+                        <Entypo
+                            name='calendar'
+                            style={{ fontSize: 30, color: colors.puprble, paddingRight: 20 }}
+                        />
+                    </View>
+                </Pressable>
+                {show && (
+                    <DateTimePicker
+                        testID='dateTimePicker'
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        display='calendar'
+                        onChange={onChange}
+                    />
+                )}
+            </View>
+        )
+    }
+
+    const renderheader = () => {
+        return (
+            <View style={styles.header}>
+                <Pressable onPress={onPressHandler}
+                >
+                    <AntDesign
+                        style={styles.icon}
+                        name={"left"}
+                        color={"black"}
+                        size={20} />
+
+                </Pressable>
+                <Text style={styles.headerTxt}>اٍنشاء حملة اعلانية</Text>
+
+            </View>
+        )
+    }
+    const renderIsPerPerson = () => {
+        return (
+            <View style={styles.perPersoneView}>
+                <Text style={styles.perPersoneText}>هل السعر اعتمادا للشخص الواحد ؟</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    <Pressable style={[noPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={noIsPerson}>
+                        <Text style={styles.perPersoneText}>لا</Text>
+                    </Pressable>
+
+                    <Pressable style={[yesPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={yesIsPerson}>
+                        <Text style={styles.perPersoneText}>نعم</Text>
+                    </Pressable>
+                </View>
             </View>
         )
     }
@@ -181,6 +348,12 @@ const ProviderCreateOffer = (props) => {
                     />
                 </View>
                 <View style={styles.inputView}>
+                    {OfferExpireDateError && (
+                        <Text style={styles.textRequired}>*</Text>
+                    )}
+                    {renderExpireDate()}
+                </View>
+                <View style={styles.inputView}>
                     {OfferPriceError && (
                         <Text style={styles.textRequired}>*</Text>
                     )}
@@ -188,28 +361,30 @@ const ProviderCreateOffer = (props) => {
                         style={styles.input}
                         keyboardType='default'
                         placeholder='السعر المقترح'
-                        onChangeText={setOfferPrice}
+                        onChangeText={val => {
+                            setOfferPrice(val)
+                            if (val < 500) {
+                                setIsPriceperPersone(true)
+                            }
+                        }}
                     />
                 </View>
-                <View style={styles.inputView}>
-                    {OfferExpireDateError && (
-                        <Text style={styles.textRequired}>*</Text>
-                    )}
-                    <TextInput
-                        style={styles.input}
-                        keyboardType='default'
-                        placeholder='صلاحية العرض'
-                        onChangeText={setOfferExpireDate}
-                    />
-                </View>
+                {isPriceperPersone &&
+                    <View style={styles.inputView}>
+                        {renderIsPerPerson()}
+                    </View>}
+
                 {sperator()}
-                {renderOfferWorkingRegion()}
+                <View style={styles.inputView}>
+                    <Text style={styles.regiontxt}>تحديد مناطق ترويج الحملة</Text>
+                    {renderOfferWorkingRegion()}
+                </View>
+
                 {sperator()}
                 {renderOfferContent()}
             </View>
         )
     }
-
     const RenderFooter = () => {
         return <View style={styles.footer}>
             {RenderSaveButton()}
@@ -224,7 +399,7 @@ const ProviderCreateOffer = (props) => {
             </Pressable>
         );
     };
-  
+
     const SaveOffer = () => {
         const addNewOffer = {
             userId: userId,
@@ -233,15 +408,31 @@ const ProviderCreateOffer = (props) => {
             campTitle: OfferTitle,
             campContents: OfferContent,
             campCost: OfferPrice,
-            campImag: '',
+            //campImag: offerImg,
             campRigon: '',
-            campExpirDate: OfferExpireDate
+            campExpirDate: OfferExpireDate,
+            isPerPerson: isPerPerson
         }
-        createNewOffer(addNewOffer).then(res => {
+
+        createNewOffer(addNewOffer, offerImg).then(res => {
             let OfferArr = campInfo || [];
-            OfferArr.push(addNewOffer);
             setCampInfo([...OfferArr])
-            console.log("OfferArr", OfferArr);
+            // console.log("OfferArr", OfferArr);
+            // console.log("addNewOffer", addNewOffer);
+            if (res.message === 'newCampaign Created') {
+                OfferArr.push(addNewOffer);
+                ToastAndroid.showWithGravity(
+                  'تم اٍنشاء العرض بنجاح',
+                  ToastAndroid.SHORT,
+                  ToastAndroid.BOTTOM,
+                );
+              }else{
+                ToastAndroid.showWithGravity(
+                  'there has been an error'+res.message,
+                  ToastAndroid.SHORT,
+                  ToastAndroid.BOTTOM,
+                );
+              }
         })
     }
 
@@ -298,6 +489,10 @@ const styles = StyleSheet.create({
     imgView: {
         width: '100%',
         height: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: 'lightgray'
         // backgroundColor: 'green',
     },
     header: {
@@ -308,10 +503,10 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
     headerTxt: {
-        fontSize: 18,
+        fontSize: 20,
         marginRight: 20,
         color: colors.puprble,
-        //  fontFamily: 'Cairo-VariableFont_slnt,wght',
+        fontWeight: 'bold'
     },
     regionText: {
         fontSize: 15,
@@ -319,6 +514,12 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         marginTop: 10
     },
+    regiontxt: {
+        fontSize: 18,
+        marginRight: 20,
+        color: colors.puprble,
+    },
+
     infoView: {
         // borderWidth: 1,
         marginTop: 30,
@@ -328,7 +529,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: 50,
         width: '90%',
-        borderRadius: 30,
+        borderRadius: 10,
         borderColor: 'black',
         fontSize: 15,
         fontWeight: 'bold',
@@ -337,11 +538,21 @@ const styles = StyleSheet.create({
         // marginVertical: 10
     },
     regionView: {
-        backgroundColor: 'gray',
-        height: 70,
-        width: '90%',
-        alignSelf: 'center',
-        marginVertical: 10
+        // width: '90%',
+        // alignSelf: 'center',
+        marginVertical: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginRight: 20
+    },
+    regionPressable: {
+        width: 30,
+        height: 30,
+        borderWidth: 2,
+        borderColor: colors.puprble,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     ContentView: {
         //borderWidth: 1,
@@ -376,19 +587,23 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     contentItemView: {
-        //backgroundColor: 'white'
-        //marginBottom: 30
-    },
-    contentinput: {
-        alignSelf: 'center',
-        textAlign: 'right',
-        height: 60,
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 50,
         width: '90%',
         borderRadius: 10,
+        backgroundColor: 'lightgray',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        marginVertical: 10
+    },
+    contentinput: {
+        textAlign: 'right',
         fontSize: 15,
         color: 'black',
-        backgroundColor: 'lightgray',
-        marginVertical: 10
+    },
+    deleteIcon: {
+        paddingLeft: 10
     },
     footer: {
         width: '100%',
@@ -415,6 +630,20 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         marginVertical: 10,
     },
+    viewDate: {
+        flexDirection: 'row',
+        height: 50,
+        width: '95%',
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: 'lightgray',
+        justifyContent: 'flex-end',
+    },
+    datetxt: {
+        fontSize: 15,
+        marginRight: 90,
+        color: colors.puprble,
+    },
     textRequired: {
         fontSize: 14,
         marginRight: 40,
@@ -429,13 +658,45 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 50,
-        backgroundColor: 'lightgray',
+        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: 'white',
+        borderColor: '#dcdcdc',
         position: 'absolute',
         right: 20,
         bottom: -20,
     },
+    perPersoneView: {
+        //marginTop: 20,
+        width: '80%',
+        alignSelf: 'center'
+    },
+    itemPersonView: {
+        borderWidth: 2,
+        borderColor: '#dcdcdc',
+        width: 60,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 30,
+        borderRadius: 5,
+        marginTop: 20
+    },
+    itemPersonViewPressed: {
+        borderWidth: 3,
+        borderColor: colors.puprble,
+        width: 60,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 30,
+        borderRadius: 5,
+        marginTop: 20
+    },
+    perPersoneText: {
+        fontSize: 18,
+        color: colors.puprble
+    }
+
 })

@@ -34,7 +34,6 @@ const ProviderSetEventType = (props) => {
 
     const renderEventsType = () => {
         const eventsList = eventTypeInfo?.map((eventItem) => {
-            console.log("event item ",eventItem);
             return (
                 <ProviderEventTypesComp {...eventItem} />
             )
@@ -44,11 +43,12 @@ const ProviderSetEventType = (props) => {
     return (
         <View style={styles.container}>
             {renderHeader()}
-            <Text style={styles.titleQuestio}>هل ترغب بتحديد انواع المناسبات التي تقوم مصلحتك بخدمتها؟</Text>
+            <Text style={styles.titleQuestio}>قم بتحديد انواع المناسبات التي تقوم مصلحتك بخدمتها؟</Text>
             <View style={styles.body}>
                 {/* <FlatList data={EventType} renderItem={renderEventsType} numColumns={2} /> */}
                 <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
                     {renderEventsType()}
+                    
                 </ScrollView>
             </View>
 
@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
     },
     body: {
         width: '90%',
-
         alignSelf: 'center',
+        marginBottom: 200
         //marginVertical: 20
     },
     home: {

@@ -72,7 +72,6 @@ const ProviderTapNav = () => {
     await getServiceInfoById({ userID: userId }).then(res => {
       if (res.message) {
         setServiceInfoAccorUser([])
-
       } else {
         setServiceInfoAccorUser(res)
 

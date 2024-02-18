@@ -105,7 +105,6 @@ const ClientRequest = (props) => {
             </View>
         )
     }
-
     const renderRequestedDates = () => {
         if (Array.isArray(requestedDate)) {
             return requestedDate.map((item, index) => {
@@ -234,7 +233,7 @@ const ClientRequest = (props) => {
                     <Text style={styles.detailText}>{item.eventName}</Text>
                 </View>
                 <View style={styles.IconView}>
-                    <Image style={styles.iconImg} source={{ uri: document.eventImg }} />
+                    <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} />
                 </View>
 
             </View>
@@ -377,26 +376,11 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
     iconImg: {
-        flex: 1,
         alignItems: 'center',
-        width: 25,
-        height: 25
+        justifyContent: 'center',
+        width: 40,
+        height: 40
     },
-
-
-
-    // priceView: {
-    //     backgroundColor: 'snow',
-    //     height: 50,
-    //     width: 200,
-    //     alignItems: 'center',
-    //     justifyContent: 'center',
-    //     borderRadius: 5,
-    //     elevation: 5
-    // },
-
-
-
 
 
     text: {

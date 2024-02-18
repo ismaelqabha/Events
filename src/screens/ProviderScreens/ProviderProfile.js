@@ -1,6 +1,6 @@
-import {StyleSheet, Text, View, Pressable, ScrollView} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
-import {colors} from '../../assets/AppColors';
+import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { colors } from '../../assets/AppColors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -8,17 +8,19 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import strings from '../../assets/res/strings';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { getRegions } from '../../resources/API';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
-  const {setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat} =
+  const { setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } =
     useContext(SearchContext);
-  const {serviceInfoAccorUser} = useContext(ServiceProviderContext);
+  const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+
   const navigation = useNavigation();
   const SocialData = [
     {
@@ -31,8 +33,12 @@ const ProviderProfile = props => {
       name: 'youtube',
     },
   ];
+  const [serviceItem, setServiceItem] = useState([]);
   const [socialData, setSocialData] = useState([...SocialData]);
   const [socialMediaEditing, setSocialMediaEditing] = useState(false);
+  const [Region, SetRegion] = useState([])
+
+
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
@@ -46,6 +52,22 @@ const ProviderProfile = props => {
     });
     return cardsArray;
   };
+  const getRegionsfromApi = () => {
+    getRegions({}).then(res => {
+      SetRegion(res)
+    })
+  }
+
+  useEffect(() => {
+    getRegionsfromApi()
+  }, [isFirst])
+
+  const filterService = () => {
+    const service = serviceInfoAccorUser?.filter(item => {
+      return item.service_id === isFirst;
+    });
+    return service
+  };
 
   const seprator = () => {
     return <View style={styles.seprater}></View>;
@@ -57,6 +79,7 @@ const ProviderProfile = props => {
     props.navigation.navigate(ScreenNames.ProviderCreateOffer, {
       isFirst,
       serviceCat,
+      Region
     });
   };
 
@@ -164,8 +187,7 @@ const ProviderProfile = props => {
         <Pressable
           style={styles.item}
           onPress={() =>
-            props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion)
-          }>
+            props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion)}>
           <View>
             <Text style={styles.basicInfo}>تحديد مناطق العمل</Text>
           </View>
@@ -207,16 +229,16 @@ const ProviderProfile = props => {
   const activateEditingSocialMedia = () => {
     setSocialMediaEditing(true);
   };
-  const disableSocialEditing=()=>{
+  const disableSocialEditing = () => {
     setSocialMediaEditing(false)
   }
   const addSocialMediaItem = () => {
     setSocialData(socialData);
   };
-  const removeSocialItem=(index)=>{
-        const newArray = [...socialData]; 
-        newArray.splice(index, 1);
-        setSocialData(newArray); 
+  const removeSocialItem = (index) => {
+    const newArray = [...socialData];
+    newArray.splice(index, 1);
+    setSocialData(newArray);
   }
   const renderSoialMedia = () => {
     return (
@@ -228,13 +250,13 @@ const ProviderProfile = props => {
             </Pressable>
           )}
           {socialMediaEditing && (
-            <View style={{ width:'80%', flexDirection:'row',justifyContent:'space-between',height:'90%',alignItems:'center'}}>
-                <Pressable onPress={disableSocialEditing}>
-              <Text style={styles.basicInfo}>الغاء</Text>
-            </Pressable>
-            <Pressable onPress={addSocialMediaItem}>
-              <Text style={styles.basicInfo}>اضافة</Text>
-            </Pressable>
+            <View style={{ width: '80%', flexDirection: 'row', justifyContent: 'space-between', height: '90%', alignItems: 'center' }}>
+              <Pressable onPress={disableSocialEditing}>
+                <Text style={styles.basicInfo}>الغاء</Text>
+              </Pressable>
+              <Pressable onPress={addSocialMediaItem}>
+                <Text style={styles.basicInfo}>اضافة</Text>
+              </Pressable>
             </View>
           )}
           <View style={styles.IconView}>
@@ -251,7 +273,7 @@ const ProviderProfile = props => {
     );
   };
 
-  const renderSocialItems = () => {
+  const renderSocialItems1 = () => {
     const items = socialData.map((val, index) =>
       renderSocialMediaItem(val.name, index),
     );
@@ -261,9 +283,9 @@ const ProviderProfile = props => {
     return (
       <View
         key={index}
-        style={[styles.item, {justifyContent: 'space-between', width: '100%'}]}>
+        style={[styles.item, { justifyContent: 'space-between', width: '100%' }]}>
         <Pressable
-          style={{alignSelf:'center',marginTop:'5%'}}
+          style={{ alignSelf: 'center', marginTop: '5%' }}
           onPress={() => removeSocialItem(index)}>
           <AntDesign name="delete" size={25} color={'gray'} />
         </Pressable>
@@ -283,7 +305,30 @@ const ProviderProfile = props => {
       </View>
     );
   };
+
+  const renderSocialItems = () => {
+    const data = filterService()
+    return data.map(item => {
+      return item.socialMedia.map(element => {
+        return <View style={styles.item}>
+          <Pressable>
+            <Text style={styles.basicInfo}>{element.social}</Text>
+          </Pressable>
+          <View style={styles.IconView}>
+            <Entypo
+              style={styles.icon}
+              name={element.social}
+              color={colors.puprble}
+              size={25}
+            />
+          </View>
+        </View>
+      })
+    })
+  }
   const renderContactInfo = () => {
+    // const data = filterService()
+    // return data.map(item => {
     return (
       <View>
         <View style={styles.item}>
@@ -316,6 +361,7 @@ const ProviderProfile = props => {
         </View>
       </View>
     );
+    // })
   };
   const renderFeedBack = () => {
     return (
@@ -372,11 +418,12 @@ const ProviderProfile = props => {
           {renderAddCampaign()}
           {renderDetermineRegion()}
           {renderSetEventsType()}
+          {/* {renderSoialMedia1()} */}
         </View>
 
         <Text style={styles.txt}>جديد</Text>
         <View style={styles.viewSet}>{renderCreateService()}</View>
-        <View style={{height: 100}}></View>
+        <View style={{ height: 100 }}></View>
       </ScrollView>
     </View>
   );
