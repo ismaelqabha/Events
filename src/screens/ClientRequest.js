@@ -19,7 +19,9 @@ const ClientRequest = (props) => {
     const { userId } = useContext(UsersContext);
     const {
         requestedDate,
+        setrequestedDate,
         resDetail,
+        setResDetail,
         requestInfo, setRequestInfo,
         eventInfo, setEventInfo,
         eventTypeInfo } = useContext(SearchContext);
@@ -31,6 +33,7 @@ const ClientRequest = (props) => {
     const [requestStatus, setRequestStatus] = useState('')
     const [requestCost, setRequestCost] = useState()
     const [requestDiscount, setRequestDiscount] = useState()
+    const [selectedDate, setSelectedDate] = useState()
     // const [selectedDate, setselectedDate] = useState()
 
 
@@ -49,14 +52,16 @@ const ClientRequest = (props) => {
             const req = requestInfo || [];
             req.push(newRequestItem)
             setRequestInfo([...req])
-            console.log("Request Created");
         })
     }
 
 
 
     const onPressRequest = () => {
-        props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
+        // setrequestedDate([])
+        console.log("res detail ", resDetail);
+        console.log("res detail lenght ", resDetail.length);
+        // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
 
     const onPressHandler = () => {
@@ -103,28 +108,36 @@ const ClientRequest = (props) => {
 
     const renderRequestedDates = () => {
         if (Array.isArray(requestedDate)) {
-            console.log("requested dates ", requestedDate);
-
-            return requestedDate.map((item) => {
+            return requestedDate.map((item, index) => {
                 return (
-                    <Pressable style={styles.dateItem}
-                    >
-                        <Text style={styles.dateTxt}>
-                            {moment(item).format('dddd')}</Text>
-                        <Text style={styles.dateTxt}>
-                            {moment(item).format('L')}
-                        </Text>
-                    </Pressable>
+                    renderDate(item, index)
                 )
             })
         } else {
             return (
-                <View style={styles.dateItem1}>
+                <View key={index} style={styles.dateItem1}>
                     <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('dddd')}</Text>
                     <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('L')}</Text>
                 </View>
             )
         }
+    }
+
+    const handleDatePress = (item) => {
+        setSelectedDate(item)
+    }
+
+    const renderDate = (item, index) => {
+        return (
+            <Pressable onPress={() => handleDatePress(item)} key={index} style={selectedDate === item ? styles.dateItemPressed : styles.dateItem}
+            >
+                <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
+                    {moment(item).format('dddd')}</Text>
+                <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
+                    {moment(item).format('L')}
+                </Text>
+            </Pressable>
+        )
     }
 
     const queryImg = () => {
@@ -158,7 +171,7 @@ const ClientRequest = (props) => {
     }
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
-            <RequestDetail {...data} />
+            <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
         </View>
     }
     const renderFoter = () => {
@@ -239,7 +252,7 @@ const ClientRequest = (props) => {
                 <View style={styles.DateView}>
                     <Text style={styles.detailText}>تفاصيل الحجز</Text>
                     <ScrollView horizontal={true}>
-                    {renderRequestedDates()}
+                        {renderRequestedDates()}
                     </ScrollView>
                 </View>
                 {renderRequestInfo()}

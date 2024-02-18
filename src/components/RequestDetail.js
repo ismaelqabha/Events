@@ -10,12 +10,15 @@ import { AppStyles } from '../assets/res/AppStyles';
 
 const RequestDetail = (props) => {
     // const { requestedDate } = props
-
+    const {
+        selectedDate,
+        setSelectedDate } = props
     const { cat, setResDetail, resDetail, requestedDate } = useContext(SearchContext);
-    const resivedDate = moment(requestedDate).format('L')
+    const resivedDate = requestedDate.map((date) => {
+        return moment(date).format('L')
+    })
     const [selectTime, setSelectTime] = useState(true);
     const [showModal, setShowModal] = useState(false);
-
     const [startTimeText, setstartTimeText] = useState()
     const [endTimeText, setendTimeText] = useState()
     const [invitersValue, setInvitersValue] = useState('');
@@ -91,8 +94,19 @@ const RequestDetail = (props) => {
     }, [invitersValue]);
 
     useEffect(() => {
-        newReservationDetail()
+        const reservation = resDetail.find((detail) => detail.reservationDate === selectedDate)
+        if (reservation) {
+            setstartTimeText(reservation.startingTime)
+            setendTimeText(reservation.EndTime)
+            setInvitersValue(reservation.numOfInviters)
+            setOffer(reservation.offerId)
+            setSelectedSupDet(reservation.subDetailId)
+        }
 
+    }, [selectedDate]);
+
+    useEffect(() => {
+        newReservationDetail()
     }, [])
 
     const showMissingInviters = () => { };
@@ -100,23 +114,35 @@ const RequestDetail = (props) => {
 
 
     const newReservationDetail = () => {
-        const resDetailForOneDate = {
-            reservationDate: resivedDate,
+        // Create a set of unique reservation dates from resDetail
+        const existingDatesSet = new Set(resDetail.map(detail => detail.reservationDate));
+
+        // Filter resivedDate array to remove dates already existing in resDetail
+        const newDates = resivedDate.filter(date => !existingDatesSet.has(date));
+
+        // Remove any reservation detail from resDetail that doesn't exist in resivedDate
+        const updatedResDetail = resDetail.filter(detail => resivedDate.includes(detail.reservationDate));
+
+        // Add new reservation details for the remaining dates in newDates
+        const newReservationDetails = newDates.map(date => ({
+            reservationDate: date,
             startingTime: null,
             EndTime: null,
             numOfInviters: null,
             subDetailId: [],
             offerId: null
-        }
-        setResDetail([...resDetail, resDetailForOneDate])
-    }
+        }));
+
+        // Update resDetail with the updated reservation details
+        setResDetail([...updatedResDetail, ...newReservationDetails]);
+    };
 
     /**
      * Update function.
      * @param {'startingTime' | 'endTime' | 'invited' | 'subDetail' | 'offerId'} type - The type of update.
      */
     const updateReservationDet = (val, type) => {
-        const detailIndex = resDetail.findIndex(item => item.reservationDate == resivedDate)
+        const detailIndex = resDetail.findIndex(item => item.reservationDate == selectedDate)
         if (detailIndex == -1) {
             return
         }
@@ -457,10 +483,9 @@ const RequestDetail = (props) => {
             </View>
         )
     }
-    console.log("requestedDate", requestedDate);
     const chooseButton = () => {
         if (Array.isArray(requestedDate) && requestedDate.length > 1) {
-            { renderNextBack() }
+            { return renderNextBack() }
         } else {
             { renderSaveButton() }
         }
