@@ -1,5 +1,5 @@
- const baseUrl = 'https://ev-server.onrender.com/';
-//const baseUrl = "http://localhost:7000/"
+//  const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -125,22 +125,24 @@ export const getCampaignsByServiceId = async (body) => {
   const url = 'Campaigns/getCampByServiceId'
   return await AppFetch(url, 'POST', body)
 }
-export const createNewOffer = async (AddNewOffer, offerPhoto) => {
+export const createNewOffer = async (AddNewOffer, offerImg) => {
   const url = 'Campaigns/createCamp'
   console.log("AddNewOffer", AddNewOffer);
+  console.log("offerImg", offerImg);
   try {
     const formData = new FormData();
-    formData.append("offerPhoto", {
-      uri: offerPhoto,
+    formData.append("OfferPhoto", {
+      uri: offerImg,
       type: 'image/jpeg',
       name: `OfferPhoto.jpg`,
     })
-   
+
     formData.append("offerData", JSON.stringify(AddNewOffer))
     const headers = {
       'Content-Type': 'multipart/form-data',
     }
-    return await AppFetch(url, 'POST',formData, headers)
+    console.log("form data ", formData);
+    return await AppFetch(url, 'POST', formData, headers)
   } catch (error) {
 
   }
