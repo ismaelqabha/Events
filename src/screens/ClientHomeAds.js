@@ -31,16 +31,17 @@ const ClientHomeAds = (props) => {
 
 
     const queryCampaign = () => {
-        if (!campInfo) {
-            return null
+        if (!campInfo || !Array.isArray(campInfo)) {
+            return null; // Return early if campInfo is undefined or not an array
         }
-        return campInfo?.filter(res => {
-            const serType = res.campCatType === cat
-            const matchRegion = res.campRigon.includes(userRegion)
-            const result = serType && matchRegion
-            return result
-        })
-    }
+
+        return campInfo.filter(res => {
+            const serType = res.campCatType === cat;
+            const matchRegion = res.campRigon.includes(userRegion);
+            const result = serType && matchRegion;
+            return result;
+        });
+    };
 
     const renderCampaigns = () => {
         setReachCampaignfrom('fromHome')
