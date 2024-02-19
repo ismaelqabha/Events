@@ -57,8 +57,10 @@ const ClientRequest = (props) => {
             setRequestInfo([...req])
         })
     }
-
-    const onModalBtnPress = () => {
+    const onModalCancelPress = () => {
+        setShowModal(false)
+    }
+    const onModalSavePress = () => {
         if (fileEventName !== undefined) {
             if (eventName !== undefined) {
                 getEventTypeID(eventName)
@@ -67,7 +69,7 @@ const ClientRequest = (props) => {
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM
                 )
-                setShowModal(false)
+               
             } else {
                 Alert.alert(
                     'تنبية',
@@ -345,9 +347,14 @@ const ClientRequest = (props) => {
                                 />
                             </View>
                         </View>
-                        <Pressable onPress={() => onModalBtnPress()} style={styles.btn}>
-                            <Text style={styles.modaltext}>OK</Text>
+                        <View style={styles.btn}>
+                        <Pressable onPress={() => onModalCancelPress()} >
+                            <Text style={styles.modaltext}>الغاء الامر</Text>
                         </Pressable>
+                        <Pressable onPress={() => onModalSavePress()} >
+                            <Text style={styles.modaltext}>حفظ</Text>
+                        </Pressable>
+                        </View>
                     </View>
                 </View>
 
@@ -607,7 +614,8 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     btn: {
-        justifyContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
         alignItems: 'center',
         height: 50,
         width: '100%',

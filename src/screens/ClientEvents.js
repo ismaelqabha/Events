@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput, ToastAndroid,Alert } from 'react-native';
+import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput, ToastAndroid, Alert } from 'react-native';
 import EventsCard from '../components/EventsCard';
 import { FlatList } from 'react-native-gesture-handler';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -18,7 +18,7 @@ const ClientEvents = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [fileEventName, setfileEventName] = useState();
     const { userId } = useContext(UsersContext);
-    const { eventInfo, setEventInfo, eventTypeInfo, setEventTypeInfo  } = useContext(SearchContext);
+    const { eventInfo, setEventInfo, eventTypeInfo, setEventTypeInfo } = useContext(SearchContext);
     const [eventTypeName, setEventTypeName] = useState()
     const [eventName, setEventName] = useState()
     const [eventTypeId, setEventTypeId] = useState()
@@ -32,8 +32,10 @@ const ClientEvents = (props) => {
         setShowModal(true);
         getEventTypeInfo()
     }
-
-    const onModalBtnPress = () => {
+    const onModalCancelPress = () => {
+        setShowModal(false)
+    }
+    const onModalSavePress = () => {
         if (fileEventName !== undefined) {
             if (eventName !== undefined) {
                 getEventTypeID(eventName)
@@ -182,9 +184,14 @@ const ClientEvents = (props) => {
                                 />
                             </View>
                         </View>
-                        <Pressable onPress={() => onModalBtnPress()} style={styles.btn}>
-                            <Text style={styles.text}>OK</Text>
-                        </Pressable>
+                        <View style={styles.btn}>
+                            <Pressable onPress={() => onModalCancelPress()} >
+                                <Text style={styles.modaltext}>الغاء الامر</Text>
+                            </Pressable>
+                            <Pressable onPress={() => onModalSavePress()} >
+                                <Text style={styles.modaltext}>حفظ</Text>
+                            </Pressable>
+                        </View>
                     </View>
                 </View>
 
@@ -252,7 +259,8 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     btn: {
-        justifyContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
         alignItems: 'center',
         height: 50,
         width: '100%',
