@@ -95,8 +95,9 @@ const RequestDetail = (props) => {
 
     }, [invitersValue]);
 
+
     useEffect(() => {
-        const reservation = resDetail.find((detail) => detail.reservationDate === selectedDate)
+        const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
         if (reservation) {
             setstartTimeText(reservation.startingTime)
             setendTimeText(reservation.EndTime)
@@ -144,7 +145,7 @@ const RequestDetail = (props) => {
      * @param {'startingTime' | 'endTime' | 'invited' | 'subDetail' | 'offerId'} type - The type of update.
      */
     const updateReservationDet = (val, type) => {
-        const detailIndex = resDetail.findIndex(item => item.reservationDate == selectedDate)
+        const detailIndex = resDetail.findIndex(item => item.reservationDate === moment(selectedDate).format('L'))
         if (detailIndex == -1) {
             return
         }
@@ -152,6 +153,7 @@ const RequestDetail = (props) => {
         switch (type) {
             case 'startingTime':
                 detail[detailIndex].startingTime = val
+                console.log("new updated ", detail[detailIndex].startingTime);
                 setResDetail([...detail])
                 break;
             case 'endTime':

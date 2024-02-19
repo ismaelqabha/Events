@@ -35,10 +35,10 @@ const ClientRequest = (props) => {
     const [requestCost, setRequestCost] = useState()
     const [requestDiscount, setRequestDiscount] = useState()
     const [selectedDate, setSelectedDate] = useState()
+
     const [eventTypeName, setEventTypeName] = useState()
     const [eventName, setEventName] = useState()
     const [eventTypeId, setEventTypeId] = useState()
-
 
 
     const creatNewRequest = () => {
