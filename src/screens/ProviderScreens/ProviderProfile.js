@@ -22,20 +22,8 @@ const ProviderProfile = props => {
   const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
 
   const navigation = useNavigation();
-  const SocialData = [
-    {
-      name: 'facebook',
-    },
-    {
-      name: 'instagram',
-    },
-    {
-      name: 'youtube',
-    },
-  ];
-  const [serviceItem, setServiceItem] = useState([]);
-  const [socialData, setSocialData] = useState([...SocialData]);
-  const [socialMediaEditing, setSocialMediaEditing] = useState(false);
+ 
+ 
   const [Region, SetRegion] = useState([])
 
 
@@ -226,143 +214,7 @@ const ProviderProfile = props => {
       </View>
     );
   };
-  const activateEditingSocialMedia = () => {
-    setSocialMediaEditing(true);
-  };
-  const disableSocialEditing = () => {
-    setSocialMediaEditing(false)
-  }
-  const addSocialMediaItem = () => {
-    setSocialData(socialData);
-  };
-  const removeSocialItem = (index) => {
-    const newArray = [...socialData];
-    newArray.splice(index, 1);
-    setSocialData(newArray);
-  }
-  const renderSoialMedia = () => {
-    return (
-      <View>
-        <View style={styles.item}>
-          {!socialMediaEditing && (
-            <Pressable onPress={activateEditingSocialMedia}>
-              <Text style={styles.basicInfo}>اضافة \ ازالة</Text>
-            </Pressable>
-          )}
-          {socialMediaEditing && (
-            <View style={{ width: '80%', flexDirection: 'row', justifyContent: 'space-between', height: '90%', alignItems: 'center' }}>
-              <Pressable onPress={disableSocialEditing}>
-                <Text style={styles.basicInfo}>الغاء</Text>
-              </Pressable>
-              <Pressable onPress={addSocialMediaItem}>
-                <Text style={styles.basicInfo}>اضافة</Text>
-              </Pressable>
-            </View>
-          )}
-          <View style={styles.IconView}>
-            <Entypo
-              style={styles.icon}
-              name={'add-to-list'}
-              color={colors.puprble}
-              size={25}
-            />
-          </View>
-        </View>
-        {renderSocialItems()}
-      </View>
-    );
-  };
-
-  const renderSocialItems1 = () => {
-    const items = socialData.map((val, index) =>
-      renderSocialMediaItem(val.name, index),
-    );
-    return items || null;
-  };
-  const renderSocialMediaItem = (name, index) => {
-    return (
-      <View
-        key={index}
-        style={[styles.item, { justifyContent: 'space-between', width: '100%' }]}>
-        <Pressable
-          style={{ alignSelf: 'center', marginTop: '5%' }}
-          onPress={() => removeSocialItem(index)}>
-          <AntDesign name="delete" size={25} color={'gray'} />
-        </Pressable>
-        <View style={styles.item}>
-          <Pressable>
-            <Text style={styles.basicInfo}>{name}</Text>
-          </Pressable>
-          <View style={styles.IconView}>
-            <FontAwesome5
-              style={styles.icon}
-              name={name}
-              color={colors.puprble}
-              size={25}
-            />
-          </View>
-        </View>
-      </View>
-    );
-  };
-
-  const renderSocialItems = () => {
-    const data = filterService()
-    return data.map(item => {
-      return item.socialMedia.map(element => {
-        return <View style={styles.item}>
-          <Pressable>
-            <Text style={styles.basicInfo}>{element.social}</Text>
-          </Pressable>
-          <View style={styles.IconView}>
-            <Entypo
-              style={styles.icon}
-              name={element.social}
-              color={colors.puprble}
-              size={25}
-            />
-          </View>
-        </View>
-      })
-    })
-  }
-  const renderContactInfo = () => {
-    // const data = filterService()
-    // return data.map(item => {
-    return (
-      <View>
-        <View style={styles.item}>
-          <View>
-            <Text style={styles.basicInfo}>0546126692</Text>
-            <Text style={styles.basicInfoTitle}>الموبايل</Text>
-          </View>
-          <View style={styles.IconView}>
-            <Ionicons
-              style={styles.icon}
-              name={'call'}
-              color={colors.puprble}
-              size={25}
-            />
-          </View>
-        </View>
-        <View style={styles.item}>
-          <View>
-            <Text style={styles.basicInfo}>exsample@gmail.com</Text>
-            <Text style={styles.basicInfoTitle}>Email</Text>
-          </View>
-          <View style={styles.IconView}>
-            <Entypo
-              style={styles.icon}
-              name={'email'}
-              color={colors.puprble}
-              size={25}
-            />
-          </View>
-        </View>
-      </View>
-    );
-    // })
-  };
+  
   const renderFeedBack = () => {
     return (
       <View>
@@ -401,17 +253,13 @@ const ProviderProfile = props => {
         </View>
         {seprator()}
         <View style={styles.viewSet}>
-          {/* {renderCalender()} */}
           {renderPayments()}
           {renderClients()}
           {renderFeedBack()}
         </View>
 
-        <Text style={styles.txt}>معلومات التواصل </Text>
-        <View style={styles.viewSet}>{renderContactInfo()}</View>
-
-        <Text style={styles.txt}>الشبكات الاجتماعية</Text>
-        <View style={styles.viewSet}>{renderSoialMedia()}</View>
+        <Text style={styles.txt}>قائمة العروض</Text>
+        <View style={styles.viewSet}></View>
 
         <Text style={styles.txt}>العمليات</Text>
         <View style={styles.viewSet}>
@@ -469,10 +317,10 @@ const styles = StyleSheet.create({
     color: colors.puprble,
     fontWeight: 'bold',
   },
-  basicInfoTitle: {
-    fontSize: 12,
-    textAlign: 'right',
-  },
+  // basicInfoTitle: {
+  //   fontSize: 12,
+  //   textAlign: 'right',
+  // },
   IconView: {
     width: 50,
     height: 50,
@@ -485,9 +333,15 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-end',
+    justifyContent: 'flex-end',
     marginTop: 10,
   },
+  // itemSM: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   justifyContent: 'space-between',
+  //   width: '80%'
+  // },
   seprater: {
     borderColor: colors.puprble,
     borderWidth: 0.2,
@@ -534,4 +388,5 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginLeft: 15,
   },
+  
 });

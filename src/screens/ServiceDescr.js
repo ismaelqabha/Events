@@ -78,15 +78,10 @@ const ServiceDescr = (props) => {
         // }
 
     }
-
-
     const onPressBack = () => {
         setrequestedDate([])
         props.navigation.goBack();
-
     }
-
-
     const renderImg = () => {
         const imageArray = data.images[0].serviceImages.map(photos => {
             return photos;
@@ -391,7 +386,6 @@ const ServiceDescr = (props) => {
         if (CampData.message !== 'No Campaigns') {
             const campArray = CampData?.map(camp => {
                 return <View style={styles.HallView}>
-                    <Text style={styles.text}>أو يمكنك اختيار احد العروض التالية</Text>
                     < CampaignCard  {...camp} />
                 </View>
             });
@@ -520,6 +514,7 @@ const ServiceDescr = (props) => {
                 <View style={styles.ditailView}>
                     <Text style={styles.text}>التفاصيل لتحديد تكلفة الحجز</Text>
                     {renderServiceDetail()}
+                    <Text style={styles.text}>أو يمكنك اختيار احد العروض التالية</Text>
                     {renderCampeigns()}
                 </View >
                 {seperator()}
@@ -782,8 +777,8 @@ const styles = StyleSheet.create({
         textAlign: 'right'
     },
     detailModal: {
-        width: '100%',
-        height: 400,
+        width: '95%',
+        height: 300,
         backgroundColor: '#ffffff',
         borderRadius: 20,
     },
@@ -823,7 +818,7 @@ const styles = StyleSheet.create({
         color: colors.puprble,
     },
     modalbody: {
-        //marginTop: 20
+        paddingHorizontal: 5
     },
     subDetailView: {
         width: '100%',

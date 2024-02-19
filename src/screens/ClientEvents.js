@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput, ToastAndroid } from 'react-native';
+import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput, ToastAndroid,Alert } from 'react-native';
 import EventsCard from '../components/EventsCard';
 import { FlatList } from 'react-native-gesture-handler';
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -9,41 +9,97 @@ import { v4 as uuidv4 } from 'uuid';
 import { createNewEvent, getEventsInfo } from '../resources/API';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import { SelectList } from 'react-native-dropdown-select-list';
+import UsersContext from '../../store/UsersContext';
 
 
 const ClientEvents = (props) => {
     const { isFromAddEventClick, data } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [fileEventName, setfileEventName] = useState();
-    const { userId, eventInfo, setEventInfo } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
+    const { eventInfo, setEventInfo, eventTypeInfo, setEventTypeInfo  } = useContext(SearchContext);
+    const [eventTypeName, setEventTypeName] = useState()
+    const [eventName, setEventName] = useState()
+    const [eventTypeId, setEventTypeId] = useState()
 
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
     const onPressModalHandler = () => {
+        getEventsType()
         setShowModal(true);
+        getEventTypeInfo()
     }
 
     const onModalBtnPress = () => {
-        creatNewEvent()
-        ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
-            ToastAndroid.SHORT,
-            ToastAndroid.BOTTOM
-        )
-        setShowModal(false)
+        if (fileEventName !== undefined) {
+            if (eventName !== undefined) {
+                getEventTypeID(eventName)
+                creatNewEvent()
+                ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+                )
+                setShowModal(false)
+            } else {
+                Alert.alert(
+                    'تنبية',
+                    'الرجاء اختيار نوع المناسبة',
+                    [
+                        {
+                            text: 'Ok',
+                            // style: 'cancel',
+                        },
+                    ],
+                    { cancelable: false } // Prevent closing the alert by tapping outside
+                );
+            }
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء اختيار اسم المناسبة',
+                [
+                    {
+                        text: 'Ok',
+                        // style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
+
     }
     const getEventsfromApi = () => {
         getEventsInfo({ userId: userId }).then(res => {
             setEventInfo(res)
         })
     }
+    const getEventsType = () => {
+        getEventList({}).then(res => {
+            setEventTypeInfo(res)
+
+        })
+    }
+    const getEventTypeInfo = () => {
+        const eventList = []
+        eventTypeInfo.forEach(element => {
+            eventList.push(element?.eventTitle)
+        })
+        eventList.sort()
+        setEventTypeName(eventList)
+    }
+    const getEventTypeID = (val) => {
+        const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
+        const eventTypeId = eventTypeInfo[eventTypeIndex].Id
+        setEventTypeId(eventTypeId)
+    }
     const creatNewEvent = () => {
         const newEventItem = {
             userId: userId,
             eventName: fileEventName,
-            // eventDate: moment(requestedDate).format('L'),
-            // eventCost: "50890",
+            eventTitleId: eventTypeId
         }
         createNewEvent(newEventItem).then(res => {
             const evnt = eventInfo || [];
@@ -54,7 +110,7 @@ const ClientEvents = (props) => {
     useEffect(() => {
         getEventsfromApi()
     }, [])
-  
+
     //console.log("eventInfo",eventInfo);
     const query = () => {
         return eventInfo || [];
@@ -76,7 +132,7 @@ const ClientEvents = (props) => {
                 </Pressable>
 
                 <Text style={styles.txt}>منسباتي</Text>
-                {/* <Pressable
+                <Pressable
                     onPress={onPressModalHandler}
                 >
                     <Entypo
@@ -84,9 +140,9 @@ const ClientEvents = (props) => {
                         name={"plus"}
                         color={"black"}
                         size={30} />
-                </Pressable> */}
+                </Pressable>
             </View>
-           
+
             <FlatList
                 data={query()}
                 renderItem={renderCard}
@@ -112,9 +168,19 @@ const ClientEvents = (props) => {
                                 keyboardType='default'
                                 placeholder='ادخل اسم المناسبة '
                                 onChangeText={setfileEventName}
-                            //value={fileEventName}
-                            //editable={false}
                             />
+                            <View style={{ width: '100%', marginVertical: 20 }}>
+                                <SelectList
+                                    data={eventTypeName}
+                                    setSelected={val => {
+                                        setEventName(val);
+                                    }}
+                                    placeholder={"أختر نوع المناسبة"}
+                                    boxStyles={styles.dropdown}
+                                    inputStyles={styles.droptext}
+                                    dropdownTextStyles={styles.dropstyle}
+                                />
+                            </View>
                         </View>
                         <Pressable onPress={() => onModalBtnPress()} style={styles.btn}>
                             <Text style={styles.text}>OK</Text>
@@ -149,13 +215,11 @@ const styles = StyleSheet.create({
         color: 'black',
         marginRight: 20
     },
-    
-   
+
     detailModal: {
-        width: 320,
-        height: 250,
+        width: '90%',
+        height: 200,
         backgroundColor: '#ffffff',
-        borderColor: '#000',
         borderRadius: 20,
     },
     centeredView: {
@@ -165,44 +229,58 @@ const styles = StyleSheet.create({
         backgroundColor: '#00000099',
     },
     Motitle: {
-        height: 40,
+        height: 70,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'gray',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },
     body: {
-        height: 120,
-        marginTop: 50,
-        alignSelf: 'flex-end',
-        marginRight: 50,
+        width: '90%',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    input: {
+        textAlign: 'center',
+        height: 50,
+        width: '100%',
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor: 'gray',
+        fontSize: 15,
+        color: 'black',
+    },
+    btn: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 50,
+        width: '100%',
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        position: 'absolute',
+        bottom: 0
     },
     text: {
         textAlign: 'center',
         fontSize: 20,
         color: 'black'
     },
-    btn: {
-        //borderWidth: 1,
-        height: 40,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        backgroundColor: 'gray',
-    },
-    input: {
-        textAlign: 'center',
+    dropdown: {
         height: 50,
-        width: 200,
-        borderWidth: 1,
-        borderRadius: 30,
-        borderColor: 'black',
-        fontSize: 15,
-        fontWeight: 'bold',
-        // marginTop: 20,
-        marginRight: 10,
+        width: '100%',
+        alignSelf: 'center',
+        borderRadius: 10,
+        textAlign: 'right',
+        borderWidth: 0.6
+    },
+    dropstyle: {
         color: 'black',
-        backgroundColor: '#fffaf0',
+        fontSize: 18,
+    },
+    droptext: {
+        fontSize: 18,
+        color: 'black',
     },
 })
 

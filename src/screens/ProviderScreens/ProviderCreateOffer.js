@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, TextInput, Image } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput, Image, ToastAndroid } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react'
 import { colors } from '../../assets/AppColors';
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -9,12 +9,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
 import UsersContext from '../../../store/UsersContext';
-import { createNewOffer} from '../../resources/API';
+import { createNewOffer } from '../../resources/API';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const ProviderCreateOffer = (props) => {
     const { isFirst, serviceCat, Region } = props.route?.params || {}
     const { campInfo, setCampInfo } = useContext(SearchContext);
+    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const { userId } = useContext(UsersContext);
 
     const [noPerPerson, setNoPerPerson] = useState(false);
@@ -29,6 +31,7 @@ const ProviderCreateOffer = (props) => {
     const [OfferPrice, setOfferPrice] = useState(null)
     const [OfferExpireDate, setOfferExpireDate] = useState(null)
     const [OfferContent, setOfferContent] = useState([])
+    const [subDetContent, setSubDetContent] = useState([])
     const [OfferWorkingRegion, setOfferWorkingRegion] = useState([])
     const [offerImg, setOfferImg] = useState(null)
     const [isPerPerson, setIsPerPerson] = useState(false)
@@ -45,6 +48,12 @@ const ProviderCreateOffer = (props) => {
     useEffect(() => {
 
     }, []);
+
+    const getSubDetailService = () => {
+        return serviceInfoAccorUser.filter(element => {
+            return element.service_id === isFirst
+        })
+    }
 
     const sperator = () => {
         return <View style={styles.seperator}></View>
@@ -124,14 +133,8 @@ const ProviderCreateOffer = (props) => {
 
     // Region Part
     const whenSetWorkingRegion = (regionTitle, setSelectedRegion, selectedRegion) => {
-        if(selectedRegion){
-            setSelectedRegion(false)
+            setSelectedRegion(!selectedRegion)
             updateSetRegion(regionTitle, setSelectedRegion)
-        }else {
-            setSelectedRegion(true)
-            updateSetRegion(regionTitle, setSelectedRegion)
-        }
-        
     }
     const updateSetRegion = (regionTitle, setSelectedRegion) => {
         OfferWorkingRegion.includes(regionTitle) ? removeRegion(regionTitle, setSelectedRegion) : addRegion(regionTitle, setSelectedRegion);
@@ -148,9 +151,9 @@ const ProviderCreateOffer = (props) => {
         setOfferWorkingRegion(list);
     }
     const renderOfferWorkingRegion = () => {
-        const [selectedRegion, setSelectedRegion] = useState(false);
-
+        
         const cardsArray = Region.regions.map(item => {
+            const [selectedRegion, setSelectedRegion] = useState(false);
             return <View style={styles.regionView}>
                 <Text style={styles.regionText}>{item.regionName}</Text>
                 <Pressable style={styles.regionPressable}
@@ -159,7 +162,7 @@ const ProviderCreateOffer = (props) => {
                         <Entypo
                             style={{ alignSelf: 'center' }}
                             name={"check"}
-                            color={colors.BGScereen}
+                            color={colors.puprble}
                             size={30} />
                     }
                 </Pressable>
@@ -169,6 +172,48 @@ const ProviderCreateOffer = (props) => {
     }
 
     // Offer Content Part
+    const whenSubDetailPress = (subDetail, setselectedSubDetail, selectedSubDetail) => {
+            setselectedSubDetail(!selectedSubDetail)
+            updateSubDetail(subDetail, setselectedSubDetail)
+    }
+    const updateSubDetail = (subDetail, setselectedSubDetail) => {
+        subDetContent.includes(subDetail) ? removeSubDetail(subDetail, setselectedSubDetail) : addSubDetail(subDetail, setselectedSubDetail);
+    }
+    const removeSubDetail = (subDetail, setselectedSubDetail) => {
+        const newList = subDetContent.filter((item) => item !== subDetail)
+        setselectedSubDetail(false)
+        setSubDetContent(newList);
+    }
+    const addSubDetail = (subDetail, setselectedSubDetail) => {
+        const list = subDetContent;
+        list.push(subDetail);
+        setselectedSubDetail(true)
+        setSubDetContent(list);
+    }
+    const renderSubDetail = () => {
+        const data = getSubDetailService()
+        const subDetail = data[0].additionalServices
+        return subDetail.map(item => {
+            return item.subDetailArray.map(element => {
+                const [selectedSubDetail, setselectedSubDetail] = useState(false);
+                return (
+                    <View style={styles.item}>
+                        <Text style={styles.Addtxt}>{element.detailSubtitle}</Text>
+                        <Pressable style={styles.regionPressable}
+                            onPress={() => whenSubDetailPress(element.detailSubtitle,setselectedSubDetail, selectedSubDetail)}>
+                            {selectedSubDetail &&
+                                <Entypo
+                                    style={{ alignSelf: 'center' }}
+                                    name={"check"}
+                                    color={colors.puprble}
+                                    size={30} />
+                            }
+                        </Pressable>
+                    </View>
+                )
+            })
+        })
+    }
     const addOfferContent = () => {
         setOfferContent([...OfferContent, { empty: "empty" }])
     }
@@ -183,7 +228,7 @@ const ProviderCreateOffer = (props) => {
 
         useEffect(() => {
             if (props.val) {
-                setContentDescr(props?.val?.contentItem)
+                setContentDescr(props?.val?.ContentDescr)
             }
         }, [])
 
@@ -195,14 +240,14 @@ const ProviderCreateOffer = (props) => {
                 <TextInput
                     style={styles.contentinput}
                     keyboardType='default'
-                    placeholder='الوصف'
+                    placeholder='محتوى جديد'
                     value={ContentDescr}
                     onChangeText={(val) => setContentDescr(val)}
                     onEndEditing={(val) => {
-                        const data = {
-                            contentItem: ContentDescr
-                        }
-                        addContent(data, props.index)
+                        // const data = {
+                        //     contentItem: ContentDescr
+                        // }
+                        addContent(ContentDescr, props.index)
                     }}
                 />
             </View>)
@@ -225,30 +270,16 @@ const ProviderCreateOffer = (props) => {
             return newArray;
         });
     }
-    const updateContentsArray = (data) => {
-        var i = OfferContent.findIndex((val) => val.contentItem === data.contentItem)
-        console.log("i ", i);
-        if (i == -1) {
-            var temp = OfferContent.findIndex((val) => val.empty === "empty")
-            var newArr = OfferContent
-            newArr[temp] = data
-            setOfferContent(newArr)
-        } else {
-            var current = userSpecialDate
-            current[i] = data
-            setOfferContent(current)
-        }
-        console.log("updated -> ", OfferContent);
-    }
     const renderOfferContent = () => {
         return (
             <View style={styles.ContentView}>
-                <Text style={styles.regiontxt}>قائمة المحتويات</Text>
+                <Text style={styles.regiontxt}>تحديد محتويات العرض</Text>
+                {renderSubDetail()}
                 {renderContents()}
                 <Pressable style={styles.item}
                     onPress={addOfferContent}
                 >
-                    <Text style={styles.Addtxt}>اضافة محتويات العرض</Text>
+                    <Text style={styles.Addtxt}>اضافة محتويات اضافية</Text>
                     <View style={styles.IconView}>
                         <Entypo
                             name={"plus"}
@@ -376,7 +407,7 @@ const ProviderCreateOffer = (props) => {
 
                 {sperator()}
                 <View style={styles.inputView}>
-                    <Text style={styles.regiontxt}>تحديد مناطق ترويج الحملة</Text>
+                    <Text style={styles.regiontxt}>تحديد مناطق ترويج العرض</Text>
                     {renderOfferWorkingRegion()}
                 </View>
 
@@ -407,9 +438,9 @@ const ProviderCreateOffer = (props) => {
             campCatType: serviceCat,
             campTitle: OfferTitle,
             campContents: OfferContent,
+            contentFromSubDet: subDetContent,
             campCost: OfferPrice,
-            //campImag: offerImg,
-            campRigon: '',
+            campRigon: OfferWorkingRegion,
             campExpirDate: OfferExpireDate,
             isPerPerson: isPerPerson
         }
@@ -418,21 +449,21 @@ const ProviderCreateOffer = (props) => {
             let OfferArr = campInfo || [];
             setCampInfo([...OfferArr])
             // console.log("OfferArr", OfferArr);
-            // console.log("addNewOffer", addNewOffer);
+            console.log("res.message", res.message);
             if (res.message === 'newCampaign Created') {
                 OfferArr.push(addNewOffer);
                 ToastAndroid.showWithGravity(
-                  'تم اٍنشاء العرض بنجاح',
-                  ToastAndroid.SHORT,
-                  ToastAndroid.BOTTOM,
+                    'تم اٍنشاء العرض بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
                 );
-              }else{
+            } else {
                 ToastAndroid.showWithGravity(
-                  'there has been an error'+res.message,
-                  ToastAndroid.SHORT,
-                  ToastAndroid.BOTTOM,
+                    'there has been an error' + res.message,
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
                 );
-              }
+            }
         })
     }
 
@@ -518,6 +549,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginRight: 20,
         color: colors.puprble,
+        marginBottom: 10
     },
 
     infoView: {
@@ -538,9 +570,7 @@ const styles = StyleSheet.create({
         // marginVertical: 10
     },
     regionView: {
-        // width: '90%',
-        // alignSelf: 'center',
-        marginVertical: 10,
+        marginVertical: 5,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
@@ -563,7 +593,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignSelf: 'flex-end',
         marginTop: 10,
-        marginRight: 20
+        marginRight: 20,
+        // borderWidth: 1
+    },
+    subSelectView: {
+
     },
     IconView: {
         width: 50,
@@ -577,7 +611,7 @@ const styles = StyleSheet.create({
     Addtxt: {
         fontSize: 15,
         color: colors.puprble,
-        marginTop: 10
+        marginRight: 20,
     },
     seperator: {
         borderWidth: 0.5,

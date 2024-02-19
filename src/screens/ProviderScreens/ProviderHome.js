@@ -17,6 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 import {colors} from '../../assets/AppColors';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {getServiceImages} from '../../resources/API';
 import {BackgroundImage} from '@rneui/base';
 
@@ -401,6 +402,116 @@ const ProviderHome = props => {
     return serviceDetail;
   };
 
+  const addSocialMediaItem = () => {
+    setSocialData(socialData);
+  };
+  const removeSocialItem = (index) => {
+    const newArray = [...socialData];
+    newArray.splice(index, 1);
+    setSocialData(newArray);
+  }
+  const renderSoialMedia = () => {
+    return (
+      <View>
+        <Pressable style={styles.item}>
+          <Text style={styles.basicInfo}>اضافة</Text>
+          <View style={styles.IconView}>
+            <Entypo
+              style={styles.icon}
+              name={'add-to-list'}
+              color={colors.puprble}
+              size={25}
+            />
+          </View>
+        </Pressable>
+        {renderSocialItems()}
+      </View>
+    );
+  };
+  const renderSocialItems = () => {
+    const data = filterService()
+    return data.map(item => {
+      return item.socialMedia.map(element => {
+        return <View style={styles.item}>
+          <View style={styles.itemSM}>
+            <Pressable>
+              <AntDesign
+                style={styles.menuIcon}
+                name={'ellipsis1'}
+                color={colors.puprble}
+                size={25} />
+            </Pressable>
+            <Pressable>
+              <Text style={styles.basicInfo}>{element.social}</Text>
+            </Pressable>
+          </View>
+          <View style={styles.IconView}>
+            <Entypo
+              style={styles.icon}
+              name={element.social}
+              color={colors.puprble}
+              size={25} />
+          </View>
+        </View>
+      })
+    })
+  }
+  const renderContactInfo = () => {
+    const data = filterService()
+    return data.map(item => {
+      return (
+        <View>
+          <View style={styles.item}>
+            <View style={styles.itemSM}>
+              <Pressable>
+                <AntDesign
+                  style={styles.menuIcon}
+                  name={'ellipsis1'}
+                  color={colors.puprble}
+                  size={25} />
+              </Pressable>
+              <View>
+                <Text style={styles.basicInfo}>{item.servicePhone}</Text>
+                <Text style={styles.basicInfoTitle}>الموبايل</Text>
+              </View>
+            </View>
+            <View style={styles.IconView}>
+              <Ionicons
+                style={styles.icon}
+                name={'call'}
+                color={colors.puprble}
+                size={25}
+              />
+            </View>
+          </View>
+          <View style={styles.item}>
+            <View style={styles.itemSM}>
+              <Pressable>
+                <AntDesign
+                  style={styles.menuIcon}
+                  name={'ellipsis1'}
+                  color={colors.puprble}
+                  size={25} />
+              </Pressable>
+              <View>
+                <Text style={styles.basicInfo}>{item.serviceEmail}</Text>
+                <Text style={styles.basicInfoTitle}>Email</Text>
+              </View>
+            </View>
+            <View style={styles.IconView}>
+              <Entypo
+                style={styles.icon}
+                name={'email'}
+                color={colors.puprble}
+                size={25}
+              />
+            </View>
+          </View>
+        </View >
+      );
+    })
+  };
+
   const onPressHandler = () => {
     props.navigation.goBack();
   };
@@ -436,6 +547,12 @@ const ProviderHome = props => {
         <View style={styles.content}>{renderHallInfo()}</View>
         {seprator()}
         <View style={styles.content}>{renderworkingReigon()}</View>
+        {seprator()}
+        <Text style={styles.sectionTitletxt}>معلومات التواصل </Text>
+        <View style={styles.content}>{renderContactInfo()}</View>
+        {seprator()}
+        <Text style={styles.sectionTitletxt}>الشبكات الاجتماعية</Text>
+        <View style={styles.content}>{renderSoialMedia()}</View>
         <View style={{height: 100}}></View>
       </ScrollView>
     </View>
@@ -465,12 +582,22 @@ const styles = StyleSheet.create({
   txt: {
     fontSize: 20,
     color: colors.puprble,
-    //marginRight: 20,
     fontWeight: 'bold',
   },
+  sectionTitletxt:{
+    fontSize: 20,
+    color: colors.puprble,
+    fontWeight: 'bold',
+    marginRight: 20
+  },
   content: {
-    marginVertical: 20,
+    marginTop: 5,
     padding: 10,
+    backgroundColor: 'lightgray',
+    width: '90%',
+    alignSelf: 'center',
+    borderRadius: 20,
+    elevation: 5
   },
   iconview: {
     flexDirection: 'row',
@@ -569,5 +696,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-end',
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
+  itemSM: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '80%'
   },
 });

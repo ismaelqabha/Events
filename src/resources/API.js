@@ -1,5 +1,5 @@
-//  const baseUrl = 'https://ev-server.onrender.com/';
-const baseUrl = "http://localhost:7000/"
+ const baseUrl = 'https://ev-server.onrender.com/';
+//const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -84,12 +84,9 @@ export const createNewEvent = async body => {
 };
 export const updateEvent = async body => {
   const url = 'Events/updateByid';
-  return await AppFetch(url, 'PATCH', body);
+  return await AppFetch(url, 'POST', body);
 };
-// export const getEventLogo = async body => {
-//   const url = 'EventList/getEventIconById';
-//   return await AppFetch(url, 'POST', body);
-// };
+
 export const getEventList = async body => {
   const url = 'EventList/getEventItem';
   return await AppFetch(url, 'POST', body);
@@ -127,8 +124,8 @@ export const getCampaignsByServiceId = async (body) => {
 }
 export const createNewOffer = async (AddNewOffer, offerImg) => {
   const url = 'Campaigns/createCamp'
-  console.log("AddNewOffer", AddNewOffer);
-  console.log("offerImg", offerImg);
+  //console.log("AddNewOffer", AddNewOffer);
+  //console.log("offerImg", offerImg);
   try {
     const formData = new FormData();
     formData.append("OfferPhoto", {
