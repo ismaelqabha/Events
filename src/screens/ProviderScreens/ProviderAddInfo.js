@@ -238,11 +238,10 @@ const ProviderAddInfo = props => {
     return (
       <View style={[styles.borderAddressView, AppStyles.shadow]}>
         <Text style={styles.headText}>{language.LocationHeadText}</Text>
+
         <View style={styles.region}>
           <Text> {address || language.address}</Text>
         </View>
-
-
         <SelectList
           data={regionData}
           setSelected={val => {
@@ -634,7 +633,6 @@ const styles = StyleSheet.create({
     maxWidth: '60%',
     minWidth: '60%',
     fontSize: 17,
-
   },
   dropstyle: {
     textAlign: 'left',

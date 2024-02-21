@@ -130,7 +130,6 @@ const ClientRequest = (props) => {
                 setIveEvent(false)
             } else {
                 setIveEvent(true)
-                console.log("res", res);
                 setEventInfo(res)
             }
         })
