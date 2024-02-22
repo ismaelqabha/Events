@@ -160,7 +160,6 @@ const RequestDetail = (props) => {
         switch (type) {
             case 'startingTime':
                 detail[detailIndex].startingTime = val
-                console.log("new updated ", detail[detailIndex].startingTime);
                 setResDetail([...detail])
                 break;
             case 'endTime':

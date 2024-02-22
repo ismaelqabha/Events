@@ -59,8 +59,6 @@ const ClientRequest = (props) => {
 
     const onPressRequest = () => {
         // setrequestedDate([])
-        console.log("res detail ", resDetail);
-        console.log("res detail lenght ", resDetail.length);
         // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
 
