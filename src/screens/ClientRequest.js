@@ -34,6 +34,7 @@ const ClientRequest = (props) => {
     const [requestCost, setRequestCost] = useState()
     const [requestDiscount, setRequestDiscount] = useState()
     const [selectedDate, setSelectedDate] = useState()
+    const [choosenEvents, setChoosenEvents] = useState([])
 
 
 
@@ -113,7 +114,7 @@ const ClientRequest = (props) => {
             })
         } else {
             return (
-                <View  style={styles.dateItem1}>
+                <View style={styles.dateItem1}>
                     <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('dddd')}</Text>
                     <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('L')}</Text>
                 </View>
@@ -184,14 +185,28 @@ const ClientRequest = (props) => {
             </View>
         )
     }
+    const handleEventChoosen = (eventId) => {
+        setChoosenEvents(prevEvents => {
+            // Check if eventId exists in prevEvents array
+            const eventIndex = prevEvents.indexOf(eventId);
+
+            // If eventId is not in prevEvents, add it
+            if (eventIndex === -1) {
+                return [...prevEvents, eventId];
+            } else {
+                // If eventId is in prevEvents, remove it
+                const updatedEvents = [...prevEvents];
+                updatedEvents.splice(eventIndex, 1);
+                return updatedEvents;
+            }
+        });
+    }
     // Event Section
     const renderEvents = () => {
         return (<View style={styles.eventView}>
             <Text style={styles.detailText}>اِضغط على المناسبة التي تنوي ارفاق الطلب لها</Text>
             {IveEvent &&
-                <Pressable >
-                    {renderEventInfo()}
-                </Pressable>
+                renderEventInfo()
             }
             <Pressable style={styles.eventItem}>
                 <Text style={styles.detailText}>اِنشاء مناسبة جديدة</Text>
@@ -225,17 +240,18 @@ const ClientRequest = (props) => {
     }
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
-        return eventData.map(item => {
+        return eventData.map((item, index) => {
             const document = getEventLogo(item.eventTitleId)
-            return (<View style={styles.eventItem}>
-                <View>
-                    <Text style={styles.detailText}>{item.eventName}</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} />
-                </View>
+            return (
+                <Pressable key={index} style={styles.eventItem} onPress={() => handleEventChoosen(item.EventId)}>
+                    <View >
+                        <Text style={styles.detailText}>{item.eventName}</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} />
+                    </View>
 
-            </View>
+                </Pressable>
             )
         })
 
