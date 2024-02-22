@@ -137,18 +137,18 @@ const ProviderAddSubDetail = props => {
   };
   const onAddImgPress = async () => {
     try {
-          let options = {
-          mediaType: 'photo',
-          includeBase64: false, 
-        };
+      let options = {
+        mediaType: 'photo',
+        includeBase64: false,
+      };
 
-        launchImageLibrary(options, response => GalleryImageResponse(response));
-      }
-     catch (error) {
+      launchImageLibrary(options, response => GalleryImageResponse(response));
+    }
+    catch (error) {
       console.error(error);
     }
   };
-  
+
   const GalleryImageResponse = response => {
     if (response.didCancel) {
       console.log('User Cancelled');
@@ -161,16 +161,33 @@ const ProviderAddSubDetail = props => {
       SaveImg(imageUri);
     }
   };
+  const SaveImg = source => {
+    if (source) {
+      const newImage = {
+        imgId: uuidv4(),
+        uri: source,
+      };
+      setSubDetailImg(newImage);
+    } else {
+      console.log('Error: Source is not valid.');
+    }
+  };
   const RenderInputDetailes = () => {
     return (
       <View style={styles.body}>
         <View style={styles.subImg}>
-          <Pressable onPress={onAddImgPress}>
-            <MaterialIcons
-              style={{ alignSelf: 'center' }}
-              name={"add-photo-alternate"}
-              color={'#dcdcdc'}
-              size={100} />
+          <Pressable style={{ width: '100%', alignItems: 'center', justifyContent: 'center', height: '100%' }} onPress={onAddImgPress}>
+            {subDetailImg ?
+              <Image
+                source={subDetailImg}
+                style={{ flex: 1, width: '100%', height: '100%', resizeMode:'stretch',  borderRadius:10}}
+              />
+              :
+              <MaterialIcons
+                style={{ alignSelf: 'center' }}
+                name={"add-photo-alternate"}
+                color={'#dcdcdc'}
+                size={100} />}
           </Pressable>
         </View>
         <TextInput
@@ -356,7 +373,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    // aspectRatio:1
   },
 
 });

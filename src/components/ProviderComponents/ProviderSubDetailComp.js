@@ -11,7 +11,7 @@ const ProviderSubDetailComp = (props) => {
             <View style={styles.cardHeader}>
                 
                 <View style={styles.imgView}>
-                    <Image source={props.imgSrc} style={styles.img} />
+                    <Image source={props.subDetailPhoto} style={styles.img} />
                 </View>
                 <View style={styles.txtView}>
                     <Text style={styles.textTitle}>{props.detailSubtitle}</Text>
@@ -58,9 +58,11 @@ const styles = StyleSheet.create({
         color: colors.puprble,
     },
     img: {
-        height: 60,
-        width: 60,
-        borderRadius: 20,
+        height: '100%',
+        width: '100%',
+        flex:1,
+        resizeMode: 'stretch'
+
     },
     imgView: {
         height: 120,
