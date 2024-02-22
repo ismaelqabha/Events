@@ -414,7 +414,7 @@ const ProviderHome = props => {
     }
     if (editHallType) {
       return (
-        <Text style={styles.basicInfoTitle}>H Type</Text>
+        <EditServiceInfo editHallType={editHallType} serviceID={isFirst} />
       )
     }
 
@@ -430,7 +430,7 @@ const ProviderHome = props => {
     }
     if (editSocialMedia) {
       return (
-        <Text style={styles.basicInfoTitle}>{socialItem}</Text>
+        <EditServiceInfo editSocialMedia={editSocialMedia} socialItem={socialItem} serviceID={isFirst} />
       )
     }
     if (editprice) {

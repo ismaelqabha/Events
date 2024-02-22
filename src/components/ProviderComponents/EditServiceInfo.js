@@ -1,14 +1,22 @@
 import { StyleSheet, Text, View, TextInput, ToastAndroid } from 'react-native'
-import React, { useContext, useState,useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { colors } from '../../assets/AppColors';
 import { Pressable } from 'react-native';
 import { getRegions, updateService } from '../../resources/API';
 import { SelectList } from 'react-native-dropdown-select-list';
+import { hallData, socialMediaList } from "../../resources/data";
+import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
+import WebView from "react-native-webview";
+import HallTypeCard from '../../components/HallTypeCard';
 
 const EditServiceInfo = (props) => {
-    const { editTitle, serviceID, editSubTitle, editHallcapasity, editphone, editEmail, editprice, editNumofRequest,editCity } = props
-    const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
+    const { editTitle, serviceID, editSubTitle,
+        editHallcapasity, editphone, editEmail,
+        editprice, editNumofRequest, editCity, editHallType,
+        editSocialMedia, socialItem } = props
+    const { serviceInfoAccorUser, setServiceInfoAccorUser, socialMediaArray,
+        setSocialMediaArray, } = useContext(ServiceProviderContext);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
     const getServiceInfo = () => {
@@ -27,12 +35,31 @@ const EditServiceInfo = (props) => {
     const [maxRequest, setMaxRequest] = useState();
     const [serviceRegion, setserviceRegion] = useState();
     const [serviceAddress, setserviceAddress] = useState();
+    const [selectHallType, setSelectHallType] = useState();
 
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
     const [address, setAddress] = useState(null)
 
+    const [contactVal, setContactVal] = useState(null)
+    const [contactType, setContactType] = useState(null)
+    const [webViewVisible, setWebViewVisible] = useState(false);
 
+    const iconColors = {
+        facebook: "blue",
+        instagram: 'purple',
+        tiktok: 'black',
+        youtube: 'red'
+    }
+    const webUri = {
+        facebook: "https://www.facebook.com",
+        instagram: "https://www.instagram.com",
+        tiktok: "https://www.tiktok.com",
+        youtube: "https://www.youtube.com"
+    };
+    const handleLogin = () => {
+        setWebViewVisible(true);
+    };
     const editBasicInfoPress = (label, itemInfo, setState, update) => {
         return (
             <View style={styles.itemView}>
@@ -88,7 +115,7 @@ const EditServiceInfo = (props) => {
 
     useEffect(() => {
         getRegionsfromApi()
-      }, [])
+    }, [])
     const editAddressPress = () => {
         return (
             <View style={styles.itemView}>
@@ -115,6 +142,96 @@ const EditServiceInfo = (props) => {
                 </View>
             </View>
         )
+    }
+    const updateArray = (data, index) => {
+        setSocialMediaArray(prevArray => {
+            const newArray = [...prevArray];
+            newArray[index] = data;
+            return newArray;
+        });
+    };
+    const handleWebViewNavigationStateChange = (newNavState) => {
+        // Extract relevant data from the web view's navigation state
+        // You can check if the user has logged in and extract profile information here
+        console.log("new state ->", newNavState);
+    };
+    const editSocialMediaPress = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editAddressView}>
+                    <SelectList
+                        data={socialMediaList}
+                        setSelected={val => {
+                            setContactType(socialMediaList[val].value)
+                            const data = {
+                                social: socialMediaList[val].value,
+                                link: contactVal,
+                            }
+                            updateArray(data, index)
+                        }}
+
+                        placeholder={contactType || socialItem}
+                        boxStyles={styles.dropdown}
+                        inputStyles={styles.droptext}
+                        dropdownTextStyles={styles.dropstyle}
+                    />
+                    <View style={styles.socialInput}>
+                        <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                        <TextInput style={styles.TextInput}
+                            keyboardType={'default'}
+                            placeholder={'حمل رابط الشبكة'}
+                            value={contactVal}
+                            onChangeText={(val) => setContactVal(val)}
+                            onFocus={() => {
+                                handleLogin()
+                            }}
+                            onEndEditing={(event) => {
+                                const text = event.nativeEvent.text
+                                const data = {
+                                    social: contactType,
+                                    link: text,
+                                }
+                                updateArray(data, index)
+                            }}
+                        />
+                    </View>
+                    {webViewVisible && (
+                        <WebView
+                            source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
+                            onNavigationStateChange={handleWebViewNavigationStateChange}
+                        />
+                    )}
+                    <View style={styles.itemFooter}>
+                        <Pressable onPress={updateSocialMediaItem}>
+                            <Text style={styles.itemText}>حفظ</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+    const editHallTypePress = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editHallTypeView}>
+                    <Text style={styles.itemText}>نوع القاعة</Text>
+                    <View style={{flexDirection:'row', alignItems:'center', justifyContent: 'center', marginVertical: 40}}>
+                        {hallData?.map((item) => {
+                            return (
+                                <HallTypeCard {...item}
+                                    isChecked={item.hallType === selectHallType}
+                                    onHallTypePress={(value) => setSelectHallType(value)} />
+                            )
+                        })
+                        }
+                    </View>
+                    <View style={styles.itemFooter}>
+                        <Pressable onPress={updateHallTypeItem}>
+                            <Text style={styles.itemText}>حفظ</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>)
     }
 
     // Update functions
@@ -287,6 +404,48 @@ const EditServiceInfo = (props) => {
         })
 
     }
+    const updateSocialMediaItem = () => {
+        const newData = {
+            service_id: serviceID,
+            socialMedia: socialMediaArray
+        }
+        updateService(newData).then(res => {
+            const data = serviceInfoAccorUser || [];
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = newData;
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+
+    }
+    const updateHallTypeItem = () => {
+        const newData = {
+            service_id: serviceID,
+            hallType: selectHallType
+        }
+        updateService(newData).then(res => {
+            const data = serviceInfoAccorUser || [];
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = newData;
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+
+    }
 
 
     const renderSelectedEdit = () => {
@@ -341,6 +500,16 @@ const EditServiceInfo = (props) => {
         if (editCity) {
             return (
                 <View>{editAddressPress()}</View>
+            )
+        }
+        if (editHallType) {
+            return (
+                <View>{editHallTypePress()}</View >
+            )
+        }
+        if (editSocialMedia) {
+            return (
+                <View>{editSocialMediaPress()}</View>
             )
         }
 
@@ -400,12 +569,13 @@ const styles = StyleSheet.create({
         elevation: 5,
         margin: 5
     },
-    editAddressView:{
+    editAddressView: {
         height: '60%',
         backgroundColor: 'lightgray',
         elevation: 5,
         margin: 5,
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingVertical: 10
     },
     region: {
         textAlign: 'right',
@@ -439,4 +609,32 @@ const styles = StyleSheet.create({
         color: colors.darkGold,
         textAlign: 'right'
     },
+    socialInput: {
+        borderWidth: 1,
+        width: "95%",
+        textAlign: 'right',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderColor: 'gray',
+        fontSize: 18,
+        marginVertical: 20,
+        flexDirection: 'row'
+    },
+    socialIcon: {
+        alignSelf: 'center',
+        marginLeft: 10
+    },
+    TextInput: {
+        flex: 1,
+        fontSize: 20,
+        textAlign: 'right',
+    },
+    editHallTypeView: {
+        height: '40%',
+        backgroundColor: 'lightgray',
+        elevation: 5,
+        margin: 5,
+        alignItems: 'center',
+        paddingVertical: 10
+    }
 })

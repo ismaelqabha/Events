@@ -230,6 +230,7 @@ const ServiceDescr = (props) => {
     const renderSubDetail = () => {
         const data = subDetArray
         const DetailInfo = data.map(item => {
+            
             return item.subDetailArray.map(subItem => {
                 return (
                     <View style={styles.subDetailView}>
@@ -237,7 +238,7 @@ const ServiceDescr = (props) => {
                         <View style={styles.subDetailItem}>
                             <Text style={styles.SupDetTxt}>{subItem.detailSubtitle}</Text>
                         </View>
-                        <View style={styles.SubDImg}><Image source={{ uri: subItem.subDetailPhoto }} /></View>
+                        <View style={styles.SubDImg}><Image style={styles.SubPhoto} source={{ uri: subItem.subDetailPhoto.uri }} /></View>
 
                     </View>
                 )
@@ -835,7 +836,11 @@ const styles = StyleSheet.create({
         height: 80,
         borderRadius: 30,
         marginLeft: 10,
-        borderWidth: 1
+    },
+    SubPhoto:{
+        width: 80,
+        height: 80,
+        borderRadius: 30,
     }
 })
 
