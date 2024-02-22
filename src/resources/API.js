@@ -1,5 +1,5 @@
-//  const baseUrl = 'https://ev-server.onrender.com/';
-const baseUrl = "http://localhost:7000/"
+const baseUrl = 'https://ev-server.onrender.com/';
+// const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -186,9 +186,27 @@ export const getRegions = async body => {
 // Draft services 
 export const addDraftToAPI = async body => {
   const url = 'DraftServices/addDraftService';
-  return await AppFetch(url, 'POST', body)
-}
+  try {
+    const { photoArray, ...draftDataWithoutPhotos } = body;
+    const formData = new FormData();
 
+    photoArray?.forEach((data, index) => {
+      formData.append(`images`, {
+        uri: data.uri,
+        type: 'image/jpeg',
+        name: `image${index}.jpg`,
+      })
+    });
+    formData.append("draftData", JSON.stringify(draftDataWithoutPhotos));
+
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+    }
+    return await AppFetch(url, 'POST', formData, headers)
+  } catch (error) {
+    // Handle error
+  }
+}
 export const getDraftFromAPI = async body => {
   const url = 'DraftServices/getDraftService'
   return await AppFetch(url, "POST", body)
