@@ -48,7 +48,8 @@ const ProviderAddServiceDetail = props => {
     socialMediaArray,
     hallCapacity,
     hallType,
-
+    phoneNumer,
+    email,
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(UsersContext);
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
@@ -97,7 +98,9 @@ const ProviderAddServiceDetail = props => {
       additionalServices: additionalServices,
       socialMedia: socialMediaArray,
       maxCapasity: hallCapacity,
-      hallType: hallType
+      hallType: hallType,
+      servicePhone: phoneNumer,
+      serviceEmail: email,
     };
     await addService(body)
       .then(async res => {
@@ -489,8 +492,8 @@ const styles = StyleSheet.create({
   Modalbtn: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    position: 'absolute', 
-    bottom: 10, 
+    position: 'absolute',
+    bottom: 10,
     width: '100%'
   },
   titleInput: {
@@ -528,7 +531,7 @@ const styles = StyleSheet.create({
   },
   listView: {
     alignItems: 'center',
-  
+
   },
   list: {
     width: '80%',

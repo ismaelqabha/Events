@@ -37,7 +37,9 @@ const ProviderInitialWithDetailPrice = props => {
         photoArray,
         workAreas,
         additionalServices,
-        socialMediaArray
+        socialMediaArray,
+        phoneNumer,
+        email
     } = useContext(ServiceProviderContext);
     const { userId } = useContext(UsersContext);
 
@@ -73,16 +75,18 @@ const ProviderInitialWithDetailPrice = props => {
             servicePrice: price,
             workingRegion: workAreas,
             additionalServices: additionalServices,
-            socialMedia:socialMediaArray
+            socialMedia: socialMediaArray,
+            servicePhone: phoneNumer,
+            serviceEmail: email,
         };
         await addService(body)
         then(async res => {
             console.log(' service res ->', res);
-            await addServiceImages(photoArray,res?.serviceID).then((res)=>{
-              console.log("images res -> ",res );
-              showMessage("تم حفظ البيانات")
+            await addServiceImages(photoArray, res?.serviceID).then((res) => {
+                console.log("images res -> ", res);
+                showMessage("تم حفظ البيانات")
             })
-          })
+        })
             .catch(e => {
                 console.log('create new event error : ', e);
             });
