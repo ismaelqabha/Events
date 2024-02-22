@@ -461,13 +461,43 @@ const RequestDetail = (props) => {
         )
     }
 
+    const handlePreviousDate = () => {
+        const formattedSelectedDate = moment(selectedDate).format('L');
+        const currentIndex = resivedDate.findIndex(date => date === formattedSelectedDate);
+        if (currentIndex !== -1) {
+            const previousIndex = (currentIndex === 0) ? resivedDate.length - 1 : currentIndex - 1;
+            const date = moment(resivedDate[previousIndex], 'DD/MM/YYYY')
+            const originalDate = new Date(date);
+            const year = originalDate.getFullYear();
+            const month = originalDate.getMonth() + 1;
+            const day = originalDate.getDate();
+            const formattedDate = `${year}-${month}-${day}`;
+            setSelectedDate(formattedDate);
+        }
+    };
+
+    const handleNextDate = () => {
+        const formattedSelectedDate = moment(selectedDate).format('L');
+        const currentIndex = resivedDate.findIndex(date => date === formattedSelectedDate);
+        if (currentIndex !== -1) {
+            const nextIndex = (currentIndex + 1) % resivedDate.length;
+            const date = moment(resivedDate[nextIndex], 'DD/MM/YYYY')
+            const originalDate = new Date(date);
+            const year = originalDate.getFullYear();
+            const month = originalDate.getMonth() + 1;
+            const day = originalDate.getDate();
+            const formattedDate = `${year}-${month}-${day}`;
+            setSelectedDate(formattedDate);
+        }
+    };
+
     const renderNextBack = () => {
         return (
             <View style={styles.nextBackView}>
-                <Pressable style={styles.backView} >
+                <Pressable style={styles.backView} onPress={() => handlePreviousDate()}>
                     <Text style={styles.nextBackText}>رجوع</Text>
                 </Pressable>
-                <Pressable style={styles.nextView} onPress={() => newReservationDetail()}>
+                <Pressable style={styles.nextView} onPress={() => handleNextDate()}>
                     <Text style={styles.nextBackText} >التالي</Text>
                 </Pressable>
             </View>
