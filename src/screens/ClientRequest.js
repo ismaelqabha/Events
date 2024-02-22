@@ -113,7 +113,7 @@ const ClientRequest = (props) => {
             })
         } else {
             return (
-                <View key={index} style={styles.dateItem1}>
+                <View  style={styles.dateItem1}>
                     <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('dddd')}</Text>
                     <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('L')}</Text>
                 </View>

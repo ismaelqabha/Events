@@ -14,9 +14,9 @@ const RequestDetail = (props) => {
         selectedDate,
         setSelectedDate } = props
     const { cat, setResDetail, resDetail, requestedDate } = useContext(SearchContext);
-    const resivedDate = requestedDate.map((date) => {
+    const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
         return moment(date).format('L')
-    })
+    }) : [requestedDate]
     const [selectTime, setSelectTime] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [startTimeText, setstartTimeText] = useState()
@@ -119,20 +119,29 @@ const RequestDetail = (props) => {
         const existingDatesSet = new Set(resDetail.map(detail => detail.reservationDate));
 
         // Filter resivedDate array to remove dates already existing in resDetail
-        const newDates = resivedDate.filter(date => !existingDatesSet.has(date));
+        const newDates = Array.isArray(resivedDate) ? resivedDate.filter(date => !existingDatesSet.has(date))
+            : resivedDate
 
         // Remove any reservation detail from resDetail that doesn't exist in resivedDate
         const updatedResDetail = resDetail.filter(detail => resivedDate.includes(detail.reservationDate));
 
         // Add new reservation details for the remaining dates in newDates
-        const newReservationDetails = newDates.map(date => ({
+        const newReservationDetails = Array.isArray(newDates) ? newDates.map(date => ({
             reservationDate: date,
             startingTime: null,
             EndTime: null,
             numOfInviters: null,
             subDetailId: [],
             offerId: null
-        }));
+        })) :
+            {
+                reservationDate: newDates,
+                startingTime: null,
+                EndTime: null,
+                numOfInviters: null,
+                subDetailId: [],
+                offerId: null
+            }
 
         // Update resDetail with the updated reservation details
         setResDetail([...updatedResDetail, ...newReservationDetails]);
