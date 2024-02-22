@@ -910,11 +910,7 @@ const ProviderHome = props => {
               <Text style={styles.basicInfo}>{itemDetail.detailTitle}</Text>
             </View>
             <View style={styles.IconView}>
-              <AntDesign
-                style={{ alignSelf: 'center' }}
-                name={'check'}
-                color={colors.puprble}
-                size={25} />
+            <Entypo name={'info'} color={colors.puprble} size={25} />
             </View>
           </View>
           {itemDetail.subDetailArray.map(subDItem => {
@@ -937,8 +933,30 @@ const ProviderHome = props => {
     })
     return serviceDetailInfo
   }
-  const renderDetail = () => {
+  const renderOptional = () => {
     const optional = selectOptionalDetail()
+    if (optional) {
+      return (
+        <View>
+          <Text style={styles.sectionTitletxt}>الخدمات الاختيارية</Text>
+          <View style={styles.content}>
+            <Pressable style={styles.item} onPress={addNewDescr}>
+              <Text style={styles.basicInfo}>اضافة جديد</Text>
+              <View style={styles.IconView}>
+                <Entypo
+                  style={styles.icon}
+                  name={'plus'}
+                  color={colors.puprble}
+                  size={25}
+                />
+              </View>
+            </Pressable>
+            {renderOptionalDetail()}</View>
+        </View>
+      )
+    }
+  };
+  const renderMandotory = () => {
     const mandotory = selectMandatoryDetail()
     if (mandotory) {
       return (
@@ -958,26 +976,6 @@ const ProviderHome = props => {
             </Pressable>
             {renderMandatoryDetail()}
           </View>
-        </View>
-      )
-    }
-    if (optional) {
-      return (
-        <View>
-          <Text style={styles.sectionTitletxt}>الخدمات الاختيارية</Text>
-          <View style={styles.content}>
-            <Pressable style={styles.item} onPress={addNewDescr}>
-              <Text style={styles.basicInfo}>اضافة جديد</Text>
-              <View style={styles.IconView}>
-                <Entypo
-                  style={styles.icon}
-                  name={'plus'}
-                  color={colors.puprble}
-                  size={25}
-                />
-              </View>
-            </Pressable>
-            {renderOptionalDetail()}</View>
         </View>
       )
     }
@@ -1155,7 +1153,8 @@ const ProviderHome = props => {
         <Text style={styles.sectionTitletxt}>الحد الاقصى لاستقبال طلبات حجز</Text>
         <View style={styles.content}>{renderServiceNumofRequest()}</View>
 
-        {renderDetail()}
+        {renderMandotory()}
+        {renderOptional()}
 
         <View style={{ height: 100 }}></View>
       </ScrollView>
