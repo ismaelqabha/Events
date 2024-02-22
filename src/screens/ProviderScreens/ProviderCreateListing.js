@@ -26,7 +26,6 @@ const ProviderCreateListing = props => {
   const updateDraftServices = async () => {
     await getDraftFromAPI(userId).then((res) => {
       if (res?.drafts) {
-        console.log("res ->", res);
         setDraftServices(res.drafts)
       }
     }).catch(e => console.log("error fetching draft services -> ", e))
