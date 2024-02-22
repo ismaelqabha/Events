@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useEffect, useRef, useContext } from "react";
+import React, { useEffect, useRef, useContext, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { ScreenNames } from "./ScreenNames";
 import ProviderHome from '../src/screens/ProviderScreens/ProviderHome';
@@ -14,6 +14,7 @@ import { getServiceInfoById } from '../src/resources/API';
 import ServiceProviderContext from '../store/ServiceProviderContext';
 import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
 import UsersContext from '../store/UsersContext';
+import { ActivityIndicator } from 'react-native-paper';
 
 
 
@@ -22,7 +23,6 @@ const Tap = createBottomTabNavigator();
 const TabButton = (props) => {
   const { item, onPress, accessibilityState } = props;
   const focused = accessibilityState.selected;
-
 
 
   const viewRef = useRef(null);
@@ -66,17 +66,25 @@ const TabButton = (props) => {
 const ProviderTapNav = () => {
   const { serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
   const { userId } = useContext(UsersContext);
+  const [isLoading, setIsLoading] = useState(true);
 
 
   const getServiceInfofromApi = async () => {
-    await getServiceInfoById({ userID: userId }).then(res => {
+    try {
+      const res = await getServiceInfoById({ userID: userId })
       if (res.message) {
         setServiceInfoAccorUser([])
       } else {
         setServiceInfoAccorUser(res)
 
       }
-    })
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    finally {
+      setIsLoading(false);
+    }
+
   }
   useEffect(() => {
     getServiceInfofromApi()
@@ -90,36 +98,44 @@ const ProviderTapNav = () => {
   ];
 
   return (
-    <Tap.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          height: 70,
-          position: 'absolute',
-          bottom: 16,
-          right: 16,
-          left: 16,
-          borderRadius: 16,
-          backgroundColor: colors.BGScereen
-        }
-      }}
-
-    >
-      {TabArr.map((item, index) => {
-        return (
-          <Tap.Screen key={index} name={item.route} component={item.component}
-            options={{
-              tabBarShowLabel: false,
-              //tabBarLabel: item.label,
-              // tabBarIcon: ({ color, focused }) => (
-              //     <Icon type={item.type} name={item.route} color={color} />
-              // ),
-              tabBarButton: (props) => <TabButton {...props} item={item} />
+    <>
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) :
+        (
+          <Tap.Navigator
+            screenOptions={{
+              headerShown: false,
+              tabBarStyle: {
+                height: 70,
+                position: 'absolute',
+                bottom: 16,
+                right: 16,
+                left: 16,
+                borderRadius: 16,
+                backgroundColor: colors.BGScereen
+              }
             }}
-          />
-        )
-      })}
-    </Tap.Navigator>
+
+          >
+            {TabArr.map((item, index) => {
+              return (
+                <Tap.Screen key={index} name={item.route} component={item.component}
+                  options={{
+                    tabBarShowLabel: false,
+                    //tabBarLabel: item.label,
+                    // tabBarIcon: ({ color, focused }) => (
+                    //     <Icon type={item.type} name={item.route} color={color} />
+                    // ),
+                    tabBarButton: (props) => <TabButton {...props} item={item} />
+                  }}
+                />
+              )
+            })}
+          </Tap.Navigator>
+        )}
+    </>
+
 
     // <Tap.Navigator
     //     // initialRouteName='ProviderHome'
