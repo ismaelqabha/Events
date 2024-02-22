@@ -721,6 +721,16 @@ const ProviderHome = props => {
     });
     return serviceType;
   };
+  const istherePrice = () => {
+    const data = filterService();
+    if (data[0].servicePrice !== null) {
+      return (
+        <View>
+          <Text style={styles.sectionTitletxt}>السعر</Text>
+          <View style={styles.content}>{renderServicePrice()}</View>
+        </View>)
+    }
+  }
   const renderServicePrice = () => {
     const data = filterService();
     const servicePrice = data?.map(item => {
@@ -1137,8 +1147,7 @@ const ProviderHome = props => {
         <Text style={styles.sectionTitletxt}>الصور</Text>
         <View style={styles.content}>{renderServicePhotos()}</View>
 
-        <Text style={styles.sectionTitletxt}>السعر</Text>
-        <View style={styles.content}>{renderServicePrice()}</View>
+        {istherePrice()}
 
         <Text style={styles.sectionTitletxt}>الوصف</Text>
         <View style={styles.content}>{renderAddDescription()}</View>
