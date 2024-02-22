@@ -4,6 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
+import Feather from "react-native-vector-icons/Feather";
 import moment from 'moment';
 import Footer from './Footers/Footer';
 import { AppStyles } from '../assets/res/AppStyles';
@@ -388,11 +389,35 @@ const RequestDetail = (props) => {
         if (CampData.message !== 'No Campaigns') {
             const campArray = CampData?.map(camp => {
                 return <View style={styles.campaignView}>
-                    <View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Text style={styles.campText}>{camp.campCost}</Text>
                         <Text style={styles.campText}>{camp.campTitle}</Text>
-                        {/* <Text style={styles.campText}>{camp.campCost}</Text> */}
                     </View>
-                    <Image style={styles.campImg} source={{ uri: camp.campImag }} />
+                    {camp.contentFromSubDet.map(item => {
+                        return (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                <Text style={styles.subDetText}>{item}</Text>
+                                <Feather
+                                    style={{ alignSelf: 'center' }}
+                                    name={"corner-down-left"}
+                                    color={colors.BGScereen}
+                                    size={30} />
+                            </View>
+                        )
+                    })}
+                    {camp.campContents.map(elment => {
+                        return (
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                <Text style={styles.subDetText}>{elment}</Text>
+                                <Feather
+                                    style={{ alignSelf: 'center' }}
+                                    name={"corner-down-left"}
+                                    color={colors.BGScereen}
+                                    size={30} />
+                            </View>
+                        )
+                    })}
+
                 </View>
             });
             return campArray;
@@ -401,6 +426,14 @@ const RequestDetail = (props) => {
     const renderReservationDet = () => {
         return (
             <View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
+                    <Pressable>
+                        <Text style={styles.detailViewText}>العروض</Text>
+                    </Pressable>
+                    <Pressable>
+                        <Text style={styles.detailViewText}>الخدمات</Text>
+                    </Pressable>
+                </View>
                 <ScrollView
                     horizontal={true}
                     pagingEnabled
@@ -413,21 +446,15 @@ const RequestDetail = (props) => {
                 >
                     <View style={{ width: Dimensions.get('screen').width }}>
                         <View style={styles.serviceDetBooking}>
-                            <Text style={styles.detailViewText}>الخدمات</Text>
                             {renderServiceDetail()}
                         </View>
                     </View>
                     <View style={{ width: Dimensions.get('screen').width }}>
-                        <View style={styles.serviceDetBooking}>
-                            <Text style={styles.detailViewText}>العروض</Text>
-                            {/* {renderServiceDetail()} */}
+                        <View style={styles.serviceOfferBooking}>
+                            {renderCampaighn()}
                         </View>
                     </View>
                 </ScrollView>
-                {/* <View style={AppStyles.createuserDots}>
-                    <View style={AppStyles.dots}></View>
-                    <View style={AppStyles.dots}></View>
-                </View> */}
             </View>
 
         )
@@ -569,9 +596,16 @@ const styles = StyleSheet.create({
     },
     serviceDetBooking: {
         width: Dimensions.get('screen').width * 0.9,
-        height: 300,
+        height: 350,
         padding: 5,
         marginTop: 10,
+        backgroundColor: colors.puprble,
+    },
+    serviceOfferBooking: {
+        width: Dimensions.get('screen').width * 0.9,
+        height: 350,
+        //padding: 5,
+        //marginTop: 10,
         backgroundColor: colors.puprble,
     },
     detailView: {
@@ -744,18 +778,18 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end'
     },
     campaignView: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
+        // flexDirection: 'row',
+        // justifyContent: 'space-around',
+        // alignItems: 'center',
         width: '100%',
         alignSelf: 'center',
         padding: 5,
-        marginTop: 30
+        marginTop: 10
         //borderWidth: 1
     },
     campText: {
         fontSize: 18,
-        color: colors.BGScereen
+        color: colors.BGScereen,
     },
     campImg: {
         width: 100,

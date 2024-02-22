@@ -81,8 +81,21 @@ const Campaigns = (props) => {
                 {seperator()}
                 <Text style={styles.titletxt}>العرض يشمل</Text>
                 <View style={styles.contentView}>
-
-                    {data.campContents.map(content => {
+                    {data.contentFromSubDet.map(item => {
+                        return (
+                            <View style={styles.contentItem}>
+                                <Text style={styles.itemtxt}>{item}</Text>
+                                <View style={styles.IconView}>
+                                    <AntDesign
+                                        style={{ alignSelf: 'center' }}
+                                        name={"checksquareo"}
+                                        color={colors.puprble}
+                                        size={30} />
+                                </View>
+                            </View>
+                        )
+                    })}
+                     {data.campContents.map(content => {
                         return (
                             <View style={styles.contentItem}>
                                 <Text style={styles.itemtxt}>{content}</Text>
