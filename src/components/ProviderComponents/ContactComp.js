@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { Modal, StyleSheet } from "react-native";
 import { TextInput } from "react-native";
 import { View, Text, Pressable } from "react-native";
 import Entypo from 'react-native-vector-icons/Entypo'
@@ -11,6 +11,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { socialMediaList } from "../../resources/data";
 import { emailVerification } from "../../resources/Regex";
 import ServiceProviderContext from "../../../store/ServiceProviderContext";
+import WebView from "react-native-webview";
 
 const ContactComp = () => {
 
@@ -51,17 +52,33 @@ const ContactComp = () => {
         tiktok: 'black',
         youtube: 'red'
     }
+    const webUri = {
+        facebook: "https://www.facebook.com",
+        instagram: "https://www.instagram.com",
+        tiktok: "https://www.tiktok.com",
+        youtube: "https://www.youtube.com"
+    };
 
     const removeSocialComp = (index) => {
-        const newArray = [...socialMediaArray]; 
+        const newArray = [...socialMediaArray];
         newArray.splice(index, 1);
-        setSocialMediaArray(newArray); 
+        setSocialMediaArray(newArray);
+    };
+    const handleWebViewNavigationStateChange = (newNavState) => {
+        // Extract relevant data from the web view's navigation state
+        // You can check if the user has logged in and extract profile information here
+        console.log("new state ->", newNavState);
     };
 
     const SocialMediaComp = (props) => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
+        const [webViewVisible, setWebViewVisible] = useState(false);
         const index = props.index
+        const handleLogin = () => {
+            setWebViewVisible(true);
+        };
+
         useEffect(() => {
             if (props.val) {
                 setContactType(props?.val?.social)
@@ -72,8 +89,8 @@ const ContactComp = () => {
         return (
             <View key={props?.index} style={styles.mediaItem}>
                 <View style={styles.mediaList}>
-                    <Pressable onPress={()=>removeSocialComp(index)} style={{width:'10%', padding: 5 , alignItems:'center'}}>
-                    <FontAwesome name="remove" size={15} />
+                    <Pressable onPress={() => removeSocialComp(index)} style={{ width: '10%', padding: 5, alignItems: 'center' }}>
+                        <FontAwesome name="remove" size={15} />
                     </Pressable>
                     <SelectList
                         data={socialMediaList}
@@ -99,6 +116,9 @@ const ContactComp = () => {
                         placeholder={'حمل رابط الشبكة'}
                         value={contactVal}
                         onChangeText={(val) => setContactVal(val)}
+                        onFocus={() => {
+                            handleLogin()
+                        }}
                         onEndEditing={(event) => {
                             const text = event.nativeEvent.text
                             const data = {
@@ -109,6 +129,12 @@ const ContactComp = () => {
                         }}
                     />
                 </View>
+                {webViewVisible && (
+                    <WebView
+                        source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
+                        onNavigationStateChange={handleWebViewNavigationStateChange}
+                    />
+                )}
             </View>
         )
     }

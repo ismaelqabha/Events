@@ -55,6 +55,7 @@
     "react-native-tab-view": "^3.5.2",
     "react-native-vector-icons": "^9.2.0",
     "react-native-video": "^5.2.1",
+    "react-native-webview": "^13.8.1",
     "react-navigation-drawer": "^2.7.2",
     "react-number-format": "^5.1.2",
     "rn-checkbox-list": "^1.2.0",
