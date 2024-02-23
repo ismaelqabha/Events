@@ -28,7 +28,7 @@ import UsersContext from '../../../store/UsersContext';
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
   const [Dtitle, setDTitle] = useState('');
-  const [nec, setNec] = useState("Mandatory");
+  const [nec, setNec] = useState();
   const [perPerson, setPerPerson] = useState(false);
   const [yesPerPerson, setYesPerPerson] = useState(false);
   const [noPerPerson, setNoPerPerson] = useState(false);

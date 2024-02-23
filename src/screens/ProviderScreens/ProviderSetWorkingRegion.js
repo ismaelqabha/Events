@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
 import ProviderWorkRegionComp from '../../components/ProviderComponents/ProviderWorkRegionComp';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
 import strings from '../../assets/res/strings';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
-import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
-import { getRegions } from '../../resources/API';
+import { getRegions, updateService } from '../../resources/API';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import SearchContext from '../../../store/SearchContext';
 
 const ProviderSetWorkingRegion = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderWorkingRegion;
   const [Region, SetRegion] = useState([])
+  const { workAreas, serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
+  const { isFirst } = useContext(SearchContext);
 
   const params = {
     ScreenHeader: {
@@ -28,21 +31,46 @@ const ProviderSetWorkingRegion = props => {
     },
   };
   const getRegionsfromApi = () => {
-    getRegions({}).then(res => {
+    getRegions().then(res => {
       console.log("res", res);
       SetRegion(res)
-      
     })
+  }
+
+  const updateWorkingRegions = () => {
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
+
+    const newData = {
+      service_id: isFirst,
+      workingRegion: workAreas
+    }
+    updateService(newData).then(res => {
+      const data = serviceInfoAccorUser || [];
+      if (selectedServiceIndex > -1) {
+        data[selectedServiceIndex] = newData;
+      }
+      if (res.message === 'Updated Sucessfuly') {
+        setServiceInfoAccorUser([...data])
+        ToastAndroid.showWithGravity(
+          'تم التعديل بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+    })
+
   }
 
   useEffect(() => {
     getRegionsfromApi()
   }, [])
+
   const onBackPress = () => {
     props.navigation.goBack();
   };
- 
+
   const renderCard = () => {
+    console.log("Region.regions",Region.regions);
     const cardsArray = Region.regions.map(card => {
       return <ProviderWorkRegionComp {...card} />;
     });
@@ -60,6 +88,7 @@ const ProviderSetWorkingRegion = props => {
     )
   }
 
+
   return (
     <View style={AppStyles.container}>
       {renderHeader()}
@@ -68,10 +97,11 @@ const ProviderSetWorkingRegion = props => {
           {renderCard()}
         </ScrollView>
       </View>
-      {/* <Pressable style={styles.footer}>
-         <ScreenNext ScreenNext={params.ScreenNext} /> 
-      </Pressable> */}
-    </View>
+
+      <Pressable style={styles.footer} onPress={updateWorkingRegions}>
+        <Text style={styles.itemText}>حفظ</Text>
+      </Pressable>
+    </View >
   );
 };
 
@@ -96,15 +126,19 @@ const styles = StyleSheet.create({
   },
   footer: {
     marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    // flexDirection: 'row',
+    // justifyContent: 'flex-end',
     width: '100%',
     height: 50,
     paddingHorizontal: '10%',
     position: 'absolute',
     bottom: 0,
-
   },
+  itemText: {
+    fontSize: 18,
+    color: colors.puprble,
+    marginRight: 20
+},
 })
 
 

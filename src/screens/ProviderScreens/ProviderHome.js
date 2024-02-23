@@ -49,6 +49,9 @@ const ProviderHome = props => {
   const [addNewDetail, setAddNewDetail] = useState(false);
   const [editServiceDetail, setEditServiceDetail] = useState(false);
   const [detailItem, setDetailItem] = useState();
+  const [DetailType, setDetailType] = useState();
+  const [detailIsperson, setDetailIsperson] = useState();
+  const [sub_DetailArr, setSub_DetailArr] = useState();
 
   const getImagesfromApi = () => {
     getServiceImages({ serviceID: isFirst }).then(res => {
@@ -348,9 +351,12 @@ const ProviderHome = props => {
     seteditTitle(false)
     setEditServiceDetail(false)
   }
-  const serviceDetailEditPress = (item) => {
+  const serviceDetailEditPress = (title, type, isPerson, subDetail) => {
     setShowModal(true)
-    setDetailItem(item)
+    setDetailItem(title)
+    setDetailType(type)
+    setDetailIsperson(isPerson)
+    setSub_DetailArr(subDetail)
     setEditServiceDetail(true)
     setAddNewDetail(false)
     setAddNewDesc(false)
@@ -440,7 +446,7 @@ const ProviderHome = props => {
     }
     if (editDescrItem) {
       return (
-        <Text style={styles.basicInfoTitle}>{descriptionItem}</Text>
+        <EditServiceInfo editDescrItem={editDescrItem} descriptionItem={descriptionItem} serviceID={isFirst} />
       )
     }
     if (editNumofRequest) {
@@ -465,7 +471,12 @@ const ProviderHome = props => {
     }
     if (editServiceDetail) {
       return (
-        <Text style={styles.basicInfoTitle}>{detailItem}</Text>
+        <EditServiceInfo editServiceDetail={editServiceDetail} 
+        detailItem={detailItem}
+        DetailType={DetailType} 
+        detailIsperson={detailIsperson}
+        sub_DetailArr={sub_DetailArr}
+        serviceID={isFirst} />
       )
     }
   }
@@ -854,7 +865,8 @@ const ProviderHome = props => {
         <View >
           <View style={styles.itemService}>
             <View style={styles.itemSM}>
-              <Pressable onPress={() => serviceDetailEditPress(itemDetail.detailTitle)}>
+              <Pressable 
+              onPress={() => serviceDetailEditPress(itemDetail.detailTitle, itemDetail.necessity, itemDetail.isPerPerson,itemDetail.subDetailArray )}>
                 <Feather
                   style={styles.menuIcon}
                   name={'more-vertical'}
@@ -900,7 +912,8 @@ const ProviderHome = props => {
         <View >
           <View style={styles.itemService}>
             <View style={styles.itemSM}>
-              <Pressable onPress={() => serviceDetailEditPress(itemDetail.detailTitle)}>
+              <Pressable 
+              onPress={() => serviceDetailEditPress(itemDetail.detailTitle, itemDetail.necessity, itemDetail.isPerPerson,itemDetail.subDetailArray)}>
                 <Feather
                   style={styles.menuIcon}
                   name={'more-vertical'}

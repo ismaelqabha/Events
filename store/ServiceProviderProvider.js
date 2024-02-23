@@ -22,6 +22,7 @@ const ProviderProvider = props => {
   const [socialMediaArray, setSocialMediaArray] = useState([])
   const [phoneNumer, setPhoneNumer] = useState(null);
   const [email, setEmail] = useState(null);
+  const [eventsTypeWorking, setEventsTypeWorking] = useState([])
 
   // location 
   const [latitude, setLatitude] = useState(null);
@@ -56,6 +57,8 @@ const ProviderProvider = props => {
         setPhotoArray,
         workAreas,
         setWorkAreas,
+        eventsTypeWorking, 
+        setEventsTypeWorking,
         price,
         setPrice,
         additionalServices,

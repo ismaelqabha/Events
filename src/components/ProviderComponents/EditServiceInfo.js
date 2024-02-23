@@ -1,20 +1,23 @@
-import { StyleSheet, Text, View, TextInput, ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, TextInput, ToastAndroid, Image, ScrollView } from 'react-native'
 import React, { useContext, useState, useEffect } from 'react'
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { colors } from '../../assets/AppColors';
 import { Pressable } from 'react-native';
 import { getRegions, updateService } from '../../resources/API';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { hallData, socialMediaList } from "../../resources/data";
+import { hallData, mandoteryOptions, socialMediaList } from "../../resources/data";
 import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
 import WebView from "react-native-webview";
 import HallTypeCard from '../../components/HallTypeCard';
+import Feather from 'react-native-vector-icons/Feather';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const EditServiceInfo = (props) => {
     const { editTitle, serviceID, editSubTitle,
         editHallcapasity, editphone, editEmail,
         editprice, editNumofRequest, editCity, editHallType,
-        editSocialMedia, socialItem } = props
+        editSocialMedia, socialItem, descriptionItem, editDescrItem,
+        editServiceDetail, detailItem, DetailType, detailIsperson, sub_DetailArr } = props
     const { serviceInfoAccorUser, setServiceInfoAccorUser, socialMediaArray,
         setSocialMediaArray, } = useContext(ServiceProviderContext);
 
@@ -36,6 +39,17 @@ const EditServiceInfo = (props) => {
     const [serviceRegion, setserviceRegion] = useState();
     const [serviceAddress, setserviceAddress] = useState();
     const [selectHallType, setSelectHallType] = useState();
+    const [serviceDescrItem, setServiceDescrItem] = useState();
+    const [serviceDescr, setServiceDescr] = useState([]);
+
+    const [serviceAdditionalServ, setServiceAdditionalServ] = useState([]);
+    const [serviceDetail, setServiceDetail] = useState();
+    const [detailType, setDetailType] = useState();
+    const [perPerson, setPerPerson] = useState();
+    const [yesPerPerson, setYesPerPerson] = useState();
+    const [noPerPerson, setNoPerPerson] = useState();
+
+    //console.log("perPerson", perPerson);
 
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
@@ -60,25 +74,18 @@ const EditServiceInfo = (props) => {
     const handleLogin = () => {
         setWebViewVisible(true);
     };
-    const editBasicInfoPress = (label, itemInfo, setState, update) => {
-        return (
-            <View style={styles.itemView}>
-                <View style={styles.editTitleView}>
-                    <Text style={styles.itemText}>{label}</Text>
-                    <TextInput
-                        style={styles.input}
-                        keyboardType='default'
-                        placeholder={itemInfo}
-                        onChangeText={setState}
-                    />
-                    <View style={styles.itemFooter}>
-                        <Pressable onPress={update}>
-                            <Text style={styles.itemText}>حفظ</Text>
-                        </Pressable>
-                    </View>
-                </View>
-            </View>)
-    }
+    useEffect(() => {
+        getRegionsfromApi()
+        if(detailIsperson){
+            setYesPerPerson(true)
+            setNoPerPerson(false)
+        }else{
+            setYesPerPerson(false)
+            setNoPerPerson(true)
+        }
+    }, [])
+
+    // region part
     const getRegionsfromApi = async () => {
         getRegions().then((res) => {
             res?.message ? showMessage(res.message) : updateData(res?.regions)
@@ -87,7 +94,6 @@ const EditServiceInfo = (props) => {
         })
 
     }
-    // region part
     const updateData = (regions) => {
         setRegions(regions)
         const allData = []
@@ -112,10 +118,27 @@ const EditServiceInfo = (props) => {
             })
         }
     }
+   
 
-    useEffect(() => {
-        getRegionsfromApi()
-    }, [])
+    const editBasicInfoPress = (label, itemInfo, setState, update) => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editTitleView}>
+                    <Text style={styles.itemText}>{label}</Text>
+                    <TextInput
+                        style={styles.input}
+                        keyboardType='default'
+                        placeholder={itemInfo}
+                        onChangeText={setState}
+                    />
+                    <View style={styles.itemFooter}>
+                        <Pressable onPress={update}>
+                            <Text style={styles.itemText}>حفظ</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>)
+    }
     const editAddressPress = () => {
         return (
             <View style={styles.itemView}>
@@ -143,6 +166,31 @@ const EditServiceInfo = (props) => {
             </View>
         )
     }
+    const editHallTypePress = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editHallTypeView}>
+                    <Text style={styles.itemText}>نوع القاعة</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 40 }}>
+                        {hallData?.map((item) => {
+                            return (
+                                <HallTypeCard {...item}
+                                    isChecked={item.hallType === selectHallType}
+                                    onHallTypePress={(value) => setSelectHallType(value)} />
+                            )
+                        })
+                        }
+                    </View>
+                    <View style={styles.itemFooter}>
+                        <Pressable onPress={updateHallTypeItem}>
+                            <Text style={styles.itemText}>حفظ</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>)
+    }
+
+    // edit social media
     const updateArray = (data, index) => {
         setSocialMediaArray(prevArray => {
             const newArray = [...prevArray];
@@ -210,23 +258,98 @@ const EditServiceInfo = (props) => {
             </View>
         )
     }
-    const editHallTypePress = () => {
+   
+    // edit service datail
+    const yesIsPerson = () => {
+        setYesPerPerson(true)
+        setNoPerPerson(false)
+        setPerPerson(true)
+    }
+    const noIsPerson = () => {
+        setYesPerPerson(false)
+        setNoPerPerson(true)
+        setPerPerson(false)
+    }
+    const renderIsPerPerson = () => {
+        return (
+            <View style={styles.perPersoneView}>
+                <Text style={styles.perPersoneText}>السعر  لهذة الخدمة حسب الشخص ؟</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    <Pressable style={[noPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={noIsPerson}>
+                        <Text style={styles.perPersoneText}>لا</Text>
+                    </Pressable>
+
+                    <Pressable style={[yesPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={yesIsPerson}>
+                        <Text style={styles.perPersoneText}>نعم</Text>
+                    </Pressable>
+                </View>
+            </View>
+        )
+    }
+    const editServiceDetailPress = () => {
+        let DType = ''
+        if(DetailType == 'Optional'){
+            DType = 'خدمة اختيارية'               
+        }else {
+            DType = 'خدمة اجبارية'
+        }
         return (
             <View style={styles.itemView}>
-                <View style={styles.editHallTypeView}>
-                    <Text style={styles.itemText}>نوع القاعة</Text>
-                    <View style={{flexDirection:'row', alignItems:'center', justifyContent: 'center', marginVertical: 40}}>
-                        {hallData?.map((item) => {
-                            return (
-                                <HallTypeCard {...item}
-                                    isChecked={item.hallType === selectHallType}
-                                    onHallTypePress={(value) => setSelectHallType(value)} />
-                            )
-                        })
-                        }
+                <View style={styles.editDetailView}>
+                    <Text style={styles.itemText}>الخدمة</Text>
+                    <TextInput
+                        style={styles.input}
+                        keyboardType="default"
+                        maxLength={60}
+                        placeholder={detailItem}
+                        onChangeText={setServiceDetail}
+                    />
+                    <View style={styles.list}>
+                        <SelectList
+                            data={mandoteryOptions}
+                            setSelected={val => { setDetailType(mandoteryOptions[val].alt) }}
+                            placeholder={DType}
+                            boxStyles={styles.dropdownDetailType}
+                            inputStyles={styles.droptext}
+                            dropdownTextStyles={styles.dropstyle}
+                        />
                     </View>
+                    {renderIsPerPerson()}
+                    <Text style={styles.itemText}>تفاصيل الخدمة</Text>
+                    {/* <ScrollView> */}
+                        <View style={styles.subDetailView}>
+                            <Pressable style={styles.addsubDetailView} //onPress={addNewDescr}
+                            >
+                                <Text style={styles.itemText}>اضافة جديد</Text>
+                                <View style={styles.IconView}>
+                                    <Entypo
+                                        name={'plus'}
+                                        color={colors.puprble}
+                                        size={25}
+                                    />
+                                </View>
+                            </Pressable>
+
+                            {sub_DetailArr.map(sub => {
+                                return (<View style={styles.subDetailItemView}>
+                                    <Pressable //onPress={() => serviceDetailEditPress(itemDetail.detailTitle)}
+                                    >
+                                        <Feather
+                                            name={'more-vertical'}
+                                            color={colors.puprble}
+                                            size={25} />
+                                    </Pressable>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                        <Text style={styles.itemText}>{sub.detailSubtitle}</Text>
+                                        <Image style={styles.subDetailImg} source={{ uri: sub.subDetailPhoto.uri }} />
+                                    </View>
+                                </View>)
+                            })}
+
+                        </View>
+                    {/* </ScrollView> */}
                     <View style={styles.itemFooter}>
-                        <Pressable onPress={updateHallTypeItem}>
+                        <Pressable onPress={updateServiceDetail}>
                             <Text style={styles.itemText}>حفظ</Text>
                         </Pressable>
                     </View>
@@ -446,6 +569,68 @@ const EditServiceInfo = (props) => {
         })
 
     }
+    const updateServiceDescrItem = () => {
+        const data = serviceInfoAccorUser || [];
+        const selectedServiceDescrItemIndex = data[selectedServiceIndex].desc?.findIndex(item => item.descItem === descriptionItem)
+        const newDescItem = {
+            descItem: serviceDescrItem
+        }
+        setServiceDescr(element => {
+            const newDescElement = [...element];
+            newDescElement[selectedServiceDescrItemIndex] = newDescItem;
+            return newDescElement;
+        })
+        const newData = {
+            service_id: serviceID,
+            desc: serviceDescr
+        }
+        updateService(newData).then(res => {
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = newData;
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+
+    }
+    const updateServiceDetail = () => {
+        const data = serviceInfoAccorUser || [];
+        const selectedServiceDetailItemIndex = data[selectedServiceIndex].additionalServices?.findIndex(item => item.detailTitle === detailItem)
+        const newDetailItem = {
+            detailTitle: serviceDetail,
+            necessity: detailType,
+            isPerPerson: perPerson 
+        }
+        setServiceAdditionalServ(element => {
+            const newDescElement = [...element];
+            newDescElement[selectedServiceDetailItemIndex] = newDetailItem;
+            return newDescElement;
+        })
+        const newData = {
+            service_id: serviceID,
+            additionalServices: serviceAdditionalServ
+        }
+        updateService(newData).then(res => {
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = newData;
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+
+    }
 
 
     const renderSelectedEdit = () => {
@@ -512,6 +697,17 @@ const EditServiceInfo = (props) => {
                 <View>{editSocialMediaPress()}</View>
             )
         }
+        if (editDescrItem) {
+            let label = 'الوصف'
+            return (
+                <View>{editBasicInfoPress(label, descriptionItem, setServiceDescrItem, updateServiceDescrItem)}</View>
+            )
+        }
+        if (editServiceDetail) {
+            return (
+                <View>{editServiceDetailPress()}</View>
+            )
+        }
 
     }
 
@@ -554,7 +750,7 @@ const styles = StyleSheet.create({
     },
     itemFooter: {
         //borderWidth: 1,
-        height: '20%',
+        height: 50,
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
@@ -597,6 +793,13 @@ const styles = StyleSheet.create({
         fontSize: 17,
         borderColor: 'white'
     },
+    dropdownDetailType: {
+        height: 50,
+        // maxWidth: '70%',
+        // minWidth: '70%',
+        fontSize: 17,
+        borderColor: 'white'
+    },
     dropstyle: {
         textAlign: 'left',
         //color: colors.darkGold,
@@ -636,5 +839,81 @@ const styles = StyleSheet.create({
         margin: 5,
         alignItems: 'center',
         paddingVertical: 10
-    }
+    },
+    editDetailView: {
+        height: '100%',
+        backgroundColor: 'lightgray',
+        elevation: 5,
+        margin: 5,
+        alignItems: 'center',
+        paddingVertical: 10
+    },
+    list: {
+        width: '90%',
+        marginTop: 20
+    },
+    subDetailItemView: {
+        width: '100%',
+        padding: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    subDetailView: {
+        borderWidth: 1,
+        borderColor: 'white',
+        width: '95%',
+        borderRadius: 10,
+        // height: 100
+    },
+    subDetailImg: {
+        width: 80,
+        height: 80,
+        borderRadius: 30
+    },
+    addsubDetailView: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: 10
+    },
+    perPersoneView: {
+        marginVertical: 20,
+        width: '90%',
+    },
+    itemPersonView: {
+        borderWidth: 2,
+        borderColor: '#dcdcdc',
+        width: 60,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 30,
+        borderRadius: 5,
+        marginTop: 10
+    },
+    itemPersonViewPressed: {
+        borderWidth: 3,
+        borderColor: colors.puprble,
+        width: 60,
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 30,
+        borderRadius: 5,
+        marginTop: 10
+    },
+    perPersoneText: {
+        fontSize: 18,
+        color: colors.puprble
+    },
+    IconView: {
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        borderRadius: 30,
+    },
 })

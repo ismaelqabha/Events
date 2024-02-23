@@ -1,16 +1,40 @@
-import { StyleSheet, Text, View, Pressable, FlatList, ScrollView } from 'react-native'
-import React, {useState, useContext, useEffect} from 'react'
+import { StyleSheet, Text, View, Pressable, FlatList, ScrollView,ToastAndroid } from 'react-native'
+import React, { useState, useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../../assets/AppColors';
 import { EventType } from '../../resources/data';
 import ProviderEventTypesComp from '../../components/ProviderComponents/ProviderEventTypesComp';
 import SearchContext from '../../../store/SearchContext';
+import { updateService } from '../../resources/API';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 const ProviderSetEventType = (props) => {
+    const { serviceInfoAccorUser, setServiceInfoAccorUser, eventsTypeWorking } = useContext(ServiceProviderContext);
+    const { eventTypeInfo, isFirst } = useContext(SearchContext);
 
-    const { eventTypeInfo} = useContext(SearchContext);
+    const updateWorkingEvents = () => {
+        const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
 
-    
+        const newData = {
+            service_id: isFirst,
+            eventWorkWith: eventsTypeWorking
+        }
+        updateService(newData).then(res => {
+            const data = serviceInfoAccorUser || [];
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = newData;
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+
+    }
 
     const onBackPress = () => {
         props.navigation.goBack();
@@ -48,10 +72,12 @@ const ProviderSetEventType = (props) => {
                 {/* <FlatList data={EventType} renderItem={renderEventsType} numColumns={2} /> */}
                 <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
                     {renderEventsType()}
-                    
+
                 </ScrollView>
             </View>
-
+            <Pressable style={styles.footer} onPress={updateWorkingEvents}>
+                <Text style={styles.itemText}>حفظ</Text>
+            </Pressable>
         </View>
     )
 }
@@ -85,13 +111,27 @@ const styles = StyleSheet.create({
     body: {
         width: '90%',
         alignSelf: 'center',
-        marginBottom: 200
-        //marginVertical: 20
+        height: '70%'
     },
     home: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between'
-    }
+    },
+    footer: {
+        marginTop: 20,
+        // flexDirection: 'row',
+        // justifyContent: 'flex-end',
+        width: '100%',
+        height: 70,
+        paddingHorizontal: '10%',
+        position: 'absolute',
+        bottom: 0,
+    },
+    itemText: {
+        fontSize: 18,
+        color: colors.puprble,
+        marginRight: 20
+    },
 
 })
