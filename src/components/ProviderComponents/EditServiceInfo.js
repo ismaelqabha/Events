@@ -13,13 +13,27 @@ import Feather from 'react-native-vector-icons/Feather';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 const EditServiceInfo = (props) => {
-    const { editTitle, serviceID, editSubTitle,
-        editHallcapasity, editphone, editEmail,
-        editprice, editNumofRequest, editCity, editHallType,
-        editSocialMedia, socialItem, descriptionItem, editDescrItem,
-        editServiceDetail, detailItem, DetailType, detailIsperson, sub_DetailArr } = props
+    const {
+        // editSubTitle,
+        // editHallcapasity, editphone, editEmail,
+        // editprice, editNumofRequest, editCity, editHallType,
+        // editSocialMedia,editDescrItem, editServiceDetail, 
+        serviceID, socialItem, descriptionItem,
+        detailItem, DetailType, detailIsperson, sub_DetailArr } = props
     const { serviceInfoAccorUser, setServiceInfoAccorUser, socialMediaArray,
-        setSocialMediaArray, } = useContext(ServiceProviderContext);
+        setSocialMediaArray, editTitle, seteditTitle,
+        editSubTitle, seteditSubTitle,
+        editCity, seteditCity,
+        locationEdit, setlocationEdit,
+        editHallType, seteditHallType,
+        editHallcapasity, seteditHallcapasity,
+        editphone, seteditphone,
+        editEmail, setEditEmail,
+        editSocialMedia, setEditSocialMedia,
+        editprice, setEditprice,
+        editDescrItem, setEditDescrItem,
+        editNumofRequest, setEditNumofRequest,
+        editServiceDetail, setEditServiceDetail } = useContext(ServiceProviderContext);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
     const getServiceInfo = () => {
@@ -76,10 +90,10 @@ const EditServiceInfo = (props) => {
     };
     useEffect(() => {
         getRegionsfromApi()
-        if(detailIsperson){
+        if (detailIsperson) {
             setYesPerPerson(true)
             setNoPerPerson(false)
-        }else{
+        } else {
             setYesPerPerson(false)
             setNoPerPerson(true)
         }
@@ -118,24 +132,36 @@ const EditServiceInfo = (props) => {
             })
         }
     }
-   
 
-    const editBasicInfoPress = (label, itemInfo, setState, update) => {
+    useEffect(() => {
+
+    }, [])
+
+    const editBasicInfoPress = (itemInfo, setState, update) => {
+        if(Number.isInteger(itemInfo)){
+            itemInfo = itemInfo.toString()
+        }
+       
         return (
             <View style={styles.itemView}>
                 <View style={styles.editTitleView}>
-                    <Text style={styles.itemText}>{label}</Text>
+                    <Pressable onPress={update} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={colors.puprble}
+                            size={20} />
+                    </Pressable>
                     <TextInput
                         style={styles.input}
                         keyboardType='default'
-                        placeholder={itemInfo}
+                        //value={itemInfo}
+                        placeholder={itemInfo || ''}
                         onChangeText={setState}
+                    //(val) => {
+                    // console.log("val", val);
+                    //setState(val)
                     />
-                    <View style={styles.itemFooter}>
-                        <Pressable onPress={update}>
-                            <Text style={styles.itemText}>حفظ</Text>
-                        </Pressable>
-                    </View>
+
                 </View>
             </View>)
     }
@@ -143,24 +169,27 @@ const EditServiceInfo = (props) => {
         return (
             <View style={styles.itemView}>
                 <View style={styles.editAddressView}>
-                    <View style={styles.region}>
-                        <Text> {address || serviceData[0].region}</Text>
-                    </View>
-                    <SelectList
-                        data={regionData}
-                        setSelected={val => {
-                            setserviceAddress(val)
-                            searchRegion(val)
-                        }}
-                        placeholder={serviceAddress || serviceData[0].address}
-                        boxStyles={styles.dropdown}
-                        inputstyles={styles.droptext}
-                        dropdownTextstyles={styles.dropstyle}
-                    />
-                    <View style={styles.itemFooter}>
-                        <Pressable onPress={updateAddress}>
-                            <Text style={styles.itemText}>حفظ</Text>
-                        </Pressable>
+                    <Pressable onPress={updateAddress} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={colors.puprble}
+                            size={20} />
+                    </Pressable>
+                    <View>
+                        <View style={styles.region}>
+                            <Text> {address || serviceData[0].region}</Text>
+                        </View>
+                        <SelectList
+                            data={regionData}
+                            setSelected={val => {
+                                setserviceAddress(val)
+                                searchRegion(val)
+                            }}
+                            placeholder={serviceAddress || serviceData[0].address}
+                            boxStyles={styles.dropdown}
+                            inputstyles={styles.droptext}
+                            dropdownTextstyles={styles.dropstyle}
+                        />
                     </View>
                 </View>
             </View>
@@ -170,7 +199,13 @@ const EditServiceInfo = (props) => {
         return (
             <View style={styles.itemView}>
                 <View style={styles.editHallTypeView}>
-                    <Text style={styles.itemText}>نوع القاعة</Text>
+                    <Pressable onPress={updateHallTypeItem} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={colors.puprble}
+                            size={20} />
+                    </Pressable>
+                    {/* <Text style={styles.itemText}>نوع القاعة</Text> */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 40 }}>
                         {hallData?.map((item) => {
                             return (
@@ -180,11 +215,6 @@ const EditServiceInfo = (props) => {
                             )
                         })
                         }
-                    </View>
-                    <View style={styles.itemFooter}>
-                        <Pressable onPress={updateHallTypeItem}>
-                            <Text style={styles.itemText}>حفظ</Text>
-                        </Pressable>
                     </View>
                 </View>
             </View>)
@@ -258,7 +288,7 @@ const EditServiceInfo = (props) => {
             </View>
         )
     }
-   
+
     // edit service datail
     const yesIsPerson = () => {
         setYesPerPerson(true)
@@ -288,9 +318,9 @@ const EditServiceInfo = (props) => {
     }
     const editServiceDetailPress = () => {
         let DType = ''
-        if(DetailType == 'Optional'){
-            DType = 'خدمة اختيارية'               
-        }else {
+        if (DetailType == 'Optional') {
+            DType = 'خدمة اختيارية'
+        } else {
             DType = 'خدمة اجبارية'
         }
         return (
@@ -317,36 +347,36 @@ const EditServiceInfo = (props) => {
                     {renderIsPerPerson()}
                     <Text style={styles.itemText}>تفاصيل الخدمة</Text>
                     {/* <ScrollView> */}
-                        <View style={styles.subDetailView}>
-                            <Pressable style={styles.addsubDetailView} //onPress={addNewDescr}
-                            >
-                                <Text style={styles.itemText}>اضافة جديد</Text>
-                                <View style={styles.IconView}>
-                                    <Entypo
-                                        name={'plus'}
+                    <View style={styles.subDetailView}>
+                        <Pressable style={styles.addsubDetailView} //onPress={addNewDescr}
+                        >
+                            <Text style={styles.itemText}>اضافة جديد</Text>
+                            <View style={styles.IconView}>
+                                <Entypo
+                                    name={'plus'}
+                                    color={colors.puprble}
+                                    size={25}
+                                />
+                            </View>
+                        </Pressable>
+
+                        {sub_DetailArr.map(sub => {
+                            return (<View style={styles.subDetailItemView}>
+                                <Pressable //onPress={() => serviceDetailEditPress(itemDetail.detailTitle)}
+                                >
+                                    <Feather
+                                        name={'more-vertical'}
                                         color={colors.puprble}
-                                        size={25}
-                                    />
+                                        size={25} />
+                                </Pressable>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                    <Text style={styles.itemText}>{sub.detailSubtitle}</Text>
+                                    <Image style={styles.subDetailImg} source={{ uri: sub.subDetailPhoto.uri }} />
                                 </View>
-                            </Pressable>
+                            </View>)
+                        })}
 
-                            {sub_DetailArr.map(sub => {
-                                return (<View style={styles.subDetailItemView}>
-                                    <Pressable //onPress={() => serviceDetailEditPress(itemDetail.detailTitle)}
-                                    >
-                                        <Feather
-                                            name={'more-vertical'}
-                                            color={colors.puprble}
-                                            size={25} />
-                                    </Pressable>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                        <Text style={styles.itemText}>{sub.detailSubtitle}</Text>
-                                        <Image style={styles.subDetailImg} source={{ uri: sub.subDetailPhoto.uri }} />
-                                    </View>
-                                </View>)
-                            })}
-
-                        </View>
+                    </View>
                     {/* </ScrollView> */}
                     <View style={styles.itemFooter}>
                         <Pressable onPress={updateServiceDetail}>
@@ -366,10 +396,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                seteditTitle(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -387,10 +418,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                seteditSubTitle(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -408,10 +440,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                seteditHallcapasity(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -429,10 +462,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                seteditphone(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -450,10 +484,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                setEditEmail(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -471,10 +506,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                setEditprice(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -492,10 +528,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                setEditNumofRequest(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -514,10 +551,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                seteditCity(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -535,7 +573,7 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
@@ -556,10 +594,11 @@ const EditServiceInfo = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
+                seteditHallType(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -586,7 +625,7 @@ const EditServiceInfo = (props) => {
         }
         updateService(newData).then(res => {
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
@@ -605,7 +644,7 @@ const EditServiceInfo = (props) => {
         const newDetailItem = {
             detailTitle: serviceDetail,
             necessity: detailType,
-            isPerPerson: perPerson 
+            isPerPerson: perPerson
         }
         setServiceAdditionalServ(element => {
             const newDescElement = [...element];
@@ -618,7 +657,7 @@ const EditServiceInfo = (props) => {
         }
         updateService(newData).then(res => {
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
@@ -633,55 +672,59 @@ const EditServiceInfo = (props) => {
     }
 
 
+    // const editObject = [
+    //     {
+    //          editItem: editTitle,
+    //          label: 'اسم المصلحة',
+    //          editFunction: editBasicInfoPress(editObject[0].label, serviceData[0].title, setServiceTitle, updateTitle(editObject.updateElements)),
+    //          updateElements : {
+    //             service_id: serviceID,
+    //             title: serviceTitle
+    //          }
+    //     }
+    // ]
     const renderSelectedEdit = () => {
+        //     if (editObject.editItem) {
+        //         return (
+        //             <View>{editObject.editFunction}</View>
+        //         )
+        //     }
         if (editTitle) {
-            let label = 'اسم المصلحة'
             return (
-                <View>{editBasicInfoPress(label, serviceData[0].title, setServiceTitle, updateTitle)}</View>
+                <View>{editBasicInfoPress(serviceData[0].title, setServiceTitle, updateTitle)}</View>
             )
         }
         if (editSubTitle) {
-            let label = 'العنوان الترويجي'
             return (
-                <View>{editBasicInfoPress(label, serviceData[0].subTitle, setServiceSubTitle, updateSubTitle)}</View>
+                <View>{editBasicInfoPress(serviceData[0].subTitle, setServiceSubTitle, updateSubTitle)}</View>
             )
         }
         if (editphone) {
-            let label = 'رقم الهاتف'
             return (
-                <View>{editBasicInfoPress(label, serviceData[0].servicePhone, setServicePhone, updatePhone)}</View>
+                <View>{editBasicInfoPress(serviceData[0].servicePhone, setServicePhone, updatePhone)}</View>
             )
         }
         if (editEmail) {
-            let label = 'البريد الالكتروني'
             return (
-                <View>{editBasicInfoPress(label, serviceData[0].serviceEmail, setServiceEmail, updateEmail)}</View>
+                <View>{editBasicInfoPress(serviceData[0].serviceEmail, setServiceEmail, updateEmail)}</View>
             )
         }
         if (editprice) {
-            let label = 'السعر'
             return (
-                <View>{editBasicInfoPress(label, serviceData[0].servicePrice, setServicePrice, updatePrice)}</View>
+                <View>{editBasicInfoPress(serviceData[0].servicePrice, setServicePrice, updatePrice)}</View>
             )
         }
         if (editNumofRequest) {
-            let label = 'الحد الاقصى للحجوزات'
             return (
-                <View>{editBasicInfoPress(label, serviceData[0].numRecivedRequest, setMaxRequest, updateMaxRequest)}</View>
+                <View>{editBasicInfoPress(serviceData[0].numRecivedRequest, setMaxRequest, updateMaxRequest)}</View>
             )
         }
         if (editHallcapasity) {
-            let label = 'سعة القاعة'
             return (
-                <View>{editBasicInfoPress(label, serviceData[0].maxCapasity, setServiceHallCapasity, updateHallCapasity)}</View>
+                <View>{editBasicInfoPress(serviceData[0].maxCapasity, setServiceHallCapasity, updateHallCapasity)}</View>
             )
         }
-        if (editprice) {
-            let label = 'السعر'
-            return (
-                <View>{editBasicInfoPress(label, serviceData[0].servicePrice, setServicePrice, updatePrice)}</View>
-            )
-        }
+
         if (editCity) {
             return (
                 <View>{editAddressPress()}</View>
@@ -708,7 +751,7 @@ const EditServiceInfo = (props) => {
                 <View>{editServiceDetailPress()}</View>
             )
         }
-
+        return null
     }
 
     return (
@@ -737,61 +780,54 @@ const styles = StyleSheet.create({
         marginVertical: 5
     },
     itemView: {
-        // borderWidth: 1,
         width: '100%',
-        height: '90%',
-        marginTop: 50,
-        justifyContent: 'center'
+        // height: '90%',
+        marginTop: 20,
+        justifyContent: 'center',
+        //borderWidth: 1
     },
-    itemText: {
-        fontSize: 18,
-        color: colors.puprble,
-        marginRight: 20
-    },
+    // itemText: {
+    //     fontSize: 18,
+    //     color: colors.puprble,
+    //     marginRight: 20
+    // },
     itemFooter: {
-        //borderWidth: 1,
-        height: 50,
-        width: '100%',
+        width: '10%',
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'absolute',
-        bottom: 0
     },
     editTitleView: {
-        //borderWidth: 1,
-        height: '30%',
         justifyContent: 'center',
         backgroundColor: 'lightgray',
-        elevation: 5,
-        margin: 5
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     editAddressView: {
-        height: '60%',
         backgroundColor: 'lightgray',
-        elevation: 5,
-        margin: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 10
+        paddingVertical: 10,
     },
     region: {
-        textAlign: 'right',
         height: 50,
-        width: '70%',
+        width: '90%',
         fontSize: 16,
         borderRadius: 10,
         borderWidth: 1,
         borderColor: 'white',
         alignSelf: 'center',
-        marginVertical: 20,
+        marginBottom: 10,
         alignItems: 'center',
         justifyContent: 'center'
     },
     dropdown: {
         height: 50,
-        maxWidth: '70%',
-        minWidth: '70%',
+        maxWidth: '90%',
+        minWidth: '90%',
         fontSize: 17,
-        borderColor: 'white'
+        borderColor: 'white',
+        alignSelf: 'center',
     },
     dropdownDetailType: {
         height: 50,
@@ -833,12 +869,8 @@ const styles = StyleSheet.create({
         textAlign: 'right',
     },
     editHallTypeView: {
-        height: '40%',
         backgroundColor: 'lightgray',
-        elevation: 5,
-        margin: 5,
-        alignItems: 'center',
-        paddingVertical: 10
+        alignSelf: 'center',
     },
     editDetailView: {
         height: '100%',
