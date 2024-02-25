@@ -37,7 +37,8 @@ const ProviderHome = props => {
     editprice, setEditprice,
     editDescrItem, setEditDescrItem,
     editNumofRequest, setEditNumofRequest,
-    editServiceDetail, setEditServiceDetail } = useContext(ServiceProviderContext);
+    editServiceDetail, setEditServiceDetail,
+    addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
   const [servicePhotos, setservicePhotos] = useState();
   const [showModal, setShowModal] = useState(false);
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
@@ -53,11 +54,12 @@ const ProviderHome = props => {
   //const [editEmail, setEditEmail] = useState(false);
   //const [editSocialMedia, setEditSocialMedia] = useState(false);
   const [socialItem, setSocialItem] = useState();
+  const [socialIndex, setSocialIndex] = useState();
   //const [editprice, setEditprice] = useState(false);
   //const [editDescrItem, setEditDescrItem] = useState(false);
   const [descriptionItem, setDescriptionItem] = useState();
   //const [editNumofRequest, setEditNumofRequest] = useState(false);
-  const [addSocilMedia, setAddSocilMedia] = useState(false);
+  // const [addSocilMedia, setAddSocilMedia] = useState(false);
   const [addNewDesc, setAddNewDesc] = useState(false);
   const [addNewDetail, setAddNewDetail] = useState(false);
   //const [editServiceDetail, setEditServiceDetail] = useState(false);
@@ -74,6 +76,7 @@ const ProviderHome = props => {
 
   useEffect(() => {
     getImagesfromApi();
+   
   }, []);
 
 
@@ -231,6 +234,7 @@ const ProviderHome = props => {
   }
   const socialMediaitemEditPress = (item) => {
     setSocialItem(item)
+    //setSocialIndex(i)
     setShowModal(true)
     setEditSocialMedia(true)
     setEditEmail(false)
@@ -407,63 +411,19 @@ const ProviderHome = props => {
     seteditTitle(false)
   }
   const renderEditServiceInfo = () => {
-    if (editTitle) {
-      return (
-        <EditServiceInfo serviceID={isFirst} />
-      )
-    }
-    if (editSubTitle) {
-      return (
-        <EditServiceInfo serviceID={isFirst} />
-      )
-    }
-    if (editHallcapasity) {
-      return (
-        <EditServiceInfo serviceID={isFirst} />
-      )
-    }
-    if (editCity) {
-      return (
-        <EditServiceInfo serviceID={isFirst} />
-      )
-    }
-    if (locationEdit) {
-      return
-    }
-    if (editHallType) {
-      return (
-        <EditServiceInfo serviceID={isFirst} />
-      )
-    }
-
-    if (editphone) {
-      return (
-        <EditServiceInfo serviceID={isFirst} />
-      )
-    }
-    if (editEmail) {
-      return (
-        <EditServiceInfo serviceID={isFirst} />
-      )
-    }
-    if (editSocialMedia) {
-      return (
-        <EditServiceInfo socialItem={socialItem} serviceID={isFirst} />
-      )
-    }
-    if (editprice) {
-      return (
-        <EditServiceInfo serviceID={isFirst} />
-      )
-    }
     if (editDescrItem) {
       return (
         <EditServiceInfo descriptionItem={descriptionItem} serviceID={isFirst} />
       )
     }
-    if (editNumofRequest) {
+    if (editServiceDetail) {
       return (
-        <EditServiceInfo serviceID={isFirst} />
+        <EditServiceInfo
+          detailItem={detailItem}
+          DetailType={DetailType}
+          detailIsperson={detailIsperson}
+          sub_DetailArr={sub_DetailArr}
+          serviceID={isFirst} />
       )
     }
     if (addSocilMedia) {
@@ -481,16 +441,7 @@ const ProviderHome = props => {
         <Text style={styles.basicInfoTitle}>add detail</Text>
       )
     }
-    if (editServiceDetail) {
-      return (
-        <EditServiceInfo
-          detailItem={detailItem}
-          DetailType={DetailType}
-          detailIsperson={detailIsperson}
-          sub_DetailArr={sub_DetailArr}
-          serviceID={isFirst} />
-      )
-    }
+
   }
 
   const filterService = () => {
@@ -551,14 +502,15 @@ const ProviderHome = props => {
         <View>
           {item.title && (
             <View>
-              {editTitle ? renderEditServiceInfo() :
+              {editTitle ?
+                <EditServiceInfo serviceID={isFirst} /> :
                 <View style={styles.itemService}>
                   <View style={styles.itemSM}>
                     <Pressable onPress={titleEditPress}>
                       <Feather
                         style={styles.menuIcon}
                         name={'edit'}
-                        color={colors.puprble}
+                        color={colors.BGScereen}
                         size={25} />
                     </Pressable>
                     <View>
@@ -575,14 +527,15 @@ const ProviderHome = props => {
 
           {item.subTitle && (
             <View>
-              {editSubTitle ? renderEditServiceInfo() :
+              {editSubTitle ?
+                <EditServiceInfo serviceID={isFirst} /> :
                 <View style={styles.itemService}>
                   <View style={styles.itemSM}>
                     <Pressable onPress={subTitleEditPress}>
                       <Feather
                         style={styles.menuIcon}
                         name={'edit'}
-                        color={colors.puprble}
+                        color={colors.BGScereen}
                         size={25} />
                     </Pressable>
                     <View>
@@ -667,7 +620,8 @@ const ProviderHome = props => {
     const serviceType = data?.map(item => {
       return (
         <View>
-          {editCity ? renderEditServiceInfo() :
+          {editCity ?
+            <EditServiceInfo serviceID={isFirst} /> :
             <View>
               {item.region && (
                 <View style={styles.itemService}>
@@ -687,7 +641,7 @@ const ProviderHome = props => {
                       <Feather
                         style={styles.menuIcon}
                         name={'edit'}
-                        color={colors.puprble}
+                        color={colors.BGScereen}
                         size={25} />
                     </Pressable>
                     <View>
@@ -701,26 +655,30 @@ const ProviderHome = props => {
                 </View>
               )}
             </View>}
-          {item.serviceLocation && (
-            <View style={styles.itemService}>
-              <View style={styles.itemSM}>
-                <Pressable onPress={locationEditPress}>
-                  <Feather
-                    style={styles.menuIcon}
-                    name={'edit'}
-                    color={colors.puprble}
-                    size={25} />
-                </Pressable>
-                <View>
-                  <Text style={styles.basicInfoTitle}>الموقع</Text>
-                  <Text style={styles.basicInfo}>{item.serviceLocation}</Text>
+          {locationEdit ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View>
+              {item.serviceLocation && (
+                <View style={styles.itemService}>
+                  <View style={styles.itemSM}>
+                    <Pressable onPress={locationEditPress}>
+                      <Feather
+                        style={styles.menuIcon}
+                        name={'edit'}
+                        color={colors.BGScereen}
+                        size={25} />
+                    </Pressable>
+                    <View>
+                      <Text style={styles.basicInfoTitle}>الموقع</Text>
+                      <Text style={styles.basicInfo}>{item.serviceLocation}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.IconView}>
+                    <Entypo name={'location-pin'} color={colors.puprble} size={25} />
+                  </View>
                 </View>
-              </View>
-              <View style={styles.IconView}>
-                <Entypo name={'location-pin'} color={colors.puprble} size={25} />
-              </View>
-            </View>
-          )}
+              )}
+            </View>}
         </View>
       );
     });
@@ -768,14 +726,15 @@ const ProviderHome = props => {
     const servicePrice = data?.map(item => {
       return (
         <View>
-          {editprice ? renderEditServiceInfo() :
+          {editprice ?
+            <EditServiceInfo serviceID={isFirst} /> :
             <View style={styles.itemService}>
               <View style={styles.itemSM}>
                 <Pressable onPress={priceEditPress}>
                   <Feather
                     style={styles.menuIcon}
                     name={'edit'}
-                    color={colors.puprble}
+                    color={colors.BGScereen}
                     size={25} />
                 </Pressable>
                 <View>
@@ -807,14 +766,15 @@ const ProviderHome = props => {
     const servicePrice = data?.map(item => {
       return (
         <View>
-          {editHallType ? renderEditServiceInfo() :
+          {editHallType ?
+            <EditServiceInfo serviceID={isFirst} /> :
             <View style={styles.itemService}>
               <View style={styles.itemSM}>
                 <Pressable onPress={HallTypeEditPress}>
                   <Feather
                     style={styles.menuIcon}
                     name={'edit'}
-                    color={colors.puprble}
+                    color={colors.BGScereen}
                     size={25} />
                 </Pressable>
                 <View>
@@ -826,14 +786,15 @@ const ProviderHome = props => {
                 <Entypo name={'info'} color={colors.puprble} size={25} />
               </View>
             </View>}
-          {editHallcapasity ? renderEditServiceInfo() :
+          {editHallcapasity ?
+            <EditServiceInfo serviceID={isFirst} /> :
             <View style={styles.itemService}>
               <View style={styles.itemSM}>
                 <Pressable onPress={hallCapasityEditPress}>
                   <Feather
                     style={styles.menuIcon}
                     name={'edit'}
-                    color={colors.puprble}
+                    color={colors.BGScereen}
                     size={25} />
                 </Pressable>
                 <View>
@@ -855,14 +816,14 @@ const ProviderHome = props => {
     const serviceType = data?.map(item => {
       return (
         <View>
-          {editNumofRequest ? renderEditServiceInfo() :
+          {editNumofRequest ?
             <View style={styles.itemService}>
               <View style={styles.itemSM}>
                 <Pressable onPress={numofRequestEditPress}>
                   <Feather
                     style={styles.menuIcon}
                     name={'edit'}
-                    color={colors.puprble}
+                    color={colors.BGScereen}
                     size={25} />
                 </Pressable>
                 <Text style={styles.basicInfo}>{item.numRecivedRequest}</Text>
@@ -1042,6 +1003,7 @@ const ProviderHome = props => {
             />
           </View>
         </Pressable>
+        <View>{addSocilMedia && <EditServiceInfo  serviceID={isFirst}/> }</View>
         {renderSocialItems()}
       </View>
     );
@@ -1050,13 +1012,13 @@ const ProviderHome = props => {
     const data = filterService()
     return data.map(item => {
       return item.socialMedia.map(element => {
-        return <View style={styles.item}>
+        return (<View style={styles.item}>
           <View style={styles.itemSM}>
             <Pressable onPress={() => socialMediaitemEditPress(element.social)}>
               <Feather
                 style={styles.menuIcon}
                 name={'edit'}
-                color={colors.puprble}
+                color={colors.BGScereen}
                 size={25} />
             </Pressable>
             <Pressable>
@@ -1071,6 +1033,7 @@ const ProviderHome = props => {
               size={25} />
           </View>
         </View>
+        )
       })
     })
   }
@@ -1079,7 +1042,8 @@ const ProviderHome = props => {
     return data.map(item => {
       return (
         <View>
-          {editphone ? renderEditServiceInfo() :
+          {editphone ?
+            <EditServiceInfo serviceID={isFirst} /> :
             <View>
               <View style={styles.item}>
                 <View style={styles.itemSM}>
@@ -1087,7 +1051,7 @@ const ProviderHome = props => {
                     <Feather
                       style={styles.menuIcon}
                       name={'edit'}
-                      color={colors.puprble}
+                      color={colors.BGScereen}
                       size={25} />
                   </Pressable>
                   <View>
@@ -1105,7 +1069,8 @@ const ProviderHome = props => {
                 </View>
               </View>
             </View>}
-          {editEmail ? renderEditServiceInfo() :
+          {editEmail ?
+            <EditServiceInfo serviceID={isFirst} /> :
             <View>
               <View style={styles.item}>
                 <View style={styles.itemSM}>
@@ -1113,7 +1078,7 @@ const ProviderHome = props => {
                     <Feather
                       style={styles.menuIcon}
                       name={'edit'}
-                      color={colors.puprble}
+                      color={colors.BGScereen}
                       size={25} />
                   </Pressable>
                   <View>
@@ -1334,12 +1299,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     marginTop: 10,
+
   },
   itemSM: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '85%',
+
   },
   detailModal: {
     width: '100%',

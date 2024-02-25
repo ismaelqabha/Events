@@ -14,12 +14,10 @@ import Entypo from 'react-native-vector-icons/Entypo';
 
 const EditServiceInfo = (props) => {
     const {
-        // editSubTitle,
-        // editHallcapasity, editphone, editEmail,
-        // editprice, editNumofRequest, editCity, editHallType,
-        // editSocialMedia,editDescrItem, editServiceDetail, 
-        serviceID, socialItem, descriptionItem,
-        detailItem, DetailType, detailIsperson, sub_DetailArr } = props
+        serviceID, socialItem, socialLink, socialIndex,
+        descriptionItem, detailItem, DetailType,
+        detailIsperson, sub_DetailArr } = props
+
     const { serviceInfoAccorUser, setServiceInfoAccorUser, socialMediaArray,
         setSocialMediaArray, editTitle, seteditTitle,
         editSubTitle, seteditSubTitle,
@@ -33,7 +31,8 @@ const EditServiceInfo = (props) => {
         editprice, setEditprice,
         editDescrItem, setEditDescrItem,
         editNumofRequest, setEditNumofRequest,
-        editServiceDetail, setEditServiceDetail } = useContext(ServiceProviderContext);
+        editServiceDetail, setEditServiceDetail,
+        addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
     const getServiceInfo = () => {
@@ -138,17 +137,17 @@ const EditServiceInfo = (props) => {
     }, [])
 
     const editBasicInfoPress = (itemInfo, setState, update) => {
-        if(Number.isInteger(itemInfo)){
+        if (Number.isInteger(itemInfo)) {
             itemInfo = itemInfo.toString()
         }
-       
+
         return (
             <View style={styles.itemView}>
                 <View style={styles.editTitleView}>
                     <Pressable onPress={update} style={styles.itemFooter}>
                         <Feather
                             name={'save'}
-                            color={colors.puprble}
+                            color={colors.BGScereen}
                             size={20} />
                     </Pressable>
                     <TextInput
@@ -172,7 +171,7 @@ const EditServiceInfo = (props) => {
                     <Pressable onPress={updateAddress} style={styles.itemFooter}>
                         <Feather
                             name={'save'}
-                            color={colors.puprble}
+                            color={colors.BGScereen}
                             size={20} />
                     </Pressable>
                     <View>
@@ -202,10 +201,9 @@ const EditServiceInfo = (props) => {
                     <Pressable onPress={updateHallTypeItem} style={styles.itemFooter}>
                         <Feather
                             name={'save'}
-                            color={colors.puprble}
+                            color={colors.BGScereen}
                             size={20} />
                     </Pressable>
-                    {/* <Text style={styles.itemText}>نوع القاعة</Text> */}
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 40 }}>
                         {hallData?.map((item) => {
                             return (
@@ -237,52 +235,118 @@ const EditServiceInfo = (props) => {
         return (
             <View style={styles.itemView}>
                 <View style={styles.editAddressView}>
-                    <SelectList
-                        data={socialMediaList}
-                        setSelected={val => {
-                            setContactType(socialMediaList[val].value)
-                            const data = {
-                                social: socialMediaList[val].value,
-                                link: contactVal,
-                            }
-                            updateArray(data, index)
-                        }}
-
-                        placeholder={contactType || socialItem}
-                        boxStyles={styles.dropdown}
-                        inputStyles={styles.droptext}
-                        dropdownTextStyles={styles.dropstyle}
-                    />
-                    <View style={styles.socialInput}>
-                        <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
-                        <TextInput style={styles.TextInput}
-                            keyboardType={'default'}
-                            placeholder={'حمل رابط الشبكة'}
-                            value={contactVal}
-                            onChangeText={(val) => setContactVal(val)}
-                            onFocus={() => {
-                                handleLogin()
-                            }}
-                            onEndEditing={(event) => {
-                                const text = event.nativeEvent.text
+                    <Pressable onPress={updateSocialMediaItem} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={colors.BGScereen}
+                            size={20} />
+                    </Pressable>
+                    <View>
+                        <SelectList
+                            data={socialMediaList}
+                            //index= {socialIndex}
+                            setSelected={val => {
+                                setContactType(socialMediaList[val].value)
                                 const data = {
-                                    social: contactType,
-                                    link: text,
+                                    social: socialMediaList[val].value,
+                                    link: contactVal,
                                 }
                                 updateArray(data, index)
                             }}
+
+                            placeholder={socialItem}
+                            boxStyles={styles.dropdown}
+                            inputStyles={styles.droptext}
+                            dropdownTextStyles={styles.dropstyle}
                         />
+                        <View style={styles.socialInput}>
+                            <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                            <TextInput
+                                style={styles.TextInput}
+                                keyboardType={'default'}
+                                placeholder={socialLink}
+                                //index= {socialIndex}
+                                value={contactVal}
+                                onChangeText={(val) => setContactVal(val)}
+                                onFocus={() => {
+                                    handleLogin()
+                                }}
+                                onEndEditing={(event) => {
+                                    const text = event.nativeEvent.text
+                                    const data = {
+                                        social: contactType,
+                                        link: text,
+                                    }
+                                    updateArray(data, index)
+                                }}
+                            />
+                        </View>
+                        {webViewVisible && (
+                            <WebView
+                                source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
+                                onNavigationStateChange={handleWebViewNavigationStateChange}
+                            />
+                        )}
                     </View>
-                    {webViewVisible && (
-                        <WebView
-                            source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
-                            onNavigationStateChange={handleWebViewNavigationStateChange}
+                </View>
+            </View>
+        )
+    }
+    const addingSocialMediaPress = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editAddressView}>
+                    <Pressable style={styles.itemFooter} onPress={addNewSocialMediaItem} 
+                    >
+                        <Feather
+                            name={'save'}
+                            color={colors.BGScereen}
+                            size={20} />
+                    </Pressable>
+                    <View>
+                        <SelectList
+                            data={socialMediaList}
+                            setSelected={val => {
+                                setContactType(socialMediaList[val].value)
+                                const data = {
+                                    social: socialMediaList[val].value,
+                                    link: contactVal,
+                                }
+                                updateArray(data, index)
+                            }}
+
+                            placeholder={'اختر الشبكة الاجتماعية'}
+                            boxStyles={styles.dropdown}
+                            inputStyles={styles.droptext}
+                            dropdownTextStyles={styles.dropstyle}
                         />
-                    )}
-                    <View style={styles.itemFooter}>
-                        <Pressable onPress={updateSocialMediaItem}>
-                            <Text style={styles.itemText}>حفظ</Text>
-                        </Pressable>
+                        <View style={styles.socialInput}>
+                            <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                            <TextInput
+                                style={styles.TextInput}
+                                keyboardType={'default'}
+                                //placeholder={"حمل الرابط"}
+                                value={contactVal}
+                                onChangeText={(val) => setContactVal(val)}
+                                onFocus={() => {
+                                    handleLogin()
+                                }}
+                                onEndEditing={(event) => {
+                                    const text = event.nativeEvent.text
+                                    const data = {
+                                        social: contactType,
+                                        link: text,
+                                    }
+                                    updateArray(data, index)
+                                }}
+                            />
+                        </View>
+                        {webViewVisible && (
+                            <WebView
+                                source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
+                                onNavigationStateChange={handleWebViewNavigationStateChange}
+                            />
+                        )}
                     </View>
                 </View>
             </View>
@@ -586,6 +650,27 @@ const EditServiceInfo = (props) => {
         })
 
     }
+    const addNewSocialMediaItem = () => {
+        const newData = {
+            service_id: serviceID,
+            socialMedia: socialMediaArray
+        }
+        updateService(newData).then(res => {
+            const data = serviceInfoAccorUser || [];
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+
+    }
     const updateHallTypeItem = () => {
         const newData = {
             service_id: serviceID,
@@ -671,87 +756,65 @@ const EditServiceInfo = (props) => {
 
     }
 
+    const editObject = [
+        {
+            editItem: editTitle,
+            editFunction: editBasicInfoPress(serviceData[0].title, setServiceTitle, updateTitle),
+        },
+        {
+            editItem: editSubTitle,
+            editFunction: editBasicInfoPress(serviceData[0].subTitle, setServiceSubTitle, updateSubTitle),
+        },
+        {
+            editItem: editEmail,
+            editFunction: editBasicInfoPress(serviceData[0].serviceEmail, setServiceEmail, updateEmail),
+        },
+        {
+            editItem: editphone,
+            editFunction: editBasicInfoPress(serviceData[0].servicePhone, setServicePhone, updatePhone),
+        },
+        {
+            editItem: editprice,
+            editFunction: editBasicInfoPress(serviceData[0].servicePrice, setServicePrice, updatePrice),
+        },
+        {
+            editItem: editNumofRequest,
+            editFunction: editBasicInfoPress(serviceData[0].numRecivedRequest, setMaxRequest, updateMaxRequest),
+        },
+        {
+            editItem: editHallcapasity,
+            editFunction: editBasicInfoPress(serviceData[0].maxCapasity, setServiceHallCapasity, updateHallCapasity),
+        },
+        {
+            editItem: editCity,
+            editFunction: editAddressPress(),
+        },
+        {
+            editItem: editHallType,
+            editFunction: editHallTypePress(),
+        },
+        {
+            editItem: editSocialMedia,
+            editFunction: editSocialMediaPress(),
+        },
+        {
+            editItem: editDescrItem,
+            editFunction: editBasicInfoPress(descriptionItem, setServiceDescrItem, updateServiceDescrItem),
+        },
+        {
+            editItem: addSocilMedia,
+            editFunction: addingSocialMediaPress(),
+        },
 
-    // const editObject = [
-    //     {
-    //          editItem: editTitle,
-    //          label: 'اسم المصلحة',
-    //          editFunction: editBasicInfoPress(editObject[0].label, serviceData[0].title, setServiceTitle, updateTitle(editObject.updateElements)),
-    //          updateElements : {
-    //             service_id: serviceID,
-    //             title: serviceTitle
-    //          }
-    //     }
-    // ]
+    ]
     const renderSelectedEdit = () => {
-        //     if (editObject.editItem) {
-        //         return (
-        //             <View>{editObject.editFunction}</View>
-        //         )
-        //     }
-        if (editTitle) {
-            return (
-                <View>{editBasicInfoPress(serviceData[0].title, setServiceTitle, updateTitle)}</View>
-            )
-        }
-        if (editSubTitle) {
-            return (
-                <View>{editBasicInfoPress(serviceData[0].subTitle, setServiceSubTitle, updateSubTitle)}</View>
-            )
-        }
-        if (editphone) {
-            return (
-                <View>{editBasicInfoPress(serviceData[0].servicePhone, setServicePhone, updatePhone)}</View>
-            )
-        }
-        if (editEmail) {
-            return (
-                <View>{editBasicInfoPress(serviceData[0].serviceEmail, setServiceEmail, updateEmail)}</View>
-            )
-        }
-        if (editprice) {
-            return (
-                <View>{editBasicInfoPress(serviceData[0].servicePrice, setServicePrice, updatePrice)}</View>
-            )
-        }
-        if (editNumofRequest) {
-            return (
-                <View>{editBasicInfoPress(serviceData[0].numRecivedRequest, setMaxRequest, updateMaxRequest)}</View>
-            )
-        }
-        if (editHallcapasity) {
-            return (
-                <View>{editBasicInfoPress(serviceData[0].maxCapasity, setServiceHallCapasity, updateHallCapasity)}</View>
-            )
-        }
-
-        if (editCity) {
-            return (
-                <View>{editAddressPress()}</View>
-            )
-        }
-        if (editHallType) {
-            return (
-                <View>{editHallTypePress()}</View >
-            )
-        }
-        if (editSocialMedia) {
-            return (
-                <View>{editSocialMediaPress()}</View>
-            )
-        }
-        if (editDescrItem) {
-            let label = 'الوصف'
-            return (
-                <View>{editBasicInfoPress(label, descriptionItem, setServiceDescrItem, updateServiceDescrItem)}</View>
-            )
-        }
-        if (editServiceDetail) {
-            return (
-                <View>{editServiceDetailPress()}</View>
-            )
-        }
-        return null
+        return editObject.map(item => {
+            if (item.editItem) {
+                return (
+                    <View>{item.editFunction}</View>
+                )
+            }
+        })
     }
 
     return (
@@ -781,7 +844,6 @@ const styles = StyleSheet.create({
     },
     itemView: {
         width: '100%',
-        // height: '90%',
         marginTop: 20,
         justifyContent: 'center',
         //borderWidth: 1
@@ -808,6 +870,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
+        borderWidth: 1,
+        borderColor: colors.BGScereen,
+        borderRadius: 10
     },
     region: {
         height: 50,
@@ -837,36 +902,35 @@ const styles = StyleSheet.create({
         borderColor: 'white'
     },
     dropstyle: {
-        textAlign: 'left',
-        //color: colors.darkGold,
+        textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 15,
     },
     droptext: {
         fontSize: 15,
         fontWeight: 'bold',
-        color: colors.darkGold,
+        color: colors.puprble,
         textAlign: 'right'
     },
     socialInput: {
         borderWidth: 1,
-        width: "95%",
-        textAlign: 'right',
+        width: "90%",
         backgroundColor: 'white',
         borderRadius: 10,
-        borderColor: 'gray',
-        fontSize: 18,
+        borderColor: 'white',
+        fontSize: 15,
         marginVertical: 20,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'center'
     },
     socialIcon: {
         alignSelf: 'center',
         marginLeft: 10
     },
     TextInput: {
-        flex: 1,
-        fontSize: 20,
-        textAlign: 'right',
+        fontSize: 15,
+        width: "50%",
     },
     editHallTypeView: {
         backgroundColor: 'lightgray',
