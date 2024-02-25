@@ -817,6 +817,7 @@ const ProviderHome = props => {
       return (
         <View>
           {editNumofRequest ?
+            <EditServiceInfo serviceID={isFirst} /> :
             <View style={styles.itemService}>
               <View style={styles.itemSM}>
                 <Pressable onPress={numofRequestEditPress}>
