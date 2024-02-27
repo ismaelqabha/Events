@@ -16,7 +16,8 @@ const EditServiceInfo = (props) => {
     const {
         serviceID, socialItem, socialLink, socialIndex,
         descriptionItem, detailItem, DetailType,
-        detailIsperson, sub_DetailArr } = props
+        detailIsperson, sub_DetailArr, editDescrItem, setEditDescrItem,
+        editSocialMedia,setEditSocialMedia } = props
 
     const { serviceInfoAccorUser, setServiceInfoAccorUser, socialMediaArray,
         setSocialMediaArray, editTitle, seteditTitle,
@@ -27,9 +28,8 @@ const EditServiceInfo = (props) => {
         editHallcapasity, seteditHallcapasity,
         editphone, seteditphone,
         editEmail, setEditEmail,
-        editSocialMedia, setEditSocialMedia,
         editprice, setEditprice,
-        editDescrItem, setEditDescrItem,
+       // editDescrItem, setEditDescrItem,
         editNumofRequest, setEditNumofRequest,
         editServiceDetail, setEditServiceDetail,
         addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
@@ -241,31 +241,15 @@ const EditServiceInfo = (props) => {
                             color={colors.BGScereen}
                             size={20} />
                     </Pressable>
-                    <View>
-                        <SelectList
-                            data={socialMediaList}
-                            //index= {socialIndex}
-                            setSelected={val => {
-                                setContactType(socialMediaList[val].value)
-                                const data = {
-                                    social: socialMediaList[val].value,
-                                    link: contactVal,
-                                }
-                                updateArray(data, index)
-                            }}
-
-                            placeholder={socialItem}
-                            boxStyles={styles.dropdown}
-                            inputStyles={styles.droptext}
-                            dropdownTextStyles={styles.dropstyle}
-                        />
+                    <View style={{width: '85%', marginRight: 10}}>
+                        <Text style={styles.editSocialtxt}>{socialItem}</Text>
                         <View style={styles.socialInput}>
                             <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
                             <TextInput
                                 style={styles.TextInput}
                                 keyboardType={'default'}
                                 placeholder={socialLink}
-                                //index= {socialIndex}
+                                index= {socialIndex}
                                 value={contactVal}
                                 onChangeText={(val) => setContactVal(val)}
                                 onFocus={() => {
@@ -325,7 +309,7 @@ const EditServiceInfo = (props) => {
                             <TextInput
                                 style={styles.TextInput}
                                 keyboardType={'default'}
-                                //placeholder={"حمل الرابط"}
+                                placeholder={"حمل الرابط"}
                                 value={contactVal}
                                 onChangeText={(val) => setContactVal(val)}
                                 onFocus={() => {
@@ -630,45 +614,47 @@ const EditServiceInfo = (props) => {
 
     }
     const updateSocialMediaItem = () => {
-        const newData = {
-            service_id: serviceID,
-            socialMedia: socialMediaArray
-        }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        setEditSocialMedia(false)
+        // const newData = {
+        //     service_id: serviceID,
+        //     socialMedia: socialMediaArray
+        // }
+        // updateService(newData).then(res => {
+        //     const data = serviceInfoAccorUser || [];
+        //     if (selectedServiceIndex > -1) {
+        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+        //     }
+        //     if (res.message === 'Updated Sucessfuly') {
+        //         setServiceInfoAccorUser([...data])
+        //         ToastAndroid.showWithGravity(
+        //             'تم التعديل بنجاح',
+        //             ToastAndroid.SHORT,
+        //             ToastAndroid.BOTTOM,
+        //         );
+        //     }
+        // })
 
     }
     const addNewSocialMediaItem = () => {
-        const newData = {
-            service_id: serviceID,
-            socialMedia: socialMediaArray
-        }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        setAddSocilMedia(false)
+        // const newData = {
+        //     service_id: serviceID,
+        //     socialMedia: socialMediaArray
+        // }
+        // updateService(newData).then(res => {
+        //     const data = serviceInfoAccorUser || [];
+        //     if (selectedServiceIndex > -1) {
+        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+        //     }
+        //     if (res.message === 'Updated Sucessfuly') {
+        //         setServiceInfoAccorUser([...data])
+        //         ToastAndroid.showWithGravity(
+        //             'تم التعديل بنجاح',
+        //             ToastAndroid.SHORT,
+        //             ToastAndroid.BOTTOM,
+        //         );
+        //     }
+        // })
 
     }
     const updateHallTypeItem = () => {
@@ -694,33 +680,34 @@ const EditServiceInfo = (props) => {
 
     }
     const updateServiceDescrItem = () => {
-        const data = serviceInfoAccorUser || [];
-        const selectedServiceDescrItemIndex = data[selectedServiceIndex].desc?.findIndex(item => item.descItem === descriptionItem)
-        const newDescItem = {
-            descItem: serviceDescrItem
-        }
-        setServiceDescr(element => {
-            const newDescElement = [...element];
-            newDescElement[selectedServiceDescrItemIndex] = newDescItem;
-            return newDescElement;
-        })
-        const newData = {
-            service_id: serviceID,
-            desc: serviceDescr
-        }
-        updateService(newData).then(res => {
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        setEditDescrItem(false)
+        // const data = serviceInfoAccorUser || [];
+        // const selectedServiceDescrItemIndex = data[selectedServiceIndex].desc?.findIndex(item => item.descItem === descriptionItem)
+        // const newDescItem = {
+        //     descItem: serviceDescrItem
+        // }
+        // setServiceDescr(element => {
+        //     const newDescElement = [...element];
+        //     newDescElement[selectedServiceDescrItemIndex] = newDescItem;
+        //     return newDescElement;
+        // })
+        // const newData = {
+        //     service_id: serviceID,
+        //     desc: serviceDescr
+        // }
+        // updateService(newData).then(res => {
+        //     if (selectedServiceIndex > -1) {
+        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+        //     }
+        //     if (res.message === 'Updated Sucessfuly') {
+        //         setServiceInfoAccorUser([...data])
+        //         ToastAndroid.showWithGravity(
+        //             'تم التعديل بنجاح',
+        //             ToastAndroid.SHORT,
+        //             ToastAndroid.BOTTOM,
+        //         );
+        //     }
+        // })
 
     }
     const updateServiceDetail = () => {
@@ -923,6 +910,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'center'
+    },
+    editSocialtxt:{
+       textAlign:'center',
+       fontSize: 18,
+       color : colors.puprble
     },
     socialIcon: {
         alignSelf: 'center',
