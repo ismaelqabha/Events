@@ -15,8 +15,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 const EditServiceInfo = (props) => {
     const {
         serviceID, socialItem, socialLink, socialIndex,
-        descriptionItem, detailItem, DetailType,
-        detailIsperson, sub_DetailArr, editDescrItem, setEditDescrItem,
+        descriptionItem, editDescrItem, setEditDescrItem,
         editSocialMedia,setEditSocialMedia } = props
 
     const { serviceInfoAccorUser, setServiceInfoAccorUser, socialMediaArray,
@@ -29,9 +28,8 @@ const EditServiceInfo = (props) => {
         editphone, seteditphone,
         editEmail, setEditEmail,
         editprice, setEditprice,
-       // editDescrItem, setEditDescrItem,
+        addNewDesc, setAddNewDesc,
         editNumofRequest, setEditNumofRequest,
-        editServiceDetail, setEditServiceDetail,
         addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
@@ -52,17 +50,10 @@ const EditServiceInfo = (props) => {
     const [serviceRegion, setserviceRegion] = useState();
     const [serviceAddress, setserviceAddress] = useState();
     const [selectHallType, setSelectHallType] = useState();
-    const [serviceDescrItem, setServiceDescrItem] = useState();
+    const [serEditedDescrItem, setSerEditedDescrItem] = useState();
+    const [addNewDescrItem, setaddNewDescrItem] = useState();
     const [serviceDescr, setServiceDescr] = useState([]);
 
-    const [serviceAdditionalServ, setServiceAdditionalServ] = useState([]);
-    const [serviceDetail, setServiceDetail] = useState();
-    const [detailType, setDetailType] = useState();
-    const [perPerson, setPerPerson] = useState();
-    const [yesPerPerson, setYesPerPerson] = useState();
-    const [noPerPerson, setNoPerPerson] = useState();
-
-    //console.log("perPerson", perPerson);
 
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
@@ -89,51 +80,7 @@ const EditServiceInfo = (props) => {
     };
     useEffect(() => {
         getRegionsfromApi()
-        if (detailIsperson) {
-            setYesPerPerson(true)
-            setNoPerPerson(false)
-        } else {
-            setYesPerPerson(false)
-            setNoPerPerson(true)
-        }
-    }, [])
-
-    // region part
-    const getRegionsfromApi = async () => {
-        getRegions().then((res) => {
-            res?.message ? showMessage(res.message) : updateData(res?.regions)
-        }).catch((e) => {
-            console.log("error fetching -> ", e);
-        })
-
-    }
-    const updateData = (regions) => {
-        setRegions(regions)
-        const allData = []
-        regions?.forEach(region => {
-            allData.push(...region?.regionCities)
-        });
-        allData.sort()
-        setRegionData(allData)
-    }
-    const searchRegion = (val) => {
-        if (!regions) {
-            return;
-        } else {
-            regions.forEach((region) => {
-                var index = region?.regionCities?.findIndex(city => {
-                    return city === val
-                })
-                if (!(index === -1)) {
-                    setAddress(region?.regionName)
-                    setserviceRegion(region?.regionName)
-                }
-            })
-        }
-    }
-
-    useEffect(() => {
-
+      
     }, [])
 
     const editBasicInfoPress = (itemInfo, setState, update) => {
@@ -216,6 +163,40 @@ const EditServiceInfo = (props) => {
                     </View>
                 </View>
             </View>)
+    }
+
+     // region part
+     const getRegionsfromApi = async () => {
+        getRegions().then((res) => {
+            res?.message ? showMessage(res.message) : updateData(res?.regions)
+        }).catch((e) => {
+            console.log("error fetching -> ", e);
+        })
+
+    }
+    const updateData = (regions) => {
+        setRegions(regions)
+        const allData = []
+        regions?.forEach(region => {
+            allData.push(...region?.regionCities)
+        });
+        allData.sort()
+        setRegionData(allData)
+    }
+    const searchRegion = (val) => {
+        if (!regions) {
+            return;
+        } else {
+            regions.forEach((region) => {
+                var index = region?.regionCities?.findIndex(city => {
+                    return city === val
+                })
+                if (!(index === -1)) {
+                    setAddress(region?.regionName)
+                    setserviceRegion(region?.regionName)
+                }
+            })
+        }
     }
 
     // edit social media
@@ -337,100 +318,32 @@ const EditServiceInfo = (props) => {
         )
     }
 
-    // edit service datail
-    const yesIsPerson = () => {
-        setYesPerPerson(true)
-        setNoPerPerson(false)
-        setPerPerson(true)
-    }
-    const noIsPerson = () => {
-        setYesPerPerson(false)
-        setNoPerPerson(true)
-        setPerPerson(false)
-    }
-    const renderIsPerPerson = () => {
-        return (
-            <View style={styles.perPersoneView}>
-                <Text style={styles.perPersoneText}>السعر  لهذة الخدمة حسب الشخص ؟</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    <Pressable style={[noPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={noIsPerson}>
-                        <Text style={styles.perPersoneText}>لا</Text>
-                    </Pressable>
+    // Add description part
+    const addNewDescItemPress = () => {
+        // if (Number.isInteger(itemInfo)) {
+        //     itemInfo = itemInfo.toString()
+        // }
 
-                    <Pressable style={[yesPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={yesIsPerson}>
-                        <Text style={styles.perPersoneText}>نعم</Text>
-                    </Pressable>
-                </View>
-            </View>
-        )
-    }
-    const editServiceDetailPress = () => {
-        let DType = ''
-        if (DetailType == 'Optional') {
-            DType = 'خدمة اختيارية'
-        } else {
-            DType = 'خدمة اجبارية'
-        }
         return (
             <View style={styles.itemView}>
-                <View style={styles.editDetailView}>
-                    <Text style={styles.itemText}>الخدمة</Text>
+                <View style={styles.editTitleView}>
+                    <Pressable onPress={addNewDescItem} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={colors.BGScereen}
+                            size={20} />
+                    </Pressable>
                     <TextInput
                         style={styles.input}
-                        keyboardType="default"
-                        maxLength={60}
-                        placeholder={detailItem}
-                        onChangeText={setServiceDetail}
+                        keyboardType='default'
+                        //value={itemInfo}
+                        placeholder={'اضافة وصف جديد'}
+                        onChangeText={setaddNewDescrItem}
+                    //(val) => {
+                    // console.log("val", val);
+                    //setState(val)
                     />
-                    <View style={styles.list}>
-                        <SelectList
-                            data={mandoteryOptions}
-                            setSelected={val => { setDetailType(mandoteryOptions[val].alt) }}
-                            placeholder={DType}
-                            boxStyles={styles.dropdownDetailType}
-                            inputStyles={styles.droptext}
-                            dropdownTextStyles={styles.dropstyle}
-                        />
-                    </View>
-                    {renderIsPerPerson()}
-                    <Text style={styles.itemText}>تفاصيل الخدمة</Text>
-                    {/* <ScrollView> */}
-                    <View style={styles.subDetailView}>
-                        <Pressable style={styles.addsubDetailView} //onPress={addNewDescr}
-                        >
-                            <Text style={styles.itemText}>اضافة جديد</Text>
-                            <View style={styles.IconView}>
-                                <Entypo
-                                    name={'plus'}
-                                    color={colors.puprble}
-                                    size={25}
-                                />
-                            </View>
-                        </Pressable>
 
-                        {sub_DetailArr.map(sub => {
-                            return (<View style={styles.subDetailItemView}>
-                                <Pressable //onPress={() => serviceDetailEditPress(itemDetail.detailTitle)}
-                                >
-                                    <Feather
-                                        name={'more-vertical'}
-                                        color={colors.puprble}
-                                        size={25} />
-                                </Pressable>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                    <Text style={styles.itemText}>{sub.detailSubtitle}</Text>
-                                    <Image style={styles.subDetailImg} source={{ uri: sub.subDetailPhoto.uri }} />
-                                </View>
-                            </View>)
-                        })}
-
-                    </View>
-                    {/* </ScrollView> */}
-                    <View style={styles.itemFooter}>
-                        <Pressable onPress={updateServiceDetail}>
-                            <Text style={styles.itemText}>حفظ</Text>
-                        </Pressable>
-                    </View>
                 </View>
             </View>)
     }
@@ -710,36 +623,26 @@ const EditServiceInfo = (props) => {
         // })
 
     }
-    const updateServiceDetail = () => {
-        const data = serviceInfoAccorUser || [];
-        const selectedServiceDetailItemIndex = data[selectedServiceIndex].additionalServices?.findIndex(item => item.detailTitle === detailItem)
-        const newDetailItem = {
-            detailTitle: serviceDetail,
-            necessity: detailType,
-            isPerPerson: perPerson
-        }
-        setServiceAdditionalServ(element => {
-            const newDescElement = [...element];
-            newDescElement[selectedServiceDetailItemIndex] = newDetailItem;
-            return newDescElement;
-        })
-        const newData = {
-            service_id: serviceID,
-            additionalServices: serviceAdditionalServ
-        }
-        updateService(newData).then(res => {
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+    const addNewDescItem = () => {
+        setAddNewDesc(false)
+        // const newData = {
+        //     service_id: serviceID,
+        //     socialMedia: socialMediaArray
+        // }
+        // updateService(newData).then(res => {
+        //     const data = serviceInfoAccorUser || [];
+        //     if (selectedServiceIndex > -1) {
+        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+        //     }
+        //     if (res.message === 'Updated Sucessfuly') {
+        //         setServiceInfoAccorUser([...data])
+        //         ToastAndroid.showWithGravity(
+        //             'تم التعديل بنجاح',
+        //             ToastAndroid.SHORT,
+        //             ToastAndroid.BOTTOM,
+        //         );
+        //     }
+        // })
 
     }
 
@@ -785,12 +688,16 @@ const EditServiceInfo = (props) => {
             editFunction: editSocialMediaPress(),
         },
         {
-            editItem: editDescrItem,
-            editFunction: editBasicInfoPress(descriptionItem, setServiceDescrItem, updateServiceDescrItem),
-        },
-        {
             editItem: addSocilMedia,
             editFunction: addingSocialMediaPress(),
+        },
+        {
+            editItem: editDescrItem,
+            editFunction: editBasicInfoPress(descriptionItem, setSerEditedDescrItem, updateServiceDescrItem),
+        },
+        {
+            editItem: addNewDesc,
+            editFunction: addNewDescItemPress(),
         },
 
     ]
@@ -835,11 +742,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         //borderWidth: 1
     },
-    // itemText: {
-    //     fontSize: 18,
-    //     color: colors.puprble,
-    //     marginRight: 20
-    // },
+    
     itemFooter: {
         width: '10%',
         alignItems: 'center',
@@ -881,13 +784,6 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         alignSelf: 'center',
     },
-    dropdownDetailType: {
-        height: 50,
-        // maxWidth: '70%',
-        // minWidth: '70%',
-        fontSize: 17,
-        borderColor: 'white'
-    },
     dropstyle: {
         textAlign: 'center',
         fontWeight: 'bold',
@@ -928,74 +824,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
         alignSelf: 'center',
     },
-    editDetailView: {
-        height: '100%',
-        backgroundColor: 'lightgray',
-        elevation: 5,
-        margin: 5,
-        alignItems: 'center',
-        paddingVertical: 10
-    },
-    list: {
-        width: '90%',
-        marginTop: 20
-    },
-    subDetailItemView: {
-        width: '100%',
-        padding: 5,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    },
-    subDetailView: {
-        borderWidth: 1,
-        borderColor: 'white',
-        width: '95%',
-        borderRadius: 10,
-        // height: 100
-    },
-    subDetailImg: {
-        width: 80,
-        height: 80,
-        borderRadius: 30
-    },
-    addsubDetailView: {
-        width: '100%',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        padding: 10
-    },
-    perPersoneView: {
-        marginVertical: 20,
-        width: '90%',
-    },
-    itemPersonView: {
-        borderWidth: 2,
-        borderColor: '#dcdcdc',
-        width: 60,
-        height: 60,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 30,
-        borderRadius: 5,
-        marginTop: 10
-    },
-    itemPersonViewPressed: {
-        borderWidth: 3,
-        borderColor: colors.puprble,
-        width: 60,
-        height: 60,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 30,
-        borderRadius: 5,
-        marginTop: 10
-    },
-    perPersoneText: {
-        fontSize: 18,
-        color: colors.puprble
-    },
+   
     IconView: {
         width: 40,
         height: 40,

@@ -53,6 +53,9 @@ const ProviderProvider = props => {
   const [editNumofRequest, setEditNumofRequest] = useState(false);
   const [editServiceDetail, setEditServiceDetail] = useState(false);
   const [addSocilMedia, setAddSocilMedia] = useState(false);
+  const [addNewDesc, setAddNewDesc] = useState(false);
+  const [addNewDetail, setAddNewDetail] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   return (
     <ServiceProviderContext.Provider
@@ -151,6 +154,12 @@ const ProviderProvider = props => {
         setEditServiceDetail,
         addSocilMedia, 
         setAddSocilMedia,
+        addNewDesc, 
+        setAddNewDesc,
+        addNewDetail, 
+        setAddNewDetail,
+        showDetailModal, 
+        setShowDetailModal
       }}>
       {props.children}
     </ServiceProviderContext.Provider>
