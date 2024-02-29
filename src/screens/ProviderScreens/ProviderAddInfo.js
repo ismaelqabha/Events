@@ -406,6 +406,35 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
+  const RenderInputNumofRequested = () => {
+    return (
+      <View>
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
+              color={colors.puprble}
+              size={20} />
+          </View>
+          <View style={styles.itemView}>
+            {(titleError || titleLengthError) && (
+              <Text style={styles.textRequired}>
+                {titleError ? language.titleRequired : language.titleLengthError}
+              </Text>
+            )}
+            <Text style={styles.text}>الحد الاقصى لاستقبال الحجوزات</Text>
+          </View>
+        </View>
+        <TextInput
+          style={styles.titleInput}
+          keyboardType="default"
+          maxLength={50}
+          onChangeText={{}}
+          //value={}
+        />
+      </View>
+    );
+  };
 
  // footer part
   const RenderFooter = () => {
@@ -453,7 +482,6 @@ const ProviderAddInfo = props => {
       setDescription(updatedDescription)
     }
   }
-
   const DescrriptionComponent = (props) => {
     const [descriptionItem, setDescriptionItem] = useState(null)
 
@@ -483,7 +511,6 @@ const ProviderAddInfo = props => {
         />
       </View>)
   }
-
   const updateDescrArray = (data , index) => {
       setDescription(prevArray => {
           const newArray = [...prevArray];
@@ -526,6 +553,7 @@ const ProviderAddInfo = props => {
         {RenderTitleBox()}
         {RenderSubTitleBox()}
         {Renderdescriptionr()}
+        {RenderInputNumofRequested()}
       </View>
     );
   };
