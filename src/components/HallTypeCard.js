@@ -18,10 +18,7 @@ const HallTypeCard = (props) => {
 
     const onHallTypePress = (item) => {
         setHallType(props.hallType)
-
-
         props.onHallTypePress(props.hallType);
-
 
         let ServiceArr = ServiceDataInfo;
         const isChecked = chickIfChecked(item);

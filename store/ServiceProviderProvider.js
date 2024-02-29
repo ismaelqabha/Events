@@ -22,6 +22,7 @@ const ProviderProvider = props => {
   const [socialMediaArray, setSocialMediaArray] = useState([])
   const [phoneNumer, setPhoneNumer] = useState(null);
   const [email, setEmail] = useState(null);
+  const [eventsTypeWorking, setEventsTypeWorking] = useState([])
 
   // location 
   const [latitude, setLatitude] = useState(null);
@@ -36,6 +37,25 @@ const ProviderProvider = props => {
 
   // Calender Scrren
   const [serviceInfoAccorUser, setServiceInfoAccorUser] = useState([]);
+
+  // edit service variable
+  const [editTitle, seteditTitle] = useState(false);
+  const [editSubTitle, seteditSubTitle] = useState(false);
+  const [editCity, seteditCity] = useState(false);
+  const [locationEdit, setlocationEdit] = useState(false);
+  const [editHallType, seteditHallType] = useState(false);
+  const [editHallcapasity, seteditHallcapasity] = useState(false);
+  const [editphone, seteditphone] = useState(false);
+  const [editEmail, setEditEmail] = useState(false);
+  const [editSocialMedia, setEditSocialMedia] = useState(false);
+  const [editprice, setEditprice] = useState(false);
+  const [editDescrItem, setEditDescrItem] = useState(false);
+  const [editNumofRequest, setEditNumofRequest] = useState(false);
+  const [editServiceDetail, setEditServiceDetail] = useState(false);
+  const [addSocilMedia, setAddSocilMedia] = useState(false);
+  const [addNewDesc, setAddNewDesc] = useState(false);
+  const [addNewDetail, setAddNewDetail] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   return (
     <ServiceProviderContext.Provider
@@ -56,6 +76,8 @@ const ProviderProvider = props => {
         setPhotoArray,
         workAreas,
         setWorkAreas,
+        eventsTypeWorking, 
+        setEventsTypeWorking,
         price,
         setPrice,
         additionalServices,
@@ -103,6 +125,41 @@ const ProviderProvider = props => {
         setDraftServices,
         draftID,
         setDraftID,
+
+        editTitle, 
+        seteditTitle,
+        editSubTitle, 
+        seteditSubTitle,
+        editCity, 
+        seteditCity,
+        locationEdit, 
+        setlocationEdit,
+        editHallType, 
+        seteditHallType,
+        editHallcapasity, 
+        seteditHallcapasity,
+        editphone, 
+        seteditphone,
+        editEmail, 
+        setEditEmail,
+        editSocialMedia, 
+        setEditSocialMedia,
+        editprice, 
+        setEditprice,
+        editDescrItem, 
+        setEditDescrItem,
+        editNumofRequest, 
+        setEditNumofRequest,
+        editServiceDetail, 
+        setEditServiceDetail,
+        addSocilMedia, 
+        setAddSocilMedia,
+        addNewDesc, 
+        setAddNewDesc,
+        addNewDetail, 
+        setAddNewDetail,
+        showDetailModal, 
+        setShowDetailModal
       }}>
       {props.children}
     </ServiceProviderContext.Provider>

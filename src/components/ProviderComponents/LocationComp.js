@@ -24,8 +24,7 @@ const LocationComp = props => {
   };
 
   const checkExists = () => {
-    workAreas.includes(props.value) ? removeFromList()
-      : addToSelected();
+    workAreas.includes(props.value) ? removeFromList(): addToSelected();
   }
 
   const addToSelected = () => {

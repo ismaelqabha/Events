@@ -442,7 +442,6 @@ const ProviderAddInfo = props => {
     })
     return fields
   }
-
   const removeDescription = (desToRemove) => {
     var i = description.findIndex((val) => val.descItem === desToRemove)
     if (i === -1) {
