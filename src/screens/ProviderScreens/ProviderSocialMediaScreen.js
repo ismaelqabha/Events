@@ -75,7 +75,10 @@ const ProviderSocialMediaScreen = (props) => {
             <ScrollView style={styles.body}>
                 <ContactComp />
             </ScrollView>
-            {RenderFooter()}
+            <View style={{width:'100%',height:'10%'}}>
+                {RenderFooter()}
+            </View>
+
         </View>
     )
 }
