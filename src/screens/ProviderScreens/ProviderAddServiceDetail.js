@@ -89,7 +89,18 @@ const ProviderAddServiceDetail = props => {
 
 
   const onPublishPress = async () => {
+    let emptyIndexes = [];
 
+    additionalServices.forEach((service, index) => {
+      if (service.subDetailArray.length === 0) {
+        emptyIndexes.push(index);
+      }
+    });
+
+    if (emptyIndexes.length > 0) {
+      const message = `Sub detail ${emptyIndexes.map(index => additionalServices[index].detailTitle).join(', ')} are empty`; showMessage(message)
+      return;
+    }
     const body = {
       userID: userId,
       servType: selectServiceType,
