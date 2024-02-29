@@ -34,6 +34,9 @@ const ProviderAddServiceDetail = props => {
   const [noPerPerson, setNoPerPerson] = useState(false);
   const [isMan, setIsMan] = useState(false);
   const [isOpt, setIsOpt] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editedDetailId, setEditedDetailId] = useState('');
+
   const {
     serviceAddress,
     price,
@@ -86,6 +89,7 @@ const ProviderAddServiceDetail = props => {
 
 
   const onPublishPress = async () => {
+
     const body = {
       userID: userId,
       servType: selectServiceType,
@@ -127,6 +131,7 @@ const ProviderAddServiceDetail = props => {
       };
       setAdditionalServices([...additionalServices, AddNewDetail]);
       setDTitle('');
+      setPerPerson(false)
       setNec("Mandatory")
       setShowModal(false);
     }
@@ -138,9 +143,13 @@ const ProviderAddServiceDetail = props => {
     return exists == -1 ? true : false;
   };
   const modalDeletePress = () => {
+    setDTitle('');
+    setPerPerson(false);
+    setNec("Mandatory");
     setShowModal(false);
   };
   const onStartPress = () => {
+    setIsEdit(false)
     setShowModal(true);
   };
   const onBackPress = () => {
@@ -155,18 +164,38 @@ const ProviderAddServiceDetail = props => {
     })
     return filterArray
   }
-
+  const deleteItem = (detail_Id) => {
+    const updatedServices = additionalServices.filter(service => service.detail_Id !== detail_Id);
+    setAdditionalServices(updatedServices);
+    setDTitle('');
+    setPerPerson(false)
+    setNec("Mandatory")
+  };
+  const openEdit = (allData) => {
+    setEditedDetailId(allData.detail_Id)
+    setDTitle(allData.detailTitle);
+    setPerPerson(allData.isPerPerson);
+    if (allData.isPerPerson) {
+      yesIsPerson()
+    } else {
+      noIsPerson()
+    }
+    setNec(allData.necessity);
+    setIsEdit(true)
+    setShowModal(true)
+  };
   const renderMandatoryServices = () => {
     const filterArray = filterData(additionalServices, "Mandatory")
     const cardsArray = filterArray?.map(card => {
-      return <ProviderShowServDetailComp {...card} />;
+      return <ProviderShowServDetailComp key={card.detail_Id} {...card} openEdit={openEdit} deleteItem={deleteItem} />;
     });
     return cardsArray;
   };
+
   const renderOptionalServices = () => {
     const filterArray = filterData(additionalServices, "Optional")
     const cardsArray = filterArray.map(card => {
-      return <ProviderShowServDetailComp {...card} />;
+      return <ProviderShowServDetailComp key={card.detail_Id} {...card} openEdit={openEdit} deleteItem={deleteItem} />;
     });
     return cardsArray;
   };
@@ -222,15 +251,17 @@ const ProviderAddServiceDetail = props => {
           onChangeText={value => {
             setDTitle(value);
           }}
+          value={Dtitle}
         />
         <View style={styles.list}>
           <SelectList
             data={mandoteryOptions}
             setSelected={val => { setNec(mandoteryOptions[val].alt) }}
-            placeholder={language.dropdownText}
+            placeholder={isEdit ? nec === 'Mandatory' ? mandoteryOptions[0].value : mandoteryOptions[1].value : language.dropdownText}
             boxStyles={styles.dropdown}
             inputStyles={styles.droptext}
             dropdownTextStyles={styles.dropstyle}
+
           />
         </View>
         {renderIsPerPerson()}
@@ -282,12 +313,31 @@ const ProviderAddServiceDetail = props => {
   };
   const RenderSaveButton = () => {
     return (
-      <Pressable onPress={() => modalSavePress()}>
-        <Text style={styles.text}>{language.Save}</Text>
+      <Pressable onPress={() => isEdit ? saveEdited() : modalSavePress()}>
+        <Text style={styles.text}>{isEdit ? language.editSave : language.Save}</Text>
       </Pressable>
     );
   };
-
+  const saveEdited = () => {
+    if (Dtitle.trim().length > 0 && editedDetailId) {
+      const updatedServices = additionalServices.map(service => {
+        if (service.detail_Id === editedDetailId) {
+          return {
+            ...service,
+            detailTitle: Dtitle,
+            necessity: nec,
+            isPerPerson: perPerson,
+          };
+        }
+        return service;
+      });
+      setAdditionalServices(updatedServices);
+      setDTitle('');
+      setPerPerson(false);
+      setNec("Mandatory");
+      setShowModal(false);
+    }
+  };
   const renderHeader = () => {
     return (
       <View style={styles.header}>

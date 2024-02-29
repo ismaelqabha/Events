@@ -91,6 +91,7 @@ const strings = {
         CreateButton: 'انشاء جديد',
         Cancel: 'الغاء',
         Save: 'حفظ',
+        editSave: 'تعديل',
         Title: 'أدخل اسم الخدمة',
         Next: 'معاينة ثم حفظ ونشر',
         Back: 'رجوع',
