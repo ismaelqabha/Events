@@ -19,7 +19,7 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import { colors } from '../../assets/AppColors';
 import SearchContext from '../../../store/SearchContext';
-import { mandoteryOptions } from '../../resources/data';
+import { hallDetailOptions, mandoteryOptions } from '../../resources/data';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { showMessage } from '../../resources/Functions';
 import { addService, addServiceImages } from '../../resources/API';
@@ -255,15 +255,29 @@ const ProviderAddServiceDetail = props => {
   const RenderTitleBox = () => {
     return (
       <View style={styles.listView}>
-        <TextInput
-          style={styles.titleInput}
-          keyboardType="default"
-          maxLength={60}
-          onChangeText={value => {
-            setDTitle(value);
-          }}
-          value={Dtitle}
-        />
+        <View style={styles.list}>
+          <SelectList
+            data={hallDetailOptions}
+            setSelected={val => {
+              setDTitle(hallDetailOptions[val].value);
+            }}
+            placeholder={'اختيار وصف الخدمة'}
+            boxStyles={styles.dropdown}
+            inputStyles={styles.droptext}
+            dropdownTextStyles={styles.dropstyle}
+          />
+        </View>
+        {Dtitle === 'أخرى' &&
+          <TextInput
+            style={styles.titleInput}
+            keyboardType="default"
+            maxLength={60}
+            onChangeText={value => {
+              setDTitle(value);
+            }}
+          //value={Dtitle}
+          />}
+
         <View style={styles.list}>
           <SelectList
             data={mandoteryOptions}
@@ -294,15 +308,32 @@ const ProviderAddServiceDetail = props => {
   const renderIsPerPerson = () => {
     return (
       <View style={styles.perPersoneView}>
-        <Text style={styles.perPersoneText}>هل يتم تحديد السعر  لهذة الخدمة حسب الشخص ؟</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+        <Text style={styles.perPersoneText}>ما هو نوع تحديد السعر لهذة الخدمة ؟</Text>
+        <View style={{ alignItems: 'flex-end' }}>
+
           <Pressable style={[noPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={noIsPerson}>
-            <Text style={styles.perPersoneText}>لا</Text>
+            <Text style={styles.perPersoneText}>حسب الطاولة</Text>
           </Pressable>
 
+
           <Pressable style={[yesPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={yesIsPerson}>
-            <Text style={styles.perPersoneText}>نعم</Text>
+            <Text style={styles.perPersoneText}>حسب الشخص</Text>
           </Pressable>
+
+          <Pressable style={styles.itemPersonView} //onPress={yesIsPerson}
+          >
+            <Text style={styles.perPersoneText}>شامل لكل الحجز</Text>
+          </Pressable>
+        </View>
+        <View style={{  alignItems: 'center' }}>
+          {noPerPerson &&
+            <TextInput
+              style={styles.numTableInput}
+              keyboardType="default"
+              maxLength={60}
+              placeholder='عدد الاشخاص للطاولة'
+              onChangeText={{}}
+            />}
         </View>
       </View>
     )
@@ -523,7 +554,7 @@ const styles = StyleSheet.create({
   },
   detailModal: {
     width: '100%',
-    height: 400,
+    height: 550,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -535,11 +566,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#00000099',
   },
   Motitle: {
-    height: 50,
+   
     justifyContent: 'center',
     alignItems: 'center',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    
   },
   body: {
     alignItems: 'center',
@@ -566,7 +598,20 @@ const styles = StyleSheet.create({
     borderColor: '#dcdcdc',
     fontSize: 18,
     backgroundColor: 'white',
+    marginTop: 20
   },
+  numTableInput: {
+    textAlign: 'center',
+    height: 40,
+    width: '60%',
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: '#dcdcdc',
+    fontSize: 18,
+    backgroundColor: 'white',
+    marginTop: 10
+  },
+
   MandatoryView: {
 
   },
@@ -603,30 +648,30 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   itemPersonView: {
-    borderWidth: 2,
+    borderWidth: 4,
     borderColor: '#dcdcdc',
-    width: 60,
-    height: 60,
+    width: '50%',
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 30,
     borderRadius: 5,
-    marginTop: 20
+    marginTop: 10,
+    
   },
   itemPersonViewPressed: {
-    borderWidth: 3,
+    borderWidth: 4,
     borderColor: colors.puprble,
-    width: 60,
-    height: 60,
+    width: '50%',
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 30,
     borderRadius: 5,
-    marginTop: 20
+    marginTop: 10,
   },
   perPersoneText: {
     fontSize: 18,
-    color: colors.puprble
+    color: colors.puprble,
+    
   }
 
 });

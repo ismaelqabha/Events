@@ -20,24 +20,6 @@ export const Users = [
         UserType: 'Provider',
     },
 ];
-export const servicesData = [
-    {
-        service_id: 1,
-        UserId: 1,
-        servType: 'قاعات',
-        title: 'قاعات الامير',
-        subTitle: 'قاعة الامير لاحياء جميع مناسباتكم السعيدة اهلا وسهلا بكم',
-        desc: '',
-        region: 'المثلث الشمالي',
-        address: 'برطعة',
-        workingRegion: [],
-        servicePice: '',
-        serviceStutes: '',
-
-
-    },
-
-];
 export const EventType = [
     { key: '0', eventTitle: 'زفاف', img: (require('../assets/photos/wedding.png')) },
     { key: '1', eventTitle: 'خطوبة', img: (require('../assets/photos/engagment.png')) },
@@ -78,22 +60,13 @@ export const mandoteryOptions = [
     { key: '0', value: 'اجبارية', alt: "Mandatory" },
     { key: '1', value: 'اختيارية', alt: "Optional" }
 ];
-export const subDetailData = [
-    {
-        orderItems: [
-            {
-                detial_id: 1, // 3sha 
-                orderProducts: []
-            },
-            {
-                detial_id: 2, // firewoks 
-                orderProducts: []
-            },
-        ],
-        request_Id: 1,
-        UserID: 1,
-    },
+export const hallDetailOptions = [
+    { key: '0', value: 'وجبات طعام' },
+    { key: '1', value: 'تزيين' },
+    { key: '2', value: 'ضيافة' },
+    { key: '3', value: 'أخرى' }
 ];
+
 export const requst =[
     {
         requestID:'',

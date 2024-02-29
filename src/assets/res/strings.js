@@ -92,7 +92,7 @@ const strings = {
         Cancel: 'الغاء',
         Save: 'حفظ',
         editSave: 'تعديل',
-        Title: 'أدخل اسم الخدمة',
+        Title: ' الخدمة',
         Next: 'معاينة ثم حفظ ونشر',
         Back: 'رجوع',
         mandotryText: 'الخدمات الاجبارية',
