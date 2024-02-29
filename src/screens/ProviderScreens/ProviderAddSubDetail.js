@@ -27,13 +27,43 @@ const ProviderAddSubDetail = props => {
   const [SDtitle, setSDTitle] = useState('');
   const [SPricetitle, setSPricetitle] = useState('');
   const [subDetailImg, setSubDetailImg] = useState();
+  const [isEdit, setIsEdit] = useState(false);
+  const [editedSubDetailId, setEditedSubDetailId] = useState('');
   const { additionalServices, setAdditionalServices } = useContext(
     ServiceProviderContext,
   );
   const langauge = strings.arabic.ProviderScreens.ProviderSubDetail;
 
   let SubDid = uuidv4();
+  const saveEdited = () => {
+    if (SDtitle.trim().length > 0 && SPricetitle.trim().length > 0) {
+      const editedSubDetail = {
+        subDetail_Id: editedSubDetailId, // Assuming you have this state variable to track the edited subDetail_Id
+        detailSubtitle: SDtitle,
+        detailSubtitleCost: SPricetitle,
+        subDetailPhoto: subDetailImg
+      };
 
+      const updatedServices = additionalServices.map(service => {
+        if (service.detail_Id === data.detail_Id) {
+          const updatedSubDetailArray = service.subDetailArray.map(item => {
+            if (item.subDetail_Id === editedSubDetailId) {
+              return editedSubDetail;
+            }
+            return item;
+          });
+          return { ...service, subDetailArray: updatedSubDetailArray };
+        }
+        return service;
+      });
+
+      setAdditionalServices(updatedServices);
+      setSDTitle('');
+      setSPricetitle('');
+      setSubDetailImg(null);
+      setShowModal(false);
+    }
+  };
   const modalSavePress = () => {
     if (SDtitle.trim().length > 0 && SPricetitle.trim().length > 0) {
       if (doesntExists()) {
@@ -52,6 +82,9 @@ const ProviderAddSubDetail = props => {
         setSPricetitle('');
       }
     }
+    setSubDetailImg()
+    setSDTitle('')
+    setSPricetitle('')
     setShowModal(false);
   };
 
@@ -65,17 +98,35 @@ const ProviderAddSubDetail = props => {
     setShowModal(false);
   };
   const onStartPress = () => {
+    setIsEdit(false)
     setShowModal(true);
   };
   const onBackPress = () => {
     props.navigation.goBack();
   };
-
+  const deleteItem = (subDetail_Id) => {
+    const updatedServices = additionalServices.map(service => {
+      if (service.detail_Id === data.detail_Id) {
+        const updatedSubDetailArray = service.subDetailArray.filter(item => item.subDetail_Id !== subDetail_Id);
+        return { ...service, subDetailArray: updatedSubDetailArray };
+      }
+      return service;
+    });
+    setAdditionalServices(updatedServices);
+  };
+  const openEdit = (allData) => {
+    setEditedSubDetailId(allData.subDetail_Id)
+    setSDTitle(allData.detailSubtitle)
+    setSPricetitle(allData.detailSubtitleCost)
+    setSubDetailImg(allData.subDetailPhoto)
+    setIsEdit(true)
+    setShowModal(true);
+  }
   const renderService = () => {
     let index = additionalServices.findIndex(val => val.detail_Id === data.detail_Id);
     const additions = additionalServices[index].subDetailArray;
     const cardsArray = additions.map(card => {
-      return <ProviderSubDetailComp {...card} />;
+      return <ProviderSubDetailComp key={card.subDetail_Id} {...card} openEdit={openEdit} deleteItem={deleteItem} />;
     });
     return cardsArray;
   };
@@ -180,7 +231,7 @@ const ProviderAddSubDetail = props => {
             {subDetailImg ?
               <Image
                 source={subDetailImg}
-                style={{ flex: 1, width: '100%', height: '100%', resizeMode:'stretch',  borderRadius:10}}
+                style={{ flex: 1, width: '100%', height: '100%', resizeMode: 'stretch', borderRadius: 10 }}
               />
               :
               <MaterialIcons
@@ -198,6 +249,7 @@ const ProviderAddSubDetail = props => {
           onChangeText={value => {
             setSDTitle(value);
           }}
+          value={SDtitle}
         />
         <TextInput
           style={styles.titleInput}
@@ -206,6 +258,7 @@ const ProviderAddSubDetail = props => {
           onChangeText={value => {
             setSPricetitle(value);
           }}
+          value={SPricetitle}
         />
       </View>
     );
@@ -227,11 +280,12 @@ const ProviderAddSubDetail = props => {
   };
   const RenderSaveButton = () => {
     return (
-      <Pressable onPress={() => modalSavePress()}>
-        <Text style={styles.text}>{langauge.Save}</Text>
+      <Pressable onPress={() => isEdit ? saveEdited() : modalSavePress()}>
+        <Text style={styles.text}>{isEdit ? langauge.editSave : langauge.Save}</Text>
       </Pressable>
     );
   };
+
   return (
     <View style={styles.container}>
       {RenderHeader()}
