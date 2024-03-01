@@ -24,6 +24,8 @@ const ProviderProvider = props => {
   const [email, setEmail] = useState(null);
   const [eventsTypeWorking, setEventsTypeWorking] = useState([])
 
+  const [Region, SetRegion] = useState([])
+
   // location 
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -92,6 +94,8 @@ const ProviderProvider = props => {
         setLatitude,
         longitude,
         setLongitude,
+        Region, 
+        SetRegion,
         allData: {
           userID: userId,
           servType: selectServiceType,

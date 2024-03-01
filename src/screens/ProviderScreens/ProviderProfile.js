@@ -19,11 +19,11 @@ const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
   const { setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat, campInfo, setCampInfo } =
     useContext(SearchContext);
-  const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+  const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
 
   const navigation = useNavigation();
 
-  const [Region, SetRegion] = useState([])
+ 
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
