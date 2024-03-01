@@ -54,6 +54,8 @@ import UserProfile from "../src/screens/UserProfile";
 import ProviderNotification from "../src/screens/ProviderScreens/ProviderNotification";
 import ProviderClientScreen from "../src/screens/ProviderScreens/ProviderClientScreen";
 import ReviewsScreen from "../src/screens/ReviewsScreen";
+import ProviderShowOffers from "../src/screens/ProviderScreens/ProviderShowOffers";
+import ProviderOfferDesc from "../src/screens/ProviderScreens/ProviderOfferDesc";
 
 
 
@@ -135,6 +137,9 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderSetEventType} component={ProviderSetEventType} />
                 <Stack.Screen name={ScreenNames.ProviderNotification} component={ProviderNotification} />
                 <Stack.Screen name={ScreenNames.ProviderClientScreen} component={ProviderClientScreen} />
+                <Stack.Screen name={ScreenNames.ProviderShowOffers} component={ProviderShowOffers} />
+                <Stack.Screen name={ScreenNames.ProviderOfferDesc} component={ProviderOfferDesc} />
+                
                 
                 <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />
                 <Stack.Screen name={ScreenNames.CreatePassword} component={CreatePassword} />

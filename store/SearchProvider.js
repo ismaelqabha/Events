@@ -29,7 +29,6 @@ const SearchProvider = props => {
   // campighin
   const [campInfo, setCampInfo] = useState([])
   const [campiegnsAccordingServiceId, setCampiegnsAccordingServiceId] = useState([])
-  const [reachCampaignfrom, setReachCampaignfrom] = useState('fromHome')
 
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
@@ -43,9 +42,6 @@ const SearchProvider = props => {
 
 
   const [orderSubdetail, setOrderSubdetail] = useState([])
-  // const [isFromRequestScreen, setisFromRequestScreen] = useState()
-  // const [RequestIdState, setRequestIdState] = useState();
-  // const [TimeText, setTimeText] = useState()
 
   // Event 
   const [eventInfo, setEventInfo] = useState([])
@@ -142,20 +138,14 @@ const SearchProvider = props => {
         setrequestedDate,
         Categorychozen,
         setCategorychozen,
-        // isFromRequestScreen,
-        // setisFromRequestScreen,
         orderSubdetail,
         setOrderSubdetail,
         eventInfo,
         setEventInfo,
         eventTypeInfo, 
         setEventTypeInfo,
-        // TimeText,
-        // setTimeText,
         campiegnsAccordingServiceId,
         setCampiegnsAccordingServiceId,
-        reachCampaignfrom,
-        setReachCampaignfrom,
         regionData, setRegionData
 
       }}>

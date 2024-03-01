@@ -9,9 +9,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
 import UsersContext from '../../../store/UsersContext';
-import { createNewOffer } from '../../resources/API';
+import { createNewOffer, getCampaignsByServiceId, getRegions } from '../../resources/API';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 const ProviderCreateOffer = (props) => {
     const { isFirst, serviceCat, Region } = props.route?.params || {}
@@ -19,8 +20,10 @@ const ProviderCreateOffer = (props) => {
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const { userId } = useContext(UsersContext);
 
-    const [noPerPerson, setNoPerPerson] = useState(false);
-    const [yesPerPerson, setYesPerPerson] = useState(false);
+    const [PerPackage, setPerPackage] = useState(false);
+    const [PerPerson, setPerPerson] = useState(false);
+    const [PerTable, setPerTable] = useState(false);
+
     const [isPriceperPersone, setIsPriceperPersone] = useState(false);
 
     const [OfferTitleError, setOfferTitleError] = useState(false)
@@ -34,20 +37,35 @@ const ProviderCreateOffer = (props) => {
     const [subDetContent, setSubDetContent] = useState([])
     const [OfferWorkingRegion, setOfferWorkingRegion] = useState([])
     const [offerImg, setOfferImg] = useState(null)
-    const [isPerPerson, setIsPerPerson] = useState(false)
+    const [priceInclude, setPriceInclude] = useState(null)
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
 
+    const [Region1, SetRegion] = useState([])
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
 
     useEffect(() => {
-
+        getCampignsfromApi()
+        getRegionsfromApi()
+        //showOfferData()
     }, []);
+
+    const getRegionsfromApi = () => {
+        getRegions({}).then(res => {
+            SetRegion(res)
+        })
+    }
+
+    const getCampignsfromApi = () => {
+        getCampaignsByServiceId({ serviceId: isFirst }).then(res => {
+            setCampInfo(res);
+        });
+    };
 
     const getSubDetailService = () => {
         return serviceInfoAccorUser.filter(element => {
@@ -55,18 +73,34 @@ const ProviderCreateOffer = (props) => {
         })
     }
 
+    // const selectedOfferData = () => {
+    //     return campInfo.filter(element => {
+    //         return element.CampId === OfferId
+    //     })
+    // }
+
+    // const showOfferData = () => {
+    //     const offerData = selectedOfferData()
+    //     console.log("offerData", offerData);
+    // }
+
     const sperator = () => {
         return <View style={styles.seperator}></View>
     }
-    const yesIsPerson = () => {
-        setYesPerPerson(true)
-        setNoPerPerson(false)
-        setIsPerPerson(true)
+    const Package = () => {
+        setPerPackage(true)
+        setPerPerson(false)
+        setPerTable(true)
     }
-    const noIsPerson = () => {
-        setYesPerPerson(false)
-        setNoPerPerson(true)
-        setIsPerPerson(false)
+    const Person = () => {
+        setPerPackage(false)
+        setPerPerson(true)
+        setPerTable(false)
+    }
+    const Table = () => {
+        setPerPackage(false)
+        setPerPerson(false)
+        setPerTable(true)
     }
 
 
@@ -133,8 +167,8 @@ const ProviderCreateOffer = (props) => {
 
     // Region Part
     const whenSetWorkingRegion = (regionTitle, setSelectedRegion, selectedRegion) => {
-            setSelectedRegion(!selectedRegion)
-            updateSetRegion(regionTitle, setSelectedRegion)
+        setSelectedRegion(!selectedRegion)
+        updateSetRegion(regionTitle, setSelectedRegion)
     }
     const updateSetRegion = (regionTitle, setSelectedRegion) => {
         OfferWorkingRegion.includes(regionTitle) ? removeRegion(regionTitle, setSelectedRegion) : addRegion(regionTitle, setSelectedRegion);
@@ -151,7 +185,7 @@ const ProviderCreateOffer = (props) => {
         setOfferWorkingRegion(list);
     }
     const renderOfferWorkingRegion = () => {
-        
+        console.log("Region.regions", Region.regions);
         const cardsArray = Region.regions.map(item => {
             const [selectedRegion, setSelectedRegion] = useState(false);
             return <View style={styles.regionView}>
@@ -173,8 +207,8 @@ const ProviderCreateOffer = (props) => {
 
     // Offer Content Part
     const whenSubDetailPress = (subDetail, setselectedSubDetail, selectedSubDetail) => {
-            setselectedSubDetail(!selectedSubDetail)
-            updateSubDetail(subDetail, setselectedSubDetail)
+        setselectedSubDetail(!selectedSubDetail)
+        updateSubDetail(subDetail, setselectedSubDetail)
     }
     const updateSubDetail = (subDetail, setselectedSubDetail) => {
         subDetContent.includes(subDetail) ? removeSubDetail(subDetail, setselectedSubDetail) : addSubDetail(subDetail, setselectedSubDetail);
@@ -200,7 +234,7 @@ const ProviderCreateOffer = (props) => {
                     <View style={styles.item}>
                         <Text style={styles.Addtxt}>{element.detailSubtitle}</Text>
                         <Pressable style={styles.regionPressable}
-                            onPress={() => whenSubDetailPress(element.detailSubtitle,setselectedSubDetail, selectedSubDetail)}>
+                            onPress={() => whenSubDetailPress(element.detailSubtitle, setselectedSubDetail, selectedSubDetail)}>
                             {selectedSubDetail &&
                                 <Entypo
                                     style={{ alignSelf: 'center' }}
@@ -351,14 +385,18 @@ const ProviderCreateOffer = (props) => {
     const renderIsPerPerson = () => {
         return (
             <View style={styles.perPersoneView}>
-                <Text style={styles.perPersoneText}>هل السعر اعتمادا للشخص الواحد ؟</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    <Pressable style={[noPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={noIsPerson}>
-                        <Text style={styles.perPersoneText}>لا</Text>
+                <Text style={styles.perPersoneText}>ماذا يشمل هذا السعر ؟</Text>
+                <View style={{ alignItems: 'flex-end' }}>
+                    <Pressable style={[PerPackage ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Package}>
+                        <Text style={styles.perPersoneText}>لكل الحجز</Text>
                     </Pressable>
 
-                    <Pressable style={[yesPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={yesIsPerson}>
-                        <Text style={styles.perPersoneText}>نعم</Text>
+                    <Pressable style={[PerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Person}>
+                        <Text style={styles.perPersoneText}>حسب الشخص</Text>
+                    </Pressable>
+
+                    <Pressable style={[PerTable ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Table}>
+                        <Text style={styles.perPersoneText}>حسب الطاولة</Text>
                     </Pressable>
                 </View>
             </View>
@@ -404,7 +442,6 @@ const ProviderCreateOffer = (props) => {
                     <View style={styles.inputView}>
                         {renderIsPerPerson()}
                     </View>}
-
                 {sperator()}
                 <View style={styles.inputView}>
                     <Text style={styles.regiontxt}>تحديد مناطق ترويج العرض</Text>
@@ -442,28 +479,37 @@ const ProviderCreateOffer = (props) => {
             campCost: OfferPrice,
             campRigon: OfferWorkingRegion,
             campExpirDate: OfferExpireDate,
-            isPerPerson: isPerPerson
+            priceInclude: priceInclude
         }
 
         createNewOffer(addNewOffer, offerImg).then(res => {
             let OfferArr = campInfo || [];
             setCampInfo([...OfferArr])
-            // console.log("OfferArr", OfferArr);
-            console.log("res.message", res.message);
-            if (res.message === 'newCampaign Created') {
-                OfferArr.push(addNewOffer);
-                ToastAndroid.showWithGravity(
-                    'تم اٍنشاء العرض بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
+            if (campInfo[0].campTitle !== OfferTitle) {
+                console.log("res.message", res.message);
+                if (res.message === 'newCampaign Created') {
+                    OfferArr.push(addNewOffer);
+                    ToastAndroid.showWithGravity(
+                        'تم اٍنشاء العرض بنجاح',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM,
+                    );
+                    props.navigation.navigate(ScreenNames.ProviderProfile);
+                } else {
+                    ToastAndroid.showWithGravity(
+                        'there has been an error' + res.message,
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM,
+                    );
+                }
             } else {
                 ToastAndroid.showWithGravity(
-                    'there has been an error' + res.message,
+                    'لا يمكن انشاء عرض اخر بأسم عرض سابق',
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                 );
             }
+
         })
     }
 
@@ -709,24 +755,24 @@ const styles = StyleSheet.create({
     itemPersonView: {
         borderWidth: 2,
         borderColor: '#dcdcdc',
-        width: 60,
-        height: 60,
+        width: '60%',
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 30,
         borderRadius: 5,
-        marginTop: 20
+        marginTop: 10
     },
     itemPersonViewPressed: {
         borderWidth: 3,
         borderColor: colors.puprble,
-        width: 60,
-        height: 60,
+        width: '60%',
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 30,
         borderRadius: 5,
-        marginTop: 20
+        marginTop: 10
     },
     perPersoneText: {
         fontSize: 18,

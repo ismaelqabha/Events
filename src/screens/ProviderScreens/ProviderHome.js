@@ -67,6 +67,7 @@ const ProviderHome = props => {
       setservicePhotos(res);
     });
   };
+  
 
   useEffect(() => {
     getImagesfromApi();

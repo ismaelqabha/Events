@@ -122,6 +122,10 @@ export const getCampaignsByServiceId = async (body) => {
   const url = 'Campaigns/getCampByServiceId'
   return await AppFetch(url, 'POST', body)
 }
+export const uodateCampaignsById = async (body) => {
+  const url = 'Campaigns/updateCamp'
+  return await AppFetch(url, 'PATCH', body)
+}
 export const createNewOffer = async (AddNewOffer, offerImg) => {
   const url = 'Campaigns/createCamp'
   //console.log("AddNewOffer", AddNewOffer);

@@ -19,9 +19,7 @@ const ClientHomeAds = (props) => {
     const { cat, setCat,
         ServiceDataInfo,
         campInfo,
-        userRegion,
-        setReachCampaignfrom,
-        reachCampaignfrom } = useContext(SearchContext);
+        userRegion } = useContext(SearchContext);
 
     const [selectServiceType, setSelectServiceType] = useState('');
     const navigation = useNavigation();
@@ -42,10 +40,9 @@ const ClientHomeAds = (props) => {
             return result;
         });
     };
+    const CampData = queryCampaign();
 
     const renderCampaigns = () => {
-        setReachCampaignfrom('fromHome')
-        const CampData = queryCampaign();
         const campArray = CampData?.map(camp => {
             return < CampaignCard {...camp} />
         });
@@ -216,19 +213,18 @@ const ClientHomeAds = (props) => {
                     </View>
 
                 </View>
-
-                <View style={styles.centents}>
-                    <View style={styles.itemView}>
-                        {renderSeeAll()}
-                        <Text style={styles.titleText}>{'أفضل العروض من' + ' ' + cat}</Text>
-                    </View>
-                    <View style={styles.campBox}>
-                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} >
-                            {renderCampaigns()}
-                        </ScrollView>
-                    </View>
-
-                </View>
+                {CampData &&
+                    <View style={styles.centents}>
+                        <View style={styles.itemView}>
+                            {renderSeeAll()}
+                            <Text style={styles.titleText}>{'أفضل العروض من' + ' ' + cat}</Text>
+                        </View>
+                        <View style={styles.campBox}>
+                            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} >
+                                {renderCampaigns()}
+                            </ScrollView>
+                        </View>
+                    </View>}
 
 
 

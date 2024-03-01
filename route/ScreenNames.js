@@ -55,7 +55,8 @@ export const ScreenNames = {
     ProviderSetEventType: 'ProviderSetEventType',
     ProviderNotification: 'ProviderNotification',
     ProviderClientScreen: 'ProviderClientScreen',
-
+    ProviderShowOffers: 'ProviderShowOffers',
+    ProviderOfferDesc: 'ProviderOfferDesc',
 
 
     Splash: 'Splash',

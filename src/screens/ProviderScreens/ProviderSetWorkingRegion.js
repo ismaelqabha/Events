@@ -32,7 +32,6 @@ const ProviderSetWorkingRegion = props => {
   };
   const getRegionsfromApi = () => {
     getRegions().then(res => {
-      console.log("res", res);
       SetRegion(res)
     })
   }
@@ -70,7 +69,6 @@ const ProviderSetWorkingRegion = props => {
   };
 
   const renderCard = () => {
-    console.log("Region.regions",Region.regions);
     const cardsArray = Region.regions.map(card => {
       return <ProviderWorkRegionComp {...card} />;
     });
