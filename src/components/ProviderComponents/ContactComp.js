@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Modal, StyleSheet } from "react-native";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Dimensions, Modal, StyleSheet } from "react-native";
 import { TextInput } from "react-native";
 import { View, Text, Pressable } from "react-native";
 import Entypo from 'react-native-vector-icons/Entypo'
+import IonIcons from 'react-native-vector-icons/Ionicons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
 import strings from "../../assets/res/strings";
@@ -74,9 +75,16 @@ const ContactComp = () => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
         const [webViewVisible, setWebViewVisible] = useState(false);
+        const webViewRef = useRef(null);
         const index = props.index
         const handleLogin = () => {
             setWebViewVisible(true);
+        };
+
+        const onBackPress = () => {
+            if (webViewRef.current) {
+                setWebViewVisible(false)
+            }
         };
 
         useEffect(() => {
@@ -110,15 +118,14 @@ const ContactComp = () => {
                     />
                 </View>
                 <View style={styles.socialInput}>
-                    <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                    <Pressable style={styles.socialIcon} onPress={handleLogin}>
+                        <FontAwesome5Brands name={contactType} size={25} color={iconColors[contactType]} />
+                    </Pressable>
                     <TextInput style={styles.TextInput}
                         keyboardType={'default'}
                         placeholder={'حمل رابط الشبكة'}
                         value={contactVal}
                         onChangeText={(val) => setContactVal(val)}
-                        onFocus={() => {
-                            handleLogin()
-                        }}
                         onEndEditing={(event) => {
                             const text = event.nativeEvent.text
                             const data = {
@@ -129,15 +136,24 @@ const ContactComp = () => {
                         }}
                     />
                 </View>
-                {webViewVisible && (
-                    <WebView
-                        source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
-                        onNavigationStateChange={handleWebViewNavigationStateChange}
-                    />
-                )}
+                <Modal visible={webViewVisible} animationType="slide">
+                    <View style={styles.modalContainer}>
+                        <Pressable style={{alignSelf:"flex-start" , margin:5}} onPress={() => onBackPress()}>
+                            <IonIcons name="chevron-back-outline" color={'black'} size={25} />
+                        </Pressable>
+                        <WebView
+                            ref={webViewRef}
+                            source={{ uri: webUri[contactType] }}
+                            onNavigationStateChange={handleWebViewNavigationStateChange}
+                            style={{ flex: 1, width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
+                        />
+                    </View>
+                </Modal>
             </View>
         )
     }
+
+
 
     const renderPhoneField = () => {
 
@@ -326,5 +342,11 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginLeft: 10
     },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    }
 })
 export default ContactComp
