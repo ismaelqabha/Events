@@ -50,6 +50,9 @@ export default function Splash(props) {
     }
 
     return (
+        // <View style={styles.container}>
+
+        // </View>
         <ImageBackground style={styles.container} source={require('../assets/photos/backgroundSplash.png')}>
            
         </ImageBackground>
