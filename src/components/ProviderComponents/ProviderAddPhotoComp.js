@@ -1,81 +1,61 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { TouchableOpacity, StyleSheet, Image, View, Dimensions } from 'react-native';
+import { TouchableOpacity, StyleSheet, Image, View, Dimensions, Text } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
-import LottieView from 'lottie-react-native';
+import IonIcons from 'react-native-vector-icons/Ionicons'
 
-const ProviderAddPhotoComp = props => {
-  const [isSelected, setIsSelected] = useState(false)
-  const { isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext)
-  const tickRef = useRef(null)
-  const { selectedPhotos, setSelectedPhotos,
-    isFromModal, setIsModalVisible } = props
-
-  const ShowImagePopUp = () => {
-    setIsDeleteMode(true)
+const ProviderAddPhotoComp = (props) => {
+  const [isSelected, setIsSelected] = useState(false);
+  const { selectedPhotos, setSelectedPhotos, isFromModal, setIsModalVisible, setOptionsModalVisible, logo } = props;
+  const showImagesModal = () => {
+    setIsModalVisible(true);
   };
 
-  useEffect(() => {
-    isSelected ? tickRef.current?.play(10, 50) : tickRef.current?.play(50, 10)
-  }, [isSelected])
+  const showModal = () => {
+    addToSelected();
+    setOptionsModalVisible(true);
+  };
 
-  const showImagesModal = () => {
-    setIsModalVisible(true)
-  }
   const setSelected = () => {
     selectedPhotos.includes(props.uri) ? removeFromSelected() : addToSelected();
-  }
+  };
 
   const removeFromSelected = () => {
     const newSelected = selectedPhotos.filter((selected) => {
-      return selected.image === props.uri
-    })
-    setSelectedPhotos(newSelected)
-    setIsSelected(false)
-  }
-  const addToSelected = () => {
-    selectedPhotos.length < 1 ?
-      setSelectedPhotos([props.uri]) :
-      setSelectedPhotos([...selectedPhotos, props.uri])
-    setIsSelected(true)
+      return selected.image === props.uri;
+    });
+    setSelectedPhotos(newSelected);
+    setIsSelected(false);
+  };
 
-  }
+  const addToSelected = () => {
+    selectedPhotos.length < 1
+      ? setSelectedPhotos([props.uri])
+      : setSelectedPhotos([...selectedPhotos, props.uri]);
+    setIsSelected(true);
+  };
+
   try {
     return (
-      <TouchableOpacity
-        onPress={isFromModal ? undefined : () => showImagesModal()}
-        onLongPress={() => ShowImagePopUp()}
-        style={[isFromModal ? isDeleteMode ? styles.modalDeleteContainer : styles.modalContainer : styles.container, AppStyles.shadow]}
-        disabled={isDeleteMode}
+      <View
+        style={[isFromModal ? styles.modalContainer : styles.container, AppStyles.shadow]}
       >
-
-        {isDeleteMode ? <TouchableOpacity style={{ flex: 1 }} onPress={() => setSelected()}>
-
-          <Image
-            resizeMode={isFromModal ? "center" : 'cover'}
-            style={styles.image}
-            source={{ uri: props.uri }}
-          />
-          <View style={isFromModal? styles.modalCircule : styles.circule}>
-            <LottieView
-              speed={1.5}
-              ref={tickRef}
-              loop={false}
-              style={styles.tick} source={require('../../LottieFiles/tick.json')} />
+        <View style={{ flex: 1 }}>
+          <Image resizeMode={isFromModal ? 'center' : 'cover'} style={styles.image} source={{ uri: props.uri }} />
+          <View>
+            {logo && <Text>Cover Photo</Text>}
           </View>
-        </TouchableOpacity>
-          :
-          <Image
-            resizeMode="cover"
-            style={styles.image}
-            source={{ uri: props.uri }}
-          />
-        }
-      </TouchableOpacity>
+
+          <TouchableOpacity onPress={showModal} style={isFromModal ? styles.modalCircule : styles.circule}>
+            <IonIcons name="ellipsis-horizontal" style={styles.tick} size={18} />
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   } catch (error) {
     console.log('presenting photo error -> ', error);
+    return null; // Render null or a placeholder component in case of an error
   }
 };
 
@@ -146,7 +126,10 @@ const styles = StyleSheet.create({
   tick: {
     width: 25,
     height: 25,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    // backgroundColor:'red',
+    paddingLeft: 4,
+    paddingTop: 2
   }
 })
 

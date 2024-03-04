@@ -239,9 +239,9 @@ export const addServiceImages = async (imagesArray, serviceID) => {
         type: 'image/jpeg',
         name: `image${index}.jpg`,
       })
-      formData.append("logoArray", data.logo)
+      logoArray.push(data.logo)
     });
-
+    formData.append("logoArray", logoArray)
     return await AppFetch(url, 'POST', formData, headers);
   } catch (error) {
     console.log("error adding images ", error);

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Alert,
 } from 'react-native';
 import ProviderShowServDetailComp from '../../components/ProviderComponents/ProviderShowServDetailComp';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -176,11 +177,30 @@ const ProviderAddServiceDetail = props => {
     return filterArray
   }
   const deleteItem = (detail_Id) => {
-    const updatedServices = additionalServices.filter(service => service.detail_Id !== detail_Id);
-    setAdditionalServices(updatedServices);
-    setDTitle('');
-    setPerPerson(false)
-    setNec("Mandatory")
+    // Show an alert to confirm the delete
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this item?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            // If user confirms, proceed with delete
+            const updatedServices = additionalServices.filter(service => service.detail_Id !== detail_Id);
+            setAdditionalServices(updatedServices);
+            setDTitle('');
+            setPerPerson(false);
+            setNec("Mandatory");
+          }
+        }
+      ],
+      { cancelable: false }
+    );
   };
   const openEdit = (allData) => {
     setEditedDetailId(allData.detail_Id)
@@ -325,7 +345,7 @@ const ProviderAddServiceDetail = props => {
             <Text style={styles.perPersoneText}>شامل لكل الحجز</Text>
           </Pressable>
         </View>
-        <View style={{  alignItems: 'center' }}>
+        <View style={{ alignItems: 'center' }}>
           {noPerPerson &&
             <TextInput
               style={styles.numTableInput}
@@ -566,12 +586,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#00000099',
   },
   Motitle: {
-   
+
     justifyContent: 'center',
     alignItems: 'center',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    
+
   },
   body: {
     alignItems: 'center',
@@ -656,7 +676,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 5,
     marginTop: 10,
-    
+
   },
   itemPersonViewPressed: {
     borderWidth: 4,
@@ -671,7 +691,7 @@ const styles = StyleSheet.create({
   perPersoneText: {
     fontSize: 18,
     color: colors.puprble,
-    
+
   }
 
 });

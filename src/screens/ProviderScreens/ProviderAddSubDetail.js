@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Image
+  Image,
+  Alert
 } from 'react-native';
 import SearchContext from '../../../store/SearchContext';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -105,14 +106,33 @@ const ProviderAddSubDetail = props => {
     props.navigation.goBack();
   };
   const deleteItem = (subDetail_Id) => {
-    const updatedServices = additionalServices.map(service => {
-      if (service.detail_Id === data.detail_Id) {
-        const updatedSubDetailArray = service.subDetailArray.filter(item => item.subDetail_Id !== subDetail_Id);
-        return { ...service, subDetailArray: updatedSubDetailArray };
-      }
-      return service;
-    });
-    setAdditionalServices(updatedServices);
+    // Show an alert to confirm the delete
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this item?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            // If user confirms, proceed with delete
+            const updatedServices = additionalServices.map(service => {
+              if (service.detail_Id === data.detail_Id) {
+                const updatedSubDetailArray = service.subDetailArray.filter(item => item.subDetail_Id !== subDetail_Id);
+                return { ...service, subDetailArray: updatedSubDetailArray };
+              }
+              return service;
+            });
+            setAdditionalServices(updatedServices);
+          }
+        }
+      ],
+      { cancelable: false }
+    );
   };
   const openEdit = (allData) => {
     setEditedSubDetailId(allData.subDetail_Id)

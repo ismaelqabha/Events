@@ -8,6 +8,7 @@ import SearchProvider from '../Events/store/SearchProvider';
 import ServiceProviderProvider from './store/ServiceProviderProvider';
 import UsersContext from './store/UsersContext';
 import UsersProvider from './store/UsersProvider';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
 const App = () => {
   LogBox.ignoreLogs([
@@ -27,7 +28,9 @@ const App = () => {
       <SearchProvider>
         <ServiceProviderProvider>
           <KeyboardAvoidingView style={{ flex: 1 }}>
-            <MainNavigation />
+            <BottomSheetModalProvider>
+              <MainNavigation />
+            </BottomSheetModalProvider>
           </KeyboardAvoidingView>
         </ServiceProviderProvider>
       </SearchProvider>

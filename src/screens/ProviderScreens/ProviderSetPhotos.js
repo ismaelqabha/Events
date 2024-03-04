@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -28,12 +28,16 @@ import { colors } from '../../assets/AppColors';
 import { ToastAndroid } from 'react-native';
 import { Alert } from 'react-native';
 import { servicesCategory } from '../../resources/data';
-import { Button } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 
 const ProviderSetPhotos = props => {
   const { selectServiceType, photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
   const [selectedPhotos, setSelectedPhotos] = useState([])
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const bottomSheetModalRef = useRef(null);
+  const snapPoints = ['25%', '25%', '50%'];
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
 
 
@@ -42,9 +46,27 @@ const ProviderSetPhotos = props => {
     checkServiceType()
   };
 
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleCloseModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.close();
+    setOptionsModalVisible(false)
+  }, []);
+
   useEffect(() => {
-    console.log("photoArray -> ", photoArray);
-  }, [photoArray])
+    if (optionsModalVisible) {
+      handlePresentModalPress();
+    } else {
+      handleCloseModalPress();
+    }
+  }, [optionsModalVisible]);
+
+
+  useEffect(() => {
+    console.log("photo array -> ", photoArray);
+  }, [photoArray]);
 
   const checkServiceType = () => {
     selectServiceType === servicesCategory[0].titleCategory ?
@@ -90,7 +112,7 @@ const ProviderSetPhotos = props => {
       console.error(error);
     }
   };
-  
+
   const GalleryImageResponse = response => {
     if (response.didCancel) {
       console.log('User Cancelled');
@@ -178,6 +200,8 @@ const ProviderSetPhotos = props => {
       setSelectedPhotos: setSelectedPhotos,
       isModalVisible: isModalVisible,
       setIsModalVisible: setIsModalVisible,
+      setOptionsModalVisible: setOptionsModalVisible,
+      logo: item?.logo
     };
     return <ProviderAddPhotoComp {...providerAddPhotoProps} />;
   };
@@ -271,35 +295,57 @@ const ProviderSetPhotos = props => {
     };
 
     return (
-      <Modal
-        animationType='fade'
-        transparent={false}
-        visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
-          <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-            <View style={{ width: '100%', paddingHorizontal: 10 }}>
-              {photoArray.map((photo, index) => (
-                <View key={index}>
-                  {renderPhoto(photo, index)}
-                </View>
-              ))}
-            </View>
-          </ScrollView>
-          <View style={[styles.footer, isDeleteMode ?
-            { justifyContent: 'space-between' } :
-            { justifyContent: 'flex-end' }]}>
-            {isDeleteMode && renderCancelButton()}
-            {RenderNextButton(true)}
-          </View>
-        </View>
+      // <Modal
+      //   animationType='fade'
+      //   transparent={false}
+      //   visible={isModalVisible}
+      //   onRequestClose={() => setIsModalVisible(false)}
+      // >
+      //   <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
+      //     <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+      //       <View style={{ width: '100%', paddingHorizontal: 10 }}>
+      //         {photoArray.map((photo, index) => (
+      //           <View key={index}>
+      //             {renderPhoto(photo, index)}
+      //           </View>
+      //         ))}
+      //       </View>
+      //     </ScrollView>
+      //     <View style={[styles.footer, isDeleteMode ?
+      //       { justifyContent: 'space-between' } :
+      //       { justifyContent: 'flex-end' }]}>
+      //       {isDeleteMode && renderCancelButton()}
+      //       {RenderNextButton(true)}
+      //     </View>
+      //   </View>
 
-      </Modal>
+      // </Modal>
+      null
     );
   };
 
+  const renderOptionsModal = () => {
+    return (
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+      >
+        <BottomSheetView style={{ flexDirection: 'row', alignItems: 'center', padding: 20 }}>
+          <TouchableOpacity onPress={deletePhotos} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }}>
+            <Icon name="trash" size={20} color="red" />
+            <Text style={{ marginLeft: 10 }}>Delete Photo</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity onPress={makeCoverPhoto} style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Icon name="star" size={20} color="gold" />
+            <Text style={{ marginLeft: 10 }}>Make Cover Photo</Text>
+          </TouchableOpacity>
+        </BottomSheetView>
+      </BottomSheetModal>
+    );
+  };
   const showMessage = () => {
     Platform.OS === 'android'
       ? ToastAndroid.show(language.showDeleteMessage, ToastAndroid.SHORT)
@@ -310,17 +356,54 @@ const ProviderSetPhotos = props => {
     selectedPhotos.length < 1 ? showMessage() : deletePhotos()
   }
 
+  const makeCoverPhoto = () => {
+    try {
+      const logoPhotoIndex = photoArray.findIndex((photo) => photo.logo === true);
+
+      if (logoPhotoIndex !== -1) {
+        // Update the object in photoArray with logo set to true to have logo set to false
+        const updatedPhotoArray = photoArray.map((photo, index) => {
+          if (index === logoPhotoIndex) {
+            return { ...photo, logo: false };
+          }
+          return photo;
+        });
+
+        const newPhoto = updatedPhotoArray.map((photo, index) => {
+
+          return selectedPhotos.includes(photo.uri) ? { ...photo, logo: true } : photo
+        })
+
+        // Update the state variables
+        setPhotoArray(newPhoto);
+        setSelectedPhotos([]);
+        handleCloseModalPress();
+      }
+    } catch (error) {
+      console.log("makeCoverPhoto error ->", error);
+    }
+  };
+
   const deletePhotos = () => {
     try {
       const newArray = photoArray.filter((photo) => {
-        return !selectedPhotos.includes(photo.uri)
-      })
+        return !selectedPhotos.includes(photo.uri);
+      });
+
+      // Check if newArray doesn't have any photo with logo set to true
+      const hasLogoPhoto = newArray.some((photo) => photo.logo);
+      // If no photo with logo, update the first photo in newArray to have logo set to true
+      if (!hasLogoPhoto && newArray.length > 0) {
+        newArray[0] = { ...newArray[0], logo: true };
+      }
+
       setPhotoArray(newArray);
-      setIsDeleteMode(false)
+      setIsDeleteMode(false);
+      handleCloseModalPress();
     } catch (error) {
-      console.log("delete phtots error ->", error);
+      console.log("delete photos error ->", error);
     }
-  }
+  };
   const cancelDeleteMode = () => {
     setIsDeleteMode(false)
     setSelectedPhotos([])
@@ -359,7 +442,7 @@ const ProviderSetPhotos = props => {
         {RenderCapturePhoto()}
         {RenderSelectedImages()}
       </View>
-      {RenderModal()}
+      {renderOptionsModal()}
       <View style={[styles.footer, isDeleteMode ?
         { justifyContent: 'space-between' } :
         { justifyContent: 'flex-end' }]}>
