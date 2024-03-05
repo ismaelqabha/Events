@@ -67,7 +67,7 @@ const ProviderHome = props => {
       setservicePhotos(res);
     });
   };
-  
+
 
   useEffect(() => {
     getImagesfromApi();
@@ -221,25 +221,11 @@ const ProviderHome = props => {
     setAddNewDetail(false)
     setEditServiceDetail(false)
   }
-  const socialMediaitemEditPress = (item, editSocialMedia, setEditSocialMedia) => {
-    setEditSocialMedia(true)
+  const socialMediaitemEditPress = (item, itemLink, editSocialMedia, setEditSocialMedia) => {
+    setSocialItem(item)
+    setSocialIndex(itemLink)
+    setEditSocialMedia(!editSocialMedia)
     setShowModal(false)
-
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const priceEditPress = () => {
     setEditprice(true)
@@ -298,21 +284,6 @@ const ProviderHome = props => {
   }
   const addNewSocialMediaPress = () => {
     setAddSocilMedia(true)
-    setEditNumofRequest(false)
-    //setEditDescrItem(false)
-    setEditprice(false)
-    //setEditSocialMedia(false)
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const addNewDescr = () => {
     setAddNewDesc(true)
@@ -1112,11 +1083,17 @@ const ProviderHome = props => {
     return data[0].socialMedia.map(element => {
       const [editSocialMedia, setEditSocialMedia] = useState(false)
       return (<View>
-        {editSocialMedia ? <EditServiceInfo serviceID={isFirst} editSocialMedia={editSocialMedia} setEditSocialMedia={setEditSocialMedia} socialItem={socialItem} /> :
+        {editSocialMedia ?
+          <EditServiceInfo
+            serviceID={isFirst}
+            editSocialMedia={editSocialMedia}
+            setEditSocialMedia={setEditSocialMedia}
+            socialItem={socialItem}
+            socialLink={socialIndex} /> :
+
           <View style={styles.item}>
             <View style={styles.itemSM}>
               <Pressable onPress={() => {
-                setSocialItem(element.social)
                 setShowModal(true)
               }}>
                 <Feather
@@ -1138,11 +1115,11 @@ const ProviderHome = props => {
             </View>
           </View>
         }
-        {renderSocialModal(socialItem, editSocialMedia, setEditSocialMedia)}
+        {renderSocialModal(element.social, element.link, editSocialMedia, setEditSocialMedia)}
       </View>)
     })
   }
-  const renderSocialModal = (item, editSocialMedia, setEditSocialMedia) => {
+  const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia) => {
     return (
       <Modal
         transparent
@@ -1162,7 +1139,8 @@ const ProviderHome = props => {
             </View>
             <View style={{ justifyContent: 'flex-end', height: '100%' }}>
               <View style={styles.modalMenu}>
-                <Pressable style={styles.modalItem} onPress={() => socialMediaitemEditPress(item, editSocialMedia, setEditSocialMedia)}>
+                <Pressable style={styles.modalItem}
+                  onPress={() => socialMediaitemEditPress(item, itemLink, editSocialMedia, setEditSocialMedia)}>
                   <Feather
                     name={'edit'}
                     color={colors.gray}

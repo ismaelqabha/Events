@@ -10,6 +10,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../assets/AppColors';
 import { uodateCampaignsById } from '../../resources/API';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 const ProviderOfferDesc = (props) => {
     const { data } = props.route?.params || {}
@@ -17,21 +20,67 @@ const ProviderOfferDesc = (props) => {
     const { Region, serviceInfoAccorUser } = useContext(ServiceProviderContext);
 
     const [Title, setTitle] = useState();
+    const [expirDate, setExpirDate] = useState();
+    const [offerPrice, setOfferPrice] = useState();
+    const [offerPriceInclude, setOfferPriceInclude] = useState();
     const [subDetContent, setSubDetContent] = useState([])
     const [offerRegions, setOfferRegions] = useState([])
+
     const [otherContent, setOtherContent] = useState(data.campContents)
     const [otherContentItem, setOtherContentItem] = useState()
+    
+    const [offerImg, setOfferImg] = useState()
 
     const [editTitle, setEditTitle] = useState(false);
+    const [editImg, setEditImg] = useState(false);
+    const [editExDate, setEditExDate] = useState(false);
+    const [editPrice, setEditPrice] = useState(false);
+    const [editIncludingPrice, setEditIncludingPrice] = useState(false);
+    const [isRenewDate, setIsRenewDate] = useState(false);
     const [showContentModal, setShowContentModal] = useState(false);
     const [showRegionModal, setShowRegionModal] = useState(false);
 
+    const [PerPackage, setPerPackage] = useState(false);
+    const [PerPerson, setPerPerson] = useState(false);
+    const [PerTable, setPerTable] = useState(false);
+
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+
 
     const selectedOfferIndex = campInfo?.findIndex(item => item.CampId === data.CampId)
+    const today = moment(date, "YYYY-MM-DD")
+    let day = today.format('D')
+    let month = today.format('M')
+    let year = today.format('YYYY')
+    let completeDate = year + '-' + month + '-' + day
+
 
     useEffect(() => {
-
+        if (completeDate > data.campExpirDate) {
+            setIsRenewDate(true)
+        }
     }, []);
+
+    const Package = () => {
+        setPerPackage(true)
+        setPerPerson(false)
+        setPerTable(false)
+        setOfferPriceInclude('لكل الحجز')
+    }
+    const Person = () => {
+        setPerPackage(false)
+        setPerPerson(true)
+        setPerTable(false)
+        setOfferPriceInclude("حسب الشخص")
+    }
+    const Table = () => {
+        setPerPackage(false)
+        setPerPerson(false)
+        setPerTable(true)
+        setOfferPriceInclude("حسب الطاولة")
+    }
 
     const getServiceForDetail = () => {
         return serviceInfoAccorUser?.filter(item => {
@@ -47,7 +96,16 @@ const ProviderOfferDesc = (props) => {
 
     const titleEditPress = () => {
         setEditTitle(true)
-
+    }
+    const expireDateEditPress = () => {
+        setEditExDate(true)
+        showMode('date')
+    }
+    const priceEditPress = () => {
+        setEditPrice(true)
+    }
+    const includePriceEditPress = () => {
+        setEditIncludingPrice(true)
     }
     const contentItemEditPress = () => {
         setShowContentModal(true)
@@ -59,6 +117,9 @@ const ProviderOfferDesc = (props) => {
         setShowRegionModal(true)
     }
     const editItem = (item, setState, update) => {
+        if (Number.isInteger(item)) {
+            item = item.toString()
+        }
         return (
             <View style={styles.itemView}>
                 <View style={styles.editTitleView}>
@@ -98,6 +159,35 @@ const ProviderOfferDesc = (props) => {
                 </View>
             </View>)
     }
+    const editPriceInclude = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editTitleView}>
+                    <Pressable onPress={updateWhatPriceInclude} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={colors.BGScereen}
+                            size={20} />
+                    </Pressable>
+                    <View>
+                        <View style={{ marginRight: 20 }}>
+                            <Text style={styles.Infotxt}>ماذا يشمل هذا السعر ؟</Text>
+                            <Pressable style={[PerPackage ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Package}>
+                                <Text style={styles.Infotxt}>لكل الحجز</Text>
+                            </Pressable>
+
+                            <Pressable style={[PerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Person}>
+                                <Text style={styles.Infotxt}>حسب الشخص</Text>
+                            </Pressable>
+
+                            <Pressable style={[PerTable ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Table}>
+                                <Text style={styles.Infotxt}>حسب الطاولة</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </View>)
+    }
 
     // Update functions
     const updateTitle = () => {
@@ -113,6 +203,89 @@ const ProviderOfferDesc = (props) => {
             if (res.message === 'Updated Sucessfuly') {
                 setCampInfo([...data])
                 setEditTitle(false)
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+    }
+    const updateEpireDate = () => {
+        const newData = {
+            CampId: data.CampId,
+            campExpirDate: expirDate
+        }
+        uodateCampaignsById(newData).then(res => {
+            const data = campInfo || [];
+            if (selectedOfferIndex > -1) {
+                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setCampInfo([...data])
+                setEditExDate(false)
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+    }
+    const updatePrice = () => {
+        const newData = {
+            CampId: data.CampId,
+            campCost: offerPrice
+        }
+        uodateCampaignsById(newData).then(res => {
+            const data = campInfo || [];
+            if (selectedOfferIndex > -1) {
+                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setCampInfo([...data])
+                setEditPrice(false)
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+    }
+    const updateImage = () => {
+        const newData = {
+            CampId: data.CampId,
+            campImag: offerImg
+        }
+        uodateCampaignsById(newData).then(res => {
+            const data = campInfo || [];
+            if (selectedOfferIndex > -1) {
+                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setCampInfo([...data])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+    }
+    const updateWhatPriceInclude = () => {
+        const newData = {
+            CampId: data.CampId,
+            priceInclude: offerPriceInclude
+        }
+        uodateCampaignsById(newData).then(res => {
+            const data = campInfo || [];
+            if (selectedOfferIndex > -1) {
+                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setCampInfo([...data])
+                setEditIncludingPrice(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -206,20 +379,6 @@ const ProviderOfferDesc = (props) => {
             </View>
         )
     }
-    const renderOfferImage = () => {
-        return (
-            <View>
-                <View style={styles.imagView}>
-                    <View style={styles.offerImg}>
-                        <Image style={styles.img} source={{ uri: data.campImag }} />
-                    </View>
-                    <Pressable style={styles.editImg}>
-                        <Entypo name={'camera'} color={colors.puprble} size={25} />
-                    </Pressable>
-                </View>
-            </View>
-        );
-    }
     const renderOfferTitle = () => {
         return (<View>
             {editTitle ? editItem(data.campTitle, setTitle, updateTitle) :
@@ -245,61 +404,170 @@ const ProviderOfferDesc = (props) => {
         </View>
         )
     }
-    const renderOfferExDate = () => {
+    /// change Photo
+    const onAddImgPress = async () => {
+        try {
+            let options = {
+                mediaType: 'photo',
+                includeBase64: false,
+            };
+            launchImageLibrary(options, response => GalleryImageResponse(response));
+            setEditImg(true)
+        }
+        catch (error) {
+            console.error(error);
+        }
+    };
+    const GalleryImageResponse = response => {
+        if (response.didCancel) {
+            console.log('User Cancelled');
+        } else if (response.error) {
+            console.log('Gallery Error : ', response.error);
+        } else if (response.customButton) {
+            console.log('User tapped custom Button ', response.customButton);
+        } else {
+            let imageUri = response.uri || response.assets?.[0]?.uri;
+            SaveImg(imageUri);
+        }
+    };
+    const SaveImg = source => {
+        if (source) {
+            setOfferImg(source);
+        } else {
+            console.log('error source isnt legable, source is :', source);
+        }
+    };
+    const renderOfferImage = () => {
         return (
-            <View style={styles.itemOffer}>
-                <View style={styles.item}>
-                    <Pressable //onPress={titleEditPress}
-                    >
-                        <Feather
-                            style={styles.menuIcon}
-                            name={'edit'}
-                            color={colors.BGScereen}
-                            size={25} />
-                    </Pressable>
-                    <View>
-                        <Text style={styles.Infotxt}>{data.campExpirDate}</Text>
-                        <Text style={styles.basicInfoTitle}>تاريخ الصلاحية</Text>
+            <View>
+                <View style={styles.imagView}>
+                    <View style={styles.offerImg}>
+                        <Image style={styles.img} source={editImg ? { uri: offerImg } : { uri: data.campImag }} />
                     </View>
-                </View>
-                <View style={styles.IconView}>
-                    <FontAwesome name={'calendar-check-o'} color={colors.puprble} size={25} />
+                    <Pressable style={styles.editImg} onPress={onAddImgPress}>
+                        <Entypo name={'camera'} color={colors.puprble} size={25} />
+                    </Pressable>
                 </View>
             </View>
+        );
+    }
+
+    //// Expire Date
+    const editEpireDate = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editTitleView}>
+                    <Pressable onPress={updateEpireDate} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={colors.BGScereen}
+                            size={20} />
+                    </Pressable>
+                    <View style={styles.editExpireDateView}>
+                        <Text style={styles.Infotxt}>{expirDate}</Text>
+                    </View>
+                </View>
+            </View>)
+    }
+    const onChange = (event, selectedDate) => {
+        setShow(false)
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let fDate = tempDate.getFullYear() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getDate();
+
+        if (completeDate < fDate) {
+            setExpirDate(fDate);
+        } else {
+            setExpirDate(data.campExpirDate);
+        }
+    }
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    }
+    const renderOfferExDate = () => {
+        return (<View>
+            {editExDate ? editEpireDate() :
+                <View style={styles.itemOffer}>
+                    <View style={styles.item}>
+                        <Pressable onPress={expireDateEditPress}>
+                            {isRenewDate ? <Text style={{ color: colors.BGScereen }}>تجديد العرض</Text> :
+                                <Feather
+                                    name={'edit'}
+                                    color={colors.BGScereen}
+                                    size={25} />}
+                        </Pressable>
+                        <View>
+                            <Text style={styles.Infotxt}>{data.campExpirDate}</Text>
+                            <Text style={styles.basicInfoTitle}>تاريخ الصلاحية</Text>
+                        </View>
+                    </View>
+                    <View style={styles.IconView}>
+                        <FontAwesome name={'calendar-check-o'} color={colors.puprble} size={25} />
+                    </View>
+                </View>
+            }
+            {show && (
+                <DateTimePicker
+                    testID='dateTimePicker'
+                    value={date}
+                    mode={mode}
+                    display='calendar'
+                    onChange={onChange}
+                />
+            )}
+        </View>
         )
     }
+
+    // Price 
     const renderOfferPrice = () => {
-        return (
-            <View style={styles.itemOffer}>
-                <Pressable //onPress={titleEditPress}
-                >
-                    <Feather
-                        style={styles.menuIcon}
-                        name={'edit'}
-                        color={colors.BGScereen}
-                        size={25} />
-                </Pressable>
-                <View>
-                    <View style={styles.Priceitem}>
+        return (<View>
+            {editPrice ? editItem(data.campCost, setOfferPrice, updatePrice) :
+                <View style={styles.itemOffer}>
+                    <View style={styles.item}>
+                        <Pressable onPress={priceEditPress}>
+                            <Feather
+                                style={styles.menuIcon}
+                                name={'edit'}
+                                color={colors.BGScereen}
+                                size={25} />
+                        </Pressable>
                         <View>
                             <Text style={styles.Infotxt}>{data.campCost}</Text>
                             <Text style={styles.basicInfoTitle}>السعر</Text>
                         </View>
-                        <View style={styles.IconView}>
-                            <Ionicons name={'pricetag'} color={colors.puprble} size={25} />
-                        </View>
                     </View>
-                    <View style={styles.Priceitem}>
+                    <View style={styles.IconView}>
+                        <Ionicons name={'pricetag'} color={colors.puprble} size={25} />
+                    </View>
+                </View>}
+        </View>
+        )
+    }
+    const renderOfferPriceInclude = () => {
+        return (<View>
+            {editIncludingPrice ? editPriceInclude() :
+                <View style={styles.itemOffer}>
+                    <View style={styles.item}>
+                        <Pressable onPress={includePriceEditPress}>
+                            <Feather
+                                style={styles.menuIcon}
+                                name={'edit'}
+                                color={colors.BGScereen}
+                                size={25} />
+                        </Pressable>
                         <View>
-                            <Text style={styles.Infotxt}>{data.priceInclude + ' السعر يشمل'}</Text>
-                            {/* <Text style={styles.basicInfoTitle}>السعر</Text> */}
-                        </View>
-                        <View style={styles.IconView}>
-                            <Entypo name={'info'} color={colors.puprble} size={25} />
+                            <Text style={styles.Infotxt}>{' السعر يشمل'+ ' ' + data.priceInclude }</Text>
                         </View>
                     </View>
-                </View>
-            </View>
+                    <View style={styles.IconView}>
+                        <Entypo name={'info'} color={colors.puprble} size={25} />
+                    </View>
+                </View>}
+        </View >
         )
     }
     // Content from sub Detail
@@ -551,6 +819,7 @@ const ProviderOfferDesc = (props) => {
                 </View>
                 <View style={styles.content}>
                     {renderOfferPrice()}
+                    {renderOfferPriceInclude()}
                 </View>
                 <Text style={styles.titletxt}>محتويات العرض من خدماتي</Text>
                 <View style={styles.content}>
@@ -655,13 +924,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         width: '85%',
     },
-    Priceitem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        width: '96%',
-        marginVertical: 5
-    },
+    // Priceitem: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     justifyContent: 'flex-end',
+    //     width: '96%',
+    //     marginVertical: 5,
+    // },
     IconView: {
         width: 40,
         height: 40,
@@ -704,6 +973,19 @@ const styles = StyleSheet.create({
         color: 'black',
         alignSelf: 'center',
         marginVertical: 5
+    },
+    editExpireDateView: {
+        height: 50,
+        width: '90%',
+        borderWidth: 0.6,
+        borderRadius: 8,
+        borderColor: 'white',
+        fontSize: 15,
+        color: 'black',
+        alignSelf: 'center',
+        marginVertical: 5,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     editView: {
         position: 'absolute',
@@ -763,5 +1045,25 @@ const styles = StyleSheet.create({
         height: 25,
         marginLeft: 10,
         borderWidth: 2
-    }
+    },
+    itemPersonView: {
+        borderWidth: 2,
+        borderColor: '#dcdcdc',
+        width: '90%',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+        marginTop: 10,
+    },
+    itemPersonViewPressed: {
+        borderWidth: 3,
+        borderColor: colors.puprble,
+        width: '90%',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+        marginTop: 10
+    },
 })

@@ -37,7 +37,7 @@ const ProviderCreateOffer = (props) => {
     const [subDetContent, setSubDetContent] = useState([])
     const [OfferWorkingRegion, setOfferWorkingRegion] = useState([])
     const [offerImg, setOfferImg] = useState(null)
-    const [priceInclude, setPriceInclude] = useState(null)
+    const [priceInclude, setPriceInclude] = useState()
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
@@ -91,16 +91,19 @@ const ProviderCreateOffer = (props) => {
         setPerPackage(true)
         setPerPerson(false)
         setPerTable(true)
+        setPriceInclude('لكل الحجز')
     }
     const Person = () => {
         setPerPackage(false)
         setPerPerson(true)
         setPerTable(false)
+        setPriceInclude('حسب الشخص')
     }
     const Table = () => {
         setPerPackage(false)
         setPerPerson(false)
         setPerTable(true)
+        setPriceInclude('حسب الطاولة')
     }
 
 

@@ -14,12 +14,13 @@ import Entypo from 'react-native-vector-icons/Entypo';
 
 const EditServiceInfo = (props) => {
     const {
-        serviceID, socialItem, socialLink, socialIndex,
+        serviceID, socialItem, socialLink,
         descriptionItem, editDescrItem, setEditDescrItem,
-        editSocialMedia,setEditSocialMedia } = props
+        editSocialMedia, setEditSocialMedia } = props
 
-    const { serviceInfoAccorUser, setServiceInfoAccorUser, socialMediaArray,
-        setSocialMediaArray, editTitle, seteditTitle,
+    const { serviceInfoAccorUser, setServiceInfoAccorUser,
+        socialMediaArray, setSocialMediaArray,
+        editTitle, seteditTitle,
         editSubTitle, seteditSubTitle,
         editCity, seteditCity,
         locationEdit, setlocationEdit,
@@ -33,6 +34,8 @@ const EditServiceInfo = (props) => {
         addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
+
+
     const getServiceInfo = () => {
         return serviceInfoAccorUser?.filter(item => {
             return item.service_id === serviceID;
@@ -49,18 +52,23 @@ const EditServiceInfo = (props) => {
     const [maxRequest, setMaxRequest] = useState();
     const [serviceRegion, setserviceRegion] = useState();
     const [serviceAddress, setserviceAddress] = useState();
+    const [serviceSocialMedia, setServiceSocialMedia] = useState(serviceData[0].socialMedia)
     const [selectHallType, setSelectHallType] = useState();
+
+
     const [serEditedDescrItem, setSerEditedDescrItem] = useState();
     const [addNewDescrItem, setaddNewDescrItem] = useState();
     const [serviceDescr, setServiceDescr] = useState([]);
+
+
 
 
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
     const [address, setAddress] = useState(null)
 
-    const [contactVal, setContactVal] = useState(null)
-    const [contactType, setContactType] = useState(null)
+    const [socialMediaLinkItem, setSocialMediaLinkItem] = useState()
+    const [socailMediaItem, setSocailMediaItem] = useState()
     const [webViewVisible, setWebViewVisible] = useState(false);
 
     const iconColors = {
@@ -80,7 +88,7 @@ const EditServiceInfo = (props) => {
     };
     useEffect(() => {
         getRegionsfromApi()
-      
+
     }, [])
 
     const editBasicInfoPress = (itemInfo, setState, update) => {
@@ -165,8 +173,8 @@ const EditServiceInfo = (props) => {
             </View>)
     }
 
-     // region part
-     const getRegionsfromApi = async () => {
+    // region part
+    const getRegionsfromApi = async () => {
         getRegions().then((res) => {
             res?.message ? showMessage(res.message) : updateData(res?.regions)
         }).catch((e) => {
@@ -200,10 +208,14 @@ const EditServiceInfo = (props) => {
     }
 
     // edit social media
-    const updateArray = (data, index) => {
-        setSocialMediaArray(prevArray => {
+    const updateArray = (data) => {
+        let newSMitemIndex = serviceSocialMedia.length + 1
+        if (serviceSocialMedia.length == 0) {
+            newSMitemIndex = 0
+        }
+        setServiceSocialMedia(prevArray => {
             const newArray = [...prevArray];
-            newArray[index] = data;
+            newArray[newSMitemIndex] = data;
             return newArray;
         });
     };
@@ -222,33 +234,24 @@ const EditServiceInfo = (props) => {
                             color={colors.BGScereen}
                             size={20} />
                     </Pressable>
-                    <View style={{width: '85%', marginRight: 10}}>
+                    <View style={{ width: '85%', marginRight: 10 }}>
                         <Text style={styles.editSocialtxt}>{socialItem}</Text>
                         <View style={styles.socialInput}>
-                            <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                            <FontAwesome5Brands name={socailMediaItem} size={25} style={styles.socialIcon} color={iconColors[socailMediaItem]} />
                             <TextInput
                                 style={styles.TextInput}
                                 keyboardType={'default'}
                                 placeholder={socialLink}
-                                index= {socialIndex}
-                                value={contactVal}
-                                onChangeText={(val) => setContactVal(val)}
-                                onFocus={() => {
-                                    handleLogin()
-                                }}
-                                onEndEditing={(event) => {
-                                    const text = event.nativeEvent.text
-                                    const data = {
-                                        social: contactType,
-                                        link: text,
-                                    }
-                                    updateArray(data, index)
-                                }}
+                                value={socialMediaLinkItem}
+                                onChangeText={setSocialMediaLinkItem}
+                            // onFocus={() => {
+                            //     handleLogin()
+                            // }}
                             />
                         </View>
                         {webViewVisible && (
                             <WebView
-                                source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
+                                source={{ uri: webUri[socailMediaItem] }} // Change URL to the social media platform's login page
                                 onNavigationStateChange={handleWebViewNavigationStateChange}
                             />
                         )}
@@ -261,7 +264,7 @@ const EditServiceInfo = (props) => {
         return (
             <View style={styles.itemView}>
                 <View style={styles.editAddressView}>
-                    <Pressable style={styles.itemFooter} onPress={addNewSocialMediaItem} 
+                    <Pressable style={styles.itemFooter} onPress={addNewSocialMediaItem}
                     >
                         <Feather
                             name={'save'}
@@ -272,12 +275,12 @@ const EditServiceInfo = (props) => {
                         <SelectList
                             data={socialMediaList}
                             setSelected={val => {
-                                setContactType(socialMediaList[val].value)
-                                const data = {
-                                    social: socialMediaList[val].value,
-                                    link: contactVal,
-                                }
-                                updateArray(data, index)
+                                setSocailMediaItem(socialMediaList[val].value)
+                                // const data = {
+                                //     social: socialMediaList[val].value,
+                                //     link: socialMediaLinkItem,
+                                // }
+                                // updateArray(data)
                             }}
 
                             placeholder={'اختر الشبكة الاجتماعية'}
@@ -286,29 +289,29 @@ const EditServiceInfo = (props) => {
                             dropdownTextStyles={styles.dropstyle}
                         />
                         <View style={styles.socialInput}>
-                            <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                            <FontAwesome5Brands name={socailMediaItem} size={25} style={styles.socialIcon} color={iconColors[socailMediaItem]} />
                             <TextInput
                                 style={styles.TextInput}
                                 keyboardType={'default'}
                                 placeholder={"حمل الرابط"}
-                                value={contactVal}
-                                onChangeText={(val) => setContactVal(val)}
-                                onFocus={() => {
-                                    handleLogin()
-                                }}
+                                value={socialMediaLinkItem}
+                                onChangeText={(val) => setSocialMediaLinkItem(val)}
+                                // onFocus={() => {
+                                //     handleLogin()
+                                // }}
                                 onEndEditing={(event) => {
                                     const text = event.nativeEvent.text
                                     const data = {
-                                        social: contactType,
-                                        link: text,
+                                        social: socailMediaItem,
+                                        link: socialMediaLinkItem,
                                     }
-                                    updateArray(data, index)
+                                    updateArray(data)
                                 }}
                             />
                         </View>
                         {webViewVisible && (
                             <WebView
-                                source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
+                                source={{ uri: webUri[socailMediaItem] }} // Change URL to the social media platform's login page
                                 onNavigationStateChange={handleWebViewNavigationStateChange}
                             />
                         )}
@@ -527,47 +530,55 @@ const EditServiceInfo = (props) => {
 
     }
     const updateSocialMediaItem = () => {
-        setEditSocialMedia(false)
-        // const newData = {
-        //     service_id: serviceID,
-        //     socialMedia: socialMediaArray
-        // }
-        // updateService(newData).then(res => {
-        //     const data = serviceInfoAccorUser || [];
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        console.log("socialItem", socialItem);
+        const SMitemIndex = serviceSocialMedia.findIndex(elme => elme.social === socialItem)
+        const SM = serviceSocialMedia
+        if (SMitemIndex > -1) {
+            SM[SMitemIndex].link = socialMediaLinkItem
+        }
+        setServiceSocialMedia(SM[SMitemIndex]);
+
+        const newData = {
+            service_id: serviceID,
+            socialMedia: serviceSocialMedia
+        }
+        updateService(newData).then(res => {
+            const data = serviceInfoAccorUser || [];
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                setEditSocialMedia(false)
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
 
     }
     const addNewSocialMediaItem = () => {
-        setAddSocilMedia(false)
-        // const newData = {
-        //     service_id: serviceID,
-        //     socialMedia: socialMediaArray
-        // }
-        // updateService(newData).then(res => {
-        //     const data = serviceInfoAccorUser || [];
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        const newData = {
+            service_id: serviceID,
+            socialMedia: serviceSocialMedia
+        }
+        updateService(newData).then(res => {
+            const data = serviceInfoAccorUser || [];
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                setAddSocilMedia(false)
+                ToastAndroid.showWithGravity(
+                    'تم الاضافة بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
 
     }
     const updateHallTypeItem = () => {
@@ -742,7 +753,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         //borderWidth: 1
     },
-    
+
     itemFooter: {
         width: '10%',
         alignItems: 'center',
@@ -807,10 +818,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignSelf: 'center'
     },
-    editSocialtxt:{
-       textAlign:'center',
-       fontSize: 18,
-       color : colors.puprble
+    editSocialtxt: {
+        textAlign: 'center',
+        fontSize: 18,
+        color: colors.puprble
     },
     socialIcon: {
         alignSelf: 'center',
@@ -824,7 +835,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
         alignSelf: 'center',
     },
-   
+
     IconView: {
         width: 40,
         height: 40,
