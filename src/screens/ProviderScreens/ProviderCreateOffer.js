@@ -231,24 +231,30 @@ const ProviderCreateOffer = (props) => {
         const data = getSubDetailService()
         const subDetail = data[0].additionalServices
         return subDetail.map(item => {
-            return item.subDetailArray.map(element => {
-                const [selectedSubDetail, setselectedSubDetail] = useState(false);
-                return (
-                    <View style={styles.item}>
-                        <Text style={styles.Addtxt}>{element.detailSubtitle}</Text>
-                        <Pressable style={styles.regionPressable}
-                            onPress={() => whenSubDetailPress(element.detailSubtitle, setselectedSubDetail, selectedSubDetail)}>
-                            {selectedSubDetail &&
-                                <Entypo
-                                    style={{ alignSelf: 'center' }}
-                                    name={"check"}
-                                    color={colors.puprble}
-                                    size={30} />
-                            }
-                        </Pressable>
-                    </View>
-                )
-            })
+            return (<View>
+                <View style={{backgroundColor: 'lightgray', marginVertical: 5, height: 30, justifyContent: 'center'}}>
+                    <Text style={styles.Addtxt}>{item.detailTitle}</Text>
+                </View>
+                {item.subDetailArray.map(element => {
+                    const [selectedSubDetail, setselectedSubDetail] = useState(false);
+                    return (
+                        <View style={styles.item}>
+                            <Text style={styles.Addtxt}>{element.detailSubtitle}</Text>
+                            <Pressable style={styles.regionPressable}
+                                onPress={() => whenSubDetailPress(element.detailSubtitle, setselectedSubDetail, selectedSubDetail)}>
+                                {selectedSubDetail &&
+                                    <Entypo
+                                        style={{ alignSelf: 'center' }}
+                                        name={"check"}
+                                        color={colors.puprble}
+                                        size={20} />
+                                }
+                            </Pressable>
+                        </View>
+                    )
+                })
+                }
+            </View>)
         })
     }
     const addOfferContent = () => {
@@ -310,7 +316,7 @@ const ProviderCreateOffer = (props) => {
     const renderOfferContent = () => {
         return (
             <View style={styles.ContentView}>
-                <Text style={styles.regiontxt}>تحديد محتويات العرض</Text>
+                <Text style={styles.regiontxt}>تحديد محتويات العرض من خدماتي</Text>
                 {renderSubDetail()}
                 {renderContents()}
                 <Pressable style={styles.item}
@@ -626,8 +632,8 @@ const styles = StyleSheet.create({
         marginRight: 20
     },
     regionPressable: {
-        width: 30,
-        height: 30,
+        width: 20,
+        height: 20,
         borderWidth: 2,
         borderColor: colors.puprble,
         alignItems: 'center',

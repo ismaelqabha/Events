@@ -35,10 +35,12 @@ const ProviderHome = props => {
     editphone, seteditphone,
     editEmail, setEditEmail,
     addNewDesc, setAddNewDesc,
+    deleteDescItem, setDeleteDescItem,
     editprice, setEditprice,
     editNumofRequest, setEditNumofRequest,
     editServiceDetail, setEditServiceDetail,
     addSocilMedia, setAddSocilMedia,
+    deleteSocialMedia, setDeleteSocialMedia,
     addNewDetail, setAddNewDetail,
     showDetailModal, setShowDetailModal } = useContext(ServiceProviderContext);
 
@@ -79,147 +81,27 @@ const ProviderHome = props => {
 
   const titleEditPress = () => {
     seteditTitle(true)
-    seteditSubTitle(false)
-    seteditCity(false)
-    setlocationEdit(false)
-    seteditHallType(false)
-    seteditHallcapasity(false)
-    seteditphone(false)
-    setEditEmail(false)
-    //setEditSocialMedia(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const subTitleEditPress = () => {
     seteditSubTitle(true)
-    seteditCity(false)
-    seteditTitle(false)
-    setlocationEdit(false)
-    seteditHallType(false)
-    seteditHallcapasity(false)
-    seteditphone(false)
-    setEditEmail(false)
-    //setEditSocialMedia(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const cityEditPress = () => {
     seteditCity(true)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    setlocationEdit(false)
-    seteditHallType(false)
-    seteditHallcapasity(false)
-    seteditphone(false)
-    setEditEmail(false)
-    //setEditSocialMedia(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const locationEditPress = () => {
     setlocationEdit(true)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    seteditHallType(false)
-    seteditHallcapasity(false)
-    seteditphone(false)
-    setEditEmail(false)
-    //setEditSocialMedia(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const HallTypeEditPress = () => {
     seteditHallType(true)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    seteditHallcapasity(false)
-    seteditphone(false)
-    setEditEmail(false)
-    //setEditSocialMedia(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const hallCapasityEditPress = () => {
     seteditHallcapasity(true)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    seteditphone(false)
-    setEditEmail(false)
-    //setEditSocialMedia(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const phoneEditPress = () => {
     seteditphone(true)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    setEditEmail(false)
-    //setEditSocialMedia(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const emailEditPress = () => {
     setEditEmail(true)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    //setEditSocialMedia(false)
-    setEditprice(false)
-    //setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const socialMediaitemEditPress = (item, itemLink, editSocialMedia, setEditSocialMedia) => {
     setSocialItem(item)
@@ -248,21 +130,7 @@ const ProviderHome = props => {
   const editDescrPress = (item, setEditDescrItem, editDescrItem) => {
     setDescriptionItem(item)
     setEditDescrItem(true)
-
-    setEditprice(false)
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
+    setShowDescModal(false)
   }
   const numofRequestEditPress = () => {
     setEditNumofRequest(true)
@@ -285,44 +153,24 @@ const ProviderHome = props => {
   const addNewSocialMediaPress = () => {
     setAddSocilMedia(true)
   }
+  const socialMediaDeletePress = () => {
+    setDeleteSocialMedia(true)
+    setShowModal(false)
+  }
   const addNewDescr = () => {
     setAddNewDesc(true)
-    setAddSocilMedia(false)
-    setEditNumofRequest(false)
-    setEditprice(false)
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
+  }
+  const deleteDescItemPress = () => {
+    setDeleteDescItem(true)
+    setShowDescModal(false)
   }
   const serviceDetailEditPress = (title, type, isPerson, subDetail) => {
     setShowDetailModal(true)
-    setShowDescModal(false)
-    setShowModal(false)
     setDetailItem(title)
     setDetailType(type)
     setDetailIsperson(isPerson)
     setSub_DetailArr(subDetail)
     setEditServiceDetail(true)
-    setAddNewDetail(false)
-    setAddNewDesc(false)
-    setAddSocilMedia(false)
-    setEditNumofRequest(false)
-    setEditprice(false)
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
   }
   const closeModalPress = () => {
     setShowModal(false)
@@ -872,12 +720,12 @@ const ProviderHome = props => {
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
                 </Pressable>
-                <Pressable style={styles.modalItem}>
+                <Pressable style={styles.modalItem} onPress={deleteDescItemPress}>
                   <AntDesign
                     name={'delete'}
                     color={colors.gray}
                     size={25} />
-                  <Text style={styles.modalHeaderTxt}>اِلغاء</Text>
+                  <Text style={styles.modalHeaderTxt}>حذف</Text>
                 </Pressable>
               </View>
             </View>
@@ -1147,12 +995,12 @@ const ProviderHome = props => {
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
                 </Pressable>
-                <Pressable style={styles.modalItem}>
+                <Pressable style={styles.modalItem} onPress={socialMediaDeletePress}>
                   <AntDesign
                     name={'delete'}
                     color={colors.gray}
                     size={25} />
-                  <Text style={styles.modalHeaderTxt}>اِلغاء</Text>
+                  <Text style={styles.modalHeaderTxt}>حذف</Text>
                 </Pressable>
               </View>
             </View>
@@ -1269,12 +1117,6 @@ const styles = StyleSheet.create({
     color: colors.puprble,
     fontFamily: 'Cairo-VariableFont_slnt,wght',
   },
-  // servicetitle: {
-  //   alignSelf: 'center',
-  //   width: '90%',
-  //   marginVertical: 10,
-  // },
-
   itemService: {
     flexDirection: 'row',
     alignItems: 'center',

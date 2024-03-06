@@ -19,7 +19,6 @@ const EditServiceInfo = (props) => {
         editSocialMedia, setEditSocialMedia } = props
 
     const { serviceInfoAccorUser, setServiceInfoAccorUser,
-        socialMediaArray, setSocialMediaArray,
         editTitle, seteditTitle,
         editSubTitle, seteditSubTitle,
         editCity, seteditCity,
@@ -30,8 +29,10 @@ const EditServiceInfo = (props) => {
         editEmail, setEditEmail,
         editprice, setEditprice,
         addNewDesc, setAddNewDesc,
+        deleteDescItem, setDeleteDescItem,
         editNumofRequest, setEditNumofRequest,
-        addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
+        addSocilMedia, setAddSocilMedia,
+        deleteSocialMedia, setDeleteSocialMedia, } = useContext(ServiceProviderContext);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
 
@@ -58,9 +59,7 @@ const EditServiceInfo = (props) => {
 
     const [serEditedDescrItem, setSerEditedDescrItem] = useState();
     const [addNewDescrItem, setaddNewDescrItem] = useState();
-    const [serviceDescr, setServiceDescr] = useState([]);
-
-
+    const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
 
 
     const [regionData, setRegionData] = useState([])
@@ -208,14 +207,11 @@ const EditServiceInfo = (props) => {
     }
 
     // edit social media
-    const updateArray = (data) => {
-        let newSMitemIndex = serviceSocialMedia.length + 1
-        if (serviceSocialMedia.length == 0) {
-            newSMitemIndex = 0
-        }
+    const addNewRecordSM = (data) => {
+        let newSMitemIndex = serviceSocialMedia.length - 1
         setServiceSocialMedia(prevArray => {
             const newArray = [...prevArray];
-            newArray[newSMitemIndex] = data;
+            newArray[newSMitemIndex + 1] = data;
             return newArray;
         });
     };
@@ -305,7 +301,7 @@ const EditServiceInfo = (props) => {
                                         social: socailMediaItem,
                                         link: socialMediaLinkItem,
                                     }
-                                    updateArray(data)
+                                    addNewRecordSM(data)
                                 }}
                             />
                         </View>
@@ -322,11 +318,15 @@ const EditServiceInfo = (props) => {
     }
 
     // Add description part
+    const addNewRecordDesc = (data) => {
+        let newDescitemIndex = serviceDescr.length - 1
+        setServiceDescr(prevArray => {
+            const newArray = [...prevArray];
+            newArray[newDescitemIndex + 1] = data;
+            return newArray;
+        });
+    };
     const addNewDescItemPress = () => {
-        // if (Number.isInteger(itemInfo)) {
-        //     itemInfo = itemInfo.toString()
-        // }
-
         return (
             <View style={styles.itemView}>
                 <View style={styles.editTitleView}>
@@ -342,9 +342,12 @@ const EditServiceInfo = (props) => {
                         //value={itemInfo}
                         placeholder={'اضافة وصف جديد'}
                         onChangeText={setaddNewDescrItem}
-                    //(val) => {
-                    // console.log("val", val);
-                    //setState(val)
+                        onEndEditing={val => {
+                            const data = {
+                                descItem: addNewDescrItem,
+                            }
+                            addNewRecordDesc(data)
+                        }}
                     />
 
                 </View>
@@ -530,7 +533,6 @@ const EditServiceInfo = (props) => {
 
     }
     const updateSocialMediaItem = () => {
-        console.log("socialItem", socialItem);
         const SMitemIndex = serviceSocialMedia.findIndex(elme => elme.social === socialItem)
         const SM = serviceSocialMedia
         if (SMitemIndex > -1) {
@@ -581,6 +583,36 @@ const EditServiceInfo = (props) => {
         })
 
     }
+    const deleteSMItem = () => {
+        // const newData = {
+        //     service_id: serviceID,
+        //     socialMedia: serviceSocialMedia
+        // }
+        // updateService(newData).then(res => {
+        //     const data = serviceInfoAccorUser || [];
+        //     if (selectedServiceIndex > -1) {
+        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+        //     }
+        //     if (res.message === 'Updated Sucessfuly') {
+        //         setServiceInfoAccorUser([...data])
+                setDeleteSocialMedia(false)
+                ToastAndroid.showWithGravity(
+                    'تم الحذف بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+        //     }
+        // })
+
+    }
+    const deleteDescItemPress = () => {
+        setDeleteDescItem(false)
+        ToastAndroid.showWithGravity(
+            'تم الحذف بنجاح',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+        );
+    }
     const updateHallTypeItem = () => {
         const newData = {
             service_id: serviceID,
@@ -604,56 +636,55 @@ const EditServiceInfo = (props) => {
 
     }
     const updateServiceDescrItem = () => {
-        setEditDescrItem(false)
-        // const data = serviceInfoAccorUser || [];
-        // const selectedServiceDescrItemIndex = data[selectedServiceIndex].desc?.findIndex(item => item.descItem === descriptionItem)
-        // const newDescItem = {
-        //     descItem: serviceDescrItem
-        // }
-        // setServiceDescr(element => {
-        //     const newDescElement = [...element];
-        //     newDescElement[selectedServiceDescrItemIndex] = newDescItem;
-        //     return newDescElement;
-        // })
-        // const newData = {
-        //     service_id: serviceID,
-        //     desc: serviceDescr
-        // }
-        // updateService(newData).then(res => {
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        console.log("serviceDescr", serviceDescr);
+        console.log("descriptionItem", descriptionItem);
+        const itemIndex = serviceDescr.findIndex(elme => elme === descriptionItem)
+        const itemDesc = serviceDescr
+        if (itemIndex > -1) {
+            itemDesc[itemIndex] = serEditedDescrItem
+        }
+        setServiceDescr(itemDesc[itemIndex]);
+
+        const newData = {
+            service_id: serviceID,
+            desc: serviceDescr
+        }
+        updateService(newData).then(res => {
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                setEditDescrItem(false)
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
 
     }
     const addNewDescItem = () => {
-        setAddNewDesc(false)
-        // const newData = {
-        //     service_id: serviceID,
-        //     socialMedia: socialMediaArray
-        // }
-        // updateService(newData).then(res => {
-        //     const data = serviceInfoAccorUser || [];
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        const newData = {
+            service_id: serviceID,
+            desc: serviceDescr
+        }
+        updateService(newData).then(res => {
+            const data = serviceInfoAccorUser || [];
+            if (selectedServiceIndex > -1) {
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceInfoAccorUser([...data])
+                setAddNewDesc(false)
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
 
     }
 
@@ -709,6 +740,14 @@ const EditServiceInfo = (props) => {
         {
             editItem: addNewDesc,
             editFunction: addNewDescItemPress(),
+        },
+        {
+            editItem: deleteSocialMedia,
+            editFunction: deleteSMItem(),
+        },
+        {
+            editItem: deleteDescItem,
+            editFunction: deleteDescItemPress(),
         },
 
     ]

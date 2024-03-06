@@ -14,12 +14,14 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
 import { getCampaignsByServiceId, getRegions } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
   const { setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat, campInfo, setCampInfo } =
     useContext(SearchContext);
   const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
+  const { userName} = useContext(UsersContext);
 
   const navigation = useNavigation();
 
@@ -268,7 +270,7 @@ const ProviderProfile = props => {
       <ScrollView>
         <View style={styles.headView}>
           <Text style={styles.headtext}>
-            {language.HeadText + 'اسماعيل كبها '}
+            {language.HeadText + userName}
           </Text>
         </View>
         <View style={styles.content}>
