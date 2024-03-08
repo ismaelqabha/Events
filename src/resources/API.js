@@ -31,6 +31,10 @@ export const signIn = async (body) => {
   const url = 'Users/login'
   return await AppFetch(url, 'POST', body)
 }
+export const updateUserData = async body => {
+  const url = 'Users/updateByid';
+  return await AppFetch(url, 'PATCH', body);
+};
 
 // Service Data
 export const getHomePageData = async body => {

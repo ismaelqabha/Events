@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, Image, ScrollView, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Image, ScrollView, TextInput, ToastAndroid } from 'react-native'
 import React, { useEffect, useContext, useState } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -7,10 +7,12 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { colors } from "../assets/AppColors"
-import { getRegions, getUserData } from '../resources/API';
+import { getRegions, updateUserData } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
 import { SelectList } from 'react-native-dropdown-select-list';
+import moment from 'moment';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const PersonalInfo = (props) => {
 
@@ -20,11 +22,17 @@ const PersonalInfo = (props) => {
     const [userPhone, setUserPhone] = useState()
     const [userMail, setUserMail] = useState()
     const [userAddress, setUserAddress] = useState()
+    const [userStatus, setUserStatus] = useState()
+    const [userBD, setUserBD] = useState()
+    const [userName, setUserName] = useState()
 
     const [editGender, setEditGender] = useState(false)
+    const [editUserName, setEditUserName] = useState(false)
     const [editPhone, setEditPhone] = useState(false)
     const [editMail, setEditMail] = useState(false)
     const [editAddress, setEditAddress] = useState(false)
+    const [editStutes, setEditStatus] = useState(false)
+    const [editBD, setEditBD] = useState(false)
 
     const [femalePress, setFemalePress] = useState(false)
     const [malePress, setMalePress] = useState(false)
@@ -37,6 +45,18 @@ const PersonalInfo = (props) => {
     const [regions, setRegions] = useState(null)
     const [address, setAddress] = useState(null)
 
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+
+
+    const userData = userInfo.user
+    const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
+    const today = moment(date, "YYYY-MM-DD")
+    let day = today.format('D')
+    let month = today.format('M')
+    let year = today.format('YYYY')
+    let completeDate = year + '-' + month + '-' + day
 
     const backPress = () => {
         props.navigation.goBack();
@@ -47,19 +67,29 @@ const PersonalInfo = (props) => {
             <View style={styles.seprater}></View>
         )
     }
-    const getUserfromApi = () => {
-        getUserData({ USER_ID: userId }).then(res => {
-            setUserInfo(res)
-        })
-    }
+   
     useEffect(() => {
-        getUserfromApi()
         getRegionsfromApi()
-        const userData = userInfo.user
-        if(userData[0].Usergender == 'ذكر'){
+
+        if (userData[0].Usergender == 'ذكر') {
             setMalePress(true)
-        }else{
+            setFemalePress(false)
+        } else {
             setFemalePress(true)
+            setMalePress(false)
+        }
+        if (userData[0].Userstatus == 'أعزب') {
+            setSinglePress(true)
+            setMarridPress(false)
+            setEngagedPress(false)
+        } else if (userData[0].Userstatus == 'متزوج') {
+            setMarridPress(true)
+            setEngagedPress(false)
+            setSinglePress(false)
+        } else {
+            setEngagedPress(true)
+            setMarridPress(false)
+            setSinglePress(false)
         }
     }, [])
 
@@ -74,6 +104,16 @@ const PersonalInfo = (props) => {
     }
     const addressEditPress = () => {
         setEditAddress(true)
+    }
+    const stutesEditPress = () => {
+        setEditStatus(true)
+    }
+    const BDEditPress = () => {
+        setEditBD(true)
+        showMode('date')
+    }
+    const userNameEditPress = () => {
+        setEditUserName(true)
     }
     const onMalePress = () => {
         setMalePress(true)
@@ -128,6 +168,26 @@ const PersonalInfo = (props) => {
                 </View>
             </View>)
     }
+    const editUsername = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editUNameView}>
+                    <Pressable onPress={updateUserName} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={'lightgray'}
+                            size={20} />
+                    </Pressable>
+                    <TextInput
+                        style={styles.inputUserName}
+                        keyboardType='default'
+                        //value={item}
+                        placeholder={userData[0].User_name || ''}
+                        onChangeText={setUserName}
+                    />
+                </View>
+            </View>)
+    }
     const getRegionsfromApi = async () => {
         getRegions().then((res) => {
             res?.message ? showMessage(res.message) : updateData(res?.regions)
@@ -155,7 +215,7 @@ const PersonalInfo = (props) => {
                 })
                 if (!(index === -1)) {
                     setAddress(region?.regionName)
-                    setserviceRegion(region?.regionName)
+                    //setserviceRegion(region?.regionName)
                 }
             })
         }
@@ -191,7 +251,6 @@ const PersonalInfo = (props) => {
             </View>)
     }
     const editingUserGender = () => {
-        
         return (
             <View style={styles.itemView}>
                 <View style={styles.editView}>
@@ -201,120 +260,175 @@ const PersonalInfo = (props) => {
                             color={'lightgray'}
                             size={20} />
                     </Pressable>
-                     <View style={styles.gender}>
-                    <Pressable style={[malePress ? styles.genderPress : styles.genderNotPres]}
-                        onPress={() => onMalePress()}>
-                        <FontAwesome
-                            name={"male"}
-                            color={colors.puprble}
-                            size={50} />
-                    </Pressable>
-                    <Pressable style={[femalePress ? styles.genderPress : styles.genderNotPres]}
-                        onPress={() => onFemalePress()}>
-                        <FontAwesome
-                            name={"female"}
-                            color={colors.puprble}
-                            size={50} />
-                    </Pressable>
-                </View>
+                    <View style={styles.gender}>
+                        <Pressable style={[malePress ? styles.genderPress : styles.genderNotPres]}
+                            onPress={() => onMalePress()}>
+                            <FontAwesome
+                                name={"male"}
+                                color={colors.puprble}
+                                size={50} />
+                        </Pressable>
+                        <Pressable style={[femalePress ? styles.genderPress : styles.genderNotPres]}
+                            onPress={() => onFemalePress()}>
+                            <FontAwesome
+                                name={"female"}
+                                color={colors.puprble}
+                                size={50} />
+                        </Pressable>
+                    </View>
                 </View>
             </View>)
     }
+    const editingUserStutes = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editView}>
+                    <Pressable onPress={updateStatus} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={'lightgray'}
+                            size={20} />
+                    </Pressable>
+                    <View style={styles.status}>
+                        <Pressable style={[singlePress ? styles.statusPress : styles.statusNotPres]}
+                            onPress={() => onSinglePress()}>
+                            <Text style={styles.statustxt}>أعزب</Text>
+                        </Pressable>
+                        <Pressable style={[engagedPress ? styles.statusPress : styles.statusNotPres]}
+                            onPress={() => onEngagedPress()}>
+                            <Text style={styles.statustxt}>خاطب</Text>
+                        </Pressable>
+                        <Pressable style={[marridPress ? styles.statusPress : styles.statusNotPres]}
+                            onPress={() => onMarridPress()}>
+                            <Text style={styles.statustxt}>متزوج</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>)
+    }
+    const editBirthDate = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editView}>
+                    <Pressable onPress={updateBirthDate} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={'lightgray'}
+                            size={20} />
+                    </Pressable>
+                    <View style={styles.editBDView}>
+                        <Text style={styles.basicInfo}>{userBD}</Text>
+                        <Pressable onPress={BDEditPress}>
+                            <Feather
+                                style={{ marginLeft: 20 }}
+                                name={'calendar'}
+                                color={colors.puprble}
+                                size={30} />
+                        </Pressable>
+                    </View>
+                </View>
+                {show && (
+                    <DateTimePicker
+                        testID='dateTimePicker'
+                        value={date}
+                        mode={mode}
+                        display='calendar'
+                        onChange={onChange}
+                    />
+                )}
+            </View>)
+    }
+   
 
     // Update Functions
+    const updateInfo = (infoData, setstate) => {
+        updateUserData(infoData).then(res => {
+            const data = userInfo || [];
+            if (selectedUserIndex > -1) {
+                data[selectedUserIndex] = { ...data[selectedUserIndex], ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setUserInfo([...data])
+                setstate(false)
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+
+        })
+    }
     const updateGender = () => {
-        setEditGender(false)
-        // const newData = {
-        //     CampId: data.CampId,
-        //     campTitle: Title
-        // }
-        // uodateCampaignsById(newData).then(res => {
-        //     const data = campInfo || [];
-        //     if (selectedOfferIndex > -1) {
-        //         data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
+        const newData = {
+            USER_ID: userId,
+            Usergender: userGender
+        }
+        updateInfo(newData, setEditGender)
+        // updateUserData(newData).then(res => {
+        //     const data = userInfo || [];
+        //     if (selectedUserIndex > -1) {
+        //         data[selectedUserIndex] = { ...data[selectedUserIndex], ...newData };
         //     }
         //     if (res.message === 'Updated Sucessfuly') {
-        //         setCampInfo([...data])
-        //         setEditTitle(false)
+        //         setUserInfo([...data])
+        //         setEditGender(false)
         //         ToastAndroid.showWithGravity(
         //             'تم التعديل بنجاح',
         //             ToastAndroid.SHORT,
         //             ToastAndroid.BOTTOM,
         //         );
         //     }
+
         // })
     }
     const updatePhone = () => {
-        setEditPhone(false)
-        // const newData = {
-        //     CampId: data.CampId,
-        //     campTitle: Title
-        // }
-        // uodateCampaignsById(newData).then(res => {
-        //     const data = campInfo || [];
-        //     if (selectedOfferIndex > -1) {
-        //         data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setCampInfo([...data])
-        //         setEditTitle(false)
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        const newData = {
+            USER_ID: userId,
+            UserPhone: userPhone
+        }
+        updateInfo(newData, setEditPhone)
     }
     const updateMail = () => {
-        setEditMail(false)
-        // const newData = {
-        //     CampId: data.CampId,
-        //     campTitle: Title
-        // }
-        // uodateCampaignsById(newData).then(res => {
-        //     const data = campInfo || [];
-        //     if (selectedOfferIndex > -1) {
-        //         data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setCampInfo([...data])
-        //         setEditTitle(false)
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        const newData = {
+            USER_ID: userId,
+            Email: userMail
+        }
+        updateInfo(newData, setEditMail)
     }
     const updateAddress = () => {
-        setEditAddress(false)
-        // const newData = {
-        //     CampId: data.CampId,
-        //     campTitle: Title
-        // }
-        // uodateCampaignsById(newData).then(res => {
-        //     const data = campInfo || [];
-        //     if (selectedOfferIndex > -1) {
-        //         data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setCampInfo([...data])
-        //         setEditTitle(false)
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        const newData = {
+            USER_ID: userId,
+            UserCity: userAddress,
+            UserRegion: address
+        }
+        updateInfo(newData, setEditAddress)
     }
-    
+    const updateStatus = () => {
+        const newData = {
+            USER_ID: userId,
+            Userstatus: userStatus
+        }
+        updateInfo(newData, setEditStatus)
+    }
+    const updateBirthDate = () => {
+        const newData = {
+            USER_ID: userId,
+            UserbirthDate: userBD
+        }
+        updateInfo(newData, setEditBD)
+    }
+    const updateUserName = () => {
+        const newData = {
+            USER_ID: userId,
+            User_name: userName
+        }
+        updateInfo(newData, setEditUserName)
+    }
+
 
     ////
     const renderContactInfo = () => {
-        const userData = userInfo.user
         return (<View>
             <Text style={styles.txt}>معلومات التواصل </Text>
             {editPhone ? editItem(userData[0].UserPhone, setUserPhone, updatePhone) :
@@ -366,7 +480,6 @@ const PersonalInfo = (props) => {
         </View>)
     }
     const renderBasicInfo = () => {
-        const userData = userInfo.user
         return (<View>
             <Text style={styles.txt}>المعلومات الاساسية</Text>
             {editGender ? editingUserGender() :
@@ -390,32 +503,40 @@ const PersonalInfo = (props) => {
                         </View>
                     </View>
                 </View>}
-            <View style={styles.userItem}>
-                <Pressable //onPress={titleEditPress}
-                >
-                    <Feather
-                        style={styles.menuIcon}
-                        name={'edit'}
-                        color={'lightgray'}
-                        size={25} />
-                </Pressable>
-                <View style={styles.item}>
-                    <View><Text style={styles.basicInfo}>{userData[0].UserbirthDate}</Text>
-                        <Text style={styles.basicInfoTitle}>تاريخ الميلاد</Text>
-                    </View>
-                    <View style={styles.IconView}>
-                        <FontAwesome
-                            style={styles.icon}
-                            name={"birthday-cake"}
-                            color={colors.puprble}
+            {editBD ? editBirthDate() :
+                <View style={styles.userItem}>
+                    <Pressable onPress={BDEditPress}>
+                        <Feather
+                            style={styles.menuIcon}
+                            name={'edit'}
+                            color={'lightgray'}
                             size={25} />
+                    </Pressable>
+                    <View style={styles.item}>
+                        <View><Text style={styles.basicInfo}>{userData[0].UserbirthDate}</Text>
+                            <Text style={styles.basicInfoTitle}>تاريخ الميلاد</Text>
+                        </View>
+                        <View style={styles.IconView}>
+                            <FontAwesome
+                                style={styles.icon}
+                                name={"birthday-cake"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
                     </View>
-                </View>
-            </View>
+                </View>}
+            {show && (
+                <DateTimePicker
+                    testID='dateTimePicker'
+                    value={date}
+                    mode={mode}
+                    display='calendar'
+                    onChange={onChange}
+                />
+            )}
         </View>)
     }
     const renderAddressInfo = () => {
-        const userData = userInfo.user
         return (<View>
             <Text style={styles.txt}>العنوان</Text>
 
@@ -479,48 +600,46 @@ const PersonalInfo = (props) => {
         </View>)
     }
     const renderSoialDetail = () => {
-        const userData = userInfo.user
         return (<View>
             <Text style={styles.txt}>التفاصيل الاجتماعية</Text>
-            <View style={styles.userItem}>
-                <Pressable //onPress={titleEditPress}
-                >
-                    <Feather
-                        style={styles.menuIcon}
-                        name={'edit'}
-                        color={'lightgray'}
-                        size={25} />
-                </Pressable>
-                <View style={styles.item}>
-                    <View><Text style={styles.basicInfo}>{userData[0].Userstatus}</Text>
-                        <Text style={styles.basicInfoTitle}>الحالة الاجتماعية</Text>
-                    </View>
-                    <View style={styles.IconView}>
-                        <Entypo
-                            style={styles.icon}
-                            name={"v-card"}
-                            color={colors.puprble}
+            {editStutes ? editingUserStutes() :
+                <View style={styles.userItem}>
+                    <Pressable onPress={stutesEditPress}>
+                        <Feather
+                            style={styles.menuIcon}
+                            name={'edit'}
+                            color={'lightgray'}
                             size={25} />
+                    </Pressable>
+                    <View style={styles.item}>
+                        <View><Text style={styles.basicInfo}>{userData[0].Userstatus}</Text>
+                            <Text style={styles.basicInfoTitle}>الحالة الاجتماعية</Text>
+                        </View>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                style={styles.icon}
+                                name={"v-card"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
                     </View>
-                </View>
-            </View>
+                </View>}
         </View>)
     }
     const renderUserName = () => {
-        const userData = userInfo.user
         return (
             <View style={styles.imgView}>
-
                 <Image style={styles.profilImg} source={userData[0].UserPhoto ? { uri: userData[0].UserPhoto } : require('../assets/photos/user.png')} />
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Pressable style={styles.editName}>
-                        <AntDesign
-                            name={"edit"}
-                            color={'white'}
-                            size={20} />
-                    </Pressable>
-                    <Text style={styles.userName}>{userData[0].User_name}</Text>
-                </View>
+                {editUserName ? editUsername() :
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Pressable style={styles.editName} onPress={userNameEditPress}>
+                            <AntDesign
+                                name={"edit"}
+                                color={'white'}
+                                size={20} />
+                        </Pressable>
+                        <Text style={styles.userName}>{userData[0].User_name}</Text>
+                    </View>}
                 <Pressable style={styles.editImg}>
                     <Entypo
                         name={"camera"}
@@ -529,6 +648,25 @@ const PersonalInfo = (props) => {
                 </Pressable>
             </View>
         )
+    }
+    const onChange = (event, selectedDate) => {
+        setShow(false)
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let fDate = tempDate.getFullYear() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getDate();
+
+        if (completeDate > fDate) {
+            setUserBD(fDate);
+        }
+        // else {
+        //     setUserBD(userData[0].UserbirthDate);
+        // }
+    }
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
     }
 
     return (
@@ -677,14 +815,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     editView: {
-        justifyContent: 'center',
+        alignItems: 'center',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+    },
+    editUNameView: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
     itemFooter: {
         width: '10%',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    editBDView: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
     input: {
         textAlign: 'center',
@@ -695,6 +843,18 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray',
         fontSize: 15,
         color: 'black',
+        alignSelf: 'center',
+        marginVertical: 5
+    },
+    inputUserName:{
+        textAlign: 'center',
+        height: 50,
+        width: '60%',
+        borderWidth: 1,
+        borderRadius: 8,
+        borderColor: 'lightgray',
+        fontSize: 15,
+        color: 'white',
         alignSelf: 'center',
         marginVertical: 5
     },
@@ -768,5 +928,38 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'white',
         elevation: 5
+    },
+    status: {
+        width: '90%',
+        alignSelf: 'center',
+        marginVertical: 20,
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+    statusPress: {
+        width: 90,
+        height: 50,
+        borderWidth: 3,
+        borderColor: colors.puprble,
+        borderRadius: 30,
+        marginHorizontal: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        elevation: 5
+    },
+    statusNotPres: {
+        width: 90,
+        height: 50,
+        borderRadius: 30,
+        marginHorizontal: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        elevation: 5
+    },
+    statustxt: {
+        fontSize: 20,
+        color: colors.puprble
     },
 })

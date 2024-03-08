@@ -23,6 +23,8 @@ export const ScreenNames = {
     LogOut: 'LogOut',
     ClientProfile: 'ClientProfile',
     ReviewsScreen: 'ReviewsScreen',
+    ClientSpecialDates: 'ClientSpecialDates',
+    ClientRelations: 'ClientRelations',
 
     // Create User
     CreateUpersonalInfo: 'CreateUpersonalInfo',

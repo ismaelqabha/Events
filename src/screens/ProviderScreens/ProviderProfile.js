@@ -24,7 +24,7 @@ const ProviderProfile = props => {
   const { userName} = useContext(UsersContext);
 
   const navigation = useNavigation();
-
+  const providerReview = true
  
 
   const renderMyService = () => {
@@ -246,7 +246,7 @@ const ProviderProfile = props => {
       <View>
         <Pressable
           style={styles.reviewitem}
-          onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen)}>
+          onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen, {providerReview})}>
           <View>
             <Text style={styles.reviewtxt}>التغذية الراجعة (2)</Text>
           </View>
