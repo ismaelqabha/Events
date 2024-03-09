@@ -4,7 +4,7 @@ import {
   View,
   ScrollView,
   Pressable,
-  Modal,
+  Modal,ToastAndroid
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import SearchContext from '../../../store/SearchContext';
@@ -18,14 +18,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { getServiceImages } from '../../resources/API';
+import { getServiceImages, updateService } from '../../resources/API';
 import { BackgroundImage } from '@rneui/base';
 import EditServiceInfo from '../../components/ProviderComponents/EditServiceInfo';
 import EditServiceDetails from '../../components/ProviderComponents/EditServiceDetails';
 
 const ProviderHome = props => {
   const { isFirst, setserviceTitle } = useContext(SearchContext);
-  const { serviceInfoAccorUser,
+  const { serviceInfoAccorUser,setServiceInfoAccorUser,
     editTitle, seteditTitle,
     editSubTitle, seteditSubTitle,
     editCity, seteditCity,
@@ -35,7 +35,6 @@ const ProviderHome = props => {
     editphone, seteditphone,
     editEmail, setEditEmail,
     addNewDesc, setAddNewDesc,
-    deleteDescItem, setDeleteDescItem,
     editprice, setEditprice,
     editNumofRequest, setEditNumofRequest,
     editServiceDetail, setEditServiceDetail,
@@ -45,12 +44,17 @@ const ProviderHome = props => {
     showDetailModal, setShowDetailModal } = useContext(ServiceProviderContext);
 
   const [servicePhotos, setservicePhotos] = useState();
-  const [showModal, setShowModal] = useState(false);
-  const [showDescModal, setShowDescModal] = useState(false);
   // const [showDetailModal, setShowDetailModal] = useState(false);
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
 
+  const filterService = () => {
+    return serviceInfoAccorUser?.filter(item => {
+      return item.service_id === isFirst;
+    });
+  }
+  const serviceData = filterService()
 
+  const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
 
   const [socialItem, setSocialItem] = useState();
   const [socialIndex, setSocialIndex] = useState();
@@ -103,7 +107,7 @@ const ProviderHome = props => {
   const emailEditPress = () => {
     setEditEmail(true)
   }
-  const socialMediaitemEditPress = (item, itemLink, editSocialMedia, setEditSocialMedia) => {
+  const socialMediaitemEditPress = (item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal) => {
     setSocialItem(item)
     setSocialIndex(itemLink)
     setEditSocialMedia(!editSocialMedia)
@@ -111,44 +115,14 @@ const ProviderHome = props => {
   }
   const priceEditPress = () => {
     setEditprice(true)
-    // setEditSocialMedia(false)
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    // setEditDescrItem(false)
-    setEditNumofRequest(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
-  const editDescrPress = (item, setEditDescrItem, editDescrItem) => {
+  const editDescrPress = (item, setEditDescrItem, setShowDescModal) => {
     setDescriptionItem(item)
     setEditDescrItem(true)
     setShowDescModal(false)
   }
   const numofRequestEditPress = () => {
     setEditNumofRequest(true)
-    //setEditDescrItem(false)
-    setEditprice(false)
-    // setEditSocialMedia(false)
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
-    setAddSocilMedia(false)
-    setAddNewDesc(false)
-    setAddNewDetail(false)
-    setEditServiceDetail(false)
   }
   const addNewSocialMediaPress = () => {
     setAddSocilMedia(true)
@@ -160,10 +134,35 @@ const ProviderHome = props => {
   const addNewDescr = () => {
     setAddNewDesc(true)
   }
-  const deleteDescItemPress = () => {
-    setDeleteDescItem(true)
-    setShowDescModal(false)
+  const deleteDescItemPress = (item, setShowDescModal) => {
+    // setDeleteDescItem(true)
+    //setDeletedItem(item)
+    
+
+    const lastUpdate = serviceDescr.filter(ser => ser.descItem !== item)
+    setServiceDescr(lastUpdate)
+
+    const newData = {
+        service_id: isFirst,
+        desc: serviceDescr
+    }
+    updateService(newData).then(res => {
+        const data = serviceInfoAccorUser || [];
+        if (selectedServiceIndex > -1) {
+            data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+        }
+        if (res.message === 'Updated Sucessfuly') {
+            setServiceInfoAccorUser([...data])
+            setShowDescModal(false)
+            ToastAndroid.showWithGravity(
+                'تم الحذف بنجاح',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+            );
+        }
+    })
   }
+
   const serviceDetailEditPress = (title, type, isPerson, subDetail) => {
     setShowDetailModal(true)
     setDetailItem(title)
@@ -172,43 +171,15 @@ const ProviderHome = props => {
     setSub_DetailArr(subDetail)
     setEditServiceDetail(true)
   }
-  const closeModalPress = () => {
-    setShowModal(false)
-    setShowDetailModal(false)
+  const closeModalPress = (setShowDescModal) => {
     setShowDescModal(false)
-    setEditServiceDetail(false)
-    setAddNewDetail(false)
-    setAddNewDesc(false)
-    setAddSocilMedia(false)
-    setEditNumofRequest(false)
-    setEditprice(false)
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
+  }
+  const closeSMmodalPress = (setShowModal) => {
+    setShowModal(false)
   }
   const addNewDetailPress = () => {
     setAddNewDetail(true)
     setShowDetailModal(true)
-    setShowDescModal(false)
-    setEditServiceDetail(false)
-    setShowModal(false)
-    setAddNewDesc(false)
-    setAddSocilMedia(false)
-    setEditNumofRequest(false)
-    setEditprice(false)
-    setEditEmail(false)
-    seteditphone(false)
-    seteditHallcapasity(false)
-    seteditHallType(false)
-    setlocationEdit(false)
-    seteditCity(false)
-    seteditSubTitle(false)
-    seteditTitle(false)
   }
   const renderEditServiceDetailInfo = () => {
     if (editServiceDetail) {
@@ -229,11 +200,7 @@ const ProviderHome = props => {
 
   }
 
-  const filterService = () => {
-    return serviceInfoAccorUser?.filter(item => {
-      return item.service_id === isFirst;
-    });
-  };
+ 
   const header = () => {
     return (
       <View style={styles.header}>
@@ -666,9 +633,11 @@ const ProviderHome = props => {
           return null;
         }
       }
-      return item.desc.map(element => {
+      return item.desc.map((element, index) => {
         const [editDescrItem, setEditDescrItem] = useState(false)
-        return (<View>
+        const [showDescModal, setShowDescModal] = useState(false);
+
+        return (<View key={index}>
           {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
             <View style={styles.itemService}>
               <View style={styles.itemSM}>
@@ -687,13 +656,13 @@ const ProviderHome = props => {
                 <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
               </View>
             </View>}
-          {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem)}
+          {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal)}
         </View>)
       })
     })
     return servicedesc
   };
-  const renderDescrModal = (item, setEditDescrItem, editDescrItem) => {
+  const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
     return (
       <Modal
         transparent
@@ -703,7 +672,7 @@ const ProviderHome = props => {
         <View style={styles.centeredDescView}>
           <View style={styles.detailModal}>
             <View>
-              <Pressable onPress={closeModalPress} style={styles.modalHeader}>
+              <Pressable onPress={() => closeModalPress(setShowDescModal)} style={styles.modalHeader}>
                 <Feather
                   style={styles.menuIcon}
                   name={'more-horizontal'}
@@ -713,14 +682,14 @@ const ProviderHome = props => {
             </View>
             <View style={{ justifyContent: 'flex-end', height: '100%' }}>
               <View style={styles.modalMenu}>
-                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, editDescrItem)}>
+                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, editDescrItem, setShowDescModal)}>
                   <Feather
                     name={'edit'}
                     color={colors.gray}
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
                 </Pressable>
-                <Pressable style={styles.modalItem} onPress={deleteDescItemPress}>
+                <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item,setShowDescModal)}>
                   <AntDesign
                     name={'delete'}
                     color={colors.gray}
@@ -930,6 +899,7 @@ const ProviderHome = props => {
     const data = filterService()
     return data[0].socialMedia.map(element => {
       const [editSocialMedia, setEditSocialMedia] = useState(false)
+      const [showModal, setShowModal] = useState(false);
       return (<View>
         {editSocialMedia ?
           <EditServiceInfo
@@ -963,11 +933,11 @@ const ProviderHome = props => {
             </View>
           </View>
         }
-        {renderSocialModal(element.social, element.link, editSocialMedia, setEditSocialMedia)}
+        {renderSocialModal(element.social, element.link, editSocialMedia, setEditSocialMedia, showModal, setShowModal)}
       </View>)
     })
   }
-  const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia) => {
+  const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia, showModal, setShowModal) => {
     return (
       <Modal
         transparent
@@ -977,7 +947,7 @@ const ProviderHome = props => {
         <View style={styles.centeredView}>
           <View style={styles.detailModal}>
             <View>
-              <Pressable onPress={closeModalPress} style={styles.modalHeader}>
+              <Pressable onPress={() => closeSMmodalPress(setShowModal)} style={styles.modalHeader}>
                 <Feather
                   style={styles.menuIcon}
                   name={'more-horizontal'}
@@ -988,7 +958,7 @@ const ProviderHome = props => {
             <View style={{ justifyContent: 'flex-end', height: '100%' }}>
               <View style={styles.modalMenu}>
                 <Pressable style={styles.modalItem}
-                  onPress={() => socialMediaitemEditPress(item, itemLink, editSocialMedia, setEditSocialMedia)}>
+                  onPress={() => socialMediaitemEditPress(item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal)}>
                   <Feather
                     name={'edit'}
                     color={colors.gray}

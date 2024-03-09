@@ -345,8 +345,9 @@ const PersonalInfo = (props) => {
         updateUserData(infoData).then(res => {
             const data = userInfo || [];
             if (selectedUserIndex > -1) {
-                data[selectedUserIndex] = { ...data[selectedUserIndex], ...newData };
+                data[selectedUserIndex] = { ...data[selectedUserIndex], ...infoData };
             }
+            console.log("res.message", res.message);
             if (res.message === 'Updated Sucessfuly') {
                 setUserInfo([...data])
                 setstate(false)
@@ -356,7 +357,6 @@ const PersonalInfo = (props) => {
                     ToastAndroid.BOTTOM,
                 );
             }
-
         })
     }
     const updateGender = () => {
@@ -365,22 +365,6 @@ const PersonalInfo = (props) => {
             Usergender: userGender
         }
         updateInfo(newData, setEditGender)
-        // updateUserData(newData).then(res => {
-        //     const data = userInfo || [];
-        //     if (selectedUserIndex > -1) {
-        //         data[selectedUserIndex] = { ...data[selectedUserIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setUserInfo([...data])
-        //         setEditGender(false)
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-
-        // })
     }
     const updatePhone = () => {
         const newData = {

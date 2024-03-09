@@ -59,7 +59,7 @@ const ProviderProvider = props => {
   const [addNewDetail, setAddNewDetail] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleteSocialMedia, setDeleteSocialMedia] = useState(false);
-  const [deleteDescItem, setDeleteDescItem] = useState(false);
+ 
 
   return (
     <ServiceProviderContext.Provider
@@ -168,8 +168,7 @@ const ProviderProvider = props => {
         setShowDetailModal,
         deleteSocialMedia, 
         setDeleteSocialMedia,
-        deleteDescItem, 
-        setDeleteDescItem
+       
       }}>
       {props.children}
     </ServiceProviderContext.Provider>
