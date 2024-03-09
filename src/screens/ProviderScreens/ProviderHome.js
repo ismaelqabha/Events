@@ -5,6 +5,8 @@ import {
   ScrollView,
   Pressable,
   Modal,
+  Image,
+  Dimensions,
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import SearchContext from '../../../store/SearchContext';
@@ -432,12 +434,15 @@ const ProviderHome = props => {
   const renderServiceLogo = () => {
     const data = filterService()
     // const serviceLogo = data?.map(item => {
+    const index = data[0].logoArray?.findIndex((val) => val === true)
+    const image = data[0]?.serviceImages[index]
+
     return (
       <View>
         <BackgroundImage
           style={styles.logoview}
           source={require('../../assets/photos/backgroundPart.png')}>
-          <View style={styles.logoImg}></View>
+          <Image style={styles.logoImg} source={{uri:image}} />
           <Pressable style={styles.editImg}>
             <Entypo name={'camera'} color={colors.puprble} size={25} />
           </Pressable>
@@ -1321,9 +1326,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoImg: {
-    width: '60%',
-    height: '80%',
-    backgroundColor: 'white',
+    width: Dimensions.get("screen").width * 0.6,
+    height: 160,
+    backgroundColor: 'red',
     borderRadius: 20,
   },
   editImg: {
