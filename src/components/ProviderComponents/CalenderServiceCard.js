@@ -9,7 +9,7 @@ import SearchContext from '../../../store/SearchContext';
 const CalenderServiceCard = (props) => {
     const { isFirst, setIsfirst } = useContext(SearchContext);
     const navigation = useNavigation();
-
+    // console.log("props ", props);
     const onCardPress = () => {
         setIsfirst(props.service_id)
         // navigation.navigate(ScreenNames.ProviderCalender, { data: { ...props } })
