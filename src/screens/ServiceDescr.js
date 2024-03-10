@@ -382,7 +382,7 @@ const ServiceDescr = (props) => {
         )
     }
     const renderCampeigns = () => {
-        setReachCampaignfrom('fromServiceDescr')
+        //setReachCampaignfrom('fromServiceDescr')
         const CampData = campiegnsAccordingServiceId;
         if (CampData.message !== 'No Campaigns') {
             const campArray = CampData?.map(camp => {
