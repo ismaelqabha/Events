@@ -9,11 +9,15 @@ import SearchContext from '../../../store/SearchContext';
 const CalenderServiceCard = (props) => {
     const { isFirst, setIsfirst } = useContext(SearchContext);
     const navigation = useNavigation();
-
+    // console.log("props ", props);
     const onCardPress = () => {
         setIsfirst(props.service_id)
         // navigation.navigate(ScreenNames.ProviderCalender, { data: { ...props } })
     }
+
+    const index = props.logoArray?.findIndex((val) => val === true)
+    const image = props?.serviceImages[index]
+
 
     return (
         <View style={styles.container}>
@@ -22,7 +26,7 @@ const CalenderServiceCard = (props) => {
             >
                 <View style={[styles.imgView, isFirst == props.service_id ? styles.imgViewforFirst : styles.imgView]}>
                    <View style={{width: '70%', alignItems: 'center'}}><Text style={styles.basicInfo}>{props.title}</Text></View> 
-                   <View style={{width: '30%' , alignItems: 'center'}}><Image style={styles.profilImg} source={require('../../assets/photos/ameer.png')} /></View> 
+                   <View style={{width: '30%' , alignItems: 'center'}}><Image style={styles.profilImg} source={ {uri:image} ||require('../../assets/photos/ameer.png')} /></View> 
                 </View>
             </Pressable>
         </View>

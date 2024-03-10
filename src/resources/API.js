@@ -223,9 +223,15 @@ export const removeDraftFromAPI = async body => {
 }
 
 //Service Images
-export const getServiceImages = async body => {
-  const url = 'ServiceImags/getImg';
-  return await AppFetch(url, 'POST', body);
+export const getServiceImages = async (body) => {
+  try {
+    const url = 'ServiceImags/getImg';
+    const response = await AppFetch(url, 'POST', { serviceID:body });
+    return response;
+  } catch (error) {
+    console.error('Error fetching service images:', error);
+    return { serviceImages: [], logoArray: [] }; // Return empty arrays in case of error
+  }
 };
 
 export const addServiceImages = async (imagesArray, serviceID) => {

@@ -10,7 +10,7 @@ import TopTapNotificaNavig from './topTapNotificaNavig';
 import { colors } from '../src/assets/AppColors';
 import Icon, { Icons } from "../src/components/Icons"
 import * as Animatable from 'react-native-animatable';
-import { getServiceInfoById } from '../src/resources/API';
+import { getServiceImages, getServiceInfoById } from '../src/resources/API';
 import ServiceProviderContext from '../store/ServiceProviderContext';
 import ProviderCreateListing from '../src/screens/ProviderScreens/ProviderCreateListing';
 import UsersContext from '../store/UsersContext';
@@ -71,21 +71,25 @@ const ProviderTapNav = () => {
 
   const getServiceInfofromApi = async () => {
     try {
-      const res = await getServiceInfoById({ userID: userId })
+      const res = await getServiceInfoById({ userID: userId });
       if (res.message) {
-        setServiceInfoAccorUser([])
+        setServiceInfoAccorUser([]);
       } else {
-        setServiceInfoAccorUser(res)
-
+        const updatedServiceInfo = await Promise.all(res.map(async (item) => {
+          // Call getServiceImages for each item
+          const serviceImageRes = await getServiceImages(item.service_id);
+          // Merge the result with the original item
+          return { ...item, serviceImages: serviceImageRes._doc.serviceImages, logoArray: serviceImageRes._doc.logoArray };
+        }));
+        
+        setServiceInfoAccorUser(updatedServiceInfo);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
-
-  }
+  };
   useEffect(() => {
     getServiceInfofromApi()
   }, [])
