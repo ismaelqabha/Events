@@ -4,14 +4,13 @@ import {
   View,
   ScrollView,
   Pressable,
-  Modal,ToastAndroid
+  Modal, ToastAndroid, Dimensions, Image
 } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import SearchContext from '../../../store/SearchContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
-import { ScreenNames } from '../../../route/ScreenNames';
 import strings from '../../assets/res/strings';
 import { colors } from '../../assets/AppColors';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -25,7 +24,7 @@ import EditServiceDetails from '../../components/ProviderComponents/EditServiceD
 
 const ProviderHome = props => {
   const { isFirst, setserviceTitle } = useContext(SearchContext);
-  const { serviceInfoAccorUser,setServiceInfoAccorUser,
+  const { serviceInfoAccorUser, setServiceInfoAccorUser,
     editTitle, seteditTitle,
     editSubTitle, seteditSubTitle,
     editCity, seteditCity,
@@ -39,7 +38,6 @@ const ProviderHome = props => {
     editNumofRequest, setEditNumofRequest,
     editServiceDetail, setEditServiceDetail,
     addSocilMedia, setAddSocilMedia,
-    deleteSocialMedia, setDeleteSocialMedia,
     addNewDetail, setAddNewDetail,
     showDetailModal, setShowDetailModal } = useContext(ServiceProviderContext);
 
@@ -55,6 +53,7 @@ const ProviderHome = props => {
   const serviceData = filterService()
 
   const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
+  const [serviceSocialMedia, setServiceSocialMedia] = useState(serviceData[0].socialMedia)
 
   const [socialItem, setSocialItem] = useState();
   const [socialIndex, setSocialIndex] = useState();
@@ -76,7 +75,7 @@ const ProviderHome = props => {
 
 
   useEffect(() => {
-    getImagesfromApi();
+
   }, []);
 
   const onPressHandler = () => {
@@ -127,41 +126,11 @@ const ProviderHome = props => {
   const addNewSocialMediaPress = () => {
     setAddSocilMedia(true)
   }
-  const socialMediaDeletePress = () => {
-    setDeleteSocialMedia(true)
-    setShowModal(false)
-  }
+ 
   const addNewDescr = () => {
     setAddNewDesc(true)
   }
-  const deleteDescItemPress = (item, setShowDescModal) => {
-    // setDeleteDescItem(true)
-    //setDeletedItem(item)
-    
 
-    const lastUpdate = serviceDescr.filter(ser => ser.descItem !== item)
-    setServiceDescr(lastUpdate)
-
-    const newData = {
-        service_id: isFirst,
-        desc: serviceDescr
-    }
-    updateService(newData).then(res => {
-        const data = serviceInfoAccorUser || [];
-        if (selectedServiceIndex > -1) {
-            data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        }
-        if (res.message === 'Updated Sucessfuly') {
-            setServiceInfoAccorUser([...data])
-            setShowDescModal(false)
-            ToastAndroid.showWithGravity(
-                'تم الحذف بنجاح',
-                ToastAndroid.SHORT,
-                ToastAndroid.BOTTOM,
-            );
-        }
-    })
-  }
 
   const serviceDetailEditPress = (title, type, isPerson, subDetail) => {
     setShowDetailModal(true)
@@ -200,7 +169,7 @@ const ProviderHome = props => {
 
   }
 
- 
+
   const header = () => {
     return (
       <View style={styles.header}>
@@ -227,7 +196,7 @@ const ProviderHome = props => {
         <BackgroundImage
           style={styles.logoview}
           source={require('../../assets/photos/backgroundPart.png')}>
-          <Image style={styles.logoImg} source={{uri:image}} />
+          <Image style={styles.logoImg} source={{ uri: image }} />
           <Pressable style={styles.editImg}>
             <Entypo name={'camera'} color={colors.puprble} size={25} />
           </Pressable>
@@ -597,6 +566,30 @@ const ProviderHome = props => {
     })
   };
 
+  const deleteDescItemPress = (item, setShowDescModal) => {
+    const lastUpdate = serviceDescr.filter(ser => ser.descItem !== item)
+    setServiceDescr(lastUpdate)
+
+    const newData = {
+      service_id: isFirst,
+      desc: serviceDescr
+    }
+    updateService(newData).then(res => {
+      const data = serviceInfoAccorUser || [];
+      if (selectedServiceIndex > -1) {
+        data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+      }
+      if (res.message === 'Updated Sucessfuly') {
+        setServiceInfoAccorUser([...data])
+        setShowDescModal(false)
+        ToastAndroid.showWithGravity(
+          'تم الحذف بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+    })
+  }
   const renderAddDescription = () => {
     return (
       <View>
@@ -692,7 +685,7 @@ const ProviderHome = props => {
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
                 </Pressable>
-                <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item,setShowDescModal)}>
+                <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal)}>
                   <AntDesign
                     name={'delete'}
                     color={colors.gray}
@@ -879,6 +872,33 @@ const ProviderHome = props => {
   }
 
   //Social Media
+  const deleteSocialMediaItem = (Socialitem, setShowModal) => {
+    console.log("serviceSocialMedia", serviceSocialMedia);
+    console.log("Socialitem", Socialitem);
+    const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
+    setServiceSocialMedia(lastUpdate)
+
+    const newData = {
+      service_id: isFirst,
+      socialMedia: serviceSocialMedia
+    }
+    updateService(newData).then(res => {
+      const data = serviceInfoAccorUser || [];
+      if (selectedServiceIndex > -1) {
+        data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+      }
+      if (res.message === 'Updated Sucessfuly') {
+        setServiceInfoAccorUser([...data])
+        setShowModal(false)
+        ToastAndroid.showWithGravity(
+          'تم الحذف بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+    })
+
+  }
   const renderSoialMedia = () => {
     return (
       <View>
@@ -968,7 +988,7 @@ const ProviderHome = props => {
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
                 </Pressable>
-                <Pressable style={styles.modalItem} onPress={socialMediaDeletePress}>
+                <Pressable style={styles.modalItem} onPress={() => deleteSocialMediaItem(item, setShowModal)}>
                   <AntDesign
                     name={'delete'}
                     color={colors.gray}

@@ -451,7 +451,7 @@ const RequestDetail = (props) => {
                     </View>
                     <View style={{ width: Dimensions.get('screen').width }}>
                         <View style={styles.serviceOfferBooking}>
-                            {renderCampaighn()}
+                            {/* {renderCampaighn()} */}
                         </View>
                     </View>
                 </ScrollView>

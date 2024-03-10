@@ -29,10 +29,8 @@ const EditServiceInfo = (props) => {
         editEmail, setEditEmail,
         editprice, setEditprice,
         addNewDesc, setAddNewDesc,
-       
         editNumofRequest, setEditNumofRequest,
-        addSocilMedia, setAddSocilMedia,
-        deleteSocialMedia, setDeleteSocialMedia, } = useContext(ServiceProviderContext);
+        addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
 
@@ -489,30 +487,6 @@ const EditServiceInfo = (props) => {
         updateInfo(newData,setAddSocilMedia)
     }
 
-    const deleteSMItem = () => {
-        // const newData = {
-        //     service_id: serviceID,
-        //     socialMedia: serviceSocialMedia
-        // }
-        // updateService(newData).then(res => {
-        //     const data = serviceInfoAccorUser || [];
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        setDeleteSocialMedia(false)
-        ToastAndroid.showWithGravity(
-            'تم الحذف بنجاح',
-            ToastAndroid.SHORT,
-            ToastAndroid.BOTTOM,
-        );
-        //     }
-        // })
-
-    }
-   
-    
 
     const editObject = [
         {
@@ -567,10 +541,6 @@ const EditServiceInfo = (props) => {
             editItem: addNewDesc,
             editFunction: addNewDescItemPress(),
         },
-        // {
-        //     editItem: deleteSocialMedia,
-        //     editFunction: deleteSMItem(),
-        // },
 
     ]
     const renderSelectedEdit = () => {

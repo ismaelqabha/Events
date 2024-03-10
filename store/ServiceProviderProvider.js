@@ -58,7 +58,7 @@ const ProviderProvider = props => {
   const [addNewDesc, setAddNewDesc] = useState(false);
   const [addNewDetail, setAddNewDetail] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [deleteSocialMedia, setDeleteSocialMedia] = useState(false);
+  
  
 
   return (
@@ -166,8 +166,6 @@ const ProviderProvider = props => {
         setAddNewDetail,
         showDetailModal, 
         setShowDetailModal,
-        deleteSocialMedia, 
-        setDeleteSocialMedia,
        
       }}>
       {props.children}

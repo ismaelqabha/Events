@@ -110,6 +110,14 @@ const ServiceDescr = (props) => {
             </View>
         </View>
     }
+    const renderLogo = () => {
+        const index = data.images[0].logoArray?.findIndex((val) => val === true)
+        const image = data.images[0]?.serviceImages[index]
+        return <Image
+            source={{ uri: image }}
+            style={styles.img}
+        />
+    }
     const renderDescription = () => {
         const serviceDescription = data.desc.map(item => {
             return (
@@ -230,7 +238,7 @@ const ServiceDescr = (props) => {
     const renderSubDetail = () => {
         const data = subDetArray
         const DetailInfo = data.map(item => {
-            
+
             return item.subDetailArray.map(subItem => {
                 return (
                     <View style={styles.subDetailView}>
@@ -502,7 +510,7 @@ const ServiceDescr = (props) => {
     const renderBody = () => {
         return (
             <View style={styles.body}>
-                <View style={styles.logo}></View>
+                <View style={styles.logo}>{renderLogo()}</View>
                 {renderTitle()}
                 {seperator()}
                 {renderDatesAvailable()}
@@ -590,13 +598,21 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
     logo: {
-        borderRadius: 30,
-        width: 70,
-        height: 70,
+        borderRadius: 40,
+        width: 85,
+        height: 85,
         position: 'absolute',
         top: -40,
         left: 50,
-        backgroundColor: colors.gold,
+        borderWidth: 3,
+        borderColor: colors.gold,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    img: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
     },
     seperaView: {
         borderWidth: 0.5,
@@ -837,7 +853,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         marginLeft: 10,
     },
-    SubPhoto:{
+    SubPhoto: {
         width: 80,
         height: 80,
         borderRadius: 30,

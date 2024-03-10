@@ -70,7 +70,7 @@ const ClientRequest = (props) => {
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM
                 )
-               
+
             } else {
                 Alert.alert(
                     'تنبية',
@@ -142,6 +142,7 @@ const ClientRequest = (props) => {
 
         })
     }
+    
     const getEventTypeInfo = () => {
         const eventList = []
         eventTypeInfo.forEach(element => {
@@ -176,6 +177,8 @@ const ClientRequest = (props) => {
             </View>
         )
     }
+
+    // render reservation Dates
     const renderRequestedDates = () => {
         if (Array.isArray(requestedDate)) {
             return requestedDate.map((item, index) => {
@@ -208,22 +211,14 @@ const ClientRequest = (props) => {
         )
     }
 
-    const queryImg = () => {
-        const imageArray = data.images[0].serviceImages.map(photos => {
-            return photos;
-        });
-        return imageArray;
-    };
+// render service logo and title
     const renderServiceImage = () => {
-        const logo = queryImg();
-        const coverphoto = logo.map(img => {
-            return <Image
-                source={{ uri: img }}
-                style={styles.img}
-            />
-        })
-
-        return coverphoto
+        const index = data.images[0].logoArray?.findIndex((val) => val === true)
+        const image = data.images[0]?.serviceImages[index]
+        return <Image
+            source={{ uri: image }}
+            style={styles.img}
+        />
     }
     const renderServiceinfo = () => {
         return <View >
@@ -237,6 +232,7 @@ const ClientRequest = (props) => {
             </View>
         </View>;
     }
+
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
             <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
@@ -366,12 +362,12 @@ const ClientRequest = (props) => {
                             </View>
                         </View>
                         <View style={styles.btn}>
-                        <Pressable onPress={() => onModalCancelPress()} >
-                            <Text style={styles.modaltext}>الغاء الامر</Text>
-                        </Pressable>
-                        <Pressable onPress={() => onModalSavePress()} >
-                            <Text style={styles.modaltext}>حفظ</Text>
-                        </Pressable>
+                            <Pressable onPress={() => onModalCancelPress()} >
+                                <Text style={styles.modaltext}>الغاء الامر</Text>
+                            </Pressable>
+                            <Pressable onPress={() => onModalSavePress()} >
+                                <Text style={styles.modaltext}>حفظ</Text>
+                            </Pressable>
                         </View>
                     </View>
                 </View>
@@ -387,7 +383,7 @@ const ClientRequest = (props) => {
             <ScrollView contentContainerStyle={styles.home}>
                 {renderServiceinfo()}
                 <View style={styles.DateView}>
-                    <Text style={styles.detailText}>تفاصيل الحجز</Text>
+                    {/* <Text style={styles.detailText}>تفاصيل الحجز</Text> */}
                     <ScrollView horizontal={true}>
                         {renderRequestedDates()}
                     </ScrollView>
