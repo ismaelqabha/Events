@@ -14,12 +14,12 @@ import Entypo from 'react-native-vector-icons/Entypo';
 
 const EditServiceInfo = (props) => {
     const {
-        serviceID, socialItem, socialLink, socialIndex,
+        serviceID, socialItem, socialLink,
         descriptionItem, editDescrItem, setEditDescrItem,
-        editSocialMedia,setEditSocialMedia } = props
+        editSocialMedia, setEditSocialMedia } = props
 
-    const { serviceInfoAccorUser, setServiceInfoAccorUser, socialMediaArray,
-        setSocialMediaArray, editTitle, seteditTitle,
+    const { serviceInfoAccorUser, setServiceInfoAccorUser,
+        editTitle, seteditTitle,
         editSubTitle, seteditSubTitle,
         editCity, seteditCity,
         locationEdit, setlocationEdit,
@@ -29,10 +29,14 @@ const EditServiceInfo = (props) => {
         editEmail, setEditEmail,
         editprice, setEditprice,
         addNewDesc, setAddNewDesc,
+       
         editNumofRequest, setEditNumofRequest,
-        addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
+        addSocilMedia, setAddSocilMedia,
+        deleteSocialMedia, setDeleteSocialMedia, } = useContext(ServiceProviderContext);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
+
+
     const getServiceInfo = () => {
         return serviceInfoAccorUser?.filter(item => {
             return item.service_id === serviceID;
@@ -49,18 +53,25 @@ const EditServiceInfo = (props) => {
     const [maxRequest, setMaxRequest] = useState();
     const [serviceRegion, setserviceRegion] = useState();
     const [serviceAddress, setserviceAddress] = useState();
+    const [serviceSocialMedia, setServiceSocialMedia] = useState(serviceData[0].socialMedia)
     const [selectHallType, setSelectHallType] = useState();
+
+
     const [serEditedDescrItem, setSerEditedDescrItem] = useState();
     const [addNewDescrItem, setaddNewDescrItem] = useState();
-    const [serviceDescr, setServiceDescr] = useState([]);
 
+    setTimeout(() => {
+        setServiceDescr(serviceData[0].desc)
+    }, 2000)
+
+    const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
 
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
     const [address, setAddress] = useState(null)
 
-    const [contactVal, setContactVal] = useState(null)
-    const [contactType, setContactType] = useState(null)
+    const [socialMediaLinkItem, setSocialMediaLinkItem] = useState()
+    const [socailMediaItem, setSocailMediaItem] = useState()
     const [webViewVisible, setWebViewVisible] = useState(false);
 
     const iconColors = {
@@ -80,7 +91,7 @@ const EditServiceInfo = (props) => {
     };
     useEffect(() => {
         getRegionsfromApi()
-      
+
     }, [])
 
     const editBasicInfoPress = (itemInfo, setState, update) => {
@@ -165,8 +176,8 @@ const EditServiceInfo = (props) => {
             </View>)
     }
 
-     // region part
-     const getRegionsfromApi = async () => {
+    // region part
+    const getRegionsfromApi = async () => {
         getRegions().then((res) => {
             res?.message ? showMessage(res.message) : updateData(res?.regions)
         }).catch((e) => {
@@ -200,10 +211,11 @@ const EditServiceInfo = (props) => {
     }
 
     // edit social media
-    const updateArray = (data, index) => {
-        setSocialMediaArray(prevArray => {
+    const addNewRecordSM = (data) => {
+        let newSMitemIndex = serviceSocialMedia.length 
+        setServiceSocialMedia(prevArray => {
             const newArray = [...prevArray];
-            newArray[index] = data;
+            newArray[newSMitemIndex] = { ...newArray[newSMitemIndex],  ...data};
             return newArray;
         });
     };
@@ -222,33 +234,24 @@ const EditServiceInfo = (props) => {
                             color={colors.BGScereen}
                             size={20} />
                     </Pressable>
-                    <View style={{width: '85%', marginRight: 10}}>
+                    <View style={{ width: '85%', marginRight: 10 }}>
                         <Text style={styles.editSocialtxt}>{socialItem}</Text>
                         <View style={styles.socialInput}>
-                            <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                            <FontAwesome5Brands name={socailMediaItem} size={25} style={styles.socialIcon} color={iconColors[socailMediaItem]} />
                             <TextInput
                                 style={styles.TextInput}
                                 keyboardType={'default'}
                                 placeholder={socialLink}
-                                index= {socialIndex}
-                                value={contactVal}
-                                onChangeText={(val) => setContactVal(val)}
-                                onFocus={() => {
-                                    handleLogin()
-                                }}
-                                onEndEditing={(event) => {
-                                    const text = event.nativeEvent.text
-                                    const data = {
-                                        social: contactType,
-                                        link: text,
-                                    }
-                                    updateArray(data, index)
-                                }}
+                                value={socialMediaLinkItem}
+                                onChangeText={setSocialMediaLinkItem}
+                            // onFocus={() => {
+                            //     handleLogin()
+                            // }}
                             />
                         </View>
                         {webViewVisible && (
                             <WebView
-                                source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
+                                source={{ uri: webUri[socailMediaItem] }} // Change URL to the social media platform's login page
                                 onNavigationStateChange={handleWebViewNavigationStateChange}
                             />
                         )}
@@ -261,7 +264,7 @@ const EditServiceInfo = (props) => {
         return (
             <View style={styles.itemView}>
                 <View style={styles.editAddressView}>
-                    <Pressable style={styles.itemFooter} onPress={addNewSocialMediaItem} 
+                    <Pressable style={styles.itemFooter} onPress={addNewSocialMediaItem}
                     >
                         <Feather
                             name={'save'}
@@ -272,12 +275,12 @@ const EditServiceInfo = (props) => {
                         <SelectList
                             data={socialMediaList}
                             setSelected={val => {
-                                setContactType(socialMediaList[val].value)
+                                setSocailMediaItem(socialMediaList[val].value)
                                 const data = {
                                     social: socialMediaList[val].value,
-                                    link: contactVal,
+                                    link: socialMediaLinkItem,
                                 }
-                                updateArray(data, index)
+                                addNewRecordSM(data)
                             }}
 
                             placeholder={'اختر الشبكة الاجتماعية'}
@@ -286,29 +289,29 @@ const EditServiceInfo = (props) => {
                             dropdownTextStyles={styles.dropstyle}
                         />
                         <View style={styles.socialInput}>
-                            <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                            <FontAwesome5Brands name={socailMediaItem} size={25} style={styles.socialIcon} color={iconColors[socailMediaItem]} />
                             <TextInput
                                 style={styles.TextInput}
                                 keyboardType={'default'}
                                 placeholder={"حمل الرابط"}
-                                value={contactVal}
-                                onChangeText={(val) => setContactVal(val)}
-                                onFocus={() => {
-                                    handleLogin()
-                                }}
+                                value={socialMediaLinkItem}
+                                onChangeText={(val) => setSocialMediaLinkItem(val)}
+                                // onFocus={() => {
+                                //     handleLogin()
+                                // }}
                                 onEndEditing={(event) => {
                                     const text = event.nativeEvent.text
                                     const data = {
-                                        social: contactType,
-                                        link: text,
+                                        social: socailMediaItem,
+                                        link: socialMediaLinkItem,
                                     }
-                                    updateArray(data, index)
+                                    addNewRecordSM(data)
                                 }}
                             />
                         </View>
                         {webViewVisible && (
                             <WebView
-                                source={{ uri: webUri[contactType] }} // Change URL to the social media platform's login page
+                                source={{ uri: webUri[socailMediaItem] }} // Change URL to the social media platform's login page
                                 onNavigationStateChange={handleWebViewNavigationStateChange}
                             />
                         )}
@@ -319,11 +322,16 @@ const EditServiceInfo = (props) => {
     }
 
     // Add description part
+    const addNewRecordDesc = (data) => {
+        let newDescitemIndex = serviceDescr.length
+        setServiceDescr(prevArray => {
+            const newArray = [...prevArray];
+            newArray[newDescitemIndex] = { ...newArray[newDescitemIndex],  ...data};
+            console.log("newArray[newDescitemIndex]", newArray[newDescitemIndex]);
+            return newArray;
+        });
+    };
     const addNewDescItemPress = () => {
-        // if (Number.isInteger(itemInfo)) {
-        //     itemInfo = itemInfo.toString()
-        // }
-
         return (
             <View style={styles.itemView}>
                 <View style={styles.editTitleView}>
@@ -339,9 +347,12 @@ const EditServiceInfo = (props) => {
                         //value={itemInfo}
                         placeholder={'اضافة وصف جديد'}
                         onChangeText={setaddNewDescrItem}
-                    //(val) => {
-                    // console.log("val", val);
-                    //setState(val)
+                        onEndEditing={val => {
+                            const data = {
+                                descItem: addNewDescrItem,
+                            }
+                            addNewRecordDesc(data)
+                        }}
                     />
 
                 </View>
@@ -349,19 +360,15 @@ const EditServiceInfo = (props) => {
     }
 
     // Update functions
-    const updateTitle = () => {
-        const newData = {
-            service_id: serviceID,
-            title: serviceTitle
-        }
-        updateService(newData).then(res => {
+    const updateInfo = (infoData, setstate) => {
+        updateService(infoData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...infoData };
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])
-                seteditTitle(false)
+                setstate(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -369,28 +376,20 @@ const EditServiceInfo = (props) => {
                 );
             }
         })
-
+    }
+    const updateTitle = () => {
+        const newData = {
+            service_id: serviceID,
+            title: serviceTitle
+        }
+        updateInfo(newData,seteditTitle) 
     }
     const updateSubTitle = () => {
         const newData = {
             service_id: serviceID,
             subTitle: serviceSubTitle
         }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                seteditSubTitle(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateInfo(newData,seteditSubTitle) 
 
     }
     const updateHallCapasity = () => {
@@ -398,87 +397,28 @@ const EditServiceInfo = (props) => {
             service_id: serviceID,
             maxCapasity: serviceHallCapasity
         }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                seteditHallcapasity(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
-
+        updateInfo(newData,seteditHallcapasity)
     }
     const updatePhone = () => {
         const newData = {
             service_id: serviceID,
             servicePhone: servicePhone
         }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                seteditphone(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
-
+        updateInfo(newData,seteditphone)
     }
     const updateEmail = () => {
         const newData = {
             service_id: serviceID,
             serviceEmail: serviceEmail
         }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                setEditEmail(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
-
+        updateInfo(newData,setEditEmail)
     }
     const updatePrice = () => {
         const newData = {
             service_id: serviceID,
             servicePrice: servicePrice
         }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                setEditprice(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateInfo(newData,setEditprice)
 
     }
     const updateMaxRequest = () => {
@@ -486,22 +426,7 @@ const EditServiceInfo = (props) => {
             service_id: serviceID,
             numRecivedRequest: maxRequest
         }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                setEditNumofRequest(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
-
+        updateInfo(newData,setEditNumofRequest)
     }
     const updateAddress = () => {
         const newData = {
@@ -509,125 +434,65 @@ const EditServiceInfo = (props) => {
             region: serviceRegion,
             address: serviceAddress
         }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                seteditCity(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateInfo(newData,seteditCity)
 
     }
     const updateSocialMediaItem = () => {
-        setEditSocialMedia(false)
-        // const newData = {
-        //     service_id: serviceID,
-        //     socialMedia: socialMediaArray
-        // }
-        // updateService(newData).then(res => {
-        //     const data = serviceInfoAccorUser || [];
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        const SMitemIndex = serviceSocialMedia.findIndex(elme => elme.social === socialItem)
+        const SM = serviceSocialMedia
+        if (SMitemIndex > -1) {
+            SM[SMitemIndex].link = socialMediaLinkItem
+        }
+        setServiceSocialMedia(SM[SMitemIndex]);
 
-    }
-    const addNewSocialMediaItem = () => {
-        setAddSocilMedia(false)
-        // const newData = {
-        //     service_id: serviceID,
-        //     socialMedia: socialMediaArray
-        // }
-        // updateService(newData).then(res => {
-        //     const data = serviceInfoAccorUser || [];
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
-
+        const newData = {
+            service_id: serviceID,
+            socialMedia: serviceSocialMedia
+        }
+        updateInfo(newData,setEditSocialMedia)
     }
     const updateHallTypeItem = () => {
         const newData = {
             service_id: serviceID,
             hallType: selectHallType
         }
-        updateService(newData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setServiceInfoAccorUser([...data])
-                seteditHallType(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
-
+        updateInfo(newData,seteditHallType)
     }
     const updateServiceDescrItem = () => {
-        setEditDescrItem(false)
-        // const data = serviceInfoAccorUser || [];
-        // const selectedServiceDescrItemIndex = data[selectedServiceIndex].desc?.findIndex(item => item.descItem === descriptionItem)
-        // const newDescItem = {
-        //     descItem: serviceDescrItem
-        // }
-        // setServiceDescr(element => {
-        //     const newDescElement = [...element];
-        //     newDescElement[selectedServiceDescrItemIndex] = newDescItem;
-        //     return newDescElement;
-        // })
-        // const newData = {
-        //     service_id: serviceID,
-        //     desc: serviceDescr
-        // }
-        // updateService(newData).then(res => {
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
+        const itemIndex = serviceDescr.findIndex(elme => elme.descItem === descriptionItem)
+        const itemDesc = serviceDescr
+        if (itemIndex > -1) {
+            itemDesc[itemIndex].descItem = serEditedDescrItem
+        }
+        setServiceDescr(itemDesc[itemIndex]);
+
+        const newData = {
+            service_id: serviceID,
+            desc: serviceDescr
+        }
+        updateInfo(newData,setEditDescrItem)
 
     }
+
     const addNewDescItem = () => {
-        setAddNewDesc(false)
+        const newData = {
+            service_id: serviceID,
+            desc: serviceDescr
+        }
+        updateInfo(newData,setAddNewDesc)
+    }
+    const addNewSocialMediaItem = () => {
+        const newData = {
+            service_id: serviceID,
+            socialMedia: serviceSocialMedia
+        }
+        updateInfo(newData,setAddSocilMedia)
+    }
+
+    const deleteSMItem = () => {
         // const newData = {
         //     service_id: serviceID,
-        //     socialMedia: socialMediaArray
+        //     socialMedia: serviceSocialMedia
         // }
         // updateService(newData).then(res => {
         //     const data = serviceInfoAccorUser || [];
@@ -636,15 +501,18 @@ const EditServiceInfo = (props) => {
         //     }
         //     if (res.message === 'Updated Sucessfuly') {
         //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
+        setDeleteSocialMedia(false)
+        ToastAndroid.showWithGravity(
+            'تم الحذف بنجاح',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+        );
         //     }
         // })
 
     }
+   
+    
 
     const editObject = [
         {
@@ -699,6 +567,10 @@ const EditServiceInfo = (props) => {
             editItem: addNewDesc,
             editFunction: addNewDescItemPress(),
         },
+        // {
+        //     editItem: deleteSocialMedia,
+        //     editFunction: deleteSMItem(),
+        // },
 
     ]
     const renderSelectedEdit = () => {
@@ -742,7 +614,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         //borderWidth: 1
     },
-    
+
     itemFooter: {
         width: '10%',
         alignItems: 'center',
@@ -807,10 +679,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignSelf: 'center'
     },
-    editSocialtxt:{
-       textAlign:'center',
-       fontSize: 18,
-       color : colors.puprble
+    editSocialtxt: {
+        textAlign: 'center',
+        fontSize: 18,
+        color: colors.puprble
     },
     socialIcon: {
         alignSelf: 'center',
@@ -824,7 +696,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
         alignSelf: 'center',
     },
-   
+
     IconView: {
         width: 40,
         height: 40,

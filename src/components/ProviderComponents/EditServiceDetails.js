@@ -189,8 +189,8 @@ const EditServiceDetails = (props) => {
                     <Pressable style={styles.subImg} onPress={onAddImgPress}>
                         {subDetailImg ?
                             <Image
-                                source={subDetailImg}
-                                style={{ flex: 1, width: '100%', height: '100%', resizeMode: 'stretch', borderRadius: 10 }}
+                                source={{uri: sub.subDetailPhoto.uri}}
+                                style={{ width: 100, height: 100, resizeMode: 'stretch', borderRadius: 10 }}
                             />
                             :
                             <MaterialIcons
@@ -231,8 +231,7 @@ const EditServiceDetails = (props) => {
                     <View style={styles.subDetailItemView}>
                         <Pressable onPress={() => {
                             setShowSubDetModal(true)
-                        }}
-                        >
+                        }}>
                             <Feather
                                 name={'more-vertical'}
                                 color={colors.puprble}
@@ -246,7 +245,7 @@ const EditServiceDetails = (props) => {
 
                             <View style={styles.subDetailImg}>
                                 <Image style={styles.subDetailImg}
-                                //source={{ uri: sub.subDetailPhoto.uri }}
+                                source={{ uri: sub.subDetailPhoto.uri }}
                                 /></View>
                         </View>
                     </View>
@@ -429,6 +428,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10
     },
     subDetailItemView: {
+        //borderWidth: 1,
         width: '100%',
         padding: 5,
         flexDirection: 'row',
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 30,
-        borderWidth: 1
+        //borderWidth: 1
     },
     addsubDetailView: {
         width: '100%',

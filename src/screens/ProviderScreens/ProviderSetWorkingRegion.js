@@ -13,8 +13,8 @@ import SearchContext from '../../../store/SearchContext';
 
 const ProviderSetWorkingRegion = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderWorkingRegion;
-  const [Region, SetRegion] = useState([])
-  const { workAreas, serviceInfoAccorUser, setServiceInfoAccorUser } = useContext(ServiceProviderContext);
+  // const [Region, SetRegion] = useState([])
+  const { workAreas, serviceInfoAccorUser, setServiceInfoAccorUser,Region, SetRegion } = useContext(ServiceProviderContext);
   const { isFirst } = useContext(SearchContext);
 
   const params = {
@@ -31,8 +31,7 @@ const ProviderSetWorkingRegion = props => {
     },
   };
   const getRegionsfromApi = () => {
-    getRegions().then(res => {
-      console.log("res", res);
+    getRegions({}).then(res => {
       SetRegion(res)
     })
   }
@@ -62,7 +61,7 @@ const ProviderSetWorkingRegion = props => {
   }
 
   useEffect(() => {
-    getRegionsfromApi()
+    
   }, [])
 
   const onBackPress = () => {
@@ -70,7 +69,6 @@ const ProviderSetWorkingRegion = props => {
   };
 
   const renderCard = () => {
-    console.log("Region.regions",Region.regions);
     const cardsArray = Region.regions.map(card => {
       return <ProviderWorkRegionComp {...card} />;
     });

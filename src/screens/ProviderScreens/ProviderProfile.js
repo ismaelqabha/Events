@@ -13,20 +13,19 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
-import { getRegions } from '../../resources/API';
+import { getCampaignsByServiceId, getRegions } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
-  const { setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat } =
+  const { setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat, campInfo, setCampInfo } =
     useContext(SearchContext);
-  const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+  const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
+  const { userName} = useContext(UsersContext);
 
   const navigation = useNavigation();
+  const providerReview = true
  
- 
-  const [Region, SetRegion] = useState([])
-
-
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
@@ -40,15 +39,25 @@ const ProviderProfile = props => {
     });
     return cardsArray;
   };
+
   const getRegionsfromApi = () => {
     getRegions({}).then(res => {
       SetRegion(res)
     })
   }
 
+  const getCampignsfromApi = () => {
+    getCampaignsByServiceId({ serviceId: isFirst }).then(res => {
+      setCampInfo(res);
+    });
+  };
+
   useEffect(() => {
     getRegionsfromApi()
+    getCampignsfromApi()
   }, [isFirst])
+
+
 
   const filterService = () => {
     const service = serviceInfoAccorUser?.filter(item => {
@@ -84,6 +93,23 @@ const ProviderProfile = props => {
           </View>
           <View style={styles.IconView}>
             <FontAwesome5 name={'users'} color={colors.puprble} size={25} />
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
+  const renderCampigns = () => {
+    return (
+      <View>
+        <Pressable
+          style={styles.item}
+          onPress={() => props.navigation.navigate(ScreenNames.ProviderShowOffers)}
+        >
+          <View>
+            <Text style={styles.basicInfo}>العروض</Text>
+          </View>
+          <View style={styles.IconView}>
+            <MaterialIcons name={'campaign'} color={colors.puprble} size={25} />
           </View>
         </Pressable>
       </View>
@@ -214,13 +240,13 @@ const ProviderProfile = props => {
       </View>
     );
   };
-  
+ 
   const renderFeedBack = () => {
     return (
       <View>
         <Pressable
           style={styles.reviewitem}
-          onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen)}>
+          onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen, {providerReview})}>
           <View>
             <Text style={styles.reviewtxt}>التغذية الراجعة (2)</Text>
           </View>
@@ -244,7 +270,7 @@ const ProviderProfile = props => {
       <ScrollView>
         <View style={styles.headView}>
           <Text style={styles.headtext}>
-            {language.HeadText + 'اسماعيل كبها '}
+            {language.HeadText + userName}
           </Text>
         </View>
         <View style={styles.content}>
@@ -256,10 +282,11 @@ const ProviderProfile = props => {
           {renderPayments()}
           {renderClients()}
           {renderFeedBack()}
+          {campInfo.message !== 'No Campaigns' && renderCampigns()}
         </View>
 
-        <Text style={styles.txt}>قائمة العروض</Text>
-        <View style={styles.viewSet}></View>
+        {/* <Text style={styles.txt}>قائمة العروض</Text>
+        <View style={styles.viewSet}>{renderOffers()}</View> */}
 
         <Text style={styles.txt}>العمليات</Text>
         <View style={styles.viewSet}>
@@ -317,10 +344,7 @@ const styles = StyleSheet.create({
     color: colors.puprble,
     fontWeight: 'bold',
   },
-  // basicInfoTitle: {
-  //   fontSize: 12,
-  //   textAlign: 'right',
-  // },
+  
   IconView: {
     width: 50,
     height: 50,
@@ -336,12 +360,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginTop: 10,
   },
-  // itemSM: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   justifyContent: 'space-between',
-  //   width: '80%'
-  // },
+ 
   seprater: {
     borderColor: colors.puprble,
     borderWidth: 0.2,
@@ -388,5 +407,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginLeft: 15,
   },
-  
+ 
+
 });

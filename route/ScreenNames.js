@@ -23,6 +23,8 @@ export const ScreenNames = {
     LogOut: 'LogOut',
     ClientProfile: 'ClientProfile',
     ReviewsScreen: 'ReviewsScreen',
+    ClientSpecialDates: 'ClientSpecialDates',
+    ClientRelations: 'ClientRelations',
 
     // Create User
     CreateUpersonalInfo: 'CreateUpersonalInfo',
@@ -55,7 +57,8 @@ export const ScreenNames = {
     ProviderSetEventType: 'ProviderSetEventType',
     ProviderNotification: 'ProviderNotification',
     ProviderClientScreen: 'ProviderClientScreen',
-
+    ProviderShowOffers: 'ProviderShowOffers',
+    ProviderOfferDesc: 'ProviderOfferDesc',
 
 
     Splash: 'Splash',

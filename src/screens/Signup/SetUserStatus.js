@@ -178,9 +178,7 @@ const SetUserStatus = (props) => {
             updateSpecialEventArray(data)
           }}
         />
-        <Pressable
-          onPress={() => onSetEventDate(eventTitle, eventDate)}
-        >
+        <Pressable onPress={() => onSetEventDate(eventTitle, eventDate)}>
           <View style={styles.Bdate}>
             <Text >{eventDate}</Text>
             <Entypo

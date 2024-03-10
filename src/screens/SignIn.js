@@ -18,7 +18,8 @@ const SignIn = (props) => {
             setPassword,
             setUserEmail,
             userInfo,
-            setUserInfo, } = useContext(UsersContext);
+            setUserInfo,
+            setUserName } = useContext(UsersContext);
 
     const [verifyUser, setVerifyUser] = useState()
 
@@ -53,6 +54,7 @@ const SignIn = (props) => {
         getUserData({ Email: userEmail }).then(res => {
             setUserInfo(res)
             setuserId(res.user[0].USER_ID)
+            setUserName(res.user[0].User_name)
             console.log("res.user[0].USER_ID",res.user[0].USER_ID);
         })
     }
