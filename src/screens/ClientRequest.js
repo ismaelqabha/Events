@@ -142,7 +142,7 @@ const ClientRequest = (props) => {
 
         })
     }
-    
+
     const getEventTypeInfo = () => {
         const eventList = []
         eventTypeInfo.forEach(element => {
@@ -211,7 +211,7 @@ const ClientRequest = (props) => {
         )
     }
 
-// render service logo and title
+    // render service logo and title
     const renderServiceImage = () => {
         const index = data.images[0].logoArray?.findIndex((val) => val === true)
         const image = data.images[0]?.serviceImages[index]
@@ -382,8 +382,11 @@ const ClientRequest = (props) => {
 
             <ScrollView contentContainerStyle={styles.home}>
                 {renderServiceinfo()}
+                <View style={styles.labelView}>
+                    <Text style={styles.detailText}>تفاصيل الحجز</Text>
+                </View>
+
                 <View style={styles.DateView}>
-                    {/* <Text style={styles.detailText}>تفاصيل الحجز</Text> */}
                     <ScrollView horizontal={true}>
                         {renderRequestedDates()}
                     </ScrollView>
@@ -425,10 +428,17 @@ const styles = StyleSheet.create({
     DateView: {
         backgroundColor: 'white',
         justifyContent: 'center',
-        marginTop: 2.5,
+        marginBottom: 5,
         width: "100%",
         height: 80,
         alignItems: 'flex-end',
+        //borderWidth: 1
+    },
+    labelView: {
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        width: "100%",
+        height: 40,
     },
     dateItem: {
         width: 120,
@@ -436,8 +446,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 3,
         alignItems: 'center',
         justifyContent: 'center',
-        alignSelf: 'flex-end',
-        backgroundColor: colors.BGScereen
+        alignSelf: 'center',
+        borderWidth: 2,
+        borderColor: 'lightgray',
+        marginRight: 20,
+        borderRadius: 5,
     },
     dateItemPressed: {
         width: 120,
@@ -445,17 +458,22 @@ const styles = StyleSheet.create({
         marginHorizontal: 3,
         alignItems: 'center',
         justifyContent: 'center',
-        alignSelf: 'flex-end',
-        backgroundColor: colors.puprble
+        alignSelf: 'center',
+        borderWidth: 2,
+        borderColor: colors.puprble,
+        marginRight: 20,
+        borderRadius: 5,
     },
     dateItem1: {
-        borderTopLeftRadius: 5,
-        //borderTopRightRadius:5,
+        borderRadius: 5,
         width: 120,
         height: 50,
         justifyContent: 'center',
-        alignSelf: 'flex-end',
-        backgroundColor: colors.puprble
+        alignSelf: 'center',
+        borderWidth: 2,
+        borderColor: 'lightgray',
+        marginRight: 20
+        // backgroundColor: colors.puprble
     },
     dateTxt: {
         fontSize: 15,
@@ -464,22 +482,21 @@ const styles = StyleSheet.create({
     },
     dateTxtPressed: {
         fontSize: 15,
-        color: colors.BGScereen,
+        color: colors.puprble,
         textAlign: 'center'
     },
 
     requestDetailView: {
-        backgroundColor: colors.puprble,
-        marginBottom: 2.5,
-        width: '100%',
-        paddingRight: 10,
-        paddingVertical: 10
+        width: '95%',
+        alignSelf: 'center',
+        borderRadius: 10,
+        marginBottom: 5,
     },
 
     detailText: {
-        fontSize: 18,
+        fontSize: 20,
         color: colors.puprble,
-        marginRight: 10
+        marginRight: 20
     },
     titleText: {
         fontSize: 16,

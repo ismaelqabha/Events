@@ -14,7 +14,7 @@ const RequestDetail = (props) => {
     const {
         selectedDate,
         setSelectedDate } = props
-    const { cat, setResDetail, resDetail, requestedDate } = useContext(SearchContext);
+    const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
         return moment(date).format('L')
     }) : [requestedDate]
@@ -400,7 +400,7 @@ const RequestDetail = (props) => {
                                 <Feather
                                     style={{ alignSelf: 'center' }}
                                     name={"corner-down-left"}
-                                    color={colors.BGScereen}
+                                    color={colors.puprble}
                                     size={30} />
                             </View>
                         )
@@ -412,7 +412,7 @@ const RequestDetail = (props) => {
                                 <Feather
                                     style={{ alignSelf: 'center' }}
                                     name={"corner-down-left"}
-                                    color={colors.BGScereen}
+                                    color={colors.puprble}
                                     size={30} />
                             </View>
                         )
@@ -427,10 +427,10 @@ const RequestDetail = (props) => {
         return (
             <View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
-                    <Pressable>
+                    <Pressable style={styles.detailLabel}>
                         <Text style={styles.detailViewText}>العروض</Text>
                     </Pressable>
-                    <Pressable>
+                    <Pressable style={styles.detailLabelPressed}>
                         <Text style={styles.detailViewText}>الخدمات</Text>
                     </Pressable>
                 </View>
@@ -451,7 +451,7 @@ const RequestDetail = (props) => {
                     </View>
                     <View style={{ width: Dimensions.get('screen').width }}>
                         <View style={styles.serviceOfferBooking}>
-                            {/* {renderCampaighn()} */}
+                            {renderCampaighn()}
                         </View>
                     </View>
                 </ScrollView>
@@ -584,10 +584,11 @@ export default RequestDetail
 
 const styles = StyleSheet.create({
     requestDetailView: {
-        backgroundColor: colors.puprble,
-        marginVertical: 2.5,
+        backgroundColor: 'white',
+        //marginVertical: 2.5,
         width: '100%',
-        padding: 10
+        padding: 10,
+        borderRadius: 10
     },
     scroll: {
         // flex: 1,
@@ -599,14 +600,14 @@ const styles = StyleSheet.create({
         height: 350,
         padding: 5,
         marginTop: 10,
-        backgroundColor: colors.puprble,
+        backgroundColor: 'white',
     },
     serviceOfferBooking: {
         width: Dimensions.get('screen').width * 0.9,
         height: 350,
         //padding: 5,
         //marginTop: 10,
-        backgroundColor: colors.puprble,
+        backgroundColor: 'white',
     },
     detailView: {
         width: '90%',
@@ -621,7 +622,7 @@ const styles = StyleSheet.create({
     pressDetailView: {
         width: 350,
         height: 60,
-        backgroundColor: 'snow',
+        //backgroundColor: 'snow',
         elevation: 5,
         borderRadius: 8,
         margin: 10,
@@ -629,9 +630,27 @@ const styles = StyleSheet.create({
     },
     detailViewText: {
         fontSize: 18,
-        color: colors.BGScereen,
+        color: colors.darkGold,
         fontWeight: 'bold',
         //margin: 5,
+    },
+    detailLabel:{
+        borderWidth: 2,
+        borderColor: 'lightgray',
+        borderRadius: 15,
+        width: '30%',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    detailLabelPressed:{
+        borderWidth: 2,
+        borderColor: colors.puprble,
+        borderRadius: 15,
+        width: '30%',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     detailText: {
         fontSize: 18,
@@ -640,7 +659,7 @@ const styles = StyleSheet.create({
     },
     subDetText: {
         fontSize: 15,
-        color: colors.BGScereen,
+        color: colors.puprble,
         marginRight: 10
     },
     closeView: {
@@ -778,18 +797,15 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end'
     },
     campaignView: {
-        // flexDirection: 'row',
-        // justifyContent: 'space-around',
-        // alignItems: 'center',
         width: '100%',
         alignSelf: 'center',
         padding: 5,
-        marginTop: 10
+        marginTop: 10,
         //borderWidth: 1
     },
     campText: {
         fontSize: 18,
-        color: colors.BGScereen,
+        color: colors.puprble,
     },
     campImg: {
         width: 100,
