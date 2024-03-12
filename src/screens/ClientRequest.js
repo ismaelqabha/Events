@@ -6,6 +6,7 @@ import UsersContext from '../../store/UsersContext';
 import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
 import Entypo from "react-native-vector-icons/Entypo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { addNewRequest, createNewEvent, deleteRequestbyId, getEventList, getEventsInfo } from '../resources/API';
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
@@ -28,6 +29,7 @@ const ClientRequest = (props) => {
     const [date, setDate] = useState(new Date());
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [calcPrice, setCalcPrice] = useState(false);
     const [selectTime, setSelectTime] = useState(true);
 
     const [fileEventName, setfileEventName] = useState();
@@ -274,12 +276,12 @@ const ClientRequest = (props) => {
     }
     const renderEvents = () => {
         return (<View style={styles.eventView}>
-            <Text style={styles.detailText}>اِضغط على المناسبة التي تنوي ارفاق الطلب لها</Text>
+            <Text style={styles.text}>اِختر او قم باٍنشاء مناسبة</Text>
             {IveEvent &&
                 renderEventInfo()
             }
             <Pressable style={styles.eventItem} onPress={onPressModalHandler}>
-                <Text style={styles.detailText}>اِنشاء مناسبة جديدة</Text>
+                <Text style={styles.text}>اِنشاء مناسبة جديدة</Text>
                 <View style={styles.IconView}>
                     <Entypo
                         style={{ alignSelf: 'center' }}
@@ -308,17 +310,31 @@ const ClientRequest = (props) => {
             return result
         })
     }
+    const whenEventPress = (eventId, selectedEvent, setSelectedEvent) => {
+        setSelectedEvent(!selectedEvent)
+    }
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
             const document = getEventLogo(item.eventTitleId)
+            //const [selectedEvent, setSelectedEvent] = useState(false);
             return (
                 <Pressable key={index} style={styles.eventItem} onPress={() => handleEventChoosen(item.EventId)}>
                     <View >
                         <Text style={styles.detailText}>{item.eventName}</Text>
                     </View>
                     <View style={styles.IconView}>
-                        <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} />
+                        <Pressable style={styles.selectEvent}
+                        // onPress={() => whenEventPress(item.EventId, selectedEvent, setSelectedEvent)}
+                        >
+                            {/* {selectedEvent && <Entypo
+                                style={{ alignSelf: 'center' }}
+                                name={"check"}
+                                color={colors.puprble}
+                                size={30} />} */}
+                        </Pressable>
+
+                        {/* <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} /> */}
                     </View>
 
                 </Pressable>
@@ -376,15 +392,34 @@ const ClientRequest = (props) => {
         )
     }
 
+    // pricing calcPrice, setCalcPrice
+    const renderPrice = () => {
+        return (
+            <Pressable style={[calcPrice ? styles.priceViewPress : styles.priceView]}
+                onPress={() => setCalcPrice(true)}>
+                <Text style={styles.text}>حساب السعر </Text>
+                <View style={styles.IconView}>
+                    <MaterialIcons
+                        style={{ alignSelf: 'center' }}
+                        name={"calculate"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
+
+            </Pressable>
+        )
+    }
+
     return (
         <View style={styles.container}>
             {renderHeader()}
 
             <ScrollView contentContainerStyle={styles.home}>
                 {renderServiceinfo()}
-                <View style={styles.labelView}>
+
+                {/* <View style={styles.labelView}>
                     <Text style={styles.detailText}>تفاصيل الحجز</Text>
-                </View>
+                </View> */}
 
                 <View style={styles.DateView}>
                     <ScrollView horizontal={true}>
@@ -393,6 +428,7 @@ const ClientRequest = (props) => {
                 </View>
                 {renderRequestInfo()}
                 {renderEvents()}
+                {renderPrice()}
                 <View style={styles.body}>
                     <Text style={styles.text}>لن يتم تأكيد الحجز حتى يقوم صاحب الخدمة بقبول الطلب خلال 24 ساعة</Text>
                 </View>
@@ -406,7 +442,7 @@ const ClientRequest = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#dcdcdc',
+        backgroundColor: colors.silver,
     },
     header: {
         backgroundColor: 'white',
@@ -420,18 +456,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         backgroundColor: 'white',
-        marginVertical: 2.5,
+        marginVertical: 5,
+        width: '95%',
         height: 150,
+        alignSelf: 'center',
         alignItems: 'center',
-        paddingRight: 10
+        paddingRight: 10,
+        borderRadius: 15
     },
     DateView: {
         backgroundColor: 'white',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         marginBottom: 5,
-        width: "100%",
+        width: "95%",
         height: 80,
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        alignSelf: 'center',
+        borderRadius: 15,
         //borderWidth: 1
     },
     labelView: {
@@ -468,12 +509,10 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         width: 120,
         height: 50,
-        justifyContent: 'center',
+        //justifyContent: 'center',
         alignSelf: 'center',
         borderWidth: 2,
-        borderColor: 'lightgray',
-        marginRight: 20
-        // backgroundColor: colors.puprble
+        borderColor: colors.silver,
     },
     dateTxt: {
         fontSize: 15,
@@ -505,10 +544,12 @@ const styles = StyleSheet.create({
     },
     eventView: {
         backgroundColor: 'white',
-        marginVertical: 2.5,
-        width: '100%',
+        marginBottom: 5,
+        width: '95%',
         paddingRight: 10,
-        paddingVertical: 10
+        paddingVertical: 10,
+        alignSelf: 'center',
+        borderRadius: 15
     },
     eventItem: {
         flexDirection: 'row',
@@ -516,6 +557,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: "100%",
         marginVertical: 5,
+    },
+    selectEvent: {
+        width: 20,
+        height: 20,
+        borderWidth: 2,
+        borderColor: 'white'
     },
     myEvents: {
         flexDirection: 'row',
@@ -537,7 +584,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'lightgray',
         borderRadius: 30,
-        marginLeft: 15
+        marginLeft: 10
     },
     iconImg: {
         alignItems: 'center',
@@ -552,8 +599,9 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     text: {
-        fontSize: 20,
-        color: 'black'
+        fontSize: 15,
+        marginRight: 10,
+        color: colors.puprble
     },
     txt: {
         fontSize: 20,
@@ -563,9 +611,13 @@ const styles = StyleSheet.create({
 
     body: {
         backgroundColor: 'white',
-        width: '100%',
-        marginVertical: 2.5,
-        paddingHorizontal: 5
+        width: '95%',
+        height: 100,
+        marginBottom: 5,
+        paddingHorizontal: 5,
+        alignSelf: 'center',
+        borderRadius: 15,
+        justifyContent: 'center'
     },
 
     icon: {
@@ -628,12 +680,12 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },
-    body: {
-        width: '90%',
-        alignSelf: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+    // body: {
+    //     width: '90%',
+    //     alignSelf: 'center',
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    // },
     input: {
         textAlign: 'center',
         height: 50,
@@ -671,6 +723,33 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'black',
     },
+    priceView: {
+        width: '95%',
+        height: 60,
+        backgroundColor: 'white',
+        alignSelf: 'center',
+        marginBottom: 5,
+        borderRadius: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingRight: 10,
+       
+
+    },
+    priceViewPress: {
+        width: '95%',
+        height: 150,
+        backgroundColor: 'white',
+        alignSelf: 'center',
+        marginBottom: 5,
+        borderRadius: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingRight: 10,
+        
+    }
 })
 
 export default ClientRequest;

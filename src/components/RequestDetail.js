@@ -5,6 +5,7 @@ import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from 'moment';
 import Footer from './Footers/Footer';
 import { AppStyles } from '../assets/res/AppStyles';
@@ -389,13 +390,26 @@ const RequestDetail = (props) => {
         if (CampData.message !== 'No Campaigns') {
             const campArray = CampData?.map(camp => {
                 return <View style={styles.campaignView}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Text style={styles.campText}>{camp.campCost}</Text>
+                    <View style={[CampData ? styles.offerTitle : styles.offerTitleSelected]}>
                         <Text style={styles.campText}>{camp.campTitle}</Text>
+                        {camp.priceInclude == 'حسب الشخص' ?
+                            <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
+                            <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
                     </View>
+                    <View style={styles.offerContentView}>
+                        <Text style={styles.campText}>محتويات العرض</Text>
+                        <View style={styles.IconView}>
+                            <MaterialCommunityIcons
+                                style={{ alignSelf: 'center' }}
+                                name={"table-of-contents"}
+                                color={colors.puprble}
+                                size={30} />
+                        </View>
+                    </View>
+
                     {camp.contentFromSubDet.map(item => {
                         return (
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
                                 <Text style={styles.subDetText}>{item}</Text>
                                 <Feather
                                     style={{ alignSelf: 'center' }}
@@ -407,7 +421,7 @@ const RequestDetail = (props) => {
                     })}
                     {camp.campContents.map(elment => {
                         return (
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
                                 <Text style={styles.subDetText}>{elment}</Text>
                                 <Feather
                                     style={{ alignSelf: 'center' }}
@@ -418,7 +432,7 @@ const RequestDetail = (props) => {
                         )
                     })}
 
-                </View>
+                </View >
             });
             return campArray;
         }
@@ -426,6 +440,7 @@ const RequestDetail = (props) => {
     const renderReservationDet = () => {
         return (
             <View>
+                <Text style={styles.text}>قم بتحديد تفاصيل الحجز اِما من الخدمات او العروض</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
                     <Pressable style={styles.detailLabel}>
                         <Text style={styles.detailViewText}>العروض</Text>
@@ -442,7 +457,6 @@ const RequestDetail = (props) => {
                     decelerationRate={'fast'}
                     snapToInterval={0}
                     snapToAlignment={'start'}
-
                 >
                     <View style={{ width: Dimensions.get('screen').width }}>
                         <View style={styles.serviceDetBooking}>
@@ -585,7 +599,6 @@ export default RequestDetail
 const styles = StyleSheet.create({
     requestDetailView: {
         backgroundColor: 'white',
-        //marginVertical: 2.5,
         width: '100%',
         padding: 10,
         borderRadius: 10
@@ -604,11 +617,9 @@ const styles = StyleSheet.create({
     },
     serviceOfferBooking: {
         width: Dimensions.get('screen').width * 0.9,
-        height: 350,
-        //padding: 5,
-        //marginTop: 10,
         backgroundColor: 'white',
     },
+
     detailView: {
         width: '90%',
         height: 500,
@@ -622,7 +633,6 @@ const styles = StyleSheet.create({
     pressDetailView: {
         width: 350,
         height: 60,
-        //backgroundColor: 'snow',
         elevation: 5,
         borderRadius: 8,
         margin: 10,
@@ -632,9 +642,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.darkGold,
         fontWeight: 'bold',
-        //margin: 5,
     },
-    detailLabel:{
+    detailLabel: {
         borderWidth: 2,
         borderColor: 'lightgray',
         borderRadius: 15,
@@ -643,7 +652,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    detailLabelPressed:{
+    detailLabelPressed: {
         borderWidth: 2,
         borderColor: colors.puprble,
         borderRadius: 15,
@@ -708,7 +717,7 @@ const styles = StyleSheet.create({
         elevation: 5
     },
     text: {
-        fontSize: 20,
+        fontSize: 15,
         color: 'black'
     },
     icoon: {
@@ -768,14 +777,14 @@ const styles = StyleSheet.create({
         width: 100,
         height: 40,
         borderWidth: 1.5,
-        borderColor: colors.BGScereen,
+        borderColor: colors.silver,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 5
     },
     nextBackText: {
         fontSize: 15,
-        color: colors.BGScereen
+        color: colors.puprble
     },
     detailModal: {
         width: '100%',
@@ -803,6 +812,28 @@ const styles = StyleSheet.create({
         marginTop: 10,
         //borderWidth: 1
     },
+    offerTitle: {
+        width: '90%', 
+        borderRadius: 10, 
+        alignSelf: 'center', 
+        backgroundColor: colors.silver, 
+        alignItems: 'center'
+    },
+    offerTitleSelected: {
+        width: '90%', 
+        borderRadius: 10, 
+        alignSelf: 'center', 
+        backgroundColor: colors.silver, 
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: colors.darkGold
+    },
+    offerContentView: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'flex-end', 
+        marginVertical: 10
+    },
     campText: {
         fontSize: 18,
         color: colors.puprble,
@@ -811,6 +842,15 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 10
-    }
+    },
+    IconView: {
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginLeft: 10
+    },
 
 })
