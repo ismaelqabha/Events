@@ -30,6 +30,7 @@ const ClientRequest = (props) => {
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [calcPrice, setCalcPrice] = useState(false);
+    const [isCalculate, setIsCalculate] = useState(false);
     const [selectTime, setSelectTime] = useState(true);
 
     const [fileEventName, setfileEventName] = useState();
@@ -317,15 +318,15 @@ const ClientRequest = (props) => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
             const document = getEventLogo(item.eventTitleId)
-            //const [selectedEvent, setSelectedEvent] = useState(false);
+            // const [selectedEvent, setSelectedEvent] = useState(false);
             return (
                 <Pressable key={index} style={styles.eventItem} onPress={() => handleEventChoosen(item.EventId)}>
                     <View >
-                        <Text style={styles.detailText}>{item.eventName}</Text>
+                        <Text style={styles.text}>{item.eventName}</Text>
                     </View>
                     <View style={styles.IconView}>
                         <Pressable style={styles.selectEvent}
-                        // onPress={() => whenEventPress(item.EventId, selectedEvent, setSelectedEvent)}
+                            onPress={() => whenEventPress(item.EventId, selectedEvent, setSelectedEvent)}
                         >
                             {/* {selectedEvent && <Entypo
                                 style={{ alignSelf: 'center' }}
@@ -392,19 +393,129 @@ const ClientRequest = (props) => {
         )
     }
 
-    // pricing calcPrice, setCalcPrice
+    // pricing 
+    const [showDetailRecipt, setShowDetailRecipt] = useState(false)
+    const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
+    const createRecipt = () => {
+        return (
+            <View style={styles.reciptView}>
+                <View style={styles.reciptDetailItem}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Pressable onPress={() => setShowDetailRecipt(true)} >
+                            <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
+                        </Pressable>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                            <Text style={styles.text}>السعر النهائي   8000 ₪</Text>
+                            <View style={styles.IconView}>
+                                <Entypo
+                                    style={{ alignSelf: 'center' }}
+                                    name={"price-tag"}
+                                    color={colors.puprble}
+                                    size={30} />
+                            </View>
+                        </View>
+                    </View>
+                </View>
+                {showDetailRecipt && <View>
+                    <View style={styles.reciptDetailItem}>
+                        <Text style={styles.text}>الخدمات</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginVertical: 10 }}>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>السعر النهائي</Text>
+                                <Text style={styles.text}>5000</Text>
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>عدد الطاولات</Text>
+                                <Text style={styles.text}>50 </Text>
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>السعر</Text>
+                                <Text style={styles.text}>70</Text>
+                            </View>
+                            <Text style={styles.text}>ضيافة</Text>
+                        </View>
+
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginVertical: 10 }}>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>السعر النهائي</Text>
+                                <Text style={styles.text}>18000</Text>
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>عدد الاشخاص</Text>
+                                <Text style={styles.text}>300 </Text>
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>السعر</Text>
+                                <Text style={styles.text}>60</Text>
+                            </View>
+                            <Pressable onPress={() => setShowSupDetRecipt(true)}>
+                            <Text style={styles.text}>وجبات طعام</Text>
+                            </Pressable>
+                           
+                        </View>
+                        {showSupDetRecipt &&
+                            <View style={{ backgroundColor: colors.silver, width: '90%', borderRadius: 10, alignSelf: 'center' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Text>السعر</Text>
+                                        <Text style={styles.text}>30</Text>
+                                    </View>
+                                    <Text style={styles.text}>ستيك</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Text>السعر</Text>
+                                        <Text style={styles.text}>20</Text>
+                                    </View>
+                                    <Text style={styles.text}>دجاج</Text>
+                                </View>
+                            </View>
+                        }
+                    </View>
+
+                    <View style={styles.reciptDetailItem}>
+                        <Text style={styles.text}>العروض</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>السعر النهائي</Text>
+                                <Text style={styles.text}>3500</Text>
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>عدد الطاولات</Text>
+                                <Text style={styles.text}>150</Text>
+                            </View>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text>السعر</Text>
+                                <Text style={styles.text}>200</Text>
+                            </View>
+                            <Text style={styles.text}>الحملة الذهبية</Text>
+                        </View>
+                    </View>
+                </View>}
+            </View >
+
+        )
+    }
     const renderPrice = () => {
         return (
             <Pressable style={[calcPrice ? styles.priceViewPress : styles.priceView]}
-                onPress={() => setCalcPrice(true)}>
-                <Text style={styles.text}>حساب السعر </Text>
-                <View style={styles.IconView}>
-                    <MaterialIcons
-                        style={{ alignSelf: 'center' }}
-                        name={"calculate"}
-                        color={colors.puprble}
-                        size={30} />
-                </View>
+                onPress={() => {
+                    setCalcPrice(true)
+                    setIsCalculate(true)
+                }}>
+                {isCalculate ? createRecipt :
+                    <View style={styles.priceLabel}>
+                        <Text style={styles.text}>حساب السعر </Text>
+                        <View style={styles.IconView}>
+                            <MaterialIcons
+                                style={{ alignSelf: 'center' }}
+                                name={"calculate"}
+                                color={colors.puprble}
+                                size={30} />
+                        </View>
+                    </View>}
+
 
             </Pressable>
         )
@@ -589,8 +700,8 @@ const styles = StyleSheet.create({
     iconImg: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: 50,
-        height: 50
+        width: 30,
+        height: 30
     },
 
     modaltext: {
@@ -723,32 +834,42 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'black',
     },
+    priceLabel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginVertical: 10
+        //borderWidth: 1
+
+    },
     priceView: {
         width: '95%',
-        height: 60,
+        height: 70,
         backgroundColor: 'white',
         alignSelf: 'center',
         marginBottom: 5,
         borderRadius: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
         paddingRight: 10,
-       
-
     },
     priceViewPress: {
         width: '95%',
-        height: 150,
+        // height: 200,
         backgroundColor: 'white',
         alignSelf: 'center',
         marginBottom: 5,
         borderRadius: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingRight: 10,
-        
+    },
+    reciptView: {
+        width: '100%',
+        marginVertical: 10,
+        alignSelf: 'center',
+        // borderWidth: 1
+    },
+    reciptDetailItem: {
+        width: '100%',
+        alignSelf: 'flex-end',
+        marginVertical: 10,
+        paddingHorizontal: 10,
     }
 })
 

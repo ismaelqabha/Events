@@ -374,8 +374,8 @@ const RequestDetail = (props) => {
                                 {selectedSubDetail && <Entypo
                                     style={{ alignSelf: 'center' }}
                                     name={"check"}
-                                    color={colors.BGScereen}
-                                    size={30} />}
+                                    color={colors.puprble}
+                                    size={25} />}
                             </Pressable>
                         </View>
                     )
@@ -743,10 +743,10 @@ const styles = StyleSheet.create({
         marginVertical: 5
     },
     subPressable: {
-        width: 30,
-        height: 30,
+        width: 25,
+        height: 25,
         borderWidth: 2,
-        borderColor: colors.BGScereen,
+        borderColor: colors.silver,
         alignItems: 'center',
         justifyContent: 'center'
     },
