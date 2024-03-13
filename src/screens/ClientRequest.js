@@ -123,8 +123,6 @@ const ClientRequest = (props) => {
     }
 
     const onPressHandler = () => {
-        // setisFromRequestScreen(false)
-        // removeRequest()
         props.navigation.goBack();
     }
 
@@ -396,12 +394,19 @@ const ClientRequest = (props) => {
     // pricing 
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
     const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
+
+    const showDetaiPress = () => {
+        setShowDetailRecipt(!showDetailRecipt)
+    }
+    const showSupDetaiPress = () => {
+        setShowSupDetRecipt(!showSupDetRecipt)
+    }
     const createRecipt = () => {
         return (
             <View style={styles.reciptView}>
-                <View style={styles.reciptDetailItem}>
+                <View style={styles.reciptDetail}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Pressable onPress={() => setShowDetailRecipt(true)} >
+                        <Pressable onPress={showDetaiPress} >
                             <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
                         </Pressable>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
@@ -417,77 +422,67 @@ const ClientRequest = (props) => {
                     </View>
                 </View>
                 {showDetailRecipt && <View>
-                    <View style={styles.reciptDetailItem}>
-                        <Text style={styles.text}>الخدمات</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginVertical: 10 }}>
+                    <View style={styles.reciptDetail}>
+                        <View style={styles.reciptLabel}>
+                            <Text style={styles.text}>الخدمات</Text>
+                        </View>
+                        <View style={styles.reciptDetailItem}>
                             <View style={{ alignItems: 'center' }}>
                                 <Text>السعر النهائي</Text>
                                 <Text style={styles.text}>5000</Text>
                             </View>
                             <View style={{ alignItems: 'center' }}>
-                                <Text>عدد الطاولات</Text>
-                                <Text style={styles.text}>50 </Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text>السعر</Text>
-                                <Text style={styles.text}>70</Text>
+                                <Text>السعر للطاولة الواحدة</Text>
+                                <Text style={styles.text}>₪ 70  X  50</Text>
                             </View>
                             <Text style={styles.text}>ضيافة</Text>
                         </View>
 
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginVertical: 10 }}>
+                        <View style={styles.reciptDetailItem}>
                             <View style={{ alignItems: 'center' }}>
                                 <Text>السعر النهائي</Text>
                                 <Text style={styles.text}>18000</Text>
                             </View>
                             <View style={{ alignItems: 'center' }}>
-                                <Text>عدد الاشخاص</Text>
-                                <Text style={styles.text}>300 </Text>
+                                <Text>السعر للشخص الواحد</Text>
+                                <Text style={styles.text}>₪ 60  X  300</Text>
                             </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text>السعر</Text>
-                                <Text style={styles.text}>60</Text>
-                            </View>
-                            <Pressable onPress={() => setShowSupDetRecipt(true)}>
-                            <Text style={styles.text}>وجبات طعام</Text>
+                            <Pressable onPress={showSupDetaiPress}>
+                                <Text style={styles.text}>وجبات طعام</Text>
                             </Pressable>
-                           
                         </View>
+
                         {showSupDetRecipt &&
-                            <View style={{ backgroundColor: colors.silver, width: '90%', borderRadius: 10, alignSelf: 'center' }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <Text>السعر</Text>
-                                        <Text style={styles.text}>30</Text>
-                                    </View>
+                            <View style={styles.reciptLabel}>
+                                <View style={styles.reciptSupDet}>
+                                    <Text>السعر</Text>
+                                    <Text >التفاصيل</Text>
+                                </View>
+                                <View style={styles.reciptSupDet}>
+                                    <Text style={styles.text}>30</Text>
                                     <Text style={styles.text}>ستيك</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
-                                    <View style={{ alignItems: 'center' }}>
-                                        <Text>السعر</Text>
-                                        <Text style={styles.text}>20</Text>
-                                    </View>
+                                <View style={styles.reciptSupDet}>
+                                    <Text style={styles.text}>20</Text>
                                     <Text style={styles.text}>دجاج</Text>
                                 </View>
                             </View>
                         }
                     </View>
 
-                    <View style={styles.reciptDetailItem}>
-                        <Text style={styles.text}>العروض</Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
+                    <View style={styles.reciptDetail}>
+                        <View style={styles.reciptLabel}>
+                            <Text style={styles.text}>العروض</Text>
+                        </View>
+                        <View style={styles.reciptDetailItem}>
                             <View style={{ alignItems: 'center' }}>
                                 <Text>السعر النهائي</Text>
                                 <Text style={styles.text}>3500</Text>
                             </View>
                             <View style={{ alignItems: 'center' }}>
-                                <Text>عدد الطاولات</Text>
-                                <Text style={styles.text}>150</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text>السعر</Text>
-                                <Text style={styles.text}>200</Text>
+                                <Text>السعر للطاولة الواحدة</Text>
+                                <Text style={styles.text}>₪ 200  X  150</Text>
                             </View>
                             <Text style={styles.text}>الحملة الذهبية</Text>
                         </View>
@@ -515,8 +510,6 @@ const ClientRequest = (props) => {
                                 size={30} />
                         </View>
                     </View>}
-
-
             </Pressable>
         )
     }
@@ -527,11 +520,6 @@ const ClientRequest = (props) => {
 
             <ScrollView contentContainerStyle={styles.home}>
                 {renderServiceinfo()}
-
-                {/* <View style={styles.labelView}>
-                    <Text style={styles.detailText}>تفاصيل الحجز</Text>
-                </View> */}
-
                 <View style={styles.DateView}>
                     <ScrollView horizontal={true}>
                         {renderRequestedDates()}
@@ -586,12 +574,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         //borderWidth: 1
     },
-    labelView: {
-        backgroundColor: 'white',
-        justifyContent: 'center',
-        width: "100%",
-        height: 40,
-    },
+   
     dateItem: {
         width: 120,
         height: 50,
@@ -865,11 +848,29 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         // borderWidth: 1
     },
-    reciptDetailItem: {
+    reciptDetail: {
         width: '100%',
         alignSelf: 'flex-end',
         marginVertical: 10,
         paddingHorizontal: 10,
+    },
+    reciptDetailItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginVertical: 10
+    },
+    reciptSupDet: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginBottom: 10
+    },
+    reciptLabel: {
+        width: '90%',
+        backgroundColor: colors.silver,
+        alignSelf: 'center',
+        borderRadius: 10
     }
 })
 
