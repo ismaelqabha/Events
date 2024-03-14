@@ -548,7 +548,7 @@ const ClientRequest = (props) => {
             <ScrollView ref={scrollViewRef} contentContainerStyle={styles.home}>
                 {renderServiceinfo()}
                 <View style={styles.DateView}>
-                    <ScrollView horizontal={true}>
+                    <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
                         {renderRequestedDates()}
                     </ScrollView>
                 </View>
