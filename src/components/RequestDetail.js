@@ -458,13 +458,15 @@ const RequestDetail = (props) => {
             return campArray;
         }
     }
+
+
     const renderReservationDet = () => {
+
         const [pressed, setPressed] = useState(0)
         const handleScroll = (event) => {
             const contentOffsetX = event.nativeEvent.contentOffset.x;
             const screenWidth = Dimensions.get('screen').width;
             const pageIndex = Math.round(contentOffsetX / screenWidth);
-
             if (pageIndex !== pressed) {
                 setPressed(pageIndex);
             }
@@ -497,7 +499,6 @@ const RequestDetail = (props) => {
                     snapToAlignment={'start'}
                     onScroll={handleScroll}
                     scrollEventThrottle={16}
-                    style={{ flex: 1 }}
                 >
                     <View ref={firstPageRef} style={{ width: Dimensions.get('screen').width }} >
                         <View style={styles.serviceDetBooking}>
@@ -653,6 +654,8 @@ const styles = StyleSheet.create({
     },
     serviceDetBooking: {
         width: Dimensions.get('screen').width * 0.9,
+        flex:1,
+        minHeight:150,
         padding: 5,
         marginTop: 10,
         backgroundColor: 'white',
