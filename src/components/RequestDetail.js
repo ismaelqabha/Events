@@ -663,7 +663,7 @@ const RequestDetail = (props) => {
                 <Text style={styles.subDetText}>الى الساعة</Text>
             </View>
             {renderInviters()}
-            {renderReservationDet()}
+            {campiegnsAccordingServiceId && renderReservationDet()}
             {chooseButton()}
 
         </View>
