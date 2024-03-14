@@ -14,7 +14,7 @@ const RequestDetail = (props) => {
     // const { requestedDate } = props
     const {
         selectedDate,
-        setSelectedDate } = props
+        setSelectedDate, handleScrollToPosition } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
         return moment(date).format('L')
@@ -523,6 +523,7 @@ const RequestDetail = (props) => {
             const formattedDate = `${year}-${month}-${day}`;
             setSelectedDate(formattedDate);
         }
+        handleScrollToPosition()
     };
 
     const handleNextDate = () => {
@@ -538,6 +539,7 @@ const RequestDetail = (props) => {
             const formattedDate = `${year}-${month}-${day}`;
             setSelectedDate(formattedDate);
         }
+        handleScrollToPosition()
     };
 
     const renderNextBack = () => {
