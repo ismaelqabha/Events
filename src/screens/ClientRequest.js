@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, Alert, Modal, ToastAndroid } from 'react-native';
 import SearchContext from '../../store/SearchContext';
@@ -44,6 +44,24 @@ const ClientRequest = (props) => {
     const [eventName, setEventName] = useState()
     const [eventTypeId, setEventTypeId] = useState()
 
+    const scrollViewRef = useRef();
+    const targetComponentRef = useRef();
+
+    // price calculation states 
+    const [totalPrice, setTotalPrice] = useState(0)
+
+
+    const handleScrollToPosition = () => {
+        if (targetComponentRef.current) {
+            targetComponentRef.current.measureLayout(
+                scrollViewRef.current,
+                (x, y) => {
+                    // Scroll to the position of the component
+                    scrollViewRef.current.scrollTo({ x: 0, y, animated: true });
+                }
+            );
+        }
+    };
 
     const creatNewRequest = () => {
         const newRequestItem = {
@@ -199,9 +217,12 @@ const ClientRequest = (props) => {
     const handleDatePress = (item) => {
         setSelectedDate(item)
     }
+    useEffect(() => {
+        setSelectedDate(requestedDate[0])
+    }, [])
     const renderDate = (item, index) => {
         return (
-            <Pressable onPress={() => handleDatePress(item)} key={index} style={selectedDate === item ? styles.dateItemPressed : styles.dateItem}
+            <Pressable ref={targetComponentRef} onPress={() => handleDatePress(item)} key={index} style={selectedDate === item ? styles.dateItemPressed : styles.dateItem}
             >
                 <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
                     {moment(item).format('dddd')}</Text>
@@ -236,7 +257,7 @@ const ClientRequest = (props) => {
 
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
-            <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+            <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} handleScrollToPosition={handleScrollToPosition} />
         </View>
     }
     const renderFoter = () => {
@@ -401,26 +422,32 @@ const ClientRequest = (props) => {
     const showSupDetaiPress = () => {
         setShowSupDetRecipt(!showSupDetRecipt)
     }
-    const createRecipt = () => {
+
+    const renderFinalPrice = () => {
         return (
-            <View style={styles.reciptView}>
-                <View style={styles.reciptDetail}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Pressable onPress={showDetaiPress} >
-                            <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
-                        </Pressable>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                            <Text style={styles.text}>السعر النهائي   8000 ₪</Text>
-                            <View style={styles.IconView}>
-                                <Entypo
-                                    style={{ alignSelf: 'center' }}
-                                    name={"price-tag"}
-                                    color={colors.puprble}
-                                    size={30} />
-                            </View>
+            <View style={styles.reciptDetail}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Pressable onPress={showDetaiPress} >
+                        <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
+                    </Pressable>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                        <Text style={styles.text}>السعر النهائي   {totalPrice} ₪</Text>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                style={{ alignSelf: 'center' }}
+                                name={"price-tag"}
+                                color={colors.puprble}
+                                size={30} />
                         </View>
                     </View>
                 </View>
+            </View>
+        )
+    }
+    const createRecipt = () => {
+        return (
+            <View style={styles.reciptView}>
+                {renderFinalPrice()}
                 {showDetailRecipt && <View>
                     <View style={styles.reciptDetail}>
                         <View style={styles.reciptLabel}>
@@ -499,7 +526,7 @@ const ClientRequest = (props) => {
                     setCalcPrice(true)
                     setIsCalculate(true)
                 }}>
-                {isCalculate ? createRecipt :
+                {isCalculate ? createRecipt() :
                     <View style={styles.priceLabel}>
                         <Text style={styles.text}>حساب السعر </Text>
                         <View style={styles.IconView}>
@@ -518,10 +545,10 @@ const ClientRequest = (props) => {
         <View style={styles.container}>
             {renderHeader()}
 
-            <ScrollView contentContainerStyle={styles.home}>
+            <ScrollView ref={scrollViewRef} contentContainerStyle={styles.home}>
                 {renderServiceinfo()}
                 <View style={styles.DateView}>
-                    <ScrollView horizontal={true}>
+                    <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
                         {renderRequestedDates()}
                     </ScrollView>
                 </View>
@@ -574,7 +601,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         //borderWidth: 1
     },
-   
+
     dateItem: {
         width: 120,
         height: 50,

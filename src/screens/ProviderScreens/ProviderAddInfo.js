@@ -62,7 +62,9 @@ const ProviderAddInfo = props => {
     hallType,
     setHallType,
     setLatitude,
-    setLongitude
+    setLongitude,
+    maxNumberOFRequest,
+    setMaxNumberOFRequest
   } = useContext(ServiceProviderContext);
 
   let scrollOffsetY = useRef(new Animated.Value(0)).current;
@@ -156,7 +158,7 @@ const ProviderAddInfo = props => {
   const showMissingSubTitle = (val) => { };
   const showMissingDescription = (val) => { };
 
-  
+
 
   const getRegionsfromApi = async () => {
     getRegions().then((res) => {
@@ -166,7 +168,7 @@ const ProviderAddInfo = props => {
     })
 
   }
-// region part
+  // region part
   const updateData = (regions) => {
     setRegions(regions)
     const allData = []
@@ -267,7 +269,7 @@ const ProviderAddInfo = props => {
     );
   };
 
-  
+
 
 
 
@@ -377,9 +379,9 @@ const ProviderAddInfo = props => {
   }
   const renderHallTyes = () => {
     return hallData?.map((item) => {
-      return <HallTypeCard {...item} 
-      isChecked={item.hallType === selectHallType}
-      onHallTypePress={(value) => setSelectHallType(value)}/>
+      return <HallTypeCard {...item}
+        isChecked={item.hallType === selectHallType}
+        onHallTypePress={(value) => setSelectHallType(value)} />
     })
   }
   const RenderHallDetails = () => {
@@ -406,6 +408,10 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
+  const handleChangeText = (text) => {
+    const newMaxNumberOfRequests = parseInt(text, 10);
+    setMaxNumberOFRequest(newMaxNumberOfRequests);
+};
   const RenderInputNumofRequested = () => {
     return (
       <View>
@@ -427,21 +433,21 @@ const ProviderAddInfo = props => {
         </View>
         <TextInput
           style={styles.titleInput}
-          keyboardType="default"
+          keyboardType="numeric"
           maxLength={50}
-          onChangeText={{}}
-          //value={}
+          onChangeText={handleChangeText}
+          value={maxNumberOFRequest.toString()}
         />
       </View>
     );
   };
 
- // footer part
+  // footer part
   const RenderFooter = () => {
     return (
-        <Animated.View style={[styles.footer, { transform: [{ translateY: translateY }] }]}>
-          <View style={styles.footer}>{RenderNextButton()}</View>
-        </Animated.View>
+      <Animated.View style={[styles.footer, { transform: [{ translateY: translateY }] }]}>
+        <View style={styles.footer}>{RenderNextButton()}</View>
+      </Animated.View>
     )
   };
   const RenderNextButton = () => {
@@ -506,17 +512,17 @@ const ProviderAddInfo = props => {
             const data = {
               descItem: descriptionItem
             }
-            updateDescrArray(data,props.index)
+            updateDescrArray(data, props.index)
           }}
         />
       </View>)
   }
-  const updateDescrArray = (data , index) => {
-      setDescription(prevArray => {
-          const newArray = [...prevArray];
-          newArray[index] = data;
-          return newArray;
-      });
+  const updateDescrArray = (data, index) => {
+    setDescription(prevArray => {
+      const newArray = [...prevArray];
+      newArray[index] = data;
+      return newArray;
+    });
   }
   const Renderdescriptionr = () => {
     return (
@@ -553,7 +559,7 @@ const ProviderAddInfo = props => {
         {RenderTitleBox()}
         {RenderSubTitleBox()}
         {Renderdescriptionr()}
-        {RenderInputNumofRequested()}
+        {selectServiceType == 'قاعات' && RenderInputNumofRequested()}
       </View>
     );
   };

@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, TouchableOpacity, Dimensions, Modal } from 'react-native';
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
@@ -14,7 +14,7 @@ const RequestDetail = (props) => {
     // const { requestedDate } = props
     const {
         selectedDate,
-        setSelectedDate } = props
+        setSelectedDate, handleScrollToPosition } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
         return moment(date).format('L')
@@ -25,6 +25,8 @@ const RequestDetail = (props) => {
     const [endTimeText, setendTimeText] = useState()
     const [invitersValue, setInvitersValue] = useState('');
     const [offer, setOffer] = useState();
+    const [pressed, setPressed] = useState([])
+
 
     const [invitersValueError, setInvitersValueError] = useState(false);
 
@@ -37,6 +39,27 @@ const RequestDetail = (props) => {
     const [mode, setMode] = useState('time');
     const [showStart, setShowStart] = useState(false);
     const [showEnd, setShowEnd] = useState(false);
+
+    const scrollViewRef = useRef(null);
+    const firstPageRef = useRef(null);
+    const secondPageRef = useRef(null);
+
+    const handlePressFirstPage = () => {
+        if (scrollViewRef.current && firstPageRef.current) {
+            scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+        }
+    };
+
+    const handlePressSecondPage = () => {
+        if (scrollViewRef.current && secondPageRef.current) {
+            scrollViewRef.current.scrollTo({
+                x: Dimensions.get('screen').width,
+                y: 0,
+                animated: true
+            });
+        }
+    };
+
 
     const showStartMode = (currentMode) => {
         setShowStart(true);
@@ -385,87 +408,145 @@ const RequestDetail = (props) => {
             )
         })
     }
+
+    const renderCampaighnHeader = (camp, index) => {
+        const handlePress = () => {
+            setPressed(prevPressed => {
+                // Check if the index exists in the pressed array
+                const indexExists = prevPressed.includes(index);
+                if (indexExists) {
+                    // If the index exists, remove it from the array
+                    return prevPressed.filter(item => item !== index);
+                } else {
+                    // If the index doesn't exist, add it to the array
+                    return [...prevPressed, index];
+                }
+            });
+        };
+        return (
+            <Pressable onPress={handlePress} style={!pressed.includes(index) ? styles.offerTitle : styles.offerTitleSelected}>
+                <Text style={styles.campText}>{camp.campTitle}</Text>
+                {camp.priceInclude == 'حسب الشخص' ?
+                    <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
+                    <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
+            </Pressable>
+        );
+    }
+    const renderCampaighnSubHeader = () => {
+        return (
+            <View style={styles.offerContentView}>
+                <Text style={styles.campText}>محتويات العرض</Text>
+                <View style={styles.IconView}>
+                    <MaterialCommunityIcons
+                        style={{ alignSelf: 'center' }}
+                        name={"table-of-contents"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
+            </View>
+        )
+    }
+    const renderCampaighnContentFromSub = (camp) => {
+        return (
+
+            camp.contentFromSubDet.map(item => {
+                return (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                        <Text style={styles.subDetText}>{item}</Text>
+                        <Feather
+                            style={{ alignSelf: 'center' }}
+                            name={"corner-down-left"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                )
+            })
+
+        )
+    }
+    const renderCampaighnContent = (camp) => {
+        return (
+            camp.campContents.map(elment => {
+                return (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                        <Text style={styles.subDetText}>{elment}</Text>
+                        <Feather
+                            style={{ alignSelf: 'center' }}
+                            name={"corner-down-left"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                )
+            })
+        )
+    }
     const renderCampaighn = () => {
         const CampData = campiegnsAccordingServiceId;
         if (CampData.message !== 'No Campaigns') {
-            const campArray = CampData?.map(camp => {
-                return <View style={styles.campaignView}>
-                    <View style={[CampData ? styles.offerTitle : styles.offerTitleSelected]}>
-                        <Text style={styles.campText}>{camp.campTitle}</Text>
-                        {camp.priceInclude == 'حسب الشخص' ?
-                            <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
-                            <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
-                    </View>
-                    <View style={styles.offerContentView}>
-                        <Text style={styles.campText}>محتويات العرض</Text>
-                        <View style={styles.IconView}>
-                            <MaterialCommunityIcons
-                                style={{ alignSelf: 'center' }}
-                                name={"table-of-contents"}
-                                color={colors.puprble}
-                                size={30} />
-                        </View>
-                    </View>
+            const campArray = CampData?.map((camp, index) => {
 
-                    {camp.contentFromSubDet.map(item => {
-                        return (
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
-                                <Text style={styles.subDetText}>{item}</Text>
-                                <Feather
-                                    style={{ alignSelf: 'center' }}
-                                    name={"corner-down-left"}
-                                    color={colors.puprble}
-                                    size={30} />
-                            </View>
-                        )
-                    })}
-                    {camp.campContents.map(elment => {
-                        return (
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
-                                <Text style={styles.subDetText}>{elment}</Text>
-                                <Feather
-                                    style={{ alignSelf: 'center' }}
-                                    name={"corner-down-left"}
-                                    color={colors.puprble}
-                                    size={30} />
-                            </View>
-                        )
-                    })}
+                return <View key={index} style={styles.campaignView}>
+                    {renderCampaighnHeader(camp, index)}
+                    {renderCampaighnSubHeader()}
+
+                    {renderCampaighnContentFromSub(camp)}
+                    {renderCampaighnContent(camp)}
 
                 </View >
             });
             return campArray;
         }
     }
+
+
     const renderReservationDet = () => {
+
+        const [pressed, setPressed] = useState(0)
+        const handleScroll = (event) => {
+            const contentOffsetX = event.nativeEvent.contentOffset.x;
+            const screenWidth = Dimensions.get('screen').width;
+            const pageIndex = Math.round(contentOffsetX / screenWidth);
+            if (pageIndex !== pressed) {
+                setPressed(pageIndex);
+            }
+        };
         return (
             <View>
                 <Text style={styles.text}>قم بتحديد تفاصيل الحجز اِما من الخدمات او العروض</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
-                    <Pressable style={styles.detailLabel}>
+                    <Pressable style={pressed === 0 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
+                        handlePressFirstPage()
+                        setPressed(0)
+                    }}>
                         <Text style={styles.detailViewText}>العروض</Text>
                     </Pressable>
-                    <Pressable style={styles.detailLabelPressed}>
+                    <Pressable style={pressed === 1 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
+                        handlePressSecondPage()
+                        setPressed(1)
+                    }}>
                         <Text style={styles.detailViewText}>الخدمات</Text>
                     </Pressable>
                 </View>
                 <ScrollView
+                    ref={scrollViewRef}
                     horizontal={true}
                     pagingEnabled
                     nestedScrollEnabled
                     showsHorizontalScrollIndicator={false}
                     decelerationRate={'fast'}
-                    snapToInterval={0}
+                    snapToInterval={Dimensions.get('screen').width}
                     snapToAlignment={'start'}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
                 >
-                    <View style={{ width: Dimensions.get('screen').width }}>
+                    <View ref={firstPageRef} style={{ width: Dimensions.get('screen').width }} >
                         <View style={styles.serviceDetBooking}>
                             {renderServiceDetail()}
                         </View>
                     </View>
-                    <View style={{ width: Dimensions.get('screen').width }}>
-                        <View style={styles.serviceOfferBooking}>
-                            {renderCampaighn()}
+                    <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width }}>
+                        <View style={[styles.serviceOfferBooking]}>
+                            {pressed === 1 && renderCampaighn()}
                         </View>
                     </View>
                 </ScrollView>
@@ -523,6 +604,7 @@ const RequestDetail = (props) => {
             const formattedDate = `${year}-${month}-${day}`;
             setSelectedDate(formattedDate);
         }
+        handleScrollToPosition()
     };
 
     const handleNextDate = () => {
@@ -538,6 +620,7 @@ const RequestDetail = (props) => {
             const formattedDate = `${year}-${month}-${day}`;
             setSelectedDate(formattedDate);
         }
+        handleScrollToPosition()
     };
 
     const renderNextBack = () => {
@@ -580,7 +663,7 @@ const RequestDetail = (props) => {
                 <Text style={styles.subDetText}>الى الساعة</Text>
             </View>
             {renderInviters()}
-            {renderReservationDet()}
+            {campiegnsAccordingServiceId && renderReservationDet()}
             {chooseButton()}
 
         </View>
@@ -610,7 +693,8 @@ const styles = StyleSheet.create({
     },
     serviceDetBooking: {
         width: Dimensions.get('screen').width * 0.9,
-        height: 350,
+        flex: 1,
+        minHeight: 150,
         padding: 5,
         marginTop: 10,
         backgroundColor: 'white',
@@ -813,25 +897,25 @@ const styles = StyleSheet.create({
         //borderWidth: 1
     },
     offerTitle: {
-        width: '90%', 
-        borderRadius: 10, 
-        alignSelf: 'center', 
-        backgroundColor: colors.silver, 
+        width: '90%',
+        borderRadius: 10,
+        alignSelf: 'center',
+        backgroundColor: colors.silver,
         alignItems: 'center'
     },
     offerTitleSelected: {
-        width: '90%', 
-        borderRadius: 10, 
-        alignSelf: 'center', 
-        backgroundColor: colors.silver, 
+        width: '90%',
+        borderRadius: 10,
+        alignSelf: 'center',
+        backgroundColor: colors.silver,
         alignItems: 'center',
         borderWidth: 2,
         borderColor: colors.darkGold
     },
     offerContentView: {
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'flex-end', 
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
         marginVertical: 10
     },
     campText: {
