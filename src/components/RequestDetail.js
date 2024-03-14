@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, TouchableOpacity, Dimensions, Modal } from 'react-native';
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
@@ -37,6 +37,27 @@ const RequestDetail = (props) => {
     const [mode, setMode] = useState('time');
     const [showStart, setShowStart] = useState(false);
     const [showEnd, setShowEnd] = useState(false);
+
+    const scrollViewRef = useRef(null);
+    const firstPageRef = useRef(null);
+    const secondPageRef = useRef(null);
+
+    const handlePressFirstPage = () => {
+        if (scrollViewRef.current && firstPageRef.current) {
+            scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+        }
+    };
+
+    const handlePressSecondPage = () => {
+        if (scrollViewRef.current && secondPageRef.current) {
+            scrollViewRef.current.scrollTo({
+                x: Dimensions.get('screen').width,
+                y: 0,
+                animated: true
+            });
+        }
+    };
+
 
     const showStartMode = (currentMode) => {
         setShowStart(true);
@@ -438,34 +459,54 @@ const RequestDetail = (props) => {
         }
     }
     const renderReservationDet = () => {
+        const [pressed, setPressed] = useState(0)
+        const handleScroll = (event) => {
+            const contentOffsetX = event.nativeEvent.contentOffset.x;
+            const screenWidth = Dimensions.get('screen').width;
+            const pageIndex = Math.round(contentOffsetX / screenWidth);
+
+            if (pageIndex !== pressed) {
+                setPressed(pageIndex);
+            }
+        };
         return (
             <View>
                 <Text style={styles.text}>قم بتحديد تفاصيل الحجز اِما من الخدمات او العروض</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
-                    <Pressable style={styles.detailLabel}>
+                    <Pressable style={pressed === 0 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
+                        handlePressFirstPage()
+                        setPressed(0)
+                    }}>
                         <Text style={styles.detailViewText}>العروض</Text>
                     </Pressable>
-                    <Pressable style={styles.detailLabelPressed}>
+                    <Pressable style={pressed === 1 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
+                        handlePressSecondPage()
+                        setPressed(1)
+                    }}>
                         <Text style={styles.detailViewText}>الخدمات</Text>
                     </Pressable>
                 </View>
                 <ScrollView
+                    ref={scrollViewRef}
                     horizontal={true}
                     pagingEnabled
                     nestedScrollEnabled
                     showsHorizontalScrollIndicator={false}
                     decelerationRate={'fast'}
-                    snapToInterval={0}
+                    snapToInterval={Dimensions.get('screen').width}
                     snapToAlignment={'start'}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                    style={{ flex: 1 }}
                 >
-                    <View style={{ width: Dimensions.get('screen').width }}>
+                    <View ref={firstPageRef} style={{ width: Dimensions.get('screen').width }} >
                         <View style={styles.serviceDetBooking}>
                             {renderServiceDetail()}
                         </View>
                     </View>
-                    <View style={{ width: Dimensions.get('screen').width }}>
-                        <View style={styles.serviceOfferBooking}>
-                            {renderCampaighn()}
+                    <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width }}>
+                        <View style={[styles.serviceOfferBooking]}>
+                            {pressed === 1 && renderCampaighn()}
                         </View>
                     </View>
                 </ScrollView>
@@ -612,7 +653,6 @@ const styles = StyleSheet.create({
     },
     serviceDetBooking: {
         width: Dimensions.get('screen').width * 0.9,
-        height: 350,
         padding: 5,
         marginTop: 10,
         backgroundColor: 'white',
@@ -815,25 +855,25 @@ const styles = StyleSheet.create({
         //borderWidth: 1
     },
     offerTitle: {
-        width: '90%', 
-        borderRadius: 10, 
-        alignSelf: 'center', 
-        backgroundColor: colors.silver, 
+        width: '90%',
+        borderRadius: 10,
+        alignSelf: 'center',
+        backgroundColor: colors.silver,
         alignItems: 'center'
     },
     offerTitleSelected: {
-        width: '90%', 
-        borderRadius: 10, 
-        alignSelf: 'center', 
-        backgroundColor: colors.silver, 
+        width: '90%',
+        borderRadius: 10,
+        alignSelf: 'center',
+        backgroundColor: colors.silver,
         alignItems: 'center',
         borderWidth: 2,
         borderColor: colors.darkGold
     },
     offerContentView: {
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'flex-end', 
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
         marginVertical: 10
     },
     campText: {
