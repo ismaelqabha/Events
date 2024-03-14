@@ -47,6 +47,10 @@ const ClientRequest = (props) => {
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
 
+    // price calculation states 
+    const [totalPrice, setTotalPrice] = useState(0)
+
+
     const handleScrollToPosition = () => {
         if (targetComponentRef.current) {
             targetComponentRef.current.measureLayout(
@@ -418,26 +422,32 @@ const ClientRequest = (props) => {
     const showSupDetaiPress = () => {
         setShowSupDetRecipt(!showSupDetRecipt)
     }
-    const createRecipt = () => {
+
+    const renderFinalPrice = () => {
         return (
-            <View style={styles.reciptView}>
-                <View style={styles.reciptDetail}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Pressable onPress={showDetaiPress} >
-                            <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
-                        </Pressable>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                            <Text style={styles.text}>السعر النهائي   8000 ₪</Text>
-                            <View style={styles.IconView}>
-                                <Entypo
-                                    style={{ alignSelf: 'center' }}
-                                    name={"price-tag"}
-                                    color={colors.puprble}
-                                    size={30} />
-                            </View>
+            <View style={styles.reciptDetail}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Pressable onPress={showDetaiPress} >
+                        <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
+                    </Pressable>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                        <Text style={styles.text}>السعر النهائي   {totalPrice} ₪</Text>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                style={{ alignSelf: 'center' }}
+                                name={"price-tag"}
+                                color={colors.puprble}
+                                size={30} />
                         </View>
                     </View>
                 </View>
+            </View>
+        )
+    }
+    const createRecipt = () => {
+        return (
+            <View style={styles.reciptView}>
+                {renderFinalPrice()}
                 {showDetailRecipt && <View>
                     <View style={styles.reciptDetail}>
                         <View style={styles.reciptLabel}>
@@ -516,7 +526,7 @@ const ClientRequest = (props) => {
                     setCalcPrice(true)
                     setIsCalculate(true)
                 }}>
-                {isCalculate ? createRecipt :
+                {isCalculate ? createRecipt() :
                     <View style={styles.priceLabel}>
                         <Text style={styles.text}>حساب السعر </Text>
                         <View style={styles.IconView}>
