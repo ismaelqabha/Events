@@ -553,7 +553,7 @@ const ProviderAddInfo = props => {
         {RenderTitleBox()}
         {RenderSubTitleBox()}
         {Renderdescriptionr()}
-        {RenderInputNumofRequested()}
+        {selectServiceType == 'قاعات' && RenderInputNumofRequested()}
       </View>
     );
   };
