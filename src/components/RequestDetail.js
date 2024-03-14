@@ -25,6 +25,8 @@ const RequestDetail = (props) => {
     const [endTimeText, setendTimeText] = useState()
     const [invitersValue, setInvitersValue] = useState('');
     const [offer, setOffer] = useState();
+    const [pressed, setPressed] = useState([])
+
 
     const [invitersValueError, setInvitersValueError] = useState(false);
 
@@ -406,52 +408,89 @@ const RequestDetail = (props) => {
             )
         })
     }
+
+    const renderCampaighnHeader = (camp, index) => {
+        const handlePress = () => {
+            setPressed(prevPressed => {
+                // Check if the index exists in the pressed array
+                const indexExists = prevPressed.includes(index);
+                if (indexExists) {
+                    // If the index exists, remove it from the array
+                    return prevPressed.filter(item => item !== index);
+                } else {
+                    // If the index doesn't exist, add it to the array
+                    return [...prevPressed, index];
+                }
+            });
+        };
+        return (
+            <Pressable onPress={handlePress} style={!pressed.includes(index) ? styles.offerTitle : styles.offerTitleSelected}>
+                <Text style={styles.campText}>{camp.campTitle}</Text>
+                {camp.priceInclude == 'حسب الشخص' ?
+                    <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
+                    <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
+            </Pressable>
+        );
+    }
+    const renderCampaighnSubHeader = () => {
+        return (
+            <View style={styles.offerContentView}>
+                <Text style={styles.campText}>محتويات العرض</Text>
+                <View style={styles.IconView}>
+                    <MaterialCommunityIcons
+                        style={{ alignSelf: 'center' }}
+                        name={"table-of-contents"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
+            </View>
+        )
+    }
+    const renderCampaighnContentFromSub = (camp) => {
+        return (
+
+            camp.contentFromSubDet.map(item => {
+                return (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                        <Text style={styles.subDetText}>{item}</Text>
+                        <Feather
+                            style={{ alignSelf: 'center' }}
+                            name={"corner-down-left"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                )
+            })
+
+        )
+    }
+    const renderCampaighnContent = (camp) => {
+        return (
+            camp.campContents.map(elment => {
+                return (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                        <Text style={styles.subDetText}>{elment}</Text>
+                        <Feather
+                            style={{ alignSelf: 'center' }}
+                            name={"corner-down-left"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                )
+            })
+        )
+    }
     const renderCampaighn = () => {
         const CampData = campiegnsAccordingServiceId;
         if (CampData.message !== 'No Campaigns') {
-            const campArray = CampData?.map(camp => {
-                return <View style={styles.campaignView}>
-                    <View style={[CampData ? styles.offerTitle : styles.offerTitleSelected]}>
-                        <Text style={styles.campText}>{camp.campTitle}</Text>
-                        {camp.priceInclude == 'حسب الشخص' ?
-                            <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
-                            <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
-                    </View>
-                    <View style={styles.offerContentView}>
-                        <Text style={styles.campText}>محتويات العرض</Text>
-                        <View style={styles.IconView}>
-                            <MaterialCommunityIcons
-                                style={{ alignSelf: 'center' }}
-                                name={"table-of-contents"}
-                                color={colors.puprble}
-                                size={30} />
-                        </View>
-                    </View>
+            const campArray = CampData?.map((camp, index) => {
 
-                    {camp.contentFromSubDet.map(item => {
-                        return (
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
-                                <Text style={styles.subDetText}>{item}</Text>
-                                <Feather
-                                    style={{ alignSelf: 'center' }}
-                                    name={"corner-down-left"}
-                                    color={colors.puprble}
-                                    size={30} />
-                            </View>
-                        )
-                    })}
-                    {camp.campContents.map(elment => {
-                        return (
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
-                                <Text style={styles.subDetText}>{elment}</Text>
-                                <Feather
-                                    style={{ alignSelf: 'center' }}
-                                    name={"corner-down-left"}
-                                    color={colors.puprble}
-                                    size={30} />
-                            </View>
-                        )
-                    })}
+                return <View key={index} style={styles.campaignView}>
+                    {renderCampaighnHeader(camp, index)}
+                    {renderCampaighnSubHeader()}
+
+                    {renderCampaighnContentFromSub(camp)}
+                    {renderCampaighnContent(camp)}
 
                 </View >
             });
@@ -654,8 +693,8 @@ const styles = StyleSheet.create({
     },
     serviceDetBooking: {
         width: Dimensions.get('screen').width * 0.9,
-        flex:1,
-        minHeight:150,
+        flex: 1,
+        minHeight: 150,
         padding: 5,
         marginTop: 10,
         backgroundColor: 'white',
