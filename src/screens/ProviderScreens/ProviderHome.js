@@ -666,7 +666,7 @@ const ProviderHome = props => {
       <Modal
         transparent
         visible={showDescModal}
-        animationType="slide"
+        animationType='fade'
         onRequestClose={() => setShowDescModal(false)}>
         <View style={styles.centeredDescView}>
           <View style={styles.detailModal}>
