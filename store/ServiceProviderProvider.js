@@ -23,7 +23,8 @@ const ProviderProvider = props => {
   const [phoneNumer, setPhoneNumer] = useState(null);
   const [email, setEmail] = useState(null);
   const [eventsTypeWorking, setEventsTypeWorking] = useState([])
-
+  const [maxNumberOFRequest,
+    setMaxNumberOFRequest] = useState('')
   const [Region, SetRegion] = useState([])
 
   // location 
@@ -58,8 +59,8 @@ const ProviderProvider = props => {
   const [addNewDesc, setAddNewDesc] = useState(false);
   const [addNewDetail, setAddNewDetail] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  
- 
+
+
 
   return (
     <ServiceProviderContext.Provider
@@ -80,7 +81,7 @@ const ProviderProvider = props => {
         setPhotoArray,
         workAreas,
         setWorkAreas,
-        eventsTypeWorking, 
+        eventsTypeWorking,
         setEventsTypeWorking,
         price,
         setPrice,
@@ -96,8 +97,10 @@ const ProviderProvider = props => {
         setLatitude,
         longitude,
         setLongitude,
-        Region, 
+        Region,
         SetRegion,
+        maxNumberOFRequest,
+        setMaxNumberOFRequest,
         allData: {
           userID: userId,
           servType: selectServiceType,
@@ -115,6 +118,7 @@ const ProviderProvider = props => {
           additionalServices: additionalServices,
           socialMedia: socialMediaArray,
           photoArray,
+          maxNumberOFRequest
         },
 
         // socail data
@@ -132,41 +136,41 @@ const ProviderProvider = props => {
         draftID,
         setDraftID,
 
-        editTitle, 
+        editTitle,
         seteditTitle,
-        editSubTitle, 
+        editSubTitle,
         seteditSubTitle,
-        editCity, 
+        editCity,
         seteditCity,
-        locationEdit, 
+        locationEdit,
         setlocationEdit,
-        editHallType, 
+        editHallType,
         seteditHallType,
-        editHallcapasity, 
+        editHallcapasity,
         seteditHallcapasity,
-        editphone, 
+        editphone,
         seteditphone,
-        editEmail, 
+        editEmail,
         setEditEmail,
-        editSocialMedia, 
+        editSocialMedia,
         setEditSocialMedia,
-        editprice, 
+        editprice,
         setEditprice,
-        editDescrItem, 
+        editDescrItem,
         setEditDescrItem,
-        editNumofRequest, 
+        editNumofRequest,
         setEditNumofRequest,
-        editServiceDetail, 
+        editServiceDetail,
         setEditServiceDetail,
-        addSocilMedia, 
+        addSocilMedia,
         setAddSocilMedia,
-        addNewDesc, 
+        addNewDesc,
         setAddNewDesc,
-        addNewDetail, 
+        addNewDetail,
         setAddNewDetail,
-        showDetailModal, 
+        showDetailModal,
         setShowDetailModal,
-       
+
       }}>
       {props.children}
     </ServiceProviderContext.Provider>
