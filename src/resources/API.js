@@ -96,6 +96,14 @@ export const getEventList = async body => {
   return await AppFetch(url, 'POST', body);
 };
 // Request
+export const getRequestByDate = async (body) => {
+  const url = 'Request/getRequestByDate'
+  return await AppFetch(url, 'POST', body)
+}
+export const getRequestByServiceId = async (body) => {
+  const url = 'Request/getRequestByServiceId'
+  return await AppFetch(url, 'POST', body)
+}
 
 export const getRequestInfoWithservice = async (body) => {
   const url = 'Request/getRequestService'

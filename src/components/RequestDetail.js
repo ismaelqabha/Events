@@ -16,9 +16,11 @@ const RequestDetail = (props) => {
         selectedDate,
         setSelectedDate, handleScrollToPosition } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
+
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
         return moment(date).format('L')
     }) : [requestedDate]
+    
     const [selectTime, setSelectTime] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [startTimeText, setstartTimeText] = useState()

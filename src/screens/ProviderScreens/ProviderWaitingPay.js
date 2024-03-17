@@ -1,10 +1,21 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React from 'react'
+import React, {useContext} from 'react'
 import { colors } from '../../assets/AppColors'
 import Fontisto from "react-native-vector-icons/Fontisto"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import SearchContext from '../../../store/SearchContext'
+import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
 
 const ProviderWaitingPay = () => {
+
+  const { requestInfoByService } =useContext(SearchContext);
+
+  const getBookingInfo = () => {
+    const reqInfo =  requestInfoByService.filter(item => {
+      return item.ReqStatus === 'waiting pay'
+    })
+    return reqInfo
+  }
 
   const renderClientInfo = () => {
     return (
@@ -85,10 +96,19 @@ const ProviderWaitingPay = () => {
     )
   }
 
+  const renderBookingCard = () => {
+    const data = getBookingInfo()
+    return data.map(item => {
+      return (
+        <ProviderReservationCard  {...item} />
+      )
+    })
+  }
+
   return (
     <View>
       {renderClientCard()}
-      {renderClientCard()}
+      {renderBookingCard()}
     </View>
   )
 }

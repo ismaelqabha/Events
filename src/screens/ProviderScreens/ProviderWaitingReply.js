@@ -1,10 +1,29 @@
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image, Pressable, ScrollView } from 'react-native'
+import React, { useContext } from 'react'
 import { colors } from '../../assets/AppColors'
 import Fontisto from "react-native-vector-icons/Fontisto"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import SearchContext from '../../../store/SearchContext'
+import moment from "moment";
+import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
 
 const ProviderWaitingReply = () => {
+  const { requestInfoByService } = useContext(SearchContext);
+
+  const getBookingInfo = () => {
+    const reqInfo = requestInfoByService.filter(item => {
+      return item.ReqStatus === 'waiting reply'
+    })
+    return reqInfo
+  }
+
+  const getBookingInfoByDate = (rseDate) => {
+    const data = getBookingInfo()
+    const reqInfo = data.filter(item => {
+      return item.ReqStatus === 'waiting reply' && moment(item.reservationDetail[0].reservationDate).format('L') === rseDate
+    })
+    return reqInfo
+  }
 
   const renderClientInfo = () => {
     return (
@@ -85,9 +104,36 @@ const ProviderWaitingReply = () => {
     )
   }
 
+  const renderBookingDates = () => {
+    const data = getBookingInfo()
+    return data.map(item => {
+      return (
+        <View>
+          <View style={{ backgroundColor: colors.silver, width: '100%' }}>
+            <Text>{moment(item.reservationDetail[0].reservationDate).format('L')}</Text>
+          </View>
+          {renderBookingCard(moment(item.reservationDetail[0].reservationDate).format('L'))}
+        </View>
+      )
+    })
+  }
+
+  const renderBookingCard = (rseDate) => {
+    const data = getBookingInfoByDate(rseDate)
+    return data.map(item => {
+      return (
+        <ProviderReservationCard  {...item} />
+      )
+    })
+  }
+
   return (
     <View>
-      {renderClientCard()}
+      {/* {renderClientCard()} */}
+      <ScrollView>
+        {renderBookingDates()}
+      </ScrollView>
+
     </View>
   )
 }
@@ -145,7 +191,7 @@ const styles = StyleSheet.create({
   dateview: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-   marginBottom: 5
+    marginBottom: 5
   },
   dateTxt: {
     color: colors.puprble,

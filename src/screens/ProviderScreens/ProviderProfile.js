@@ -13,13 +13,14 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
-import { getCampaignsByServiceId, getRegions } from '../../resources/API';
+import { getCampaignsByServiceId, getRegions, getRequestByServiceId } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
-  const { setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat, campInfo, setCampInfo } =
-    useContext(SearchContext);
+  const { setIsfirst, isFirst, setserviceTitle, 
+    serviceCat, setServiceCat, campInfo, setCampInfo,
+    requestInfoByService, setRequestInfoByService } =useContext(SearchContext);
   const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
   const { userName} = useContext(UsersContext);
 
@@ -51,10 +52,16 @@ const ProviderProfile = props => {
       setCampInfo(res);
     });
   };
+  const getRequestInfo = () => {
+    getRequestByServiceId({ ReqServId: isFirst }).then(res => {
+      setRequestInfoByService(res)
+    })
+}
 
   useEffect(() => {
     getRegionsfromApi()
     getCampignsfromApi()
+    getRequestInfo()
   }, [isFirst])
 
 

@@ -37,7 +37,7 @@ const SearchProvider = props => {
   const [detailIdState, setdetailIdState] = useState();
 
   // Request
-  const [requestInfo, setRequestInfo] = useState([])
+  const [requestInfoByService, setRequestInfoByService] = useState([])
   const [resDetail, setResDetail] = useState([])
 
 
@@ -88,8 +88,8 @@ const SearchProvider = props => {
         setUserFavorates,
         fileFavoriteState,
         setFileFavoriteState,
-        requestInfo,
-        setRequestInfo,
+        requestInfoByService, 
+        setRequestInfoByService,
         resDetail, 
         setResDetail,
         ImgOfServeice,
