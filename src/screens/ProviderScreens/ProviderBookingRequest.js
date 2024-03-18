@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React, {useContext} from 'react'
+import React, {useContext, useState} from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard';
 import { colors } from '../../assets/AppColors';
@@ -10,6 +10,7 @@ const ProviderBookingRequest = (props) => {
   const { fulDate } = props.route?.params || {}
 
   const { requestInfoByService } =useContext(SearchContext);
+  const [fromReservationScreen, setfromReservationScreen] = useState(true)
 
   const selectedDate = moment(fulDate).format('L')
 
@@ -57,7 +58,7 @@ const ProviderBookingRequest = (props) => {
     const data = getBookingInfo()
     return data.map(item => {
       return (
-        <ProviderReservationCard  {...item} />
+        <ProviderReservationCard fromReservationScreen={fromReservationScreen} {...item} />
       )
     })
   }
@@ -77,7 +78,7 @@ export default ProviderBookingRequest
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
+//backgroundColor: 'white'
   },
   title: {
     flexDirection: 'row',

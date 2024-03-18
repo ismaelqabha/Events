@@ -4,6 +4,7 @@ import { colors } from '../../assets/AppColors'
 import Fontisto from "react-native-vector-icons/Fontisto"
 
 const ProviderReservationCard = (props) => {
+    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen } = props
 
     const renderClientInfo = () => {
         return (
@@ -13,12 +14,11 @@ const ProviderReservationCard = (props) => {
             </View>
         )
     }
-
     const renderRequestDate = () => {
         return (
             <View style={styles.dateview}>
                 <View>
-                    <Text style={styles.dateTxt}>5/1/2024</Text>
+                    <Text style={styles.dateTxt}>{props.ReqDate}</Text>
                     <Text style={styles.labelDateTxt}>تاريخ الطلب</Text>
                 </View>
                 <View style={styles.IconView}>
@@ -56,7 +56,6 @@ const ProviderReservationCard = (props) => {
             </View>
         )
     }
-
     const renderPayRemain = () => {
         return (
             <View style={styles.dateview}>
@@ -65,27 +64,72 @@ const ProviderReservationCard = (props) => {
             </View>
         )
     }
-    const renderRequestInfo = () => {
+
+    const requestWaitingReplyCard = () => {
         return (
             <View style={styles.reqInfo}>
-                {/* {renderRequestDate()}
-                {renderBookingDate()} */}
+                {renderRequestDate()}
                 {renderPrice()}
-                {renderPayRemain()}
-                {/* <View style={styles.buttonView}>
-                    <Pressable><Text style={styles.buttonTxt}>اٍلغاء الطلب</Text></Pressable>
-                    <Pressable><Text style={styles.buttonTxt}>التفاصيل</Text></Pressable>
-                </View> */}
+                <View style={styles.buttonView}>
+                    <Pressable><Text style={styles.buttonTxt}>رفض</Text></Pressable>
+                    <Pressable><Text style={styles.buttonTxt}>قبول</Text></Pressable>
+                </View>
             </View>
         )
+    }
+    const requestWaitingPayCard = () => {
+        return (
+            <View style={styles.reqInfo}>
+                {renderRequestDate()}
+                {renderPrice()}
+                <View style={styles.buttonView}>
+                    <Pressable><Text style={styles.buttonTxt}>اٍلغاء الطلب</Text></Pressable>
+                    <Pressable><Text style={styles.buttonTxt}>اِجراء دفع</Text></Pressable>
+                </View>
+            </View>
+        )
+    }
+    const requestReservationCard = () => {
+        return (
+            <View style={styles.reqInfo}>
+                {renderPrice()}
+                {renderPayRemain()}
+            </View>
+        )
+    }
+
+    const renderCard = () => {
+        if (fromWaitingScreen) {
+            return (
+                <View style={styles.card}>
+                    {requestWaitingReplyCard()}
+                    {renderClientInfo()}
+                </View>
+            )
+        }
+        if (fromWaitingPayScreen) {
+            return (
+                <View style={styles.card}>
+                    {requestWaitingPayCard()}
+                    {renderClientInfo()}
+                </View>
+            )
+        }
+        if(fromReservationScreen){
+            return (
+                <View style={styles.card1}>
+                    {requestReservationCard()}
+                    {renderClientInfo()}
+                </View>
+            )
+        }
     }
 
 
 
     return (
-        <View style={styles.card}>
-            {renderRequestInfo()}
-            {renderClientInfo()}
+        <View>
+            {renderCard()}
         </View>
     )
 }
@@ -94,6 +138,14 @@ export default ProviderReservationCard
 
 const styles = StyleSheet.create({
     card: {
+        flexDirection: 'row',
+        width: '90%',
+        height: 150,
+        alignSelf: 'center',
+        margin: 10,
+        // borderWidth: 1
+    },
+    card1: {
         flexDirection: 'row',
         width: '90%',
         height: 100,
@@ -129,24 +181,24 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: 'white'
     },
-    // buttonView: {
-    //     flexDirection: 'row',
-    //     width: '100%',
-    //     height: 30,
-    //     justifyContent: 'space-around',
-    //     alignItems: 'center',
-    //     position: 'absolute',
-    //     bottom: 0
-    // },
-    // infoTxt: {
-    //     marginVertical: 5,
-    //     marginRight: 10,
-    //     color: colors.puprble,
-    //     fontSize: 15
-    // },
-    // buttonTxt: {
-    //     fontSize: 17
-    // },
+    buttonView: {
+        flexDirection: 'row',
+        width: '100%',
+        height: 30,
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 0
+    },
+    infoTxt: {
+        marginVertical: 5,
+        marginRight: 10,
+        color: colors.puprble,
+        fontSize: 15
+    },
+    buttonTxt: {
+        fontSize: 17
+    },
     dateview: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -161,21 +213,21 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontSize: 20
     },
-    Txt:{
+    Txt: {
         fontSize: 15,
-        marginLeft: 20, 
+        marginLeft: 20,
         color: colors.puprble
-    }
-    // labelDateTxt: {
-    //     fontSize: 15
-    // },
-    // IconView: {
-    //     width: 30,
-    //     height: 30,
-    //     alignItems: 'center',
-    //     justifyContent: 'center',
-    //     backgroundColor: 'lightgray',
-    //     borderRadius: 30,
-    //     marginLeft: 15
-    // },
+    },
+    labelDateTxt: {
+        fontSize: 15
+    },
+    IconView: {
+        width: 30,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginLeft: 15
+    },
 })
