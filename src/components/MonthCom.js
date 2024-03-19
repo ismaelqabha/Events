@@ -205,7 +205,7 @@ const MonthCom = (props) => {
         const [monthPressed, setMonthPress] = useState(false)
         return (
             <Pressable style={[styles.monthView, monthPressed ? styles.monthViewPress : styles.monthView]}
-                //onPress={() => { onCardPress(month.monNum, month.year, month, monthPressed, setMonthPress) }}
+                onPress={() => { onCardPress(month.monNum, month.year, month, monthPressed, setMonthPress) }}
                 >
                 <View style={styles.MView}>
                     <Text style={styles.yearText}>
