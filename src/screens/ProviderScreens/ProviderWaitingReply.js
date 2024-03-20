@@ -278,6 +278,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'lightgray',
     justifyContent: 'flex-end',
+    alignSelf:'center'
   },
 })
 
