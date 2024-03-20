@@ -104,6 +104,10 @@ export const getRequestByServiceId = async (body) => {
   const url = 'Request/getRequestByServiceId'
   return await AppFetch(url, 'POST', body)
 }
+export const getRequestsAndUsersByServiceId = async (body) => {
+  const url = 'Request/getAllClientsRequestService'
+  return await AppFetch(url, 'POST', body)
+}
 
 export const getRequestInfoWithservice = async (body) => {
   const url = 'Request/getRequestService'

@@ -11,13 +11,22 @@ import MonthCom from '../../components/MonthCom'
 
 
 const ProviderWaitingReply = () => {
-  const { requestInfoByService } = useContext(SearchContext);
+  const { requestInfoByService, userInfoBySpiceficId, setUserInfoBySpiceficId } = useContext(SearchContext);
   const [fromWaitingScreen, setFromWaitingScreen] = useState(true)
+
   const [monthly, setMonthly] = useState(false)
   const [spacificDate, setspacificDate] = useState(false)
   const [clientName, setClientName] = useState(true)
+
+  const [useDefultSearch, setUseDefultSearch] = useState(true)
+  const [useMonthToSearch, setuseMonthToSearch] = useState(false)
+  const [useSpacificDateToSearch, setUseSpacificDateToSearch] = useState(false)
+  const [useClientToSearch, setUseClientToSearch] = useState(false)
+
   const [client, setClient] = useState(null)
   const [selectedSpacificDate, setSelectedSpacificDate] = useState(null)
+  const [selectedMonth, setSelectedMonth] = useState(null)
+  const [selectedYear, setSelectedYear] = useState(null)
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
@@ -39,6 +48,8 @@ const ProviderWaitingReply = () => {
     setMonthly(false)
     setspacificDate(false)
     setClientName(true)
+    // setUseDefultSearch(false)
+    // setUseClientToSearch(true)
   }
 
   const getBookingInfo = () => {
@@ -56,6 +67,8 @@ const ProviderWaitingReply = () => {
     return reqInfo
   }
 
+
+
   const collectAllRequestDates = () => {
     const data = getBookingInfo()
     return data.map(item => {
@@ -65,8 +78,15 @@ const ProviderWaitingReply = () => {
       let year = requestBookingDate.format('YYYY')
       let completeDate = year + '-' + month + '-' + startingDay
 
+
       if (!(allRequestingDates.includes(completeDate))) {
-        allRequestingDates.push(completeDate)
+        if (useMonthToSearch) {
+          if (month === selectedMonth && year === selectedYear) {
+            allRequestingDates.push(completeDate)
+          }
+        } else {
+          allRequestingDates.push(completeDate)
+        }
       }
       allRequestingDates.sort();
     })
@@ -110,6 +130,8 @@ const ProviderWaitingReply = () => {
         </Pressable>
       </View>)
   }
+  // seraching By Client Name
+
   const inputClientName = () => {
     return (
       <View>
@@ -123,6 +145,7 @@ const ProviderWaitingReply = () => {
     )
   }
 
+  // searching By sepecific Date
   const onChange = (event, selectedDate) => {
     setShow(false)
     const currentDate = selectedDate || date;
@@ -161,7 +184,14 @@ const ProviderWaitingReply = () => {
       </View>
     )
   }
-
+  const renderBookingCardAccorDate = () => {
+    const data = getBookingInfoByDate(selectedSpacificDate)
+    return data.map(item => {
+      return (
+        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
+      )
+    })
+  }
   const inputMonth = () => {
     return (
       <View>
@@ -187,7 +217,9 @@ const ProviderWaitingReply = () => {
       {renderFilter()}
       {renderFilterTools()}
       <ScrollView>
-        {renderBookingDates()}
+        {useMonthToSearch && renderBookingDates()}
+        {useDefultSearch && renderBookingDates()}
+        {useSpacificDateToSearch && renderBookingCardAccorDate()}
         <View style={{ height: 100 }}></View>
       </ScrollView>
     </View>
@@ -278,7 +310,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'lightgray',
     justifyContent: 'flex-end',
-    alignSelf:'center'
+    alignSelf: 'center'
   },
 })
 

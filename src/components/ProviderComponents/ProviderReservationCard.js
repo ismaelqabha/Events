@@ -201,13 +201,14 @@ const styles = StyleSheet.create({
     },
     dateview: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         marginBottom: 5
     },
     shekeImg: {
-        width: 40,
-        height: 40,
+        width: 35,
+        height: 35,
+        marginLeft: 15
     },
     dateTxt: {
         color: colors.puprble,

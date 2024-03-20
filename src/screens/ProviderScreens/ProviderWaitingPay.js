@@ -16,8 +16,16 @@ const ProviderWaitingPay = () => {
   const [monthly, setMonthly] = useState(false)
   const [spacificDate, setspacificDate] = useState(false)
   const [clientName, setClientName] = useState(true)
+
+  const [useDefultSearch, setUseDefultSearch] = useState(true)
+  const [useMonthToSearch, setuseMonthToSearch] = useState(false)
+  const [useSpacificDateToSearch, setUseSpacificDateToSearch] = useState(false)
+  const [useClientToSearch, setUseClientToSearch] = useState(false)
+
   const [client, setClient] = useState(null)
   const [selectedSpacificDate, setSelectedSpacificDate] = useState(null)
+  const [selectedMonth, setSelectedMonth] = useState(null)
+  const [selectedYear, setSelectedYear] = useState(null)
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
@@ -50,9 +58,12 @@ const ProviderWaitingPay = () => {
 
   const getBookingInfoByDate = (rseDate) => {
     const data = getBookingInfo()
+    console.log("data", data);
     const reqInfo = data.filter(item => {
+      console.log("rseDate", rseDate);
       return item.ReqStatus === 'waiting pay' && item.reservationDetail[0].reservationDate === rseDate
     })
+    //console.log("reqInfo", reqInfo);
     return reqInfo
   }
 
@@ -65,8 +76,15 @@ const ProviderWaitingPay = () => {
       let year = requestBookingDate.format('YYYY')
       let completeDate = year + '-' + month + '-' + startingDay
 
+
       if (!(allRequestingDates.includes(completeDate))) {
-        allRequestingDates.push(completeDate)
+        if (useMonthToSearch) {
+          if (month === selectedMonth && year === selectedYear) {
+            allRequestingDates.push(completeDate)
+          }
+        } else {
+          allRequestingDates.push(completeDate)
+        }
       }
       allRequestingDates.sort();
     })
@@ -74,6 +92,7 @@ const ProviderWaitingPay = () => {
 
   const renderBookingCard = (rseDate) => {
     const data = getBookingInfoByDate(rseDate)
+
     return data.map(item => {
       return (
         <ProviderReservationCard fromWaitingPayScreen={fromWaitingPayScreen}  {...item} />
@@ -161,6 +180,14 @@ const ProviderWaitingPay = () => {
       </View>
     )
   }
+  const renderBookingCardAccorDate = () => {
+    const data = getBookingInfoByDate(selectedSpacificDate)
+    return data.map(item => {
+      return (
+        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
+      )
+    })
+  }
 
   const inputMonth = () => {
     return (
@@ -181,15 +208,14 @@ const ProviderWaitingPay = () => {
   }
 
 
-
-
-
   return (
     <View style={styles.container}>
       {renderFilter()}
       {renderFilterTools()}
       <ScrollView>
-        {renderBookingDates()}
+        {useMonthToSearch && renderBookingDates()}
+        {useDefultSearch && renderBookingDates()}
+        {useSpacificDateToSearch && renderBookingCardAccorDate()}
         <View style={{ height: 100 }}></View>
       </ScrollView>
     </View>
@@ -277,6 +303,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'lightgray',
     justifyContent: 'flex-end',
-    alignSelf:'center'
+    alignSelf: 'center'
   },
 })
