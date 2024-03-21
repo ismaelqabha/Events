@@ -29,8 +29,8 @@ const ClientRequest = (props) => {
     const [date, setDate] = useState(new Date());
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [calcPrice, setCalcPrice] = useState(false);
-    const [isCalculate, setIsCalculate] = useState(false);
+    const [showDetailRecipt, setShowDetailRecipt] = useState(false)
+    const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
     const [selectTime, setSelectTime] = useState(true);
 
     const [fileEventName, setfileEventName] = useState();
@@ -413,8 +413,7 @@ const ClientRequest = (props) => {
     }
 
     // pricing 
-    const [showDetailRecipt, setShowDetailRecipt] = useState(false)
-    const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
+
 
     const showDetaiPress = () => {
         setShowDetailRecipt(!showDetailRecipt)
@@ -449,33 +448,40 @@ const ClientRequest = (props) => {
             <View style={styles.reciptView}>
                 {renderFinalPrice()}
                 {showDetailRecipt && <View>
+                    <View style={styles.reciptDateLabel}>
+                        <Text style={styles.text}>{moment(requestedDate).format('L')}</Text>
+                    </View>
                     <View style={styles.reciptDetail}>
+
                         <View style={styles.reciptLabel}>
                             <Text style={styles.text}>الخدمات</Text>
                         </View>
+
                         <View style={styles.reciptDetailItem}>
-                            <View style={{ alignItems: 'center' }}>
+                            <View style={styles.reciptClom}>
                                 <Text>السعر النهائي</Text>
                                 <Text style={styles.text}>5000</Text>
                             </View>
-                            <View style={{ alignItems: 'center' }}>
+                            <View style={reciptMidClom}>
                                 <Text>السعر للطاولة الواحدة</Text>
                                 <Text style={styles.text}>₪ 70  X  50</Text>
                             </View>
-                            <Text style={styles.text}>ضيافة</Text>
+                            <Pressable onPress={showSupDetaiPress} style={styles.reciptClom}>
+                                <Text style={styles.text}>ضيافة</Text>
+                            </Pressable>
                         </View>
 
 
                         <View style={styles.reciptDetailItem}>
-                            <View style={{ alignItems: 'center' }}>
+                            <View style={styles.reciptClom}>
                                 <Text>السعر النهائي</Text>
                                 <Text style={styles.text}>18000</Text>
                             </View>
-                            <View style={{ alignItems: 'center' }}>
+                            <View style={reciptMidClom}>
                                 <Text>السعر للشخص الواحد</Text>
                                 <Text style={styles.text}>₪ 60  X  300</Text>
                             </View>
-                            <Pressable onPress={showSupDetaiPress}>
+                            <Pressable onPress={showSupDetaiPress} style={styles.reciptClom}>
                                 <Text style={styles.text}>وجبات طعام</Text>
                             </Pressable>
                         </View>
@@ -483,16 +489,24 @@ const ClientRequest = (props) => {
                         {showSupDetRecipt &&
                             <View style={styles.reciptLabel}>
                                 <View style={styles.reciptSupDet}>
-                                    <Text>السعر</Text>
-                                    <Text >التفاصيل</Text>
+                                    <View style={{ alignItems: 'center', width: '50%' }}><Text>السعر</Text></View>
+                                    <View style={{ alignItems: 'center', width: '50%' }}><Text >التفاصيل</Text></View>
                                 </View>
                                 <View style={styles.reciptSupDet}>
-                                    <Text style={styles.text}>30</Text>
-                                    <Text style={styles.text}>ستيك</Text>
+                                    <View style={{ alignItems: 'center', width: '50%' }}>
+                                        <Text style={styles.text}>30</Text>
+                                    </View>
+                                    <View style={{ alignItems: 'center', width: '50%' }}>
+                                        <Text style={styles.text}>ستيك</Text>
+                                    </View>
                                 </View>
                                 <View style={styles.reciptSupDet}>
-                                    <Text style={styles.text}>20</Text>
-                                    <Text style={styles.text}>دجاج</Text>
+                                    <View style={{ alignItems: 'center', width: '50%' }}>
+                                        <Text style={styles.text}>30</Text>
+                                    </View>
+                                    <View style={{ alignItems: 'center', width: '50%' }}>
+                                        <Text style={styles.text}>دجاج</Text>
+                                    </View>
                                 </View>
                             </View>
                         }
@@ -503,17 +517,20 @@ const ClientRequest = (props) => {
                             <Text style={styles.text}>العروض</Text>
                         </View>
                         <View style={styles.reciptDetailItem}>
-                            <View style={{ alignItems: 'center' }}>
+                            <View style={styles.reciptClom}>
                                 <Text>السعر النهائي</Text>
                                 <Text style={styles.text}>3500</Text>
                             </View>
-                            <View style={{ alignItems: 'center' }}>
+                            <View style={reciptMidClom}>
                                 <Text>السعر للطاولة الواحدة</Text>
                                 <Text style={styles.text}>₪ 200  X  150</Text>
                             </View>
-                            <Text style={styles.text}>الحملة الذهبية</Text>
+                            <Pressable style={styles.reciptClom}>
+                                <Text style={styles.text}>الحملة الذهبية</Text>
+                            </Pressable>
                         </View>
                     </View>
+
                 </View>}
             </View >
 
@@ -521,23 +538,9 @@ const ClientRequest = (props) => {
     }
     const renderPrice = () => {
         return (
-            <Pressable style={[calcPrice ? styles.priceViewPress : styles.priceView]}
-                onPress={() => {
-                    setCalcPrice(true)
-                    setIsCalculate(true)
-                }}>
-                {isCalculate ? createRecipt() :
-                    <View style={styles.priceLabel}>
-                        <Text style={styles.text}>حساب السعر </Text>
-                        <View style={styles.IconView}>
-                            <MaterialIcons
-                                style={{ alignSelf: 'center' }}
-                                name={"calculate"}
-                                color={colors.puprble}
-                                size={30} />
-                        </View>
-                    </View>}
-            </Pressable>
+            <View style={styles.priceView}>
+                {createRecipt()}
+            </View>
         )
     }
 
@@ -554,6 +557,7 @@ const ClientRequest = (props) => {
                 </View>
                 {renderRequestInfo()}
                 {renderEvents()}
+
                 {renderPrice()}
                 <View style={styles.body}>
                     <Text style={styles.text}>لن يتم تأكيد الحجز حتى يقوم صاحب الخدمة بقبول الطلب خلال 24 ساعة</Text>
@@ -844,31 +848,22 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'black',
     },
-    priceLabel: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        marginVertical: 10
-        //borderWidth: 1
+    // priceLabel: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     justifyContent: 'flex-end',
+    //     marginVertical: 10
+    //     //borderWidth: 1
 
-    },
+    // },
     priceView: {
         width: '95%',
-        height: 70,
-        backgroundColor: 'white',
-        alignSelf: 'center',
-        marginBottom: 5,
-        borderRadius: 15,
-        paddingRight: 10,
-    },
-    priceViewPress: {
-        width: '95%',
-        // height: 200,
         backgroundColor: 'white',
         alignSelf: 'center',
         marginBottom: 5,
         borderRadius: 15,
     },
+
     reciptView: {
         width: '100%',
         marginVertical: 10,
@@ -887,6 +882,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         marginVertical: 10
     },
+    reciptClom: {
+        alignItems: 'center',
+        width: '30%'
+    },
+    reciptMidClom: {
+        alignItems: 'center',
+        width: '40%'
+    },
     reciptSupDet: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -898,6 +901,15 @@ const styles = StyleSheet.create({
         backgroundColor: colors.silver,
         alignSelf: 'center',
         borderRadius: 10
+    },
+    reciptDateLabel: {
+        width: '90%',
+        backgroundColor: colors.silver,
+        alignSelf: 'center',
+        borderRadius: 10,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 })
 

@@ -13,19 +13,20 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
-import { getCampaignsByServiceId, getRegions } from '../../resources/API';
+import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
-  const { setIsfirst, isFirst, setserviceTitle, serviceCat, setServiceCat, campInfo, setCampInfo } =
-    useContext(SearchContext);
+  const { setIsfirst, isFirst, setserviceTitle,
+    serviceCat, setServiceCat, campInfo, setCampInfo,
+    requestInfoByService, setRequestInfoByService } = useContext(SearchContext);
   const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
-  const { userName} = useContext(UsersContext);
+  const { userName } = useContext(UsersContext);
 
   const navigation = useNavigation();
   const providerReview = true
- 
+
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
@@ -50,11 +51,22 @@ const ProviderProfile = props => {
     getCampaignsByServiceId({ serviceId: isFirst }).then(res => {
       setCampInfo(res);
     });
-  };
+  }; 
+  const getRequestInfo = () => {
+    getRequestByServiceId({ ReqServId: isFirst }).then(res => {
+      setRequestInfoByService(res)
+    })
+  }
+  const getRequestUsersfromApi = () => {
+    getRequestsAndUsersByServiceId({ ReqServId: isFirst }).then(res => {
+      setRequestInfoByService(res)
+    })
+  }
 
   useEffect(() => {
     getRegionsfromApi()
     getCampignsfromApi()
+    getRequestInfo()
   }, [isFirst])
 
 
@@ -240,13 +252,13 @@ const ProviderProfile = props => {
       </View>
     );
   };
- 
+
   const renderFeedBack = () => {
     return (
       <View>
         <Pressable
           style={styles.reviewitem}
-          onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen, {providerReview})}>
+          onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen, { providerReview })}>
           <View>
             <Text style={styles.reviewtxt}>التغذية الراجعة (2)</Text>
           </View>
@@ -344,7 +356,7 @@ const styles = StyleSheet.create({
     color: colors.puprble,
     fontWeight: 'bold',
   },
-  
+
   IconView: {
     width: 50,
     height: 50,
@@ -360,7 +372,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginTop: 10,
   },
- 
+
   seprater: {
     borderColor: colors.puprble,
     borderWidth: 0.2,
@@ -407,6 +419,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginLeft: 15,
   },
- 
+
 
 });

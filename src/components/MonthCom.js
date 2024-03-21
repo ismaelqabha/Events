@@ -9,7 +9,7 @@ const MonthCom = (props) => {
     const { onMonthSelected } = props
     const [date, setDate] = useState(new Date())
 
-    const [allMonths, setAllMonths] = useState[months]
+     const [allMonths, setAllMonths] = useState(months)
 
     let nextMonth = date.getMonth() + 1
     let monthtext = ''
@@ -20,6 +20,57 @@ const MonthCom = (props) => {
     let secondyear = 12
     let thirdyear = 24 - (firstyear + secondyear)
     let allyear = firstyear + secondyear + thirdyear
+
+    const monthsNames = [
+        {
+            monthNumber: 1,
+            monthText: 'كانون ثاني'
+        },
+        {
+            monthNumber: 2,
+            monthText: 'شباط'
+        },
+        {
+            monthNumber: 3,
+            monthText: 'أذار'
+        },
+        {
+            monthNumber: 4,
+            monthText: 'نيسان'
+        },
+        {
+            monthNumber: 5,
+            monthText: 'أيار'
+        },
+        {
+            monthNumber: 6,
+            monthText: 'حزيران'
+        },
+        {
+            monthNumber: 7,
+            monthText: 'تموز'
+        },
+        {
+            monthNumber: 8,
+            monthText: 'أب'
+        },
+        {
+            monthNumber: 9,
+            monthText: 'أيلول'
+        },
+        {
+            monthNumber: 10,
+            monthText: 'تشرين أول'
+        },
+        {
+            monthNumber: 11,
+            monthText: 'تشرين ثاني'
+        },
+        {
+            monthNumber: 12,
+            monthText: 'كانون أول'
+        },
+    ]
 
     useEffect(() => {
         for (var i = 0; i < allyear; i++) {
@@ -186,7 +237,6 @@ const MonthCom = (props) => {
     const onCardPress = (mon, year, month , monthPressed, setMonthPress) => {
         if (monthPressed) {
             setMonthPress(false)
-
         } else {
             setYearforSearch(year)
             onMonthSelected?.(mon)
@@ -202,10 +252,11 @@ const MonthCom = (props) => {
 
 
     const renderMonth = () => months.map(month => {
+        console.log("months", months);
         const [monthPressed, setMonthPress] = useState(false)
         return (
             <Pressable style={[styles.monthView, monthPressed ? styles.monthViewPress : styles.monthView]}
-                //onPress={() => { onCardPress(month.monNum, month.year, month, monthPressed, setMonthPress) }}
+                onPress={() => { onCardPress(month.monNum, month.year, month, monthPressed, setMonthPress) }}
                 >
                 <View style={styles.MView}>
                     <Text style={styles.yearText}>
@@ -234,7 +285,10 @@ const MonthCom = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        // borderWidth: 1,
+        // width: 50,
+        // height: 50
+        // flex: 1,
     },
     monthView: {
         alignItems: 'center',

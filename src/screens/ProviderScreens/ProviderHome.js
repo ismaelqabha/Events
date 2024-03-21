@@ -126,12 +126,22 @@ const ProviderHome = props => {
   const addNewSocialMediaPress = () => {
     setAddSocilMedia(true)
   }
- 
   const addNewDescr = () => {
     setAddNewDesc(true)
   }
 
+  const closeModalPress = (setShowDescModal) => {
+    setShowDescModal(false)
+  }
+  const closeSMmodalPress = (setShowModal) => {
+    setShowModal(false)
+  }
 
+  const addNewDetailPress = () => {
+    setAddNewDetail(true)
+    setEditServiceDetail(false)
+    setShowDetailModal(true)
+  }
   const serviceDetailEditPress = (title, type, isPerson, subDetail) => {
     setShowDetailModal(true)
     setDetailItem(title)
@@ -139,16 +149,7 @@ const ProviderHome = props => {
     setDetailIsperson(isPerson)
     setSub_DetailArr(subDetail)
     setEditServiceDetail(true)
-  }
-  const closeModalPress = (setShowDescModal) => {
-    setShowDescModal(false)
-  }
-  const closeSMmodalPress = (setShowModal) => {
-    setShowModal(false)
-  }
-  const addNewDetailPress = () => {
-    setAddNewDetail(true)
-    setShowDetailModal(true)
+    setAddNewDetail(false)
   }
   const renderEditServiceDetailInfo = () => {
     if (editServiceDetail) {
@@ -163,7 +164,9 @@ const ProviderHome = props => {
     }
     if (addNewDetail) {
       return (
-        <Text style={styles.basicInfoTitle}>add detail</Text>
+        <EditServiceDetails
+          DetailType={DetailType}
+          serviceID={isFirst} />
       )
     }
 
@@ -663,7 +666,7 @@ const ProviderHome = props => {
       <Modal
         transparent
         visible={showDescModal}
-        animationType="slide"
+        animationType='fade'
         onRequestClose={() => setShowDescModal(false)}>
         <View style={styles.centeredDescView}>
           <View style={styles.detailModal}>

@@ -1,94 +1,223 @@
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput } from 'react-native'
+import React, { useContext, useState } from 'react'
 import { colors } from '../../assets/AppColors'
+import moment from "moment";
 import Fontisto from "react-native-vector-icons/Fontisto"
-import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import Entypo from "react-native-vector-icons/Entypo"
+import SearchContext from '../../../store/SearchContext'
+import DateTimePicker from '@react-native-community/datetimepicker';
+import MonthCom from '../../components/MonthCom'
+import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
 
 const ProviderWaitingPay = () => {
 
-  const renderClientInfo = () => {
+  const { requestInfoByService } = useContext(SearchContext);
+  const [fromWaitingPayScreen, setFromWaitingPayScreen] = useState(true)
+  const [monthly, setMonthly] = useState(false)
+  const [spacificDate, setspacificDate] = useState(false)
+  const [clientName, setClientName] = useState(true)
+
+  const [useDefultSearch, setUseDefultSearch] = useState(true)
+  const [useMonthToSearch, setuseMonthToSearch] = useState(false)
+  const [useSpacificDateToSearch, setUseSpacificDateToSearch] = useState(false)
+  const [useClientToSearch, setUseClientToSearch] = useState(false)
+
+  const [client, setClient] = useState(null)
+  const [selectedSpacificDate, setSelectedSpacificDate] = useState(null)
+  const [selectedMonth, setSelectedMonth] = useState(null)
+  const [selectedYear, setSelectedYear] = useState(null)
+
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+
+  const allRequestingDates = []
+
+  const monthlyPress = () => {
+    setMonthly(true)
+    setspacificDate(false)
+    setClientName(false)
+  }
+  const spacificDatePress = () => {
+    setMonthly(false)
+    setspacificDate(true)
+    setClientName(false)
+  }
+  const clientNamePress = () => {
+    setMonthly(false)
+    setspacificDate(false)
+    setClientName(true)
+  }
+
+  const getBookingInfo = () => {
+    const reqInfo = requestInfoByService.filter(item => {
+      return item.ReqStatus === 'waiting pay'
+    })
+    return reqInfo
+  }
+
+  const getBookingInfoByDate = (rseDate) => {
+    const data = getBookingInfo()
+    console.log("data", data);
+    const reqInfo = data.filter(item => {
+      console.log("rseDate", rseDate);
+      return item.ReqStatus === 'waiting pay' && item.reservationDetail[0].reservationDate === rseDate
+    })
+    //console.log("reqInfo", reqInfo);
+    return reqInfo
+  }
+
+  const collectAllRequestDates = () => {
+    const data = getBookingInfo()
+    return data.map(item => {
+      const requestBookingDate = moment(item.reservationDetail[0].reservationDate, "YYYY-MM-DD")
+      let startingDay = requestBookingDate.format('D')
+      let month = requestBookingDate.format('M')
+      let year = requestBookingDate.format('YYYY')
+      let completeDate = year + '-' + month + '-' + startingDay
+
+
+      if (!(allRequestingDates.includes(completeDate))) {
+        if (useMonthToSearch) {
+          if (month === selectedMonth && year === selectedYear) {
+            allRequestingDates.push(completeDate)
+          }
+        } else {
+          allRequestingDates.push(completeDate)
+        }
+      }
+      allRequestingDates.sort();
+    })
+  }
+
+  const renderBookingCard = (rseDate) => {
+    const data = getBookingInfoByDate(rseDate)
+
+    return data.map(item => {
+      return (
+        <ProviderReservationCard fromWaitingPayScreen={fromWaitingPayScreen}  {...item} />
+      )
+    })
+  }
+
+  const renderBookingDates = () => {
+    collectAllRequestDates()
+    return allRequestingDates.map(item => {
+      return (
+        <View>
+          <View style={styles.dateView}>
+            <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
+            <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
+          </View>
+          {renderBookingCard(item)}
+        </View>
+      )
+    })
+  }
+
+  const renderFilter = () => {
     return (
-      <View style={styles.info}>
-        <Image style={styles.profilImg} source={require('../../assets/photos/user.png')} />
-        <Text style={styles.userName}>اسماعيل كبها</Text>
+      <View style={styles.choicesView}>
+        <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
+          <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>حسب الشهر</Text>
+        </Pressable>
+        <Pressable style={[styles.Dview, spacificDate ? styles.DviewPress : styles.Dview]} onPress={spacificDatePress}>
+          <Text style={[styles.filtertxt, spacificDate ? styles.filtertxtPress : styles.filtertxt]}>تاريخ محدد</Text>
+        </Pressable>
+        <Pressable style={[styles.Dview, clientName ? styles.DviewPress : styles.Dview]} onPress={clientNamePress}>
+          <Text style={[styles.filtertxt, clientName ? styles.filtertxtPress : styles.filtertxt]}>اسم زبون</Text>
+        </Pressable>
+      </View>)
+  }
+  const inputClientName = () => {
+    return (
+      <View>
+        <TextInput
+          style={styles.input}
+          keyboardType='default'
+          placeholder='ادخل اسم الزبون'
+          onChangeText={setClient}
+        />
       </View>
     )
   }
 
-  const renderRequestDate = () => {
+  const onChange = (event, selectedDate) => {
+    setShow(false)
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+
+    let tempDate = new Date(currentDate);
+    let fDate = tempDate.getFullYear() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getDate();
+    setSelectedSpacificDate(fDate);
+  }
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  }
+  const inputSpecificDate = () => {
     return (
-      <View style={styles.dateview}>
-        <View>
-          <Text style={styles.dateTxt}>5/1/2024</Text>
-          <Text style={styles.labelDateTxt}>تاريخ الطلب</Text>
-        </View>
-        <View style={styles.IconView}>
-          <Fontisto
-            name={"date"}
-            color={colors.puprble}
-            size={15} />
-        </View>
+      <View>
+        <Pressable onPress={() => showMode('date')} >
+          <View style={styles.viewDate}>
+            <Text style={styles.dateTxt}>{selectedSpacificDate || "YYYY/MM/DD"}</Text>
+            <Entypo
+              name='calendar'
+              style={{ fontSize: 30, color: colors.puprble, paddingHorizontal: 20 }}
+            />
+          </View>
+        </Pressable>
+        {show && (
+          <DateTimePicker
+            testID='dateTimePicker'
+            value={date}
+            mode={mode}
+            is24Hour={true}
+            display='spinner'
+            onChange={onChange}
+          />
+        )}
       </View>
     )
   }
-  const renderBookingDate = () => {
-    return (
-      <View style={styles.dateview}>
-        <View>
-          <Text style={styles.dateTxt}>10/8/2024</Text>
-          <Text style={styles.labelDateTxt}>تاريخ الحجز</Text>
-        </View>
-        <View style={styles.IconView}>
-          <Fontisto
-            name={"date"}
-            color={colors.puprble}
-            size={15} />
-        </View>
-      </View>
-    )
+  const renderBookingCardAccorDate = () => {
+    const data = getBookingInfoByDate(selectedSpacificDate)
+    return data.map(item => {
+      return (
+        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
+      )
+    })
   }
-  const renderPrice = () => {
+
+  const inputMonth = () => {
     return (
-      <View style={styles.dateview}>
-        <View>
-          <Text style={styles.dateTxt}>10000</Text>
-        </View>
-        <View style={styles.IconView}>
-          <MaterialIcons
-            name={"payments"}
-            color={colors.puprble}
-            size={15} />
-        </View>
-      </View>
-    )
-  }
-  const renderRequestInfo = () => {
-    return (
-      <View style={styles.reqInfo}>
-        {renderRequestDate()}
-        {renderBookingDate()}
-        {renderPrice()}
-        <View style={styles.buttonView}>
-          <Pressable><Text style={styles.buttonTxt}>اٍلغاء الطلب</Text></Pressable>
-          <Pressable><Text style={styles.buttonTxt}>التفاصيل</Text></Pressable>
-        </View>
+      <View>
+        <MonthCom />
       </View>
     )
   }
 
-  const renderClientCard = () => {
+  const renderFilterTools = () => {
     return (
-      <View style={styles.card}>
-        {renderRequestInfo()}
-        {renderClientInfo()}
+      <View style={{ width: '90%', alignSelf: 'center' }}>
+        {clientName && inputClientName()}
+        {monthly && inputMonth()}
+        {spacificDate && inputSpecificDate()}
       </View>
     )
   }
+
 
   return (
-    <View>
-      {renderClientCard()}
-      {renderClientCard()}
+    <View style={styles.container}>
+      {renderFilter()}
+      {renderFilterTools()}
+      <ScrollView>
+        {useMonthToSearch && renderBookingDates()}
+        {useDefultSearch && renderBookingDates()}
+        {useSpacificDateToSearch && renderBookingCardAccorDate()}
+        <View style={{ height: 100 }}></View>
+      </ScrollView>
     </View>
   )
 }
@@ -96,78 +225,84 @@ const ProviderWaitingPay = () => {
 export default ProviderWaitingPay
 
 const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    width: '90%',
-    height: 190,
-    alignSelf: 'center',
-    margin: 10
-  },
-  info: {
-    width: '40%',
-    height: '100%',
-    borderRadius: 10,
-    backgroundColor: colors.darkGold,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  reqInfo: {
-    width: '60%',
-    height: '95%',
-    alignSelf: 'center',
-    backgroundColor: 'white',
-    elevation: 5,
-    padding: 5
-    //alignItems: 'center',
-  },
-  profilImg: {
-    width: 70,
-    height: 80,
-    borderRadius: 10,
-    backgroundColor: colors.BGScereen,
-    marginBottom: 10
-  },
-  userName: {
-    fontSize: 15,
-    color: 'white'
-  },
-  buttonView: {
-    flexDirection: 'row',
-    width: '100%',
-    height: 30,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 0
-  },
-  infoTxt: {
-    marginVertical: 5,
-    marginRight: 10,
-    color: colors.puprble,
-    fontSize: 15
-  },
-  buttonTxt: {
-    fontSize: 17
-  },
-  dateview: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-   marginBottom: 5
+  container: {
+    flex: 1,
+    //backgroundColor: 'white'
   },
   dateTxt: {
     color: colors.puprble,
     fontSize: 20
   },
-  labelDateTxt: {
-    fontSize: 15
+  dateView: {
+    backgroundColor: colors.silver,
+    width: '100%',
+    height: 40,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexDirection: 'row',
+    elevation: 5,
+    marginVertical: 20
   },
-  IconView: {
-    width: 30,
-    height: 30,
+  filtertxt: {
+    color: colors.silver,
+    fontSize: 20
+  },
+  filtertxtPress: {
+    color: colors.puprble,
+    fontSize: 20
+  },
+  choicesView: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    backgroundColor: colors.puprble,
+    width: '50%',
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    //borderRadius: 35,
+    marginVertical: 20
+  },
+  Dview: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50%',
+    height: 40,
+    backgroundColor: colors.puprble,
+    borderRadius: 35,
+    //elevation: 5,
+    margin: 5
+  },
+  DviewPress: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50%',
+    height: 40,
+    backgroundColor: colors.darkGold,
+    borderRadius: 35,
+    elevation: 5,
+    margin: 5
+  },
+  input: {
+    alignSelf: 'center',
+    textAlign: 'center',
+    height: 50,
+    width: '100%',
+    borderRadius: 10,
+    borderColor: 'gray',
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: 'black',
     backgroundColor: 'lightgray',
-    borderRadius: 30,
-    marginLeft: 15
+    borderWidth: 0.5
+  },
+  viewDate: {
+    flexDirection: 'row',
+    height: 50,
+    width: '95%',
+    borderRadius: 10,
+    alignItems: 'center',
+    backgroundColor: 'lightgray',
+    justifyContent: 'flex-end',
+    alignSelf: 'center'
   },
 })

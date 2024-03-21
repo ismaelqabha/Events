@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, ScrollView, Pressable, FlatList } from 'react-n
 import React, { useState } from 'react'
 import moment from "moment";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { colors } from '../../assets/AppColors';
@@ -38,7 +39,7 @@ const CalenderDayCard = (props) => {
         const fullDate = []
 
         for (var day = 1; day <= daysInMonth; day++) {
-            const completeDate = day + '-' + currentMonth + '-' + currentYear
+            const completeDate = currentYear + '-' + currentMonth + '-' + day
             fullDate.push(
                 {
                     currentDay: day,
@@ -72,7 +73,15 @@ const CalenderDayCard = (props) => {
                 <Text style={styles.text}>
                     {item.currentDay}
                 </Text>
-                <Text style={styles.resText}>الحجوزات (2)</Text>
+            </View>
+            <View style={styles.footer}>
+                <Pressable style={{}}>
+                    <Entypo
+                        name={"dots-three-horizontal"}
+                        color={'gray'}
+                        size={20} />
+                </Pressable>
+                <Text style={styles.resText}>(2)</Text>
             </View>
         </Pressable>
     )
@@ -129,7 +138,7 @@ const styles = StyleSheet.create({
     card: {
         width: 85,
         height: 85,
-        backgroundColor: 'snow',
+        // backgroundColor: 'snow',
         borderRadius: 8,
         elevation: 5,
         margin: 5
@@ -149,23 +158,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'green',
         borderTopLeftRadius: 8,
-        borderTopRightRadius: 8
+        borderTopRightRadius: 8,
+        height: '30%'
     },
     body: {
         alignItems: 'center',
-        backgroundColor: 'lightgray'
+        backgroundColor: 'lightgray',
+        height: '40%',
+        justifyContent:'center',
+         //borderWidth: 1
+    },
+    footer: {
+        alignItems: 'flex-end',
+        backgroundColor: colors.silver,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        height: '30%'
+        //borderWidth: 1
     },
     text: {
         fontSize: 18,
-        //color: 'black',
         fontWeight: 'bold',
-        marginTop: 10
     },
     resText: {
-        marginTop: 10,
         fontSize: 15,
-       
-        //color: colors.puprble,
     },
     datetxt: {
         fontSize: 15,

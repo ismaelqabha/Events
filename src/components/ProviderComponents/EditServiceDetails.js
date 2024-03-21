@@ -8,7 +8,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../assets/AppColors';
-import { mandoteryOptions } from "../../resources/data";
+import { hallDetailOptions, mandoteryOptions } from "../../resources/data";
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const EditServiceDetails = (props) => {
@@ -17,20 +17,22 @@ const EditServiceDetails = (props) => {
     const { serviceInfoAccorUser, setServiceInfoAccorUser,
         editServiceDetail, setEditServiceDetail,
         addNewDetail, setAddNewDetail,
-         setShowDetailModal } = useContext(ServiceProviderContext);
+        setShowDetailModal } = useContext(ServiceProviderContext);
 
     const [serviceAdditionalServ, setServiceAdditionalServ] = useState([]);
     const [serviceDetail, setServiceDetail] = useState();
     const [detailType, setDetailType] = useState();
+    const [priceInclude, setPriceInclude] = useState()
     const [serEditedDescrItem, setSerEditedDescrItem] = useState();
     const [addNewDescrItem, setaddNewDescrItem] = useState();
 
     const [addNewSubDetItem, setaddNewSubDetItem] = useState();
 
+    const [PerPackage, setPerPackage] = useState(false);
+    const [PerPerson, setPerPerson] = useState(false);
+    const [PerTable, setPerTable] = useState(false);
+
     const [showSubDetModal, setShowSubDetModal] = useState(false);
-    const [perPerson, setPerPerson] = useState();
-    const [yesPerPerson, setYesPerPerson] = useState();
-    const [noPerPerson, setNoPerPerson] = useState();
 
     const [subDetailImg, setSubDetailImg] = useState();
 
@@ -43,37 +45,45 @@ const EditServiceDetails = (props) => {
     const serviceData = getServiceInfo()
 
     useEffect(() => {
-        if (detailIsperson) {
-            setYesPerPerson(true)
-            setNoPerPerson(false)
-        } else {
-            setYesPerPerson(false)
-            setNoPerPerson(true)
-        }
+        
 
     }, [])
 
-    const yesIsPerson = () => {
-        setYesPerPerson(true)
-        setNoPerPerson(false)
-        setPerPerson(true)
-    }
-    const noIsPerson = () => {
-        setYesPerPerson(false)
-        setNoPerPerson(true)
+   
+    const Package = () => {
+        setPerPackage(true)
         setPerPerson(false)
+        setPerTable(false)
+        setPriceInclude('لكل الحجز')
     }
+    const Person = () => {
+        setPerPackage(false)
+        setPerPerson(true)
+        setPerTable(false)
+        setPriceInclude('حسب الشخص')
+    }
+    const Table = () => {
+        setPerPackage(false)
+        setPerPerson(false)
+        setPerTable(true)
+        setPriceInclude('حسب الطاولة')
+    }
+
     const renderIsPerPerson = () => {
         return (
             <View style={styles.perPersoneView}>
-                <Text style={styles.perPersoneText}>السعر  لهذة الخدمة حسب الشخص ؟</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                    <Pressable style={[noPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={noIsPerson}>
-                        <Text style={styles.perPersoneText}>لا</Text>
+                <Text style={styles.perPersoneText}>ماذا يشمل هذا السعر ؟</Text>
+                <View style={{ alignItems: 'flex-end' }}>
+                    <Pressable style={[PerPackage ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Package}>
+                        <Text style={styles.perPersoneText}>لكل الحجز</Text>
                     </Pressable>
 
-                    <Pressable style={[yesPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={yesIsPerson}>
-                        <Text style={styles.perPersoneText}>نعم</Text>
+                    <Pressable style={[PerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Person}>
+                        <Text style={styles.perPersoneText}>حسب الشخص</Text>
+                    </Pressable>
+
+                    <Pressable style={[PerTable ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Table}>
+                        <Text style={styles.perPersoneText}>حسب الطاولة</Text>
                     </Pressable>
                 </View>
             </View>
@@ -87,11 +97,10 @@ const EditServiceDetails = (props) => {
         setEditSubDetItem(true)
         setShowSubDetModal(false)
     }
-
-    
     const closeModalPress = () => {
         setShowSubDetModal(false)
     }
+
     const onAddImgPress = async () => {
         try {
             let options = {
@@ -135,6 +144,8 @@ const EditServiceDetails = (props) => {
     const updateSubDet = (setEditSubDetItem) => {
         setEditSubDetItem(false)
     }
+    
+    // edit Detail
     const editServiceDetailPress = () => {
         let DType = ''
         if (DetailType == 'Optional') {
@@ -164,7 +175,6 @@ const EditServiceDetails = (props) => {
                         />
                     </View>
                     {renderIsPerPerson()}
-                    {/* <Text style={styles.itemText}>تفاصيل الخدمة</Text> */}
 
                     <View style={styles.subDetailView}>
                         {/* Add new Sub Detail */}
@@ -189,9 +199,8 @@ const EditServiceDetails = (props) => {
                     <Pressable style={styles.subImg} onPress={onAddImgPress}>
                         {subDetailImg ?
                             <Image
-                                source={{uri: sub.subDetailPhoto.uri}}
-                                style={{ width: 100, height: 100, resizeMode: 'stretch', borderRadius: 10 }}
-                            />
+                                source={{ uri: sub.subDetailPhoto.uri }}
+                                style={{ width: 100, height: 100, resizeMode: 'stretch', borderRadius: 10 }} />
                             :
                             <MaterialIcons
                                 style={{ alignSelf: 'center' }}
@@ -245,7 +254,7 @@ const EditServiceDetails = (props) => {
 
                             <View style={styles.subDetailImg}>
                                 <Image style={styles.subDetailImg}
-                                source={{ uri: sub.subDetailPhoto.uri }}
+                                    source={{ uri: sub.subDetailPhoto.uri }}
                                 /></View>
                         </View>
                     </View>
@@ -254,6 +263,8 @@ const EditServiceDetails = (props) => {
             </ScrollView >)
         })
     }
+
+
     const renderAddSubDet = () => {
         return (<View>
             {addNewSubDetItem ? <View style={styles.addSubDetView}>
@@ -353,6 +364,65 @@ const EditServiceDetails = (props) => {
         )
     }
 
+    // add New detail
+    const addNewServiceDetailPress = () => {
+        useEffect(() => {
+           
+        }, [])
+
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editDetailView}>
+                    <Text style={styles.itemText}>الخدمة</Text>
+
+                    <View style={styles.list}>
+                        <SelectList
+                            data={hallDetailOptions}
+                            setSelected={val => {
+                                setServiceDetail(hallDetailOptions[val].value);
+                            }}
+                            placeholder={'اختيار وصف الخدمة'}
+                            boxStyles={styles.dropdownDetailType}
+                            inputStyles={styles.droptext}
+                            dropdownTextStyles={styles.dropstyle}
+                        />
+                    </View>
+
+                    {serviceDetail === 'أخرى' &&
+                        <TextInput
+                            style={styles.titleInput}
+                            keyboardType="default"
+                            maxLength={60}
+                            placeholder={'أدخل اسم الخدمة'}
+                            onChangeText={setServiceDetail}
+                        />}
+
+                    <View style={styles.list}>
+                        <SelectList
+                            data={mandoteryOptions}
+                            setSelected={val => { setDetailType(mandoteryOptions[val].alt) }}
+                            placeholder={'أختر نوع الخدمة'}
+                            boxStyles={styles.dropdownDetailType}
+                            inputStyles={styles.droptext}
+                            dropdownTextStyles={styles.dropstyle}
+                        />
+                    </View>
+                    {renderIsPerPerson()}
+                    <Text style={styles.itemText}>أدخل تفاصيل الخدمة </Text>
+
+                    <View style={styles.subDetailView}>
+                        {/* Add new Sub Detail */}
+                        {renderAddSubDet()}
+                    </View>
+
+                    <View style={styles.itemFooter}>
+                        <Pressable onPress={updateServiceDetail}>
+                            <Text style={styles.itemText}>حفظ</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </View>)
+    }
     const updateServiceDetail = () => {
         setShowDetailModal(false)
         // const data = serviceInfoAccorUser || [];
@@ -390,13 +460,12 @@ const EditServiceDetails = (props) => {
     const editObject = [
         {
             editItem: addNewDetail,
-            // editFunction: editBasicInfoPress(),
+            editFunction: addNewServiceDetailPress(),
         },
-        {
-            editItem: editServiceDetail,
-            editFunction: editServiceDetailPress(),
-        },
-
+        // {
+        //     editItem: editServiceDetail,
+        //     editFunction: editServiceDetailPress(),
+        // },
     ]
     const renderSelectedEdit = () => {
         return editObject.map(item => {
@@ -424,7 +493,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
         elevation: 5,
         margin: 5,
-        alignItems: 'center',
+        // alignItems: 'center',
         paddingVertical: 10
     },
     subDetailItemView: {
@@ -440,7 +509,9 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         width: '95%',
         borderRadius: 10,
-        height: 380
+        alignSelf: 'center',
+        marginVertical: 10,
+        //height: 380
     },
     subDetailImg: {
         width: 80,
@@ -462,8 +533,8 @@ const styles = StyleSheet.create({
     itemPersonView: {
         borderWidth: 2,
         borderColor: '#dcdcdc',
-        width: 60,
-        height: 60,
+        width: '60%',
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 30,
@@ -473,8 +544,8 @@ const styles = StyleSheet.create({
     itemPersonViewPressed: {
         borderWidth: 3,
         borderColor: colors.puprble,
-        width: 60,
-        height: 60,
+        width: '60%',
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 30,
@@ -489,7 +560,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.puprble,
         marginRight: 20,
-        textAlign: 'right'
+        // textAlign: 'right'
     },
     itemView: {
         width: '100%',
@@ -502,9 +573,10 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
+        alignSelf: 'center',
         //borderWidth: 1,
         position: 'absolute',
-        bottom: 20
+        bottom: 25
     },
     input: {
         textAlign: 'center',
@@ -520,7 +592,8 @@ const styles = StyleSheet.create({
     },
     list: {
         width: '90%',
-        marginTop: 20
+        marginTop: 20,
+        alignSelf: 'center',
     },
     IconView: {
         width: 40,
@@ -564,7 +637,7 @@ const styles = StyleSheet.create({
     titleInput: {
         textAlign: 'right',
         height: 50,
-        width: '100%',
+        width: '90%',
         borderWidth: 2,
         borderRadius: 10,
         borderColor: '#dcdcdc',
@@ -572,6 +645,7 @@ const styles = StyleSheet.create({
         color: 'black',
         backgroundColor: 'white',
         alignSelf: 'center',
+        marginTop: 20
     },
     priceInput: {
         textAlign: 'right',

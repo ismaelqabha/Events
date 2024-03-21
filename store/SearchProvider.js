@@ -6,7 +6,7 @@ import SearchContext from '../store/SearchContext';
 const SearchProvider = props => {
 
   //user
-  //const [userId, setuserId] = useState(1);
+  const [userInfoBySpiceficId, setUserInfoBySpiceficId] = useState();
 
   const [cat, setCat] = useState('');
   const [isFirst, setIsfirst] = useState()
@@ -37,7 +37,7 @@ const SearchProvider = props => {
   const [detailIdState, setdetailIdState] = useState();
 
   // Request
-  const [requestInfo, setRequestInfo] = useState([])
+  const [requestInfoByService, setRequestInfoByService] = useState([])
   const [resDetail, setResDetail] = useState([])
 
 
@@ -70,8 +70,8 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
-        // userId,
-        // setuserId,
+        userInfoBySpiceficId, 
+        setUserInfoBySpiceficId,
         cat,
         setCat,
         isFirst,
@@ -88,8 +88,8 @@ const SearchProvider = props => {
         setUserFavorates,
         fileFavoriteState,
         setFileFavoriteState,
-        requestInfo,
-        setRequestInfo,
+        requestInfoByService, 
+        setRequestInfoByService,
         resDetail, 
         setResDetail,
         ImgOfServeice,

@@ -16,9 +16,11 @@ const RequestDetail = (props) => {
         selectedDate,
         setSelectedDate, handleScrollToPosition } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
+
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
         return moment(date).format('L')
     }) : [requestedDate]
+    
     const [selectTime, setSelectTime] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [startTimeText, setstartTimeText] = useState()
@@ -497,7 +499,14 @@ const RequestDetail = (props) => {
             return campArray;
         }
     }
-
+    // this function will be show when there are some similer offers detail 
+    const renderCheckSelectedOffer = () => {
+        return (
+            <View style={styles.checkDataView}>
+                <Text style={styles.text}>تنبية !! لقد تم اختيار عروض تحتوي على تفاصيل متشابة</Text>
+            </View>
+        )
+    }
 
     const renderReservationDet = () => {
 
@@ -518,13 +527,13 @@ const RequestDetail = (props) => {
                         handlePressFirstPage()
                         setPressed(0)
                     }}>
-                        <Text style={styles.detailViewText}>العروض</Text>
+                        <Text style={styles.detailViewText}>الخدمات</Text>
                     </Pressable>
                     <Pressable style={pressed === 1 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
                         handlePressSecondPage()
                         setPressed(1)
                     }}>
-                        <Text style={styles.detailViewText}>الخدمات</Text>
+                        <Text style={styles.detailViewText}>العروض</Text>
                     </Pressable>
                 </View>
                 <ScrollView
@@ -547,6 +556,7 @@ const RequestDetail = (props) => {
                     <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width }}>
                         <View style={[styles.serviceOfferBooking]}>
                             {pressed === 1 && renderCampaighn()}
+                            {renderCheckSelectedOffer()}
                         </View>
                     </View>
                 </ScrollView>
@@ -652,6 +662,15 @@ const RequestDetail = (props) => {
         }
     }
 
+    // this function will be show when there are some similer detail between services detail and service offer 
+    const renderCheckSelectedResDetail = () => {
+        return (
+            <View style={styles.checkDataView}>
+                <Text style={styles.text}>تنبية !! لقد تم اختيار تفاصيل الحجز متشابه في العروض والخدمات</Text>
+            </View>
+        )
+    }
+
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
             <View style={styles.Time}>
@@ -664,6 +683,7 @@ const RequestDetail = (props) => {
             </View>
             {renderInviters()}
             {campiegnsAccordingServiceId && renderReservationDet()}
+            {renderCheckSelectedResDetail()}
             {chooseButton()}
 
         </View>
@@ -936,5 +956,14 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         marginLeft: 10
     },
+    checkDataView: {
+        backgroundColor: colors.silver,
+        width: '90%',
+        borderRadius: 10,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+        marginTop:  10
+    }
 
 })

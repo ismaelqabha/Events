@@ -194,10 +194,7 @@ const ClientHomeAds = (props) => {
             </Interactable.View> */}
             <ScrollView contentContainerStyle={styles.home}>
 
-                <Pressable
-                    // style={styles.search}
-                    onPress={() => navigation.navigate(ScreenNames.SignIn)}
-                >
+                <Pressable onPress={() => navigation.navigate(ScreenNames.SignIn)} >
                     <Text style={styles.txt}>Login</Text>
                 </Pressable>
 

@@ -120,7 +120,7 @@ const Results = (props) => {
         const DateFiltered = servicedata[0].dates?.find(dat => {
             return dat.time === dataforReservation
         });
-        console.log("DateFiltered", DateFiltered);
+        //console.log("DateFiltered", DateFiltered);
         return !!DateFiltered
     }
     const comparingDates = (dateAviable, monthAvailble, source) => {

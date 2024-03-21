@@ -200,7 +200,7 @@ const ProviderCreateOffer = (props) => {
                             style={{ alignSelf: 'center' }}
                             name={"check"}
                             color={colors.puprble}
-                            size={30} />
+                            size={20} />
                     }
                 </Pressable>
             </View>
@@ -232,7 +232,7 @@ const ProviderCreateOffer = (props) => {
         const subDetail = data[0].additionalServices
         return subDetail.map(item => {
             return (<View>
-                <View style={{backgroundColor: 'lightgray', marginVertical: 5, height: 30, justifyContent: 'center'}}>
+                <View style={styles.detailTitleView}>
                     <Text style={styles.Addtxt}>{item.detailTitle}</Text>
                 </View>
                 {item.subDetailArray.map(element => {
@@ -287,10 +287,10 @@ const ProviderCreateOffer = (props) => {
                     value={ContentDescr}
                     onChangeText={(val) => setContentDescr(val)}
                     onEndEditing={(val) => {
-                        // const data = {
-                        //     contentItem: ContentDescr
-                        // }
-                        addContent(ContentDescr, props.index)
+                        const data = {
+                            contentItem: ContentDescr
+                        }
+                        addContent(data, props.index)
                     }}
                 />
             </View>)
@@ -319,9 +319,7 @@ const ProviderCreateOffer = (props) => {
                 <Text style={styles.regiontxt}>تحديد محتويات العرض من خدماتي</Text>
                 {renderSubDetail()}
                 {renderContents()}
-                <Pressable style={styles.item}
-                    onPress={addOfferContent}
-                >
+                <Pressable style={styles.item} onPress={addOfferContent}>
                     <Text style={styles.Addtxt}>اضافة محتويات اضافية</Text>
                     <View style={styles.IconView}>
                         <Entypo
@@ -632,10 +630,10 @@ const styles = StyleSheet.create({
         marginRight: 20
     },
     regionPressable: {
-        width: 20,
-        height: 20,
+        width: 25,
+        height: 25,
         borderWidth: 2,
-        borderColor: colors.puprble,
+        borderColor: colors.silver,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -662,6 +660,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
         borderRadius: 30,
         marginLeft: 15
+    },
+    detailTitleView: {
+        backgroundColor: colors.silver,
+        marginVertical: 10, height: 30,
+        justifyContent: 'center',
+        width: '90%',
+        borderRadius: 10,
+        alignSelf: 'center'
     },
     Addtxt: {
         fontSize: 15,
