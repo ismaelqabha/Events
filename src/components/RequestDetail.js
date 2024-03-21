@@ -14,20 +14,20 @@ const RequestDetail = (props) => {
     // const { requestedDate } = props
     const {
         selectedDate,
-        setSelectedDate, handleScrollToPosition } = props
+        setSelectedDate, handleScrollToPosition, pressed, setPressed } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
 
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
         return moment(date).format('L')
     }) : [requestedDate]
-    
+
     const [selectTime, setSelectTime] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [startTimeText, setstartTimeText] = useState()
     const [endTimeText, setendTimeText] = useState()
     const [invitersValue, setInvitersValue] = useState('');
     const [offer, setOffer] = useState();
-    const [pressed, setPressed] = useState([])
+
 
 
     const [invitersValueError, setInvitersValueError] = useState(false);
@@ -41,6 +41,18 @@ const RequestDetail = (props) => {
     const [mode, setMode] = useState('time');
     const [showStart, setShowStart] = useState(false);
     const [showEnd, setShowEnd] = useState(false);
+
+
+
+    useEffect(() => {
+        try {
+            let result1 = pressed.map(index => campiegnsAccordingServiceId[index]);
+            updateReservationDet(result1, 'campaigns')
+        } catch (error) {
+            console.log("error ", error);
+        }
+
+    }, [pressed])
 
     const scrollViewRef = useRef(null);
     const firstPageRef = useRef(null);
@@ -176,7 +188,7 @@ const RequestDetail = (props) => {
 
     /**
      * Update function.
-     * @param {'startingTime' | 'endTime' | 'invited' | 'subDetail' | 'offerId'} type - The type of update.
+     * @param {'startingTime' | 'endTime' | 'invited' | 'subDetail' | 'offerId' | 'campaigns'} type - The type of update.
      */
     const updateReservationDet = (val, type) => {
         const detailIndex = resDetail.findIndex(item => item.reservationDate === moment(selectedDate).format('L'))
@@ -206,6 +218,10 @@ const RequestDetail = (props) => {
                 break;
             case 'offerId':
                 detail[detailIndex].offerId = val
+                setResDetail([...detail])
+                break;
+            case 'campaigns':
+                detail[detailIndex].campaigns = val
                 setResDetail([...detail])
                 break;
 
@@ -484,6 +500,7 @@ const RequestDetail = (props) => {
     }
     const renderCampaighn = () => {
         const CampData = campiegnsAccordingServiceId;
+
         if (CampData.message !== 'No Campaigns') {
             const campArray = CampData?.map((camp, index) => {
 
@@ -963,7 +980,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'center',
         paddingHorizontal: 10,
-        marginTop:  10
+        marginTop: 10
     }
 
 })

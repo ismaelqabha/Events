@@ -30,7 +30,6 @@ const ClientRequest = (props) => {
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
-    const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
     const [selectTime, setSelectTime] = useState(true);
 
     const [fileEventName, setfileEventName] = useState();
@@ -46,6 +45,8 @@ const ClientRequest = (props) => {
 
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
+
+    const [pressed, setPressed] = useState([])
 
     // price calculation states 
     const [totalPrice, setTotalPrice] = useState(0)
@@ -257,7 +258,7 @@ const ClientRequest = (props) => {
 
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
-            <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} handleScrollToPosition={handleScrollToPosition} />
+            <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} handleScrollToPosition={handleScrollToPosition} pressed={pressed} setPressed={setPressed} />
         </View>
     }
     const renderFoter = () => {
@@ -418,9 +419,7 @@ const ClientRequest = (props) => {
     const showDetaiPress = () => {
         setShowDetailRecipt(!showDetailRecipt)
     }
-    const showSupDetaiPress = () => {
-        setShowSupDetRecipt(!showSupDetRecipt)
-    }
+
 
     const renderFinalPrice = () => {
         return (
@@ -447,93 +446,190 @@ const ClientRequest = (props) => {
         return (
             <View style={styles.reciptView}>
                 {renderFinalPrice()}
-                {showDetailRecipt && <View>
-                    <View style={styles.reciptDateLabel}>
-                        <Text style={styles.text}>{moment(requestedDate).format('L')}</Text>
-                    </View>
-                    <View style={styles.reciptDetail}>
-
-                        <View style={styles.reciptLabel}>
-                            <Text style={styles.text}>الخدمات</Text>
-                        </View>
-
-                        <View style={styles.reciptDetailItem}>
-                            <View style={styles.reciptClom}>
-                                <Text>السعر النهائي</Text>
-                                <Text style={styles.text}>5000</Text>
-                            </View>
-                            <View style={reciptMidClom}>
-                                <Text>السعر للطاولة الواحدة</Text>
-                                <Text style={styles.text}>₪ 70  X  50</Text>
-                            </View>
-                            <Pressable onPress={showSupDetaiPress} style={styles.reciptClom}>
-                                <Text style={styles.text}>ضيافة</Text>
-                            </Pressable>
-                        </View>
-
-
-                        <View style={styles.reciptDetailItem}>
-                            <View style={styles.reciptClom}>
-                                <Text>السعر النهائي</Text>
-                                <Text style={styles.text}>18000</Text>
-                            </View>
-                            <View style={reciptMidClom}>
-                                <Text>السعر للشخص الواحد</Text>
-                                <Text style={styles.text}>₪ 60  X  300</Text>
-                            </View>
-                            <Pressable onPress={showSupDetaiPress} style={styles.reciptClom}>
-                                <Text style={styles.text}>وجبات طعام</Text>
-                            </Pressable>
-                        </View>
-
-                        {showSupDetRecipt &&
-                            <View style={styles.reciptLabel}>
-                                <View style={styles.reciptSupDet}>
-                                    <View style={{ alignItems: 'center', width: '50%' }}><Text>السعر</Text></View>
-                                    <View style={{ alignItems: 'center', width: '50%' }}><Text >التفاصيل</Text></View>
-                                </View>
-                                <View style={styles.reciptSupDet}>
-                                    <View style={{ alignItems: 'center', width: '50%' }}>
-                                        <Text style={styles.text}>30</Text>
-                                    </View>
-                                    <View style={{ alignItems: 'center', width: '50%' }}>
-                                        <Text style={styles.text}>ستيك</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.reciptSupDet}>
-                                    <View style={{ alignItems: 'center', width: '50%' }}>
-                                        <Text style={styles.text}>30</Text>
-                                    </View>
-                                    <View style={{ alignItems: 'center', width: '50%' }}>
-                                        <Text style={styles.text}>دجاج</Text>
-                                    </View>
-                                </View>
-                            </View>
-                        }
-                    </View>
-
-                    <View style={styles.reciptDetail}>
-                        <View style={styles.reciptLabel}>
-                            <Text style={styles.text}>العروض</Text>
-                        </View>
-                        <View style={styles.reciptDetailItem}>
-                            <View style={styles.reciptClom}>
-                                <Text>السعر النهائي</Text>
-                                <Text style={styles.text}>3500</Text>
-                            </View>
-                            <View style={reciptMidClom}>
-                                <Text>السعر للطاولة الواحدة</Text>
-                                <Text style={styles.text}>₪ 200  X  150</Text>
-                            </View>
-                            <Pressable style={styles.reciptClom}>
-                                <Text style={styles.text}>الحملة الذهبية</Text>
-                            </Pressable>
-                        </View>
-                    </View>
-
-                </View>}
+                {requestedDate.map((date, index) => renderFullReciptDate(date, index))}
             </View >
 
+        )
+    }
+
+    const renderFullReciptDate = (date, index) => {
+        // common states
+        
+        const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
+        if (!showDetailRecipt) {
+            return null
+        }
+
+        // sub details 
+        const detailIndex = resDetail.findIndex(item => item.reservationDate === moment(date).format('L'))
+        if (detailIndex === -1) {
+            return
+        }
+        const { subDetailId, numOfInviters } = resDetail[detailIndex]
+        const filteredSubDetials = data.additionalServices.filter((sub) => subDetailId.includes(sub.detail_Id))
+        const campaigns = resDetail[detailIndex].campaigns;
+
+        // details 
+        const details = {
+            setShowSupDetRecipt: setShowSupDetRecipt,
+            showSupDetRecipt: showSupDetRecipt,
+            filteredSubDetials: filteredSubDetials.length > 0 ? filteredSubDetials : false,
+            numOfInviters: numOfInviters,
+
+        }
+
+        return (
+            // showDetailRes
+            <View key={index}>
+                {/* shows the date */}
+                {renderReciptDate(date)}
+                {/* shows the services choosen */}
+                <View style={styles.reciptDetail}>
+                    {filteredSubDetials.length > 0 && renderReciptServices()}
+                    {renderMainReciptDetails(details)}
+                </View>
+                {/* shows the deals choosen */}
+                {campaigns && renderDeals(campaigns)}
+            </View>
+        )
+    }
+    const renderSubDetRecipt = (subArray) => {
+        return (
+            <View style={styles.reciptLabel}>
+                {subDetReciptHeader()}
+                { }
+                {subArray.map((detail, index) => {
+                    return (
+                        renderSubDetailSingleService(detail.detailSubtitleCost, detail.detailSubtitle, index)
+                    )
+                })}
+            </View>
+        )
+    }
+    const subDetReciptHeader = () => {
+        return (
+            <View style={styles.reciptSupDet}>
+                <View style={{ alignItems: 'center', width: '50%' }}><Text>السعر</Text></View>
+                <View style={{ alignItems: 'center', width: '50%' }}><Text >التفاصيل</Text></View>
+            </View>
+        )
+    }
+    const renderSubDetailSingleService = (price = 0, title = 'random', index) => {
+        return (
+            <View key={index} style={styles.reciptSupDet}>
+                {subDetailReciptPrice(price)}
+                {subDetailTitle(title)}
+            </View>
+        )
+    }
+    const subDetailReciptPrice = (price) => {
+        return (
+            <View style={{ alignItems: 'center', width: '50%' }}>
+                <Text style={styles.text}>{price}</Text>
+            </View>
+        )
+    }
+    const subDetailTitle = (title) => {
+        return (
+            <View style={{ alignItems: 'center', width: '50%' }}>
+                <Text style={styles.text}>{title}</Text>
+            </View>
+        )
+    }
+    const renderReciptServices = () => {
+        return (
+            <View style={styles.reciptLabel}>
+                <Text style={styles.text}>الخدمات</Text>
+            </View>
+        )
+    }
+    const renderMainReciptDetails = (details) => {
+        return (
+            details.filteredSubDetials ?
+                details.filteredSubDetials.map((subDetail, index) => renderSingleReciptService(subDetail, index, details))
+                :
+                null
+        )
+    }
+    const renderSingleReciptService = (subDetail, index, details) => {
+        const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest'
+        let price = 0
+        subDetail.subDetailArray.forEach((detail) => price += parseInt(detail.detailSubtitleCost))
+        return (
+            <>
+                <View key={index} style={styles.reciptDetailItem}>
+                    {renderFinalReciptPrice(price * (details.numOfInviters || 0))}
+                    {additionType === 'perPerson' && renderPerPerson(price, details.numOfInviters || 0)}
+                    <Pressable onPress={() => details.setShowSupDetRecipt(!details.showSupDetRecipt)} style={styles.reciptClom}>
+                        <Text style={styles.text}>{subDetail?.detailTitle || ''}</Text>
+                    </Pressable>
+
+                </View>
+                {details.showSupDetRecipt && renderSubDetRecipt(subDetail.subDetailArray)}
+            </>
+        )
+    }
+    const renderReciptDate = (date) => {
+        return (
+            <View style={styles.reciptDateLabel}>
+                <Text style={styles.text}>{moment(date).format('L')}</Text>
+            </View>
+        )
+    }
+    const renderPerPerson = (price = 0, invited = 0) => {
+        return (
+            <View style={styles.reciptMidClom}>
+                <Text>السعر للشخص الواحد</Text>
+                <Text style={styles.text}>{`₪ ${price}  X  ${invited}`}</Text>
+            </View>
+        )
+    }
+    const renderPerTable = (price = 0, invited = 0) => {
+        return (
+            <View style={styles.reciptMidClom}>
+                <Text>السعر للطاولة الواحدة</Text>
+                <Text style={styles.text}>{`₪ ${price}  X  ${invited}`}</Text>
+            </View>
+        )
+    }
+    const renderDeals = (campaigns) => {
+        return (
+            <View style={styles.reciptDetail}>
+                {renderDealsHeader()}
+                {campaigns.map((camp, index) => renderSingleDealRecipt(camp , index))}
+            </View>
+        )
+    }
+    const renderSingleDealRecipt = (camp , index) => {
+        return (
+            <View key={index} style={styles.reciptDetailItem}>
+                {renderFinalReciptPrice()}
+                {renderPerTable(camp?.campCost)}
+                {renderDealTitle(camp?.campTitle)}
+            </View>
+        )
+    }
+    const renderDealTitle = (title) => {
+        return (
+            <Pressable style={styles.reciptClom}>
+                <Text style={styles.text}>{title}</Text>
+            </Pressable>
+        )
+    }
+    const renderDealsHeader = () => {
+        return (
+            <View style={styles.reciptLabel}>
+                <Text style={styles.text}>العروض</Text>
+            </View>
+        )
+    }
+
+    const renderFinalReciptPrice = (price) => {
+        return (
+            <View style={styles.reciptClom}>
+                <Text>السعر النهائي</Text>
+                <Text style={styles.text}>{price || 0}</Text>
+            </View>
         )
     }
     const renderPrice = () => {
