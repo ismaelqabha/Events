@@ -30,12 +30,12 @@ const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
   const [Dtitle, setDTitle] = useState('');
   const [nec, setNec] = useState();
-  const [perPerson, setPerPerson] = useState(false);
-  const [yesPerPerson, setYesPerPerson] = useState(false);
-  const [noPerPerson, setNoPerPerson] = useState(false);
+  const [additionType, setAdditionType] = useState(null);
+  const [numberPerTable, setNumberPerTable] = useState('')
   const [isMan, setIsMan] = useState(false);
   const [isOpt, setIsOpt] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [other, setOther] = useState(false);
   const [editedDetailId, setEditedDetailId] = useState('');
 
   const {
@@ -138,12 +138,14 @@ const ProviderAddServiceDetail = props => {
         detail_Id: Did,
         detailTitle: Dtitle,
         necessity: nec,
-        isPerPerson: perPerson,
+        additionType: additionType,
+        numberPerTable: numberPerTable,
         subDetailArray: []
       };
       setAdditionalServices([...additionalServices, AddNewDetail]);
       setDTitle('');
-      setPerPerson(false)
+      setAdditionType(null)
+      setNumberPerTable('')
       setNec("Mandatory")
       setShowModal(false);
     }
@@ -156,7 +158,8 @@ const ProviderAddServiceDetail = props => {
   };
   const modalDeletePress = () => {
     setDTitle('');
-    setPerPerson(false);
+    setAdditionType(null)
+    setNumberPerTable('')
     setNec("Mandatory");
     setShowModal(false);
   };
@@ -194,7 +197,8 @@ const ProviderAddServiceDetail = props => {
             const updatedServices = additionalServices.filter(service => service.detail_Id !== detail_Id);
             setAdditionalServices(updatedServices);
             setDTitle('');
-            setPerPerson(false);
+            setAdditionType(null)
+            setNumberPerTable('')
             setNec("Mandatory");
           }
         }
@@ -205,12 +209,8 @@ const ProviderAddServiceDetail = props => {
   const openEdit = (allData) => {
     setEditedDetailId(allData.detail_Id)
     setDTitle(allData.detailTitle);
-    setPerPerson(allData.isPerPerson);
-    if (allData.isPerPerson) {
-      yesIsPerson()
-    } else {
-      noIsPerson()
-    }
+    setAdditionType(allData.additionType);
+    setNumberPerTable(allData.numberPerTable)
     setNec(allData.necessity);
     setIsEdit(true)
     setShowModal(true)
@@ -279,7 +279,12 @@ const ProviderAddServiceDetail = props => {
           <SelectList
             data={hallDetailOptions}
             setSelected={val => {
-              setDTitle(hallDetailOptions[val].value);
+              if (hallDetailOptions[val].value === 'أخرى') {
+                setOther(true)
+              } else {
+                setDTitle(hallDetailOptions[val].value)
+                setOther(false)
+              }
             }}
             placeholder={'اختيار وصف الخدمة'}
             boxStyles={styles.dropdown}
@@ -287,7 +292,7 @@ const ProviderAddServiceDetail = props => {
             dropdownTextStyles={styles.dropstyle}
           />
         </View>
-        {Dtitle === 'أخرى' &&
+        {other &&
           <TextInput
             style={styles.titleInput}
             keyboardType="default"
@@ -295,7 +300,7 @@ const ProviderAddServiceDetail = props => {
             onChangeText={value => {
               setDTitle(value);
             }}
-          //value={Dtitle}
+            value={Dtitle}
           />}
 
         <View style={styles.list}>
@@ -314,15 +319,8 @@ const ProviderAddServiceDetail = props => {
     );
   };
 
-  const yesIsPerson = () => {
-    setYesPerPerson(true)
-    setNoPerPerson(false)
-    setPerPerson(true)
-  }
-  const noIsPerson = () => {
-    setYesPerPerson(false)
-    setNoPerPerson(true)
-    setPerPerson(false)
+  const setType = (type) => {
+    setAdditionType(type)
   }
 
   const renderIsPerPerson = () => {
@@ -331,28 +329,30 @@ const ProviderAddServiceDetail = props => {
         <Text style={styles.perPersoneText}>ما هو نوع تحديد السعر لهذة الخدمة ؟</Text>
         <View style={{ alignItems: 'flex-end' }}>
 
-          <Pressable style={[noPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={noIsPerson}>
+          <Pressable style={[additionType === 'perTable' ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={() => setType('perTable')}>
             <Text style={styles.perPersoneText}>حسب الطاولة</Text>
           </Pressable>
 
 
-          <Pressable style={[yesPerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={yesIsPerson}>
+          <Pressable style={[additionType === 'perPerson' ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={() => setType('perPerson')}>
             <Text style={styles.perPersoneText}>حسب الشخص</Text>
           </Pressable>
 
-          <Pressable style={styles.itemPersonView} //onPress={yesIsPerson}
-          >
+          <Pressable style={[additionType === 'perRequest' ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={() => setType('perRequest')}>
             <Text style={styles.perPersoneText}>شامل لكل الحجز</Text>
           </Pressable>
         </View>
         <View style={{ alignItems: 'center' }}>
-          {noPerPerson &&
+          {additionType === 'perTable' &&
             <TextInput
               style={styles.numTableInput}
               keyboardType="default"
               maxLength={60}
               placeholder='عدد الاشخاص للطاولة'
-              onChangeText={{}}
+              onChangeText={(text) => {
+                setNumberPerTable(text)
+              }}
+              value={numberPerTable}
             />}
         </View>
       </View>
@@ -388,14 +388,14 @@ const ProviderAddServiceDetail = props => {
             ...service,
             detailTitle: Dtitle,
             necessity: nec,
-            isPerPerson: perPerson,
+            additionType: additionType,
           };
         }
         return service;
       });
       setAdditionalServices(updatedServices);
       setDTitle('');
-      setPerPerson(false);
+      setAdditionType(null)
       setNec("Mandatory");
       setShowModal(false);
     }
