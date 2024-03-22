@@ -1,16 +1,22 @@
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Image, Pressable, Alert, ToastAndroid } from 'react-native'
 import React, { useContext } from 'react'
 import { colors } from '../../assets/AppColors'
 import Fontisto from "react-native-vector-icons/Fontisto"
 import UsersContext from '../../../store/UsersContext'
+import { updateRequest } from '../../resources/API'
+import SearchContext from '../../../store/SearchContext'
+import { useNavigation } from '@react-navigation/native';
+import { ScreenNames } from '../../../route/ScreenNames'
+
 
 const ProviderReservationCard = (props) => {
     const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen } = props
     const { allUserData } = useContext(UsersContext);
-
+    const { setRequestInfoByService } = useContext(SearchContext);
+    const navigation = useNavigation();
 
     const filterUsersAccID = () => {
-        const filterUsers =  allUserData.user.filter(item => {
+        const filterUsers = allUserData.user.filter(item => {
             return item.USER_ID === props.ReqUserId
         })
         return filterUsers
@@ -19,10 +25,10 @@ const ProviderReservationCard = (props) => {
     const renderClientInfo = () => {
         const data = filterUsersAccID()
         return (
-            <View style={styles.info}>
-                <Image style={styles.profilImg} source={{uri: data[0].UserPhoto}} />
+            <Pressable style={styles.info} onPress={() => navigation.navigate(ScreenNames.UserProfile)}>
+                <Image style={styles.profilImg} source={{ uri: data[0].UserPhoto }} />
                 <Text style={styles.userName}>{data[0].User_name}</Text>
-            </View>
+            </Pressable>
         )
     }
     const renderRequestDate = () => {
@@ -75,37 +81,105 @@ const ProviderReservationCard = (props) => {
             </View>
         )
     }
+    const updateInfo = (infoData) => {
+        updateRequest(infoData).then(res => {
+            if (res.message === 'Updated Sucessfuly') {
+                setRequestInfoByService([...data])
+
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+    }
+    const accept = () => {
+        const newData = {
+            RequestId: props.RequestId,
+            ReqStatus: 'waiting pay'
+        }
+        updateInfo(newData)
+    }
+    const refuse = () => {
+        const newData = {
+            RequestId: props.RequestId,
+            ReqStatus: 'refuse'
+        }
+        updateInfo(newData)
+    }
+
+    const onAcceptReqPress = () => {
+        Alert.alert(
+            'تأكيد',
+            'هل انت متأكد من قبول طلب الحجز ؟ ',
+            [
+                {
+                    text: 'لا',
+                    style: 'cancel',
+                },
+                {
+                    text: 'نعم',
+                    onPress: () => accept(),
+                    style: 'destructive', // Use 'destructive' for a red-colored button
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    }
+    const onRefuseReqPress = () => {
+        Alert.alert(
+            'تأكيد',
+            'هل انت متأكد من رفض طلب الحجز ؟ ',
+            [
+                {
+                    text: 'لا',
+                    style: 'cancel',
+                },
+                {
+                    text: 'نعم',
+                    onPress: () => refuse(),
+                    style: 'destructive', // Use 'destructive' for a red-colored button
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    }
 
     const requestWaitingReplyCard = () => {
         return (
-            <View style={styles.reqInfo}>
+            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest)}>
                 {renderRequestDate()}
                 {renderPrice()}
                 <View style={styles.buttonView}>
-                    <Pressable><Text style={styles.buttonTxt}>رفض</Text></Pressable>
-                    <Pressable><Text style={styles.buttonTxt}>قبول</Text></Pressable>
+                    <Pressable onPress={onRefuseReqPress}>
+                        <Text style={styles.buttonTxt}>رفض</Text>
+                    </Pressable>
+                    <Pressable onPress={onAcceptReqPress}>
+                        <Text style={styles.buttonTxt}>قبول</Text>
+                    </Pressable>
                 </View>
-            </View>
+            </Pressable>
         )
     }
     const requestWaitingPayCard = () => {
         return (
-            <View style={styles.reqInfo}>
+            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest)}>
                 {renderRequestDate()}
                 {renderPrice()}
                 <View style={styles.buttonView}>
                     <Pressable><Text style={styles.buttonTxt}>اٍلغاء الطلب</Text></Pressable>
                     <Pressable><Text style={styles.buttonTxt}>اِجراء دفع</Text></Pressable>
                 </View>
-            </View>
+            </Pressable>
         )
     }
     const requestReservationCard = () => {
         return (
-            <View style={styles.reqInfo}>
+            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest)}>
                 {renderPrice()}
                 {renderPayRemain()}
-            </View>
+            </Pressable>
         )
     }
 

@@ -136,8 +136,6 @@ const ClientRequest = (props) => {
 
     const onPressRequest = () => {
         // setrequestedDate([])
-        // console.log("res detail ", resDetail);
-        // console.log("res detail lenght ", resDetail.length);
         // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
 
@@ -414,13 +412,9 @@ const ClientRequest = (props) => {
     }
 
     // pricing 
-
-
     const showDetaiPress = () => {
         setShowDetailRecipt(!showDetailRecipt)
     }
-
-
     const renderFinalPrice = () => {
         return (
             <View style={styles.reciptDetail}>
@@ -447,11 +441,9 @@ const ClientRequest = (props) => {
             <View style={styles.reciptView}>
                 {renderFinalPrice()}
                 {requestedDate.map((date, index) => renderFullReciptDate(date, index))}
-            </View >
-
+            </View>
         )
     }
-
     const renderFullReciptDate = (date, index) => {
         // common states
         

@@ -47,18 +47,7 @@ const ServiceDescr = (props) => {
         setShowModal(false);
     };
 
-    const checkIfInEvent = () => {
-        const isinEvent = requestInfo?.find(ResDate => {
-            const reservDate = ResDate.reservationDate;
-            const bookdate = moment(requestedDate).format('L');
-            const res1 = reservDate === bookdate
-            const res2 = ResDate.ReqServId === data?.service_id
-            const res3 = ResDate.ReqUserId == userId
-            const result = res1 && res2 && res3
-            return result
-        });
-        return !!isinEvent;
-    }
+   
 
     const onRequestPressHandler = () => {
         // if (!checkIfInEvent()) {

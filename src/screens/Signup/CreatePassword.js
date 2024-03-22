@@ -54,9 +54,12 @@ const CreatePassword = props => {
   };
 
   const chickIfExist = () => {
-    const isChecked = userInfo.find(item => item.Email === userEmail);
+  
+    const isChecked = userInfo.user.find(item => item.Email === userEmail);
+    console.log(!!isChecked);
     return !!isChecked;
   };
+
   const addNewUser = () => {
     const AddNewUser = {
       Email: userEmail,

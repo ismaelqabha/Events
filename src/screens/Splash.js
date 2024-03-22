@@ -45,7 +45,6 @@ export default function Splash(props) {
     const getAllUserfromApi = () => {
         getAllUsersInfo({}).then(res => {
             setAllUserData(res)
-            console.log("res", res);
         })
     }
 

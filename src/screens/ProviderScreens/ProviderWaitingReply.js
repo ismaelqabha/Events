@@ -19,7 +19,8 @@ const ProviderWaitingReply = () => {
 
   const [monthly, setMonthly] = useState(false)
   const [spacificDate, setspacificDate] = useState(false)
-  const [clientName, setClientName] = useState(true)
+  const [clientName, setClientName] = useState(false)
+  const [allRequests, setAllRequests] = useState(true)
 
   const [useDefultSearch, setUseDefultSearch] = useState(true)
   const [useMonthToSearch, setuseMonthToSearch] = useState(false)
@@ -36,23 +37,35 @@ const ProviderWaitingReply = () => {
   const [show, setShow] = useState(false);
 
   const allRequestingDates = []
+  const manageArrayDates = []
+  const arrayUsingSpicifcDate = []
 
   const monthlyPress = () => {
     setMonthly(true)
     setspacificDate(false)
     setClientName(false)
+    setAllRequests(false)
   }
   const spacificDatePress = () => {
     setMonthly(false)
     setspacificDate(true)
     setClientName(false)
+    setAllRequests(false)
   }
   const clientNamePress = () => {
     setMonthly(false)
     setspacificDate(false)
     setClientName(true)
-    // setUseDefultSearch(false)
-    // setUseClientToSearch(true)
+    setAllRequests(false)
+  }
+  const allReqPress = () => {
+    setMonthly(false)
+    setspacificDate(false)
+    setClientName(false)
+    setAllRequests(true)
+    setUseDefultSearch(true)
+    setUseClientToSearch(false)
+    setUseSpacificDateToSearch(false)
   }
 
   const getBookingInfo = () => {
@@ -62,6 +75,7 @@ const ProviderWaitingReply = () => {
     return reqInfo
   }
 
+  /// searching all requests
   const getBookingInfoByDate = (rseDate) => {
     const data = getBookingInfo()
     const reqInfo = data.filter(item => {
@@ -69,8 +83,6 @@ const ProviderWaitingReply = () => {
     })
     return reqInfo
   }
-
-
 
   const collectAllRequestDates = () => {
     const data = getBookingInfo()
@@ -123,16 +135,20 @@ const ProviderWaitingReply = () => {
     return (
       <View style={styles.choicesView}>
         <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
-          <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>حسب الشهر</Text>
+          <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>شهر</Text>
         </Pressable>
         <Pressable style={[styles.Dview, spacificDate ? styles.DviewPress : styles.Dview]} onPress={spacificDatePress}>
-          <Text style={[styles.filtertxt, spacificDate ? styles.filtertxtPress : styles.filtertxt]}>تاريخ محدد</Text>
+          <Text style={[styles.filtertxt, spacificDate ? styles.filtertxtPress : styles.filtertxt]}>تاريخ</Text>
         </Pressable>
         <Pressable style={[styles.Dview, clientName ? styles.DviewPress : styles.Dview]} onPress={clientNamePress}>
-          <Text style={[styles.filtertxt, clientName ? styles.filtertxtPress : styles.filtertxt]}>اسم زبون</Text>
+          <Text style={[styles.filtertxt, clientName ? styles.filtertxtPress : styles.filtertxt]}>زبون</Text>
+        </Pressable>
+        <Pressable style={[styles.Dview, allRequests ? styles.DviewPress : styles.Dview]} onPress={allReqPress}>
+          <Text style={[styles.filtertxt, allRequests ? styles.filtertxtPress : styles.filtertxt]}>الكل</Text>
         </Pressable>
       </View>)
   }
+
   // seraching By Client Name
   const filterUsersAccName = () => {
     const filterUsers = allUserData.user.filter(item => {
@@ -140,7 +156,8 @@ const ProviderWaitingReply = () => {
     })
     return filterUsers
   }
-  const filterReqAccUserId = () => {
+
+  const getRequestsAccUserId = () => {
     const data = filterUsersAccName()
     const userid = data[0].USER_ID
     const reqInfo = requestInfoByService.filter(item => {
@@ -149,8 +166,30 @@ const ProviderWaitingReply = () => {
     return reqInfo
   }
 
-  const renderResCard = () => {
-    const data = filterReqAccUserId()
+  const manageDatesusingSearchbyName = () =>{
+    const data = getRequestsAccUserId()
+    return data.map(item => {
+      const requestBookingDate = item.reservationDetail[0].reservationDate
+
+      if (!(manageArrayDates.includes(requestBookingDate))) {
+        manageArrayDates.push(requestBookingDate)
+      }
+      manageArrayDates.sort();
+    })
+
+  }
+  const filterReqAccUserId = (resDate) => {
+    const data = filterUsersAccName()
+    const userid = data[0].USER_ID
+    const reqInfo = requestInfoByService.filter(item => {
+      return item.ReqStatus === 'waiting reply' && item.ReqUserId === userid && item.reservationDetail[0].reservationDate === resDate
+    })
+    return reqInfo
+  }
+
+  const renderResCard = (resDate) => {
+    const data = filterReqAccUserId(resDate)
+    
     return data.map(item => {
       return (
         <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
@@ -159,18 +198,23 @@ const ProviderWaitingReply = () => {
   }
 
   const renderRequestAccUserName = () => {
-    const data = filterReqAccUserId()
-    return data.map(item => {
+    manageDatesusingSearchbyName()
+    return manageArrayDates.map(item => {
       return (
         <View>
           <View style={styles.dateView}>
-            <Text style={styles.dateTxt}>{moment(item.reservationDetail[0].reservationDate).format('dddd')}</Text>
-            <Text style={styles.dateTxt}>{moment(item.reservationDetail[0].reservationDate).format('L')}</Text>
+            <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
+            <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
           </View>
-          {renderResCard()}
+          {renderResCard(item)}
         </View>
       )
     })
+  }
+  const onSearchPress = () => {
+    setUseDefultSearch(false)
+    setUseClientToSearch(true)
+    setUseSpacificDateToSearch(false)
   }
 
   const inputClientName = () => {
@@ -180,13 +224,11 @@ const ProviderWaitingReply = () => {
           style={styles.input}
           keyboardType='default'
           placeholder='ادخل اسم الزبون'
-          onChangeText={(val) => {
-            setClient(val)
-            setUseDefultSearch(false)
-            setUseClientToSearch(true)
-            renderRequestAccUserName()
-          }}
+          onChangeText={setClient}
         />
+        <Pressable onPress={onSearchPress}>
+          <Text>بحث</Text>
+        </Pressable>
       </View>
     )
   }
@@ -198,12 +240,17 @@ const ProviderWaitingReply = () => {
     setDate(currentDate);
 
     let tempDate = new Date(currentDate);
-    let fDate = tempDate.getFullYear() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getDate();
+    let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
     setSelectedSpacificDate(fDate);
   }
   const showMode = (currentMode) => {
     setShow(true);
     setMode(currentMode);
+  }
+  const onSearchSpicaficDatePress = () => {
+    setUseDefultSearch(false)
+    setUseClientToSearch(false)
+    setUseSpacificDateToSearch(true)
   }
   const inputSpecificDate = () => {
     return (
@@ -216,6 +263,9 @@ const ProviderWaitingReply = () => {
               style={{ fontSize: 30, color: colors.puprble, paddingHorizontal: 20 }}
             />
           </View>
+        </Pressable>
+        <Pressable onPress={onSearchSpicaficDatePress}>
+          <Text>بحث</Text>
         </Pressable>
         {show && (
           <DateTimePicker
@@ -230,14 +280,34 @@ const ProviderWaitingReply = () => {
       </View>
     )
   }
-  const renderBookingCardAccorDate = () => {
+  const manageDatesbySearchSpicficDate = () => {
     const data = getBookingInfoByDate(selectedSpacificDate)
     return data.map(item => {
+      const requestBookingDate = item.reservationDetail[0].reservationDate
+
+      if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
+        arrayUsingSpicifcDate.push(requestBookingDate)
+      }
+      arrayUsingSpicifcDate.sort();
+    })
+
+  }
+
+  const renderBookingCardAccorDate = () => {
+    manageDatesbySearchSpicficDate()
+    return arrayUsingSpicifcDate.map(item => {
       return (
-        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
+        <View>
+          <View style={styles.dateView}>
+            <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
+            <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
+          </View>
+          {renderBookingCard(selectedSpacificDate)}
+        </View>
       )
     })
   }
+  /// searching by month
   const inputMonth = () => {
     return (
       <View>
@@ -255,8 +325,6 @@ const ProviderWaitingReply = () => {
       </View>
     )
   }
-
-
 
   return (
     <View style={styles.container}>
@@ -309,8 +377,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     backgroundColor: colors.puprble,
-    width: '50%',
-    height: 40,
+    width: '60%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     //borderRadius: 35,
@@ -319,8 +387,8 @@ const styles = StyleSheet.create({
   Dview: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: '50%',
-    height: 40,
+    width: '30%',
+    height: 50,
     backgroundColor: colors.puprble,
     borderRadius: 35,
     //elevation: 5,
@@ -329,8 +397,8 @@ const styles = StyleSheet.create({
   DviewPress: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: '50%',
-    height: 40,
+    width: '30%',
+    height: 50,
     backgroundColor: colors.darkGold,
     borderRadius: 35,
     elevation: 5,
