@@ -1,16 +1,27 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import { colors } from '../../assets/AppColors'
 import Fontisto from "react-native-vector-icons/Fontisto"
+import UsersContext from '../../../store/UsersContext'
 
 const ProviderReservationCard = (props) => {
     const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen } = props
+    const { allUserData } = useContext(UsersContext);
+
+
+    const filterUsersAccID = () => {
+        const filterUsers =  allUserData.user.filter(item => {
+            return item.USER_ID === props.ReqUserId
+        })
+        return filterUsers
+    }
 
     const renderClientInfo = () => {
+        const data = filterUsersAccID()
         return (
             <View style={styles.info}>
-                <Image style={styles.profilImg} source={require('../../assets/photos/user.png')} />
-                <Text style={styles.userName}>اسماعيل كبها</Text>
+                <Image style={styles.profilImg} source={{uri: data[0].UserPhoto}} />
+                <Text style={styles.userName}>{data[0].User_name}</Text>
             </View>
         )
     }
@@ -115,7 +126,7 @@ const ProviderReservationCard = (props) => {
                 </View>
             )
         }
-        if(fromReservationScreen){
+        if (fromReservationScreen) {
             return (
                 <View style={styles.card1}>
                     {requestReservationCard()}

@@ -3,6 +3,7 @@ import UsersContext from './UsersContext';
 
 const UsersProvider = (props) => {
     const [userId, setuserId] = useState();
+    const [allUserData, setAllUserData] = useState([]);
     const [userInfo, setUserInfo] = useState([]);
     const [userName, setUserName] = useState(null);
     const [userEmail, setUserEmail] = useState(null);
@@ -57,7 +58,9 @@ const UsersProvider = (props) => {
                 latitude, 
                 setLatitude,
                 longitude, 
-                setLongitude
+                setLongitude,
+                allUserData, 
+                setAllUserData
             }}>
             {props.children}
         </UsersContext.Provider>

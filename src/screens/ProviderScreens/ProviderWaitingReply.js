@@ -8,10 +8,13 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
 import MonthCom from '../../components/MonthCom'
+import UsersContext from '../../../store/UsersContext'
 
 
 const ProviderWaitingReply = () => {
   const { requestInfoByService, userInfoBySpiceficId, setUserInfoBySpiceficId } = useContext(SearchContext);
+  const { allUserData } = useContext(UsersContext);
+
   const [fromWaitingScreen, setFromWaitingScreen] = useState(true)
 
   const [monthly, setMonthly] = useState(false)
@@ -131,6 +134,44 @@ const ProviderWaitingReply = () => {
       </View>)
   }
   // seraching By Client Name
+  const filterUsersAccName = () => {
+    const filterUsers = allUserData.user.filter(item => {
+      return item.User_name === client
+    })
+    return filterUsers
+  }
+  const filterReqAccUserId = () => {
+    const data = filterUsersAccName()
+    const userid = data[0].USER_ID
+    const reqInfo = requestInfoByService.filter(item => {
+      return item.ReqStatus === 'waiting reply' && item.ReqUserId === userid
+    })
+    return reqInfo
+  }
+
+  const renderResCard = () => {
+    const data = filterReqAccUserId()
+    return data.map(item => {
+      return (
+        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
+      )
+    })
+  }
+
+  const renderRequestAccUserName = () => {
+    const data = filterReqAccUserId()
+    return data.map(item => {
+      return (
+        <View>
+          <View style={styles.dateView}>
+            <Text style={styles.dateTxt}>{moment(item.reservationDetail[0].reservationDate).format('dddd')}</Text>
+            <Text style={styles.dateTxt}>{moment(item.reservationDetail[0].reservationDate).format('L')}</Text>
+          </View>
+          {renderResCard()}
+        </View>
+      )
+    })
+  }
 
   const inputClientName = () => {
     return (
@@ -139,7 +180,12 @@ const ProviderWaitingReply = () => {
           style={styles.input}
           keyboardType='default'
           placeholder='ادخل اسم الزبون'
-          onChangeText={setClient}
+          onChangeText={(val) => {
+            setClient(val)
+            setUseDefultSearch(false)
+            setUseClientToSearch(true)
+            renderRequestAccUserName()
+          }}
         />
       </View>
     )
@@ -220,6 +266,7 @@ const ProviderWaitingReply = () => {
         {useMonthToSearch && renderBookingDates()}
         {useDefultSearch && renderBookingDates()}
         {useSpacificDateToSearch && renderBookingCardAccorDate()}
+        {useClientToSearch && renderRequestAccUserName()}
         <View style={{ height: 100 }}></View>
       </ScrollView>
     </View>
