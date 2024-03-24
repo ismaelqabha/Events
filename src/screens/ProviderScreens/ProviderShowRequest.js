@@ -151,7 +151,7 @@ const ProviderShowRequest = (props) => {
         )
     }
     const renderSelectedSubDetail = () => {
-        return reqInfo.reservationDetail.subDetailId.map(item => {
+        return reqInfo.reservationDetail[0].subDetailId.map(item => {
             const data = filterSerDetail(item)
             // console.log("dataaa", data.detailSubtitle);
             return data.map(subItem => {
@@ -180,12 +180,14 @@ const ProviderShowRequest = (props) => {
     return (
         <View style={styles.container}>
             {header()}
-            {renderSendingReqDate()}
-            {renderReqDate()}
-            {renderfinalCost()}
-            {renderReqTime()}
-            {isHall()}
-            {renderSelectedSubDetail()}
+            <ScrollView>
+                {renderSendingReqDate()}
+                {renderReqDate()}
+                {renderfinalCost()}
+                {renderReqTime()}
+                {isHall()}
+                {renderSelectedSubDetail()}
+            </ScrollView>
         </View>
     )
 }
