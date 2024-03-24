@@ -7,6 +7,7 @@ import { updateRequest } from '../../resources/API'
 import SearchContext from '../../../store/SearchContext'
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames'
+import moment from "moment";
 
 
 const ProviderReservationCard = (props) => {
@@ -14,6 +15,8 @@ const ProviderReservationCard = (props) => {
     const { allUserData } = useContext(UsersContext);
     const { setRequestInfoByService } = useContext(SearchContext);
     const navigation = useNavigation();
+    const reqInfo = { ...props }
+    
 
     const filterUsersAccID = () => {
         const filterUsers = allUserData.user.filter(item => {
@@ -25,7 +28,7 @@ const ProviderReservationCard = (props) => {
     const renderClientInfo = () => {
         const data = filterUsersAccID()
         return (
-            <Pressable style={styles.info} onPress={() => navigation.navigate(ScreenNames.UserProfile)}>
+            <Pressable style={styles.info} onPress={() => navigation.navigate(ScreenNames.UserProfile, { data })}>
                 <Image style={styles.profilImg} source={{ uri: data[0].UserPhoto }} />
                 <Text style={styles.userName}>{data[0].User_name}</Text>
             </Pressable>
@@ -148,7 +151,7 @@ const ProviderReservationCard = (props) => {
 
     const requestWaitingReplyCard = () => {
         return (
-            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest)}>
+            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, {reqInfo})}>
                 {renderRequestDate()}
                 {renderPrice()}
                 <View style={styles.buttonView}>
