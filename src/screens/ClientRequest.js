@@ -446,26 +446,34 @@ const ClientRequest = (props) => {
         return (
             <View style={styles.reciptView}>
                 {renderFinalPrice()}
-                {requestedDate.map((date, index) => renderFullReciptDate(date, index))}
+                {Array.isArray(requestedDate) ? requestedDate.map((date, index) => renderFullReciptDate(date, index)) : renderFullReciptDate(requestedDate)}
             </View >
 
         )
     }
 
-    const renderFullReciptDate = (date, index) => {
+    const renderFullReciptDate = (date, index = 0) => {
         // common states
-        
+
         const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
         if (!showDetailRecipt) {
             return null
         }
 
         // sub details 
-        const detailIndex = resDetail.findIndex(item => item.reservationDate === moment(date).format('L'))
-        if (detailIndex === -1) {
-            return
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === moment(date).format('L'))
+
+        if (Array.isArray(requestedDate)) {
+            if (detailIndex === -1) {
+                return
+            }
+        } else {
+            detailIndex = 0
         }
+        console.log("res detail ", resDetail[detailIndex] , " detailIndex " , detailIndex);
+
         const { subDetailId, numOfInviters } = resDetail[detailIndex]
+        console.log("subDetailId",subDetailId , "numOfInviters",numOfInviters );
         const filteredSubDetials = data.additionalServices.filter((sub) => subDetailId.includes(sub.detail_Id))
         const campaigns = resDetail[detailIndex].campaigns;
 
@@ -596,11 +604,11 @@ const ClientRequest = (props) => {
         return (
             <View style={styles.reciptDetail}>
                 {renderDealsHeader()}
-                {campaigns.map((camp, index) => renderSingleDealRecipt(camp , index))}
+                {campaigns.map((camp, index) => renderSingleDealRecipt(camp, index))}
             </View>
         )
     }
-    const renderSingleDealRecipt = (camp , index) => {
+    const renderSingleDealRecipt = (camp, index) => {
         return (
             <View key={index} style={styles.reciptDetailItem}>
                 {renderFinalReciptPrice()}
