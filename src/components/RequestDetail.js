@@ -191,9 +191,13 @@ const RequestDetail = (props) => {
      * @param {'startingTime' | 'endTime' | 'invited' | 'subDetail' | 'offerId' | 'campaigns'} type - The type of update.
      */
     const updateReservationDet = (val, type) => {
-        const detailIndex = resDetail.findIndex(item => item.reservationDate === moment(selectedDate).format('L'))
-        if (detailIndex == -1) {
-            return
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === moment(selectedDate).format('L'))
+        if (Array.isArray(requestedDate)) {
+            if (detailIndex === -1) {
+                return
+            }
+        } else {
+            detailIndex = 0
         }
         const detail = resDetail
         switch (type) {
