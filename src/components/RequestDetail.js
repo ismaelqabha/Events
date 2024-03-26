@@ -39,9 +39,13 @@ const RequestDetail = (props) => {
     }, [requestedDate]); // Recreate colors array when requestedDate changes
 
     useEffect(() => {
-        const index = requestedDate.findIndex((date) => date === selectedDate);
-        if (index !== -1) {
-            setColorDate(colors[index]);
+        if (typeof requestedDate === 'string') {
+            setColorDate(colors[0]);
+        } else {
+            const index = requestedDate.findIndex((date) => date === selectedDate);
+            if (index !== -1) {
+                setColorDate(colors[index]);
+            }
         }
     }, [selectedDate, colors]); // Update bgColorDate when selectedDate or colors change
 
