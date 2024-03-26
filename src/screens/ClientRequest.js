@@ -11,7 +11,8 @@ import { addNewRequest, createNewEvent, deleteRequestbyId, getEventList, getEven
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
 import { SelectList } from 'react-native-dropdown-select-list';
-
+import { v4 as uuidv4 } from 'uuid';
+import { showMessage } from '../resources/Functions'
 
 
 
@@ -47,6 +48,7 @@ const ClientRequest = (props) => {
     const targetComponentRef = useRef();
 
     const [pressed, setPressed] = useState([])
+    const [selectedEvent, setSelectedEvent] = useState([]);
 
     // price calculation states 
     const [totalPrice, setTotalPrice] = useState(0)
@@ -134,7 +136,27 @@ const ClientRequest = (props) => {
         })
     }
 
-    const onPressRequest = () => {
+    const onServiceRequest = () => {
+        const requestBody = {
+            ReqDate: new Date(),
+            ReqStatus: 'waiting reply',
+            ReqEventId: selectedEvent.toString(),
+            Cost: totalPrice,
+            RequestId: uuidv4(),
+
+        }
+        console.log("request body ", requestBody);
+
+        addNewRequest(requestBody).then((res) => {
+            if (res.message && res.message === 'Request Created') {
+                showMessage("Request Created successfully")
+            } else {
+                showMessage("failed to create request")
+                console.log("res message ", res.message);
+            }
+        }).catch((E) => {
+            console.error("error creating request E:", E);
+        })
         // setrequestedDate([])
         // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
@@ -262,7 +284,7 @@ const ClientRequest = (props) => {
     const renderFoter = () => {
         return (
             <View style={styles.foter}>
-                <Pressable onPress={() => onPressRequest()}
+                <Pressable onPress={() => onServiceRequest()}
                     disabled={selectTime ? false : true}
                     style={[styles.btnview, selectTime ? styles.btnview : styles.btnRequestApproved]}
                 >
@@ -329,14 +351,23 @@ const ClientRequest = (props) => {
             return result
         })
     }
-    const whenEventPress = (eventId, selectedEvent, setSelectedEvent) => {
-        setSelectedEvent(!selectedEvent)
+    const whenEventPress = (eventId) => {
+        // Check if the eventId already exists in selectedEvent array
+        const index = selectedEvent.indexOf(eventId);
+
+        if (index !== -1) {
+            // If eventId exists, remove it from the array
+            const updatedEvents = [...selectedEvent.slice(0, index), ...selectedEvent.slice(index + 1)];
+            setSelectedEvent(updatedEvents);
+        } else {
+            // If eventId doesn't exist, add it to the array
+            setSelectedEvent([...selectedEvent, eventId]);
+        }
     }
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
-            const document = getEventLogo(item.eventTitleId)
-            // const [selectedEvent, setSelectedEvent] = useState(false);
+            const isSelected = selectedEvent.indexOf(item.EventId) !== -1;
             return (
                 <Pressable key={index} style={styles.eventItem} onPress={() => handleEventChoosen(item.EventId)}>
                     <View >
@@ -344,13 +375,16 @@ const ClientRequest = (props) => {
                     </View>
                     <View style={styles.IconView}>
                         <Pressable style={styles.selectEvent}
-                            onPress={() => whenEventPress(item.EventId, selectedEvent, setSelectedEvent)}
+                            onPress={() => whenEventPress(item.EventId)}
                         >
-                            {/* {selectedEvent && <Entypo
-                                style={{ alignSelf: 'center' }}
-                                name={"check"}
-                                color={colors.puprble}
-                                size={30} />} */}
+                            {isSelected && (
+                                <Entypo
+                                    style={{ alignSelf: 'center' }}
+                                    name={"check"}
+                                    color={colors.puprble}
+                                    size={30}
+                                />
+                            )}
                         </Pressable>
 
                         {/* <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} /> */}
@@ -440,22 +474,29 @@ const ClientRequest = (props) => {
         return (
             <View style={styles.reciptView}>
                 {renderFinalPrice()}
-                {requestedDate.map((date, index) => renderFullReciptDate(date, index))}
-            </View>
+                {Array.isArray(requestedDate) ? requestedDate.map((date, index) => renderFullReciptDate(date, index)) : renderFullReciptDate(requestedDate)}
+            </View >
+
         )
     }
-    const renderFullReciptDate = (date, index) => {
+
+    const renderFullReciptDate = (date, index = 0) => {
         // common states
-        
+
         const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
         if (!showDetailRecipt) {
             return null
         }
 
         // sub details 
-        const detailIndex = resDetail.findIndex(item => item.reservationDate === moment(date).format('L'))
-        if (detailIndex === -1) {
-            return
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === moment(date).format('L'))
+
+        if (Array.isArray(requestedDate)) {
+            if (detailIndex === -1) {
+                return
+            }
+        } else {
+            detailIndex = 0
         }
         const { subDetailId, numOfInviters } = resDetail[detailIndex]
         const filteredSubDetials = data.additionalServices.filter((sub) => subDetailId.includes(sub.detail_Id))
@@ -588,11 +629,11 @@ const ClientRequest = (props) => {
         return (
             <View style={styles.reciptDetail}>
                 {renderDealsHeader()}
-                {campaigns.map((camp, index) => renderSingleDealRecipt(camp , index))}
+                {campaigns.map((camp, index) => renderSingleDealRecipt(camp, index))}
             </View>
         )
     }
-    const renderSingleDealRecipt = (camp , index) => {
+    const renderSingleDealRecipt = (camp, index) => {
         return (
             <View key={index} style={styles.reciptDetailItem}>
                 {renderFinalReciptPrice()}
