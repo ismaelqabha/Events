@@ -9,6 +9,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import moment from 'moment';
 import Footer from './Footers/Footer';
 import { AppStyles } from '../assets/res/AppStyles';
+import { request } from 'react-native-permissions';
 
 const RequestDetail = (props) => {
     // const { requestedDate } = props
@@ -28,11 +29,81 @@ const RequestDetail = (props) => {
     const [invitersValue, setInvitersValue] = useState('');
     const [offer, setOffer] = useState();
 
+    // colors related ->
+    const [bgColorDate, setColorDate] = useState('white');
+    const mainColor = 'EBE4F7'; // Main color theme
+    const [colors, setColors] = useState([]);
 
+    useEffect(() => {
+        createColors();
+    }, [requestedDate]); // Recreate colors array when requestedDate changes
+
+    useEffect(() => {
+        if (typeof requestedDate === 'string') {
+            setColorDate(colors[0]);
+        } else {
+            const index = requestedDate.findIndex((date) => date === selectedDate);
+            if (index !== -1) {
+                setColorDate(colors[index]);
+            }
+        }
+    }, [selectedDate, colors]); // Update bgColorDate when selectedDate or colors change
+
+    const createColors = () => {
+        let generatedColors = [];
+        if (Array.isArray(requestedDate)) {
+            generatedColors = requestedDate.map(date => generateRandomColor());
+        } else {
+            generatedColors = [generateRandomColor()];
+        }
+        setColors(generatedColors);
+    }
+
+    const generateRandomColor = () => {
+        // Generate random values to add/subtract to each RGB component
+        const randomDelta = 5; // Adjust this value as needed
+        const mainColorRGB = hexToRgb(mainColor);
+        const randomR = Math.floor(Math.random() * randomDelta * 2) - randomDelta;
+        const randomG = Math.floor(Math.random() * randomDelta * 2) - randomDelta;
+        const randomB = Math.floor(Math.random() * randomDelta * 2) - randomDelta;
+
+        // Calculate the new RGB values
+        const newR = clamp(mainColorRGB.r + randomR, 0, 255);
+        const newG = clamp(mainColorRGB.g + randomG, 0, 255);
+        const newB = clamp(mainColorRGB.b + randomB, 0, 255);
+
+        // Convert the new RGB values back to hex format
+        return rgbToHex(newR, newG, newB);
+    }
+
+    const hexToRgb = (hex) => {
+        // Remove '#' if present
+        hex = hex.replace(/^#/, '');
+
+        // Parse the hex string into its RGB components
+        const bigint = parseInt(hex, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+
+        return { r, g, b };
+    }
+
+    const rgbToHex = (r, g, b) => {
+        // Convert RGB components to hex format
+        return '#' + [r, g, b].map(x => {
+            const hex = x.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
+    }
+
+    const clamp = (value, min, max) => {
+        // Ensure a value stays within a specified range
+        return Math.min(Math.max(value, min), max);
+    }
+    // end of colors related 
 
     const [invitersValueError, setInvitersValueError] = useState(false);
-
-
     const [selectedSupDet, setSelectedSupDet] = useState([]);
     const [detailViewPressed, setDetailViewPressed] = useState(false);
     const [campaignViewPressed, setCampaignViewPressed] = useState(false);
@@ -191,9 +262,13 @@ const RequestDetail = (props) => {
      * @param {'startingTime' | 'endTime' | 'invited' | 'subDetail' | 'offerId' | 'campaigns'} type - The type of update.
      */
     const updateReservationDet = (val, type) => {
-        const detailIndex = resDetail.findIndex(item => item.reservationDate === moment(selectedDate).format('L'))
-        if (detailIndex == -1) {
-            return
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === moment(selectedDate).format('L'))
+        if (Array.isArray(requestedDate)) {
+            if (detailIndex === -1) {
+                return
+            }
+        } else {
+            detailIndex = 0
         }
         const detail = resDetail
         switch (type) {
@@ -689,7 +764,7 @@ const RequestDetail = (props) => {
     }
 
     const renderRequestInfo = () => {
-        return <View style={styles.requestDetailView}>
+        return <View style={[styles.requestDetailView, { backgroundColor: bgColorDate }]}>
             <View style={styles.Time}>
                 {renderReservStartingTime()}
                 <Text style={styles.subDetText}>من الساعة</Text>
@@ -718,7 +793,6 @@ export default RequestDetail
 
 const styles = StyleSheet.create({
     requestDetailView: {
-        backgroundColor: 'white',
         width: '100%',
         padding: 10,
         borderRadius: 10
