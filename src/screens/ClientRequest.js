@@ -11,7 +11,8 @@ import { addNewRequest, createNewEvent, deleteRequestbyId, getEventList, getEven
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
 import { SelectList } from 'react-native-dropdown-select-list';
-
+import { v4 as uuidv4 } from 'uuid';
+import { showMessage } from '../resources/Functions'
 
 
 
@@ -47,6 +48,7 @@ const ClientRequest = (props) => {
     const targetComponentRef = useRef();
 
     const [pressed, setPressed] = useState([])
+    const [selectedEvent, setSelectedEvent] = useState([]);
 
     // price calculation states 
     const [totalPrice, setTotalPrice] = useState(0)
@@ -134,7 +136,27 @@ const ClientRequest = (props) => {
         })
     }
 
-    const onPressRequest = () => {
+    const onServiceRequest = () => {
+        const requestBody = {
+            ReqDate: new Date(),
+            ReqStatus: 'waiting reply',
+            ReqEventId: selectedEvent.toString(),
+            Cost: totalPrice,
+            RequestId: uuidv4(),
+
+        }
+        console.log("request body ", requestBody);
+
+        addNewRequest(requestBody).then((res) => {
+            if (res.message && res.message === 'Request Created') {
+                showMessage("Request Created successfully")
+            } else {
+                showMessage("failed to create request")
+                console.log("res message ", res.message);
+            }
+        }).catch((E) => {
+            console.error("error creating request E:", E);
+        })
         // setrequestedDate([])
         // console.log("res detail ", resDetail);
         // console.log("res detail lenght ", resDetail.length);
@@ -264,7 +286,7 @@ const ClientRequest = (props) => {
     const renderFoter = () => {
         return (
             <View style={styles.foter}>
-                <Pressable onPress={() => onPressRequest()}
+                <Pressable onPress={() => onServiceRequest()}
                     disabled={selectTime ? false : true}
                     style={[styles.btnview, selectTime ? styles.btnview : styles.btnRequestApproved]}
                 >
@@ -331,14 +353,23 @@ const ClientRequest = (props) => {
             return result
         })
     }
-    const whenEventPress = (eventId, selectedEvent, setSelectedEvent) => {
-        setSelectedEvent(!selectedEvent)
+    const whenEventPress = (eventId) => {
+        // Check if the eventId already exists in selectedEvent array
+        const index = selectedEvent.indexOf(eventId);
+
+        if (index !== -1) {
+            // If eventId exists, remove it from the array
+            const updatedEvents = [...selectedEvent.slice(0, index), ...selectedEvent.slice(index + 1)];
+            setSelectedEvent(updatedEvents);
+        } else {
+            // If eventId doesn't exist, add it to the array
+            setSelectedEvent([...selectedEvent, eventId]);
+        }
     }
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
-            const document = getEventLogo(item.eventTitleId)
-            // const [selectedEvent, setSelectedEvent] = useState(false);
+            const isSelected = selectedEvent.indexOf(item.EventId) !== -1;
             return (
                 <Pressable key={index} style={styles.eventItem} onPress={() => handleEventChoosen(item.EventId)}>
                     <View >
@@ -346,13 +377,16 @@ const ClientRequest = (props) => {
                     </View>
                     <View style={styles.IconView}>
                         <Pressable style={styles.selectEvent}
-                            onPress={() => whenEventPress(item.EventId, selectedEvent, setSelectedEvent)}
+                            onPress={() => whenEventPress(item.EventId)}
                         >
-                            {/* {selectedEvent && <Entypo
-                                style={{ alignSelf: 'center' }}
-                                name={"check"}
-                                color={colors.puprble}
-                                size={30} />} */}
+                            {isSelected && (
+                                <Entypo
+                                    style={{ alignSelf: 'center' }}
+                                    name={"check"}
+                                    color={colors.puprble}
+                                    size={30}
+                                />
+                            )}
                         </Pressable>
 
                         {/* <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} /> */}
@@ -470,10 +504,7 @@ const ClientRequest = (props) => {
         } else {
             detailIndex = 0
         }
-        console.log("res detail ", resDetail[detailIndex] , " detailIndex " , detailIndex);
-
         const { subDetailId, numOfInviters } = resDetail[detailIndex]
-        console.log("subDetailId",subDetailId , "numOfInviters",numOfInviters );
         const filteredSubDetials = data.additionalServices.filter((sub) => subDetailId.includes(sub.detail_Id))
         const campaigns = resDetail[detailIndex].campaigns;
 
