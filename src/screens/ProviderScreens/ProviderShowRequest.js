@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-native'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -14,6 +14,9 @@ const ProviderShowRequest = (props) => {
     const { isFirst } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const { reqInfo } = props.route?.params || {}
+    
+    const [listSelectedDet, setListSelectedDet] = useState([])
+    const subDetArray = []
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
@@ -150,29 +153,66 @@ const ProviderShowRequest = (props) => {
             </View>
         )
     }
-    const renderSelectedSubDetail = () => {
-        return reqInfo.reservationDetail[0].subDetailId.map(item => {
-            const data = filterSerDetail(item)
-            // console.log("dataaa", data.detailSubtitle);
-            return data.map(subItem => {
-                console.log("subItem", subItem.detailSubtitle);
-                return (
-                    <View style={styles.ContentView}>
-                        <View style={styles.dateview}>
-                            {/* <View style={{ alignItems: 'flex-end' }}> */}
-                            <Text style={styles.dateTxt}>{subItem.detailSubtitle}</Text>
-                            {/* </View> */}
-                            <View style={styles.IconView}>
-                                <AntDesign
-                                    name={"checkcircle"}
-                                    color={colors.puprble}
-                                    size={20} />
-                            </View>
-                        </View>
-                    </View>
-                )
-            })
 
+    const [DTitle, setDTitle] = useState()
+    const [SUBTitle, setSUBTitle] = useState([])
+
+    const renderServiceDetail = () => {
+        return serviceData[0].additionalServices.map(item => {
+            return reqInfo.reservationDetail[0].subDetailId.map(subItem => {
+                if (item.subDetailArray[0].subDetail_Id.includes(subItem)) {
+
+                    subDetArray.push(item.subDetailArray[0].detailSubtitle)
+
+                    if (!(listSelectedDet.includes(item.detailTitle))) {
+                        setDTitle(item.detailTitle)
+                        setSUBTitle(subDetArray)
+                    }
+
+                    const newData = {
+                        detTitle : DTitle,
+                        supDetTitle : SUBTitle
+                    }
+
+                    setListSelectedDet([...listSelectedDet, newData])
+
+                    console.log("listSelectedDet", listSelectedDet);
+                    // return detailTitleArray.map(det => {
+                    //     return (
+                    //         <View>
+                    //             <Text style={styles.dateTxt}>{det}</Text>
+                    //             {/* {renderSelectedSubDetail(item)} */}
+                    //             {/* <View style={styles.dateview}>
+                    //                 <Text style={styles.dateTxt}>{item.subDetailArray[0].detailSubtitle}</Text>
+                    //                 <View style={styles.IconView}>
+                    //                     <AntDesign
+                    //                         name={"checkcircle"}
+                    //                         color={colors.puprble}
+                    //                         size={20} />
+                    //                 </View>
+                    //             </View> */}
+                    //         </View>
+                    //     )
+                    // })
+                   
+                }
+            })
+        })
+    }
+    const renderSelectedSubDetail = (subtitle) => {
+        return subtitle[0].map(item => {
+            return (
+                <View style={styles.dateview}>
+                    <Text style={styles.dateTxt}>{item.subDetailArray[0].detailSubtitle}</Text>
+                    <View style={styles.IconView}>
+                        <AntDesign
+                            name={"checkcircle"}
+                            color={colors.puprble}
+                            size={20} />
+                    </View>
+                </View>
+
+            )
         })
 
     }
@@ -186,7 +226,8 @@ const ProviderShowRequest = (props) => {
                 {renderfinalCost()}
                 {renderReqTime()}
                 {isHall()}
-                {renderSelectedSubDetail()}
+                {/* {renderSelectedSubDetail()} */}
+                {/* <View style={styles.ContentView}>{renderServiceDetail()}</View> */}
             </ScrollView>
         </View>
     )
