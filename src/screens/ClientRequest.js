@@ -492,7 +492,7 @@ const ClientRequest = (props) => {
             const filteredSubDetailArray = service.subDetailArray.filter(subDetail =>
                 subDetailId.includes(subDetail.id)
             );
-    
+
             // Return the service object with modified subDetailArray
             return {
                 ...service,
@@ -520,12 +520,14 @@ const ClientRequest = (props) => {
         }
         const { subDetailId, numOfInviters } = resDetail[detailIndex]
         const filteredSubDetials = filterSubDetails(subDetailId)
-        const campaigns = resDetail[detailIndex].campaigns;
+        const showList = filteredSubDetials.some(item => item.subDetailArray && item.subDetailArray.length > 0);
+        const campaigns = resDetail[detailIndex].campaigns || [];
+        const showCamp = campaigns && campaigns.length > 0 ? true : false
         // details 
         const details = {
             setShowSupDetRecipt: setShowSupDetRecipt,
             showSupDetRecipt: showSupDetRecipt,
-            filteredSubDetials: filteredSubDetials.length > 0 ? filteredSubDetials : false,
+            filteredSubDetials: showList ? filteredSubDetials : false,
             numOfInviters: numOfInviters,
 
         }
@@ -534,14 +536,14 @@ const ClientRequest = (props) => {
             // showDetailRes
             <View key={index}>
                 {/* shows the date */}
-                {renderReciptDate(date)}
+                {!(showList === false && showCamp === false) && renderReciptDate(date)}
                 {/* shows the services choosen */}
                 <View style={styles.reciptDetail}>
-                    {filteredSubDetials.length > 0 && renderReciptServices()}
+                    {showList && renderReciptServices()}
                     {renderMainReciptDetails(details)}
                 </View>
                 {/* shows the deals choosen */}
-                {campaigns && renderDeals(campaigns)}
+                {showCamp && renderDeals(campaigns)}
             </View>
         )
     }
