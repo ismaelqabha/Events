@@ -242,7 +242,7 @@ const RequestDetail = (props) => {
             EndTime: null,
             numOfInviters: null,
             subDetailId: [],
-            offerId: null
+            offerId: []
         })) :
             {
                 reservationDate: newDates,
@@ -250,7 +250,7 @@ const RequestDetail = (props) => {
                 EndTime: null,
                 numOfInviters: null,
                 subDetailId: [],
-                offerId: null
+                offerId: []
             }
 
         // Update resDetail with the updated reservation details

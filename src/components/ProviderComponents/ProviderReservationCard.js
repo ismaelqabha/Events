@@ -76,6 +76,16 @@ const ProviderReservationCard = (props) => {
             </View>
         )
     }
+    const time = () => {
+        return (
+            <View style={styles.dateview}>
+                <View>
+                    <Text style={styles.dateTxt}>{props.reservationDetail[0].startingTime}</Text>
+                </View>
+                {/* <Image style={styles.shekeImg} source={require('../../assets/photos/shekelSign.png')} /> */}
+            </View>
+        )
+    }
     const renderPayRemain = () => {
         return (
             <View style={styles.dateview}>
@@ -154,6 +164,7 @@ const ProviderReservationCard = (props) => {
             <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, {reqInfo})}>
                 {renderRequestDate()}
                 {renderPrice()}
+                {/* {time()} */}
                 <View style={styles.buttonView}>
                     <Pressable onPress={onRefuseReqPress}>
                         <Text style={styles.buttonTxt}>رفض</Text>
@@ -167,7 +178,7 @@ const ProviderReservationCard = (props) => {
     }
     const requestWaitingPayCard = () => {
         return (
-            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest)}>
+            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, {reqInfo})}>
                 {renderRequestDate()}
                 {renderPrice()}
                 <View style={styles.buttonView}>

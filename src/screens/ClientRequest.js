@@ -143,7 +143,6 @@ const ClientRequest = (props) => {
             ReqEventId: selectedEvent.toString(),
             Cost: totalPrice,
             RequestId: uuidv4(),
-
         }
         console.log("request body ", requestBody);
 

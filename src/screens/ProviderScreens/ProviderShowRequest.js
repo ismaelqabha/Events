@@ -11,10 +11,11 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 
 const ProviderShowRequest = (props) => {
-    const { isFirst } = useContext(SearchContext);
+    const { isFirst, campInfo } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const { reqInfo } = props.route?.params || {}
     
+    // console.log("reqInfo", reqInfo);
     const [listSelectedDet, setListSelectedDet] = useState([])
     const subDetArray = []
 
@@ -25,9 +26,9 @@ const ProviderShowRequest = (props) => {
     }
     const serviceData = filterService()
 
-    const filterSerDetail = (id) => {
-        return serviceData[0].additionalServices[0].subDetailArray?.filter(item => {
-            return item.subDetail_Id === id;
+    const filterSelectedCampign = (id) => {
+        return campInfo?.filter(item => {
+            return item.CampId === id;
         });
     }
 
@@ -154,67 +155,68 @@ const ProviderShowRequest = (props) => {
         )
     }
 
-    const [DTitle, setDTitle] = useState()
-    const [SUBTitle, setSUBTitle] = useState([])
+    const isSelectedFromDetail = () => {
+        //console.log("l",reqInfo.reservationDetail[0].subDetailId.length);
+        if (reqInfo.reservationDetail[0].subDetailId.length > 0) {
+            return (<View>
+                <Text style={styles.labelText}>الخدمات المختارة</Text>
+                <View style={styles.ContentView}>{renderServiceDetail()}</View>
+            </View>)
+        }
+    }
 
     const renderServiceDetail = () => {
         return serviceData[0].additionalServices.map(item => {
             return reqInfo.reservationDetail[0].subDetailId.map(subItem => {
                 if (item.subDetailArray[0].subDetail_Id.includes(subItem)) {
-
-                    subDetArray.push(item.subDetailArray[0].detailSubtitle)
-
-                    if (!(listSelectedDet.includes(item.detailTitle))) {
-                        setDTitle(item.detailTitle)
-                        setSUBTitle(subDetArray)
-                    }
-
-                    const newData = {
-                        detTitle : DTitle,
-                        supDetTitle : SUBTitle
-                    }
-
-                    setListSelectedDet([...listSelectedDet, newData])
-
-                    console.log("listSelectedDet", listSelectedDet);
-                    // return detailTitleArray.map(det => {
-                    //     return (
-                    //         <View>
-                    //             <Text style={styles.dateTxt}>{det}</Text>
-                    //             {/* {renderSelectedSubDetail(item)} */}
-                    //             {/* <View style={styles.dateview}>
-                    //                 <Text style={styles.dateTxt}>{item.subDetailArray[0].detailSubtitle}</Text>
-                    //                 <View style={styles.IconView}>
-                    //                     <AntDesign
-                    //                         name={"checkcircle"}
-                    //                         color={colors.puprble}
-                    //                         size={20} />
-                    //                 </View>
-                    //             </View> */}
-                    //         </View>
-                    //     )
-                    // })
-                   
+                    return (
+                        <View>
+                            {/* <Text style={styles.dateTxt}>{item.detailTitle}</Text> */}
+                            <View style={styles.dateview}>
+                                <Text style={styles.dateTxt}>{item.subDetailArray[0].detailSubtitle}</Text>
+                                <View style={styles.IconView}>
+                                    <AntDesign
+                                        name={"checkcircle"}
+                                        color={colors.puprble}
+                                        size={20} />
+                                </View>
+                            </View>
+                        </View>
+                    )
                 }
             })
         })
     }
-    const renderSelectedSubDetail = (subtitle) => {
-        return subtitle[0].map(item => {
+   
+
+    const renderCampigns = () => {
+        return reqInfo.reservationDetail[0].offerId.map(Offid => {
+        
+            const data = filterSelectedCampign(Offid)
+           
             return (
-                <View style={styles.dateview}>
-                    <Text style={styles.dateTxt}>{item.subDetailArray[0].detailSubtitle}</Text>
-                    <View style={styles.IconView}>
-                        <AntDesign
-                            name={"checkcircle"}
-                            color={colors.puprble}
-                            size={20} />
+                <View>
+                    <View style={styles.dateview}>
+                        <Text style={styles.dateTxt}>{data[0].campTitle}</Text>
+                        <View style={styles.IconView}>
+                            <AntDesign
+                                name={"checkcircle"}
+                                color={colors.puprble}
+                                size={20} />
+                        </View>
                     </View>
                 </View>
-
             )
         })
-
+    }
+    const isSelectedFromCampign = () => {
+        console.log("len", reqInfo.reservationDetail[0].offerId.length);
+        if (reqInfo.reservationDetail[0].offerId.length > 0) {
+            return (<View>
+                <Text style={styles.labelText}>العروض المختارة</Text>
+                <View style={styles.ContentView}>{renderCampigns()}</View>
+            </View>)
+        }
     }
 
     return (
@@ -226,8 +228,8 @@ const ProviderShowRequest = (props) => {
                 {renderfinalCost()}
                 {renderReqTime()}
                 {isHall()}
-                {/* {renderSelectedSubDetail()} */}
-                {/* <View style={styles.ContentView}>{renderServiceDetail()}</View> */}
+                {isSelectedFromDetail()}
+                {/* {isSelectedFromCampign()} */}
             </ScrollView>
         </View>
     )
@@ -277,7 +279,13 @@ const styles = StyleSheet.create({
     },
     dateTxt: {
         color: colors.puprble,
-        fontSize: 20
+        fontSize: 20,
+
+    },
+    labelText: {
+        color: colors.puprble,
+        fontSize: 20,
+        marginRight: 20
     },
     labelDateTxt: {
         fontSize: 15
