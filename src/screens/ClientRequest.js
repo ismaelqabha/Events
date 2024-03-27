@@ -486,6 +486,20 @@ const ClientRequest = (props) => {
         )
     }
 
+    const filterSubDetails = (subDetailId) => {
+        return data.additionalServices.map(service => {
+            // Filter sub details based on whether their id exists in subDetailId array
+            const filteredSubDetailArray = service.subDetailArray.filter(subDetail =>
+                subDetailId.includes(subDetail.id)
+            );
+    
+            // Return the service object with modified subDetailArray
+            return {
+                ...service,
+                subDetailArray: filteredSubDetailArray
+            };
+        });
+    };
     const renderFullReciptDate = (date, index = 0) => {
         // common states
 
@@ -505,9 +519,9 @@ const ClientRequest = (props) => {
             detailIndex = 0
         }
         const { subDetailId, numOfInviters } = resDetail[detailIndex]
-        const filteredSubDetials = data.additionalServices.filter((sub) => subDetailId.includes(sub.detail_Id))
+        const filteredSubDetials = filterSubDetails(subDetailId)
         const campaigns = resDetail[detailIndex].campaigns;
-
+        console.log(" filteredSubDetials", filteredSubDetials);
         // details 
         const details = {
             setShowSupDetRecipt: setShowSupDetRecipt,
