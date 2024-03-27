@@ -521,7 +521,6 @@ const ClientRequest = (props) => {
         const { subDetailId, numOfInviters } = resDetail[detailIndex]
         const filteredSubDetials = filterSubDetails(subDetailId)
         const campaigns = resDetail[detailIndex].campaigns;
-        console.log(" filteredSubDetials", filteredSubDetials);
         // details 
         const details = {
             setShowSupDetRecipt: setShowSupDetRecipt,
