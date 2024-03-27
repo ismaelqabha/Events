@@ -285,11 +285,14 @@ const RequestDetail = (props) => {
                 setResDetail([...detail])
                 break;
             case 'subDetail':
-                const subDetailes = detail[detailIndex].subDetailId
-                const index = subDetailes.findIndex((id) => id === val)
-                index === -1 ? detail[detailIndex].subDetailId.push(val) :
-                    detail[detailIndex].subDetailId = detail[detailIndex].subDetailId.slice(index, 1)
-                setResDetail([...detail])
+                const subDetails = detail[detailIndex].subDetailId;
+                const index = subDetails.findIndex((id) => id === val);
+                if (index === -1) {
+                    detail[detailIndex].subDetailId.push(val);
+                } else {
+                    detail[detailIndex].subDetailId = subDetails.slice(0, index).concat(subDetails.slice(index + 1));
+                }
+                setResDetail([...detail]);
                 break;
             case 'offerId':
                 detail[detailIndex].offerId = val
