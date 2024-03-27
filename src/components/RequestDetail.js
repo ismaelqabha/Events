@@ -486,7 +486,7 @@ const RequestDetail = (props) => {
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
-                            <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.subDetail_Id, setSelectedSubDetail, selectedSubDetail)}>
+                            <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.id, setSelectedSubDetail, selectedSubDetail)}>
                                 {selectedSubDetail && <Entypo
                                     style={{ alignSelf: 'center' }}
                                     name={"check"}
