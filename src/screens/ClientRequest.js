@@ -48,7 +48,7 @@ const ClientRequest = (props) => {
     const targetComponentRef = useRef();
 
     const [pressed, setPressed] = useState([])
-    const [selectedEvent, setSelectedEvent] = useState([]);
+    const [selectedEvent, setSelectedEvent] = useState('');
 
     // price calculation states 
     const [totalPrice, setTotalPrice] = useState(0)
@@ -142,7 +142,6 @@ const ClientRequest = (props) => {
             ReqStatus: 'waiting reply',
             ReqEventId: selectedEvent.toString(),
             Cost: totalPrice,
-            RequestId: uuidv4(),
 
         }
         console.log("request body ", requestBody);
@@ -354,22 +353,12 @@ const ClientRequest = (props) => {
         })
     }
     const whenEventPress = (eventId) => {
-        // Check if the eventId already exists in selectedEvent array
-        const index = selectedEvent.indexOf(eventId);
-
-        if (index !== -1) {
-            // If eventId exists, remove it from the array
-            const updatedEvents = [...selectedEvent.slice(0, index), ...selectedEvent.slice(index + 1)];
-            setSelectedEvent(updatedEvents);
-        } else {
-            // If eventId doesn't exist, add it to the array
-            setSelectedEvent([...selectedEvent, eventId]);
-        }
+        setSelectedEvent(eventId || '');
     }
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
-            const isSelected = selectedEvent.indexOf(item.EventId) !== -1;
+            const isSelected = selectedEvent === item.EventId;
             return (
                 <Pressable key={index} style={styles.eventItem} onPress={() => handleEventChoosen(item.EventId)}>
                     <View >
@@ -388,7 +377,6 @@ const ClientRequest = (props) => {
                                 />
                             )}
                         </Pressable>
-
                         {/* <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} /> */}
                     </View>
 
