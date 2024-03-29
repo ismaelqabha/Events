@@ -117,13 +117,13 @@ const RequestDetail = (props) => {
 
     useEffect(() => {
         try {
-            let result1 = pressed.map(index => campiegnsAccordingServiceId[index]);
+            let result1 = offer.map(id => campiegnsAccordingServiceId?.find((camp) => camp.CampId === id));
             updateReservationDet(result1, 'campaigns')
         } catch (error) {
             console.log("error ", error);
         }
 
-    }, [pressed])
+    }, [offer])
 
     const scrollViewRef = useRef(null);
     const firstPageRef = useRef(null);

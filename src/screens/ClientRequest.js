@@ -144,14 +144,12 @@ const ClientRequest = (props) => {
             Cost: totalPrice,
 
         }
-        console.log("request body ", requestBody);
 
         addNewRequest(requestBody).then((res) => {
             if (res.message && res.message === 'Request Created') {
                 showMessage("Request Created successfully")
             } else {
                 showMessage("failed to create request")
-                console.log("res message ", res.message);
             }
         }).catch((E) => {
             console.error("error creating request E:", E);
