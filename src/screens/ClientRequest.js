@@ -48,7 +48,7 @@ const ClientRequest = (props) => {
     const targetComponentRef = useRef();
 
     const [pressed, setPressed] = useState([])
-    const [selectedEvent, setSelectedEvent] = useState([]);
+    const [selectedEvent, setSelectedEvent] = useState('');
 
     // price calculation states 
     const [totalPrice, setTotalPrice] = useState(0)
@@ -140,18 +140,18 @@ const ClientRequest = (props) => {
         const requestBody = {
             ReqDate: new Date(),
             ReqStatus: 'waiting reply',
-            ReqEventId: selectedEvent.toString(),
+            ReqEventId: selectedEvent,
             Cost: totalPrice,
-            RequestId: uuidv4(),
+            ReqServId: data?._id,
+            ReqUserId: userId,
+            reservationDetail: resDetail,
         }
-        console.log("request body ", requestBody);
 
         addNewRequest(requestBody).then((res) => {
             if (res.message && res.message === 'Request Created') {
                 showMessage("Request Created successfully")
             } else {
                 showMessage("failed to create request")
-                console.log("res message ", res.message);
             }
         }).catch((E) => {
             console.error("error creating request E:", E);
@@ -351,22 +351,12 @@ const ClientRequest = (props) => {
         })
     }
     const whenEventPress = (eventId) => {
-        // Check if the eventId already exists in selectedEvent array
-        const index = selectedEvent.indexOf(eventId);
-
-        if (index !== -1) {
-            // If eventId exists, remove it from the array
-            const updatedEvents = [...selectedEvent.slice(0, index), ...selectedEvent.slice(index + 1)];
-            setSelectedEvent(updatedEvents);
-        } else {
-            // If eventId doesn't exist, add it to the array
-            setSelectedEvent([...selectedEvent, eventId]);
-        }
+        setSelectedEvent(eventId || '');
     }
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
-            const isSelected = selectedEvent.indexOf(item.EventId) !== -1;
+            const isSelected = selectedEvent === item.EventId;
             return (
                 <Pressable key={index} style={styles.eventItem} onPress={() => handleEventChoosen(item.EventId)}>
                     <View >
@@ -385,7 +375,6 @@ const ClientRequest = (props) => {
                                 />
                             )}
                         </Pressable>
-
                         {/* <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} /> */}
                     </View>
 
@@ -445,6 +434,31 @@ const ClientRequest = (props) => {
     }
 
     // pricing 
+
+    const calculateTotalPrice = () => {
+        let total = 0;
+        // Iterate through the components and sum up their prices
+        requestedDate.forEach((date) => {
+            const detailIndex = resDetail.findIndex((item) => item.reservationDate === moment(date).format('L'));
+            if (detailIndex !== -1) {
+                const { subDetailId, numOfInviters } = resDetail[detailIndex];
+                const filteredSubDetails = filterSubDetails(subDetailId);
+                filteredSubDetails.forEach((subDetail) => {
+                    subDetail.subDetailArray.forEach((detail) => {
+                        total += parseInt(detail.detailSubtitleCost) * (numOfInviters || 0);
+                    });
+                });
+            }
+        });
+        // Update the totalPrice state
+        setTotalPrice(total);
+    };
+
+    // Call the function to calculate the initial total price
+    useEffect(() => {
+        calculateTotalPrice();
+    }, [requestedDate, resDetail]);
+
     const showDetaiPress = () => {
         setShowDetailRecipt(!showDetailRecipt)
     }
@@ -479,6 +493,20 @@ const ClientRequest = (props) => {
         )
     }
 
+    const filterSubDetails = (subDetailId) => {
+        return data.additionalServices.map(service => {
+            // Filter sub details based on whether their id exists in subDetailId array
+            const filteredSubDetailArray = service.subDetailArray.filter(subDetail =>
+                subDetailId.includes(subDetail.id)
+            );
+
+            // Return the service object with modified subDetailArray
+            return {
+                ...service,
+                subDetailArray: filteredSubDetailArray
+            };
+        });
+    };
     const renderFullReciptDate = (date, index = 0) => {
         // common states
 
@@ -498,14 +526,15 @@ const ClientRequest = (props) => {
             detailIndex = 0
         }
         const { subDetailId, numOfInviters } = resDetail[detailIndex]
-        const filteredSubDetials = data.additionalServices.filter((sub) => subDetailId.includes(sub.detail_Id))
-        const campaigns = resDetail[detailIndex].campaigns;
-
+        const filteredSubDetials = filterSubDetails(subDetailId)
+        const showList = filteredSubDetials.some(item => item.subDetailArray && item.subDetailArray.length > 0);
+        const campaigns = resDetail[detailIndex].campaigns || [];
+        const showCamp = campaigns && campaigns.length > 0 ? true : false
         // details 
         const details = {
             setShowSupDetRecipt: setShowSupDetRecipt,
             showSupDetRecipt: showSupDetRecipt,
-            filteredSubDetials: filteredSubDetials.length > 0 ? filteredSubDetials : false,
+            filteredSubDetials: showList ? filteredSubDetials : false,
             numOfInviters: numOfInviters,
 
         }
@@ -514,14 +543,14 @@ const ClientRequest = (props) => {
             // showDetailRes
             <View key={index}>
                 {/* shows the date */}
-                {renderReciptDate(date)}
+                {!(showList === false && showCamp === false) && renderReciptDate(date)}
                 {/* shows the services choosen */}
                 <View style={styles.reciptDetail}>
-                    {filteredSubDetials.length > 0 && renderReciptServices()}
+                    {showList && renderReciptServices()}
                     {renderMainReciptDetails(details)}
                 </View>
                 {/* shows the deals choosen */}
-                {campaigns && renderDeals(campaigns)}
+                {showCamp && renderDeals(campaigns)}
             </View>
         )
     }
@@ -584,14 +613,15 @@ const ClientRequest = (props) => {
         )
     }
     const renderSingleReciptService = (subDetail, index, details) => {
-        const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest'
-        let price = 0
-        subDetail.subDetailArray.forEach((detail) => price += parseInt(detail.detailSubtitleCost))
+        const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
+        let price = 0;
+        subDetail.subDetailArray.forEach((detail) => price += parseInt(detail.detailSubtitleCost));
+
         return (
             <>
                 <View key={index} style={styles.reciptDetailItem}>
                     {renderFinalReciptPrice(price * (details.numOfInviters || 0))}
-                    {additionType === 'perPerson' && renderPerPerson(price, details.numOfInviters || 0)}
+                    {renderReciptComponent(additionType, price, details.numOfInviters || 0, subDetail.perTable)}
                     <Pressable onPress={() => details.setShowSupDetRecipt(!details.showSupDetRecipt)} style={styles.reciptClom}>
                         <Text style={styles.text}>{subDetail?.detailTitle || ''}</Text>
                     </Pressable>
@@ -599,8 +629,9 @@ const ClientRequest = (props) => {
                 </View>
                 {details.showSupDetRecipt && renderSubDetRecipt(subDetail.subDetailArray)}
             </>
-        )
-    }
+        );
+    };
+
     const renderReciptDate = (date) => {
         return (
             <View style={styles.reciptDateLabel}>
@@ -612,18 +643,52 @@ const ClientRequest = (props) => {
         return (
             <View style={styles.reciptMidClom}>
                 <Text>السعر للشخص الواحد</Text>
-                <Text style={styles.text}>{`₪ ${price}  X  ${invited}`}</Text>
+                <Text style={styles.text}>{`₪ ${price}  X  ${invited || 0}`}</Text>
             </View>
         )
     }
-    const renderPerTable = (price = 0, invited = 0) => {
+    const renderPerTable = (price = 0, invited = 0, perTable = 1) => {
+        if (perTable == 0) {
+            perTable = 1;
+        }
         return (
             <View style={styles.reciptMidClom}>
                 <Text>السعر للطاولة الواحدة</Text>
-                <Text style={styles.text}>{`₪ ${price}  X  ${invited}`}</Text>
+                <Text style={styles.text}>{`₪ ${price}  X  ${invited || 0 / perTable}`}</Text>
             </View>
         )
     }
+    const renderRequest = (price = 0) => {
+        return (
+            <View style={styles.reciptMidClom}>
+                <Text>السعر للحجز</Text>
+                <Text style={styles.text}>{`₪ ${price}  X  ${1}`}</Text>
+            </View>
+        )
+    }
+
+    /**
+    * Renders the appropriate receipt component based on the addition type.
+    * 
+    * @param additionType - The type of addition ('perPerson', 'perTable', 'perRequest').
+    * @param price - The price of the component.
+    * @param invited - The number of invited persons (optional).
+    * @param perTable - The number of persons per table (optional).
+    * @returns The rendered component.
+    */
+    const renderReciptComponent = (additionType, price, invited, perTable) => {
+        switch (additionType) {
+            case 'perPerson':
+                return renderPerPerson(price, invited);
+            case 'perTable':
+                return renderPerTable(price, invited, perTable);
+            case 'perRequest':
+                return renderRequest(price);
+            default:
+                return null;
+        }
+    };
+
     const renderDeals = (campaigns) => {
         return (
             <View style={styles.reciptDetail}>
@@ -636,7 +701,7 @@ const ClientRequest = (props) => {
         return (
             <View key={index} style={styles.reciptDetailItem}>
                 {renderFinalReciptPrice()}
-                {renderPerTable(camp?.campCost)}
+                {renderReciptComponent('perTable', camp?.campCost)}
                 {renderDealTitle(camp?.campTitle)}
             </View>
         )
