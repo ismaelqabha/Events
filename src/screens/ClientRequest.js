@@ -140,9 +140,11 @@ const ClientRequest = (props) => {
         const requestBody = {
             ReqDate: new Date(),
             ReqStatus: 'waiting reply',
-            ReqEventId: selectedEvent.toString(),
+            ReqEventId: selectedEvent,
             Cost: totalPrice,
-
+            ReqServId: data?._id,
+            ReqUserId: userId,
+            reservationDetail: resDetail,
         }
 
         addNewRequest(requestBody).then((res) => {
