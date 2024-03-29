@@ -30,6 +30,8 @@ const RequestDetail = (props) => {
     const [offer, setOffer] = useState();
 
     const [similarity, setSimilarity] = useState(false);
+    const [multiSelected, setMultiSelected] = useState(false)
+
 
     useEffect(() => {
         const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
@@ -38,14 +40,15 @@ const RequestDetail = (props) => {
             const subDetailId = reservation.subDetailId || [];
             const campaigns = reservation.campaigns || [];
 
-            // Check if there's at least one campaign where the contentFromSubDet ids match with subDetailId
             const similarity = campaigns.some(campaign => {
                 const contentFromSubDet = campaign.contentFromSubDet || [];
                 return contentFromSubDet.some(id => subDetailId.includes(id));
             });
 
-            // Set similarity state based on the result
             setSimilarity(similarity);
+
+            const moreThanOneCampaign = campaigns.length > 1;
+            setMultiSelected(moreThanOneCampaign);
         }
     }, [resDetail, selectedDate]);
 
@@ -667,7 +670,7 @@ const RequestDetail = (props) => {
                     <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width }}>
                         <View style={[styles.serviceOfferBooking]}>
                             {pressed === 1 && renderCampaighn()}
-                            {renderCheckSelectedOffer()}
+                            {multiSelected && renderCheckSelectedOffer()}
                         </View>
                     </View>
                 </ScrollView>
