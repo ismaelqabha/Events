@@ -242,7 +242,7 @@ const RequestDetail = (props) => {
             EndTime: null,
             numOfInviters: null,
             subDetailId: [],
-            offerId: null
+            offerId: []
         })) :
             {
                 reservationDate: newDates,
@@ -250,7 +250,7 @@ const RequestDetail = (props) => {
                 EndTime: null,
                 numOfInviters: null,
                 subDetailId: [],
-                offerId: null
+                offerId: []
             }
 
         // Update resDetail with the updated reservation details
@@ -295,8 +295,19 @@ const RequestDetail = (props) => {
                 setResDetail([...detail]);
                 break;
             case 'offerId':
-                detail[detailIndex].offerId = val
-                setResDetail([...detail])
+                const offerIdArray = detail[detailIndex].offerId || []; // Ensure offerId is initialized as an array
+                const idx = offerIdArray.indexOf(val); // Check if val exists in the offerId array
+                let newOF
+                if (idx === -1) {
+                    // If val doesn't exist, add it to the array
+                    newOF = [...offerIdArray, val];
+                } else {
+                    // If val exists, remove it from the array
+                    newOF = offerIdArray.filter(item => item !== val);
+                }
+                detail[detailIndex].offerId = newOF;
+                setOffer(newOF)
+                setResDetail([...detail]);
                 break;
             case 'campaigns':
                 detail[detailIndex].campaigns = val
@@ -326,16 +337,8 @@ const RequestDetail = (props) => {
         setInvitersValue(val)
         updateReservationDet(val, 'invited')
     }
-    const whenSupDetailPress = (SubId, setSelectedSubDetail, selectedSubDetail) => {
-
-        if (selectedSubDetail) {
-            setSelectedSubDetail(false)
-            updateReservationDet(SubId, 'subDetail')
-
-        } else {
-            setSelectedSubDetail(true)
-            updateReservationDet(SubId, 'subDetail')
-        }
+    const whenSupDetailPress = (SubId) => {
+        updateReservationDet(SubId, 'subDetail')
     }
     const checkStartTime = () => {
         showStartMode('time')
@@ -477,7 +480,6 @@ const RequestDetail = (props) => {
     }
 
     const renderServiceDetail = () => {
-
         const detail = props.additionalServices
         return detail.map(element => {
             return (<View>
@@ -485,12 +487,13 @@ const RequestDetail = (props) => {
                     <Text style={styles.detailText}>{element.detailTitle}</Text>
                 </View>
                 {element.subDetailArray.map(item => {
-                    const [selectedSubDetail, setSelectedSubDetail] = useState(false);
+                    const found = selectedSupDet?.find((det) => det === item.id)
+
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
-                            <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.id, setSelectedSubDetail, selectedSubDetail)}>
-                                {selectedSubDetail && <Entypo
+                            <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.id)}>
+                                {found && <Entypo
                                     style={{ alignSelf: 'center' }}
                                     name={"check"}
                                     color={colors.puprble}
@@ -505,22 +508,15 @@ const RequestDetail = (props) => {
         })
     }
 
+    const onCampPress = (campId) => {
+        updateReservationDet(campId, 'offerId');
+
+    }
+
     const renderCampaighnHeader = (camp, index) => {
-        const handlePress = () => {
-            setPressed(prevPressed => {
-                // Check if the index exists in the pressed array
-                const indexExists = prevPressed.includes(index);
-                if (indexExists) {
-                    // If the index exists, remove it from the array
-                    return prevPressed.filter(item => item !== index);
-                } else {
-                    // If the index doesn't exist, add it to the array
-                    return [...prevPressed, index];
-                }
-            });
-        };
+        const found = offer?.findIndex((det) => det === camp?.CampId)
         return (
-            <Pressable onPress={handlePress} style={!pressed.includes(index) ? styles.offerTitle : styles.offerTitleSelected}>
+            <Pressable onPress={() => onCampPress(camp?.CampId || index)} style={found === -1 ? styles.offerTitle : styles.offerTitleSelected}>
                 <Text style={styles.campText}>{camp.campTitle}</Text>
                 {camp.priceInclude == 'حسب الشخص' ?
                     <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
@@ -615,7 +611,7 @@ const RequestDetail = (props) => {
             }
         };
         return (
-            <View style={{backgroundColor:bgColorDate}}>
+            <View style={{ backgroundColor: bgColorDate }}>
                 <Text style={styles.text}>قم بتحديد تفاصيل الحجز اِما من الخدمات او العروض</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
                     <Pressable style={pressed === 0 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
