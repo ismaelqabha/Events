@@ -615,7 +615,7 @@ const RequestDetail = (props) => {
             }
         };
         return (
-            <View>
+            <View style={{backgroundColor:bgColorDate}}>
                 <Text style={styles.text}>قم بتحديد تفاصيل الحجز اِما من الخدمات او العروض</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
                     <Pressable style={pressed === 0 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
@@ -811,11 +811,11 @@ const styles = StyleSheet.create({
         minHeight: 150,
         padding: 5,
         marginTop: 10,
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
     },
     serviceOfferBooking: {
         width: Dimensions.get('screen').width * 0.9,
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
     },
 
     detailView: {
