@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { colors } from '../../assets/AppColors'
 import Fontisto from "react-native-vector-icons/Fontisto"
 import Entypo from "react-native-vector-icons/Entypo"
@@ -79,17 +79,17 @@ const ProviderWaitingReply = () => {
   const getBookingInfoByDate = (rseDate) => {
     const data = getBookingInfo()
     const reqInfo = data.filter(item => {
-    
+
       if (item.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         let result = item.reservationDetail.find(multiItem => {
-          
+
           return multiItem.reservationDate === rseDate
         })
         return result
       } else {
         //if reservation detail has one date
-        
+
         return item.reservationDetail[0].reservationDate === rseDate
       }
     })
@@ -202,7 +202,7 @@ const ProviderWaitingReply = () => {
   const getRequestsAccUserId = () => {
     let userid = '0'
     const data = filterUsersAccName()
-   
+
     if (data.length > 0) {
       userid = data[0].USER_ID
     }
@@ -299,6 +299,11 @@ const ProviderWaitingReply = () => {
       </View>
     )
   }
+  useEffect(() => {
+    if (selectedSpacificDate !== "YYYY/MM/DD") {
+      onSearchSpicaficDatePress()
+    }
+  }, [selectedSpacificDate])
 
   // searching By sepecific Date
   const onChange = (event, selectedDate) => {
@@ -315,8 +320,8 @@ const ProviderWaitingReply = () => {
     setMode(currentMode);
   }
   const onSearchSpicaficDatePress = () => {
-    setUseDefultSearch(false)
-    setUseClientToSearch(false)
+    // setUseDefultSearch(false)
+    // setUseClientToSearch(false)
     setUseSpacificDateToSearch(true)
   }
   const inputSpecificDate = () => {
@@ -331,9 +336,9 @@ const ProviderWaitingReply = () => {
             />
           </View>
         </Pressable>
-        <Pressable onPress={onSearchSpicaficDatePress}>
+        {/* <Pressable onPress={onSearchSpicaficDatePress}>
           <Text>بحث</Text>
-        </Pressable>
+        </Pressable> */}
         {show && (
           <DateTimePicker
             testID='dateTimePicker'
