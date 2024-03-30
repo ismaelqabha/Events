@@ -29,6 +29,29 @@ const RequestDetail = (props) => {
     const [invitersValue, setInvitersValue] = useState('');
     const [offer, setOffer] = useState();
 
+    const [similarity, setSimilarity] = useState(false);
+    const [multiSelected, setMultiSelected] = useState(false)
+
+
+    useEffect(() => {
+        const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
+
+        if (reservation) {
+            const subDetailId = reservation.subDetailId || [];
+            const campaigns = reservation.campaigns || [];
+
+            const similarity = campaigns.some(campaign => {
+                const contentFromSubDet = campaign.contentFromSubDet || [];
+                return contentFromSubDet.some(id => subDetailId.includes(id));
+            });
+
+            setSimilarity(similarity);
+
+            const moreThanOneCampaign = campaigns.length > 1;
+            setMultiSelected(moreThanOneCampaign);
+        }
+    }, [resDetail, selectedDate]);
+
     // colors related ->
     const [bgColorDate, setColorDate] = useState('white');
     const mainColor = 'EBE4F7'; // Main color theme
@@ -117,13 +140,13 @@ const RequestDetail = (props) => {
 
     useEffect(() => {
         try {
-            let result1 = pressed.map(index => campiegnsAccordingServiceId[index]);
+            let result1 = offer.map(id => campiegnsAccordingServiceId?.find((camp) => camp.CampId === id));
             updateReservationDet(result1, 'campaigns')
         } catch (error) {
             console.log("error ", error);
         }
 
-    }, [pressed])
+    }, [offer])
 
     const scrollViewRef = useRef(null);
     const firstPageRef = useRef(null);
@@ -285,15 +308,29 @@ const RequestDetail = (props) => {
                 setResDetail([...detail])
                 break;
             case 'subDetail':
-                const subDetailes = detail[detailIndex].subDetailId
-                const index = subDetailes.findIndex((id) => id === val)
-                index === -1 ? detail[detailIndex].subDetailId.push(val) :
-                    detail[detailIndex].subDetailId = detail[detailIndex].subDetailId.slice(index, 1)
-                setResDetail([...detail])
+                const subDetails = detail[detailIndex].subDetailId;
+                const index = subDetails.findIndex((id) => id === val);
+                if (index === -1) {
+                    detail[detailIndex].subDetailId.push(val);
+                } else {
+                    detail[detailIndex].subDetailId = subDetails.slice(0, index).concat(subDetails.slice(index + 1));
+                }
+                setResDetail([...detail]);
                 break;
             case 'offerId':
-                detail[detailIndex].offerId = val
-                setResDetail([...detail])
+                const offerIdArray = detail[detailIndex].offerId || []; // Ensure offerId is initialized as an array
+                const idx = offerIdArray.indexOf(val); // Check if val exists in the offerId array
+                let newOF
+                if (idx === -1) {
+                    // If val doesn't exist, add it to the array
+                    newOF = [...offerIdArray, val];
+                } else {
+                    // If val exists, remove it from the array
+                    newOF = offerIdArray.filter(item => item !== val);
+                }
+                detail[detailIndex].offerId = newOF;
+                setOffer(newOF)
+                setResDetail([...detail]);
                 break;
             case 'campaigns':
                 detail[detailIndex].campaigns = val
@@ -323,16 +360,8 @@ const RequestDetail = (props) => {
         setInvitersValue(val)
         updateReservationDet(val, 'invited')
     }
-    const whenSupDetailPress = (SubId, setSelectedSubDetail, selectedSubDetail) => {
-
-        if (selectedSubDetail) {
-            setSelectedSubDetail(false)
-            updateReservationDet(SubId, 'subDetail')
-
-        } else {
-            setSelectedSubDetail(true)
-            updateReservationDet(SubId, 'subDetail')
-        }
+    const whenSupDetailPress = (SubId) => {
+        updateReservationDet(SubId, 'subDetail')
     }
     const checkStartTime = () => {
         showStartMode('time')
@@ -474,7 +503,6 @@ const RequestDetail = (props) => {
     }
 
     const renderServiceDetail = () => {
-
         const detail = props.additionalServices
         return detail.map(element => {
             return (<View>
@@ -482,12 +510,13 @@ const RequestDetail = (props) => {
                     <Text style={styles.detailText}>{element.detailTitle}</Text>
                 </View>
                 {element.subDetailArray.map(item => {
-                    const [selectedSubDetail, setSelectedSubDetail] = useState(false);
+                    const found = selectedSupDet?.find((det) => det === item.id)
+
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
-                            <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.subDetail_Id, setSelectedSubDetail, selectedSubDetail)}>
-                                {selectedSubDetail && <Entypo
+                            <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.id)}>
+                                {found && <Entypo
                                     style={{ alignSelf: 'center' }}
                                     name={"check"}
                                     color={colors.puprble}
@@ -502,22 +531,15 @@ const RequestDetail = (props) => {
         })
     }
 
+    const onCampPress = (campId) => {
+        updateReservationDet(campId, 'offerId');
+
+    }
+
     const renderCampaighnHeader = (camp, index) => {
-        const handlePress = () => {
-            setPressed(prevPressed => {
-                // Check if the index exists in the pressed array
-                const indexExists = prevPressed.includes(index);
-                if (indexExists) {
-                    // If the index exists, remove it from the array
-                    return prevPressed.filter(item => item !== index);
-                } else {
-                    // If the index doesn't exist, add it to the array
-                    return [...prevPressed, index];
-                }
-            });
-        };
+        const found = offer?.findIndex((det) => det === camp?.CampId)
         return (
-            <Pressable onPress={handlePress} style={!pressed.includes(index) ? styles.offerTitle : styles.offerTitleSelected}>
+            <Pressable onPress={() => onCampPress(camp?.CampId || index)} style={found === -1 ? styles.offerTitle : styles.offerTitleSelected}>
                 <Text style={styles.campText}>{camp.campTitle}</Text>
                 {camp.priceInclude == 'حسب الشخص' ?
                     <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
@@ -612,7 +634,7 @@ const RequestDetail = (props) => {
             }
         };
         return (
-            <View>
+            <View style={{ backgroundColor: bgColorDate }}>
                 <Text style={styles.text}>قم بتحديد تفاصيل الحجز اِما من الخدمات او العروض</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
                     <Pressable style={pressed === 0 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
@@ -648,7 +670,7 @@ const RequestDetail = (props) => {
                     <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width }}>
                         <View style={[styles.serviceOfferBooking]}>
                             {pressed === 1 && renderCampaighn()}
-                            {renderCheckSelectedOffer()}
+                            {multiSelected && renderCheckSelectedOffer()}
                         </View>
                     </View>
                 </ScrollView>
@@ -775,7 +797,7 @@ const RequestDetail = (props) => {
             </View>
             {renderInviters()}
             {campiegnsAccordingServiceId && renderReservationDet()}
-            {renderCheckSelectedResDetail()}
+            {similarity && renderCheckSelectedResDetail()}
             {chooseButton()}
 
         </View>
@@ -808,11 +830,11 @@ const styles = StyleSheet.create({
         minHeight: 150,
         padding: 5,
         marginTop: 10,
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
     },
     serviceOfferBooking: {
         width: Dimensions.get('screen').width * 0.9,
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
     },
 
     detailView: {

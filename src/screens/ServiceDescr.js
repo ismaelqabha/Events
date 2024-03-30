@@ -14,6 +14,8 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from "../assets/AppColors"
 import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
+
 
 const ServiceDescr = (props) => {
     const { data } = props?.route.params
@@ -420,8 +422,8 @@ const ServiceDescr = (props) => {
                     <Pressable
                     //onPress={() => onPressModalHandler()}
                     >
-                        <Ionicons
-                            name={"logo-tiktok"}
+                        <FontAwesome5Brands
+                            name={"tiktok"}
                             color={'black'}
                             size={35} />
                     </Pressable>
