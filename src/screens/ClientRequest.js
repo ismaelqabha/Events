@@ -439,20 +439,38 @@ const ClientRequest = (props) => {
 
     const calculateTotalPrice = () => {
         let total = 0;
-        // Iterate through the components and sum up their prices
-        requestedDate.forEach((date) => {
-            const detailIndex = resDetail.findIndex((item) => item.reservationDate === moment(date).format('L'));
-            if (detailIndex !== -1) {
-                const { subDetailId, numOfInviters } = resDetail[detailIndex];
+
+        // Check if requestedDate is an array
+        if (Array.isArray(requestedDate)) {
+            requestedDate.forEach((date) => {
+                // For each date in the array, calculate the total price
+                const detailIndex = resDetail.findIndex((item) => item.reservationDate === moment(date).format('L'));
+                if (detailIndex !== -1) {
+                    const { subDetailId, numOfInviters } = resDetail[detailIndex];
+                    const filteredSubDetails = filterSubDetails(subDetailId);
+                    filteredSubDetails.forEach((subDetail) => {
+                        subDetail.subDetailArray.forEach((detail) => {
+                            total += parseInt(detail.detailSubtitleCost) * (numOfInviters || 0);
+                        });
+                    });
+                }
+            });
+        } else {
+            // If requestedDate is a string, calculate the total price for that single date
+            if (resDetail.length > 0) {
+                const { subDetailId, numOfInviters } = resDetail[0];
                 const filteredSubDetails = filterSubDetails(subDetailId);
                 filteredSubDetails.forEach((subDetail) => {
                     subDetail.subDetailArray.forEach((detail) => {
+                        console.log("detail ", detail);
                         total += parseInt(detail.detailSubtitleCost) * (numOfInviters || 0);
                     });
                 });
             }
-        });
+        }
+
         // Update the totalPrice state
+        console.log("total ", total);
         setTotalPrice(total);
     };
 
