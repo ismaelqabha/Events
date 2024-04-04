@@ -240,7 +240,7 @@ export const removeDraftFromAPI = async body => {
 export const getServiceImages = async (body) => {
   try {
     const url = 'ServiceImags/getImg';
-    const response = await AppFetch(url, 'POST', { serviceID:body });
+    const response = await AppFetch(url, 'POST', { serviceID: body });
     return response;
   } catch (error) {
     console.error('Error fetching service images:', error);
@@ -255,22 +255,23 @@ export const addServiceImages = async (imagesArray, serviceID) => {
     const headers = {
       'Content-Type': 'multipart/form-data',
     }
-    const logoArray = [];
-    formData.append("serviceID", serviceID)
+    formData.append("serviceID", serviceID);
+
     imagesArray?.forEach((data, index) => {
       formData.append(`images`, {
         uri: data.uri,
         type: 'image/jpeg',
         name: `image${index}.jpg`,
-      })
-      logoArray.push(data.logo)
+      });
+
+      // Append each logo individually with a unique key
+      formData.append(`logoArray[${index}]`, data.logo);
     });
-    formData.append("logoArray", logoArray)
+
     return await AppFetch(url, 'POST', formData, headers);
   } catch (error) {
     console.log("error adding images ", error);
   }
-
 };
 
 // Service Booking Dates

@@ -22,7 +22,7 @@ import { colors } from '../../assets/AppColors';
 import SearchContext from '../../../store/SearchContext';
 import { hallDetailOptions, mandoteryOptions } from '../../resources/data';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { showMessage } from '../../resources/Functions';
+import { onPublishPress, showMessage } from '../../resources/Functions';
 import { addService, addServiceImages } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
@@ -56,6 +56,8 @@ const ProviderAddServiceDetail = props => {
     email,
   } = useContext(ServiceProviderContext);
   const { userId } = useContext(UsersContext);
+  const { allData } = useContext(ServiceProviderContext);
+
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
 
 
@@ -84,53 +86,10 @@ const ProviderAddServiceDetail = props => {
       nextStyle: styles.next,
       nextTextStyle: styles.nextText,
       Text: language.Next,
-      onPress: () => onPublishPress(),
+      onPress: () => onPublishPress(allData),
     },
   };
 
-
-  const onPublishPress = async () => {
-    let emptyIndexes = [];
-
-    additionalServices.forEach((service, index) => {
-      if (service.subDetailArray.length === 0) {
-        emptyIndexes.push(index);
-      }
-    });
-
-    if (emptyIndexes.length > 0) {
-      const message = `Sub detail ${emptyIndexes.map(index => additionalServices[index].detailTitle).join(', ')} are empty`; showMessage(message)
-      return;
-    }
-    const body = {
-      userID: userId,
-      servType: selectServiceType,
-      title: title,
-      subTitle: SuTitle,
-      desc: description,
-      region: serviceRegion,
-      address: serviceAddress,
-      servicePrice: price,
-      additionalServices: additionalServices,
-      socialMedia: socialMediaArray,
-      maxCapasity: hallCapacity,
-      hallType: hallType,
-      servicePhone: phoneNumer,
-      serviceEmail: email,
-    };
-    await addService(body)
-      .then(async res => {
-        //console.log(' service res ->', res.serviceID);
-        await addServiceImages(photoArray, res?.serviceID).then((res) => {
-          // console.log("images res -> ", res);
-          // showMessage("تم حفظ البيانات")
-        })
-      })
-      .catch(e => {
-        console.log('create new event error : ', e);
-      });
-
-  };
 
   const modalSavePress = () => {
     if (Dtitle.trim().length > 0 && doesntExists()) {
