@@ -20,7 +20,7 @@ import SearchContext from '../../../store/SearchContext';
 import { addService, addServiceImages } from '../../resources/API';
 import HeaderComp from '../../components/ProviderComponents/HeaderComp';
 import { colors } from '../../assets/AppColors';
-import { showMessage } from '../../resources/Functions';
+import { onPublishPress, showMessage } from '../../resources/Functions';
 import UsersContext from '../../../store/UsersContext';
 
 const ProviderInitialWithDetailPrice = props => {
@@ -42,6 +42,7 @@ const ProviderInitialWithDetailPrice = props => {
         email
     } = useContext(ServiceProviderContext);
     const { userId } = useContext(UsersContext);
+    const { allData } = useContext(ServiceProviderContext);
 
     const params = {
         ScreenHeader: {
@@ -59,37 +60,8 @@ const ProviderInitialWithDetailPrice = props => {
             nextStyle: styles.next,
             nextTextStyle: styles.nextText,
             Text: langauge.Next,
-            onPress: () => onPublishPress(),
+            onPress: () => onPublishPress(allData),
         },
-    };
-
-    const onPublishPress = async () => {
-        const body = {
-            userID: userId,
-            servType: selectServiceType,
-            title: title,
-            subTitle: SuTitle,
-            desc: description,
-            region: serviceRegion,
-            address: serviceAddress,
-            servicePrice: price,
-            workingRegion: workAreas,
-            additionalServices: additionalServices,
-            socialMedia: socialMediaArray,
-            servicePhone: phoneNumer,
-            serviceEmail: email,
-        };
-        await addService(body)
-        then(async res => {
-            console.log(' service res ->', res);
-            await addServiceImages(photoArray, res?.serviceID).then((res) => {
-                console.log("images res -> ", res);
-                showMessage("تم حفظ البيانات")
-            })
-        })
-            .catch(e => {
-                console.log('create new event error : ', e);
-            });
     };
 
     const onAddSerPress = () => {
