@@ -136,7 +136,45 @@ const ClientRequest = (props) => {
         })
     }
 
+    const checkAllDetails = () => {
+        if (typeof totalPrice !== 'number' || totalPrice <= 0) {
+            showMessage("Please choose proper services.");
+            return false;
+        }
+
+        if (!data || !data._id) {
+            showMessage("Invalid service data.");
+            return false;
+        }
+
+        if (!userId) {
+            showMessage("Invalid user ID.");
+            return false;
+        }
+
+        if (!Array.isArray(resDetail) || resDetail.length === 0) {
+            showMessage("Please provide reservation details.");
+            return false;
+        }
+
+        // Iterate through each reservation detail and perform checks
+        for (const detail of resDetail) {
+            if (!detail.reservationDate || !detail.startingTime || !detail.EndTime ||
+                detail.numOfInviters === null || !Array.isArray(detail.subDetailId) ||
+                !Array.isArray(detail.offerId) || detail.subDetailId.length === 0 ||
+                detail.offerId.length === 0) {
+                showMessage("Please fill all reservation details.");
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     const onServiceRequest = () => {
+        if (!checkAllDetails()) {
+            return
+        }
         const requestBody = {
             ReqDate: new Date(),
             ReqStatus: 'waiting reply',
