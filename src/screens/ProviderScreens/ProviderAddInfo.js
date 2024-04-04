@@ -410,8 +410,12 @@ const ProviderAddInfo = props => {
   }
   const handleChangeText = (text) => {
     const newMaxNumberOfRequests = parseInt(text, 10);
+    if (isNaN(newMaxNumberOfRequests)) {
+      setMaxNumberOFRequest(0);
+      return;
+    }
     setMaxNumberOFRequest(newMaxNumberOfRequests);
-};
+  };
   const RenderInputNumofRequested = () => {
     return (
       <View>
