@@ -11,12 +11,12 @@ import moment from "moment";
 
 
 const ProviderReservationCard = (props) => {
-    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen } = props
+    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen, reservationDetail } = props
     const { allUserData } = useContext(UsersContext);
     const { setRequestInfoByService } = useContext(SearchContext);
     const navigation = useNavigation();
     const reqInfo = { ...props }
-    
+
 
     const filterUsersAccID = () => {
         const filterUsers = allUserData.user.filter(item => {
@@ -79,11 +79,26 @@ const ProviderReservationCard = (props) => {
     const time = () => {
         return (
             <View style={styles.dateview}>
-                <View>
-                    <Text style={styles.dateTxt}>{props.reservationDetail[0].startingTime}</Text>
-                </View>
-                {/* <Image style={styles.shekeImg} source={require('../../assets/photos/shekelSign.png')} /> */}
+                <Text style={styles.dateTxt}>{'  الى  ' + props.reservationDetail[0].EndTime}</Text>
+                <Text style={styles.dateTxt}>{'  من   ' + props.reservationDetail[0].startingTime}</Text>
             </View>
+        )
+
+
+    }
+
+
+    const renderMultiReq = () => {
+        return (<View>
+            {MultiReqtime()}
+        </View>
+        )
+    }
+    const renderSingleReq = () => {
+        return (<View>
+            {renderPrice()}
+            {time()}
+        </View>
         )
     }
     const renderPayRemain = () => {
@@ -121,7 +136,6 @@ const ProviderReservationCard = (props) => {
         }
         updateInfo(newData)
     }
-
     const onAcceptReqPress = () => {
         Alert.alert(
             'تأكيد',
@@ -161,24 +175,59 @@ const ProviderReservationCard = (props) => {
 
     const requestWaitingReplyCard = () => {
         return (
-            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, {reqInfo})}>
-                {renderRequestDate()}
-                {renderPrice()}
-                {/* {time()} */}
-                <View style={styles.buttonView}>
-                    <Pressable onPress={onRefuseReqPress}>
-                        <Text style={styles.buttonTxt}>رفض</Text>
-                    </Pressable>
-                    <Pressable onPress={onAcceptReqPress}>
-                        <Text style={styles.buttonTxt}>قبول</Text>
-                    </Pressable>
-                </View>
-            </Pressable>
+            <View style={styles.card}>
+                <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                    {renderRequestDate()}
+                    {renderSingleReq()}
+                    <View style={styles.buttonView}>
+                        <Pressable onPress={onRefuseReqPress}>
+                            <Text style={styles.buttonTxt}>رفض</Text>
+                        </Pressable>
+                        <Pressable onPress={onAcceptReqPress}>
+                            <Text style={styles.buttonTxt}>قبول</Text>
+                        </Pressable>
+                    </View>
+                </Pressable>
+                {renderClientInfo()}
+            </View>
         )
+    }
+    const multiRequestWaitingReplyCard = () => {
+        return reservationDetail.map(item => {
+            return (
+                <View style={styles.card}>
+                    <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                    <Text style={styles.dateTxt}>حجز متعدد الايام</Text>
+                        {renderRequestDate()}
+
+                        <View style={styles.dateview}>
+                            <View>
+                                <Text style={styles.dateTxt}>{item.Cost}</Text>
+                            </View>
+                            <Image style={styles.shekeImg} source={require('../../assets/photos/shekelSign.png')} />
+                        </View>
+
+                        <View style={styles.dateview}>
+                            <Text style={styles.dateTxt}>{'  الى  ' + item.EndTime}</Text>
+                            <Text style={styles.dateTxt}>{'  من   ' + item.startingTime}</Text>
+                        </View>
+                        <View style={styles.buttonView}>
+                            <Pressable onPress={onRefuseReqPress}>
+                                <Text style={styles.buttonTxt}>رفض</Text>
+                            </Pressable>
+                            <Pressable onPress={onAcceptReqPress}>
+                                <Text style={styles.buttonTxt}>قبول</Text>
+                            </Pressable>
+                        </View>
+                    </Pressable>
+                    {renderClientInfo()}
+                </View>
+            )
+        })
     }
     const requestWaitingPayCard = () => {
         return (
-            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, {reqInfo})}>
+            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                 {renderRequestDate()}
                 {renderPrice()}
                 <View style={styles.buttonView}>
@@ -199,10 +248,14 @@ const ProviderReservationCard = (props) => {
 
     const renderCard = () => {
         if (fromWaitingScreen) {
+
             return (
-                <View style={styles.card}>
-                    {requestWaitingReplyCard()}
-                    {renderClientInfo()}
+                <View>
+                    {reservationDetail.length > 1 ?
+                        multiRequestWaitingReplyCard()
+                        :
+                        requestWaitingReplyCard()
+                    }
                 </View>
             )
         }
@@ -239,7 +292,7 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
         width: '90%',
-        height: 150,
+        height: 170,
         alignSelf: 'center',
         margin: 10,
         // borderWidth: 1
@@ -311,7 +364,7 @@ const styles = StyleSheet.create({
     },
     dateTxt: {
         color: colors.puprble,
-        fontSize: 20
+        fontSize: 15
     },
     Txt: {
         fontSize: 15,

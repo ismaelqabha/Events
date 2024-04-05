@@ -12,7 +12,8 @@ import UsersContext from '../../../store/UsersContext'
 
 
 const ProviderWaitingReply = () => {
-  const { requestInfoByService, userInfoBySpiceficId, setUserInfoBySpiceficId } = useContext(SearchContext);
+  const { requestInfoByService, userInfoBySpiceficId, setUserInfoBySpiceficId,
+    selectMonthforSearch, yearforSearch } = useContext(SearchContext);
   const { allUserData } = useContext(UsersContext);
 
   const [fromWaitingScreen, setFromWaitingScreen] = useState(true)
@@ -36,12 +37,15 @@ const ProviderWaitingReply = () => {
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
+
+
   const allRequestingDates = []
   const manageArrayDates = []
   const arrayUsingSpicifcDate = []
 
   const monthlyPress = () => {
     setMonthly(true)
+    setuseMonthToSearch(true)
     setspacificDate(false)
     setClientName(false)
     setAllRequests(false)
@@ -51,12 +55,14 @@ const ProviderWaitingReply = () => {
     setspacificDate(true)
     setClientName(false)
     setAllRequests(false)
+    setuseMonthToSearch(false)
   }
   const clientNamePress = () => {
     setMonthly(false)
     setspacificDate(false)
     setClientName(true)
     setAllRequests(false)
+    setuseMonthToSearch(false)
   }
   const allReqPress = () => {
     setMonthly(false)
@@ -66,36 +72,93 @@ const ProviderWaitingReply = () => {
     setUseDefultSearch(true)
     setUseClientToSearch(false)
     setUseSpacificDateToSearch(false)
+    setuseMonthToSearch(false)
   }
 
   const getBookingInfo = () => {
-    const reqInfo = requestInfoByService.filter(item => {
-      return item.ReqStatus === 'waiting reply'
-    })
-    return reqInfo
+    if (requestInfoByService !== '{message : no Request}') {
+      const reqInfo = requestInfoByService.filter(item => {
+        return item.ReqStatus === 'waiting reply'
+      })
+      return reqInfo
+    } else {
+      return []
+    }
   }
 
-  /// searching all requests
-  const getBookingInfoByDate = (rseDate) => {
+  const getRequestsAccDates = () => {
+    const today = moment(new Date(), "YYYY-MM-DD")
+    const day = today.format('D')
+    const month = today.format('M')
+    const year = today.format('YYYY')
+    const todayDate = year + '-' + month + '-' + day
+
     const data = getBookingInfo()
     const reqInfo = data.filter(item => {
-
       if (item.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         let result = item.reservationDetail.find(multiItem => {
-
-          return multiItem.reservationDate === rseDate
+          return multiItem.reservationDate.slice(0, 10) > todayDate
         })
         return result
-      } else {
-        //if reservation detail has one date
 
-        return item.reservationDetail[0].reservationDate === rseDate
+      } else {
+
+        //if reservation detail has one date
+        return item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate
       }
     })
 
     return reqInfo
   }
+
+
+  /// searching all requests
+  const getBookingInfoByDate = (rseDate) => {
+    const data = getRequestsAccDates()
+    console.log("data>>",data);
+   
+    const reqInfo = data.filter(req => {
+      if (req.reservationDetail.length > 1) {
+        const multiReqInfo = req.reservationDetail.find(multiItem => {
+          return multiItem.reservationDate.slice(0, 10) == rseDate
+        })
+        console.log("multiReqInfo", multiReqInfo);
+        return multiReqInfo
+      } else {
+        return req.reservationDetail[0].reservationDate.slice(0, 10) == rseDate
+      }
+    })
+    console.log("reqInfo>>",reqInfo);
+    return reqInfo
+    
+
+
+
+
+
+
+    // const reqInfo = data.filter(item => {
+
+    //   if (item.reservationDetail.length > 1) {
+    //     //if reservation detail has more than one date
+    //     let result = item.reservationDetail.find(multiItem => {
+    //       console.log(multiItem.reservationDate.slice(0, 10), rseDate, multiItem.reservationDate.slice(0, 10) == rseDate);
+    //       return multiItem.reservationDate.slice(0, 10) == rseDate
+    //     })
+    //     console.log("result", result);
+    //     return result
+
+    //   } else {
+
+    //     //if reservation detail has one date
+    //     return item.reservationDetail[0].reservationDate.slice(0, 10) == rseDate
+    //   }
+    // })
+    // return reqInfo
+  }
+
+
 
   const collectAllRequestDates = () => {
     let startingDay = ''
@@ -103,9 +166,9 @@ const ProviderWaitingReply = () => {
     let year = ''
     let completeDate = ''
     let requestBookingDate = ''
-    const data = getBookingInfo()
-    return data.map(item => {
+    const data = getRequestsAccDates()
 
+    return data.map(item => {
       if (item.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         return item.reservationDetail.map(multiItem => {
@@ -115,9 +178,10 @@ const ProviderWaitingReply = () => {
           year = requestBookingDate.format('YYYY')
           completeDate = year + '-' + month + '-' + startingDay
 
+
           if (!(allRequestingDates.includes(completeDate))) {
             if (useMonthToSearch) {
-              if (month === selectedMonth && year === selectedYear) {
+              if (month == selectMonthforSearch && year == yearforSearch) {
                 allRequestingDates.push(completeDate)
               }
             } else {
@@ -135,7 +199,7 @@ const ProviderWaitingReply = () => {
 
         if (!(allRequestingDates.includes(completeDate))) {
           if (useMonthToSearch) {
-            if (month === selectedMonth && year === selectedYear) {
+            if (month == selectMonthforSearch && year == yearforSearch) {
               allRequestingDates.push(completeDate)
             }
           } else {
@@ -149,7 +213,7 @@ const ProviderWaitingReply = () => {
 
   const renderBookingCard = (rseDate) => {
     const data = getBookingInfoByDate(rseDate)
-
+    console.log("ddddd", data);
     return data.map(item => {
       return (
         <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
@@ -159,7 +223,6 @@ const ProviderWaitingReply = () => {
 
   const renderBookingDates = () => {
     collectAllRequestDates()
-
     return allRequestingDates.map(item => {
       return (
         <View>
@@ -207,7 +270,18 @@ const ProviderWaitingReply = () => {
       userid = data[0].USER_ID
     }
     const reqInfo = requestInfoByService.filter(item => {
-      return item.ReqStatus === 'waiting reply' && item.ReqUserId === userid
+      if (item.reservationDetail.length > 1) {
+        //if reservation detail has more than one date
+        let result = item.reservationDetail.find(multiItem => {
+          return multiItem.reservationDate > todayDate && item.ReqStatus === 'waiting reply' && item.ReqUserId === userid
+        })
+        return result
+
+      } else {
+
+        //if reservation detail has one date
+        return item.reservationDetail[0].reservationDate > todayDate && item.ReqStatus === 'waiting reply' && item.ReqUserId === userid
+      }
     })
     return reqInfo
   }
@@ -281,6 +355,7 @@ const ProviderWaitingReply = () => {
     setUseDefultSearch(false)
     setUseClientToSearch(true)
     setUseSpacificDateToSearch(false)
+    setuseMonthToSearch(false)
   }
 
   const inputClientName = () => {
@@ -293,17 +368,10 @@ const ProviderWaitingReply = () => {
           onChangeText={setClient}
           onEndEditing={onSearchPress}
         />
-        {/* <Pressable onPress={onSearchPress}>
-          <Text>بحث</Text>
-        </Pressable> */}
       </View>
     )
   }
-  useEffect(() => {
-    if (selectedSpacificDate !== "YYYY/MM/DD") {
-      onSearchSpicaficDatePress()
-    }
-  }, [selectedSpacificDate])
+
 
   // searching By sepecific Date
   const onChange = (event, selectedDate) => {
@@ -314,14 +382,15 @@ const ProviderWaitingReply = () => {
     let tempDate = new Date(currentDate);
     let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
     setSelectedSpacificDate(fDate);
+    onSearchSpicaficDatePress()
   }
   const showMode = (currentMode) => {
     setShow(true);
     setMode(currentMode);
   }
   const onSearchSpicaficDatePress = () => {
-    // setUseDefultSearch(false)
-    // setUseClientToSearch(false)
+    setUseDefultSearch(false)
+    setUseClientToSearch(false)
     setUseSpacificDateToSearch(true)
   }
   const inputSpecificDate = () => {
@@ -336,9 +405,7 @@ const ProviderWaitingReply = () => {
             />
           </View>
         </Pressable>
-        {/* <Pressable onPress={onSearchSpicaficDatePress}>
-          <Text>بحث</Text>
-        </Pressable> */}
+
         {show && (
           <DateTimePicker
             testID='dateTimePicker'
@@ -354,24 +421,28 @@ const ProviderWaitingReply = () => {
   }
   const manageDatesbySearchSpicficDate = () => {
     let requestBookingDate = ''
+
     const data = getBookingInfoByDate(selectedSpacificDate)
     return data.map(item => {
       if (item.reservationDetail.length > 1) {
         return item.reservationDetail.find(multiItem => {
           requestBookingDate = multiItem.reservationDate
-
-          if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
-            arrayUsingSpicifcDate.push(requestBookingDate)
+          if (requestBookingDate == selectedSpacificDate) {
+            if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
+              arrayUsingSpicifcDate.push(requestBookingDate)
+            }
           }
         })
 
       } else {
         requestBookingDate = item.reservationDetail[0].reservationDate
-
-        if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
-          arrayUsingSpicifcDate.push(requestBookingDate)
+        if (requestBookingDate == selectedSpacificDate) {
+          if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
+            arrayUsingSpicifcDate.push(requestBookingDate)
+          }
         }
       }
+
       arrayUsingSpicifcDate.sort();
     })
 
@@ -395,7 +466,13 @@ const ProviderWaitingReply = () => {
   const inputMonth = () => {
     return (
       <View>
-        <MonthCom />
+        <MonthCom
+          isChecked={selectedMonth && selectedYear}
+          onCatPress={(m, y) => {
+            setSelectedMonth(m)
+            setSelectedYear(y)
+          }}
+        />
       </View>
     )
   }

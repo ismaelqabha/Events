@@ -26,6 +26,7 @@ const ClientRequest = (props) => {
         requestInfo, setRequestInfo,
         eventInfo, setEventInfo,
         eventTypeInfo, setEventTypeInfo } = useContext(SearchContext);
+       
 
     const [date, setDate] = useState(new Date());
     const [IveEvent, setIveEvent] = useState(false);
@@ -136,17 +137,20 @@ const ClientRequest = (props) => {
         })
     }
 
+
+
     const onServiceRequest = () => {
         const requestBody = {
-            ReqDate: new Date(),
+            ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
             ReqStatus: 'waiting reply',
             ReqEventId: selectedEvent,
             Cost: totalPrice,
-            ReqServId: data?._id,
+            ReqServId: data?.service_id,
             ReqUserId: userId,
             reservationDetail: resDetail,
         }
-
+       
+        
         addNewRequest(requestBody).then((res) => {
             if (res.message && res.message === 'Request Created') {
                 showMessage("Request Created successfully")

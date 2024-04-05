@@ -12,7 +12,6 @@ const ServiceCard = (props) => {
     const { setCat, ServiceDataInfo, setServiceDataInfo, ServId, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
 
-    const [pressed, setPressed] = useState(true)
 
     const chickIfChecked = () => {
         return isChecked
@@ -58,7 +57,8 @@ const ServiceCard = (props) => {
         if (isFromChooseServiceClick === true) {
             const ServiceCard = props;
             const clicked = chickIfChecked(ServiceCard);
-            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody, styles.shadow]} onPress={() => onCatPress(ServiceCard)}>
+            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody, styles.shadow]} 
+            onPress={() => onCatPress(ServiceCard)}>
                 <Image
                     source={ServiceCard.img}
 

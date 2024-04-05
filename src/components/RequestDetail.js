@@ -19,7 +19,8 @@ const RequestDetail = (props) => {
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
 
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
-        return moment(date).format('L')
+        
+        return date
     }) : [requestedDate]
 
     const [selectTime, setSelectTime] = useState(true);

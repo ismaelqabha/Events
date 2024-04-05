@@ -12,7 +12,7 @@ import UsersContext from '../../../store/UsersContext';
 
 const ProviderWaitingPay = () => {
 
-  const { requestInfoByService } = useContext(SearchContext);
+  const { requestInfoByService, selectMonthforSearch, yearforSearch } = useContext(SearchContext);
   const { allUserData } = useContext(UsersContext);
   const [fromWaitingPayScreen, setFromWaitingPayScreen] = useState(true)
 
@@ -44,18 +44,21 @@ const ProviderWaitingPay = () => {
     setspacificDate(false)
     setClientName(false)
     setAllRequests(false)
+    setuseMonthToSearch(true)
   }
   const spacificDatePress = () => {
     setMonthly(false)
     setspacificDate(true)
     setClientName(false)
     setAllRequests(false)
+    setuseMonthToSearch(false)
   }
   const clientNamePress = () => {
     setMonthly(false)
     setspacificDate(false)
     setClientName(true)
     setAllRequests(false)
+    setuseMonthToSearch(false)
   }
   const allReqPress = () => {
     setMonthly(false)
@@ -65,18 +68,52 @@ const ProviderWaitingPay = () => {
     setUseDefultSearch(true)
     setUseClientToSearch(false)
     setUseSpacificDateToSearch(false)
+    setuseMonthToSearch(false)
   }
 
+ 
   const getBookingInfo = () => {
-    const reqInfo = requestInfoByService.filter(item => {
-      return item.ReqStatus === 'waiting pay'
+    if (requestInfoByService !== '{message : no Request}') {
+      const reqInfo = requestInfoByService.filter(item => {
+        return item.ReqStatus === 'waiting pay'
+      })
+      return reqInfo
+    } else {
+      return []
+    }
+  }
+
+  const getRequestsAccDates = () => {
+    const today = moment(new Date(), "YYYY-MM-DD")
+    const day = today.format('D')
+    const month = today.format('M')
+    const year = today.format('YYYY')
+    const todayDate = year + '-' + month + '-' + day
+
+    const data = getBookingInfo()
+    const reqInfo = data.filter(item => {
+      if (item.reservationDetail.length > 1) {
+        //if reservation detail has more than one date
+        let result = item.reservationDetail.find(multiItem => {
+          return multiItem.reservationDate.slice(0, 10) > todayDate
+        })
+        
+        return result
+
+      } else {
+
+        //if reservation detail has one date
+        //console.log(item.reservationDetail[0].reservationDate,'>', todayDate.slice(0, 10), item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10));
+        return item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10)
+      }
     })
+
     return reqInfo
   }
 
   /// searching all requests
   const getBookingInfoByDate = (rseDate) => {
-    const data = getBookingInfo()
+    const data = getRequestsAccDates()
     const reqInfo = data.filter(item => {
 
       if (item.reservationDetail.length > 1) {
@@ -116,7 +153,7 @@ const ProviderWaitingPay = () => {
 
           if (!(allRequestingDates.includes(completeDate))) {
             if (useMonthToSearch) {
-              if (month === selectedMonth && year === selectedYear) {
+              if (month == selectMonthforSearch && year == yearforSearch) {
                 allRequestingDates.push(completeDate)
               }
             } else {
@@ -134,7 +171,7 @@ const ProviderWaitingPay = () => {
 
         if (!(allRequestingDates.includes(completeDate))) {
           if (useMonthToSearch) {
-            if (month === selectedMonth && year === selectedYear) {
+            if (month == selectMonthforSearch && year == yearforSearch) {
               allRequestingDates.push(completeDate)
             }
           } else {
@@ -199,7 +236,7 @@ const ProviderWaitingPay = () => {
   const getRequestsAccUserId = () => {
     let userid = '0'
     const data = filterUsersAccName()
-   
+
     if (data.length > 0) {
       userid = data[0].USER_ID
     }
@@ -298,9 +335,6 @@ const ProviderWaitingPay = () => {
           onChangeText={setClient}
           onEndEditing={onSearchPress}
         />
-        {/* <Pressable onPress={onSearchPress}>
-          <Text>بحث</Text>
-        </Pressable> */}
       </View>
     )
   }
@@ -315,6 +349,7 @@ const ProviderWaitingPay = () => {
     let tempDate = new Date(currentDate);
     let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
     setSelectedSpacificDate(fDate);
+    onSearchSpicaficDatePress()
   }
   const showMode = (currentMode) => {
     setShow(true);
@@ -337,9 +372,6 @@ const ProviderWaitingPay = () => {
             />
           </View>
         </Pressable>
-        <Pressable onPress={onSearchSpicaficDatePress}>
-          <Text>بحث</Text>
-        </Pressable>
         {show && (
           <DateTimePicker
             testID='dateTimePicker'
@@ -355,24 +387,28 @@ const ProviderWaitingPay = () => {
   }
   const manageDatesbySearchSpicficDate = () => {
     let requestBookingDate = ''
+
     const data = getBookingInfoByDate(selectedSpacificDate)
     return data.map(item => {
       if (item.reservationDetail.length > 1) {
         return item.reservationDetail.find(multiItem => {
           requestBookingDate = multiItem.reservationDate
-
-          if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
-            arrayUsingSpicifcDate.push(requestBookingDate)
+          if (requestBookingDate == selectedSpacificDate) {
+            if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
+              arrayUsingSpicifcDate.push(requestBookingDate)
+            }
           }
         })
 
       } else {
         requestBookingDate = item.reservationDetail[0].reservationDate
-
-        if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
-          arrayUsingSpicifcDate.push(requestBookingDate)
+        if (requestBookingDate == selectedSpacificDate) {
+          if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
+            arrayUsingSpicifcDate.push(requestBookingDate)
+          }
         }
       }
+
       arrayUsingSpicifcDate.sort();
     })
 
