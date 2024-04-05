@@ -10,7 +10,6 @@ export const showMessage = (msg) => {
     : Alert.IOS.alert(msg);
 };
 export const onPublishPress = async (allData) => {
-
   await addService(allData)
     .then(async res => {
       console.log(' service res ->', res.serviceID);

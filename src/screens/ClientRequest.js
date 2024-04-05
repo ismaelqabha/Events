@@ -138,8 +138,46 @@ const ClientRequest = (props) => {
     }
 
 
+    const checkAllDetails = () => {
+        if (typeof totalPrice !== 'number' || totalPrice <= 0) {
+            showMessage("Please choose proper services.");
+            return false;
+        }
+
+        if (!data || !data._id) {
+            showMessage("Invalid service data.");
+            return false;
+        }
+
+        if (!userId) {
+            showMessage("Invalid user ID.");
+            return false;
+        }
+
+        if (!Array.isArray(resDetail) || resDetail.length === 0) {
+            showMessage("Please provide reservation details.");
+            return false;
+        }
+
+        // Iterate through each reservation detail and perform checks
+        for (const detail of resDetail) {
+            if (!detail.reservationDate || !detail.startingTime || !detail.EndTime ||
+                detail.numOfInviters === null || !Array.isArray(detail.subDetailId) ||
+                !Array.isArray(detail.offerId) || detail.subDetailId.length === 0 ||
+                detail.offerId.length === 0) {
+                showMessage("Please fill all reservation details.");
+                return false;
+            }
+        }
+
+        return true;
+    };
+
 
     const onServiceRequest = () => {
+        if (!checkAllDetails()) {
+            return
+        }
         const requestBody = {
             ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
             ReqStatus: 'waiting reply',
@@ -441,20 +479,38 @@ const ClientRequest = (props) => {
 
     const calculateTotalPrice = () => {
         let total = 0;
-        // Iterate through the components and sum up their prices
-        requestedDate.forEach((date) => {
-            const detailIndex = resDetail.findIndex((item) => item.reservationDate === moment(date).format('L'));
-            if (detailIndex !== -1) {
-                const { subDetailId, numOfInviters } = resDetail[detailIndex];
+
+        // Check if requestedDate is an array
+        if (Array.isArray(requestedDate)) {
+            requestedDate.forEach((date) => {
+                // For each date in the array, calculate the total price
+                const detailIndex = resDetail.findIndex((item) => item.reservationDate === moment(date).format('L'));
+                if (detailIndex !== -1) {
+                    const { subDetailId, numOfInviters } = resDetail[detailIndex];
+                    const filteredSubDetails = filterSubDetails(subDetailId);
+                    filteredSubDetails.forEach((subDetail) => {
+                        subDetail.subDetailArray.forEach((detail) => {
+                            total += parseInt(detail.detailSubtitleCost) * (numOfInviters || 0);
+                        });
+                    });
+                }
+            });
+        } else {
+            // If requestedDate is a string, calculate the total price for that single date
+            if (resDetail.length > 0) {
+                const { subDetailId, numOfInviters } = resDetail[0];
                 const filteredSubDetails = filterSubDetails(subDetailId);
                 filteredSubDetails.forEach((subDetail) => {
                     subDetail.subDetailArray.forEach((detail) => {
+                        console.log("detail ", detail);
                         total += parseInt(detail.detailSubtitleCost) * (numOfInviters || 0);
                     });
                 });
             }
-        });
+        }
+
         // Update the totalPrice state
+        console.log("total ", total);
         setTotalPrice(total);
     };
 

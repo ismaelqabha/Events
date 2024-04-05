@@ -33,6 +33,11 @@ const RequestDetail = (props) => {
     const [similarity, setSimilarity] = useState(false);
     const [multiSelected, setMultiSelected] = useState(false)
 
+    const [isCampaign, setIsCampaign] = useState(true)
+
+    useEffect(() => {
+        setIsCampaign(campiegnsAccordingServiceId && campiegnsAccordingServiceId.length > 0);
+    }, []);
 
     useEffect(() => {
         const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
@@ -644,12 +649,12 @@ const RequestDetail = (props) => {
                     }}>
                         <Text style={styles.detailViewText}>الخدمات</Text>
                     </Pressable>
-                    <Pressable style={pressed === 1 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
+                    {isCampaign && <Pressable style={pressed === 1 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
                         handlePressSecondPage()
                         setPressed(1)
                     }}>
                         <Text style={styles.detailViewText}>العروض</Text>
-                    </Pressable>
+                    </Pressable>}
                 </View>
                 <ScrollView
                     ref={scrollViewRef}
@@ -668,12 +673,12 @@ const RequestDetail = (props) => {
                             {renderServiceDetail()}
                         </View>
                     </View>
-                    <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width }}>
+                    {isCampaign && <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width }}>
                         <View style={[styles.serviceOfferBooking]}>
                             {pressed === 1 && renderCampaighn()}
                             {multiSelected && renderCheckSelectedOffer()}
                         </View>
-                    </View>
+                    </View>}
                 </ScrollView>
             </View>
 
