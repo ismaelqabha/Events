@@ -16,7 +16,7 @@ const MonthCom = (props) => {
 
     const onCardPress = (year, month, monthPressed, setMonthPress) => {
         setMonthPress(!monthPressed)
-        setselectMonthforSearch(month)
+        onMonthSelected(month)
         setYearforSearch(year)
 
     }

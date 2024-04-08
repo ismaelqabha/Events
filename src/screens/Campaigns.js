@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-native'
-import React, { useContext,useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
 import { ScreenNames } from '../../route/ScreenNames';
@@ -10,11 +10,14 @@ import { getServiceBySerId } from '../resources/API';
 
 const Campaigns = (props) => {
     const { data } = props?.route.params
-    const { ServiceInfoById, setServiceInfoById } = useContext(SearchContext);
+    const { ServiceInfoById, setServiceInfoById, ServiceDataInfo } = useContext(SearchContext);
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
+
+
 
     const getServiceDataFromApi = () => {
         getServiceBySerId({ service_id: data.serviceId }).then(res => {
@@ -25,6 +28,29 @@ const Campaigns = (props) => {
     useEffect(() => {
         getServiceDataFromApi()
     }, [])
+
+    const filterServiceInfo = () => {
+        return ServiceDataInfo.filter(item => {
+            return item.serviceData.service_id === data.serviceId
+        })
+    }
+    const getServiceDetail = (id) => {
+        const data = filterServiceInfo()
+        const serviceData = data[0].serviceData.additionalServices.filter(element => {
+            return element.subDetailArray.find(itemId => {
+                return itemId.id === id
+            })
+        })
+        return serviceData
+    }
+
+    const getSerSubDet = (id) => {
+        const data = getServiceDetail(id)
+        const subDetInfo = data[0].subDetailArray.filter(item => {
+            return item.id === id
+        })
+        return subDetInfo
+    }
 
     const renderHeader = () => {
         return (
@@ -41,7 +67,7 @@ const Campaigns = (props) => {
         )
     }
     const onCheckAvailablePress = () => {
-        props.navigation.navigate(ScreenNames.ServiceDescr, { data: {...ServiceInfoById} })
+        props.navigation.navigate(ScreenNames.ServiceDescr, { data: { ...ServiceInfoById } })
     }
 
     const renderImg = () => {
@@ -72,6 +98,7 @@ const Campaigns = (props) => {
         }
     }
     const renderBody = () => {
+
         return (
             <View style={styles.body}>
                 <View style={styles.Offertitle}>
@@ -81,10 +108,12 @@ const Campaigns = (props) => {
                 {seperator()}
                 <Text style={styles.titletxt}>العرض يشمل</Text>
                 <View style={styles.contentView}>
-                    {data.contentFromSubDet.map(item => {
+
+                    {data.contentFromSubDet.map(itemID => {
+                        const titleInfo = getSerSubDet(itemID)
                         return (
                             <View style={styles.contentItem}>
-                                <Text style={styles.itemtxt}>{item}</Text>
+                                <Text style={styles.itemtxt}>{titleInfo[0].detailSubtitle}</Text>
                                 <View style={styles.IconView}>
                                     <AntDesign
                                         style={{ alignSelf: 'center' }}
@@ -95,7 +124,7 @@ const Campaigns = (props) => {
                             </View>
                         )
                     })}
-                     {data.campContents.map(content => {
+                    {data.campContents.map(content => {
                         return (
                             <View style={styles.contentItem}>
                                 <Text style={styles.itemtxt}>{content}</Text>

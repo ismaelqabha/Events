@@ -26,7 +26,7 @@ const ClientRequest = (props) => {
         requestInfo, setRequestInfo,
         eventInfo, setEventInfo,
         eventTypeInfo, setEventTypeInfo } = useContext(SearchContext);
-       
+
 
     const [date, setDate] = useState(new Date());
     const [IveEvent, setIveEvent] = useState(false);
@@ -187,8 +187,8 @@ const ClientRequest = (props) => {
             ReqUserId: userId,
             reservationDetail: resDetail,
         }
-       
-        
+
+
         addNewRequest(requestBody).then((res) => {
             if (res.message && res.message === 'Request Created') {
                 showMessage("Request Created successfully")
@@ -413,7 +413,7 @@ const ClientRequest = (props) => {
                                     style={{ alignSelf: 'center' }}
                                     name={"check"}
                                     color={colors.puprble}
-                                    size={30}
+                                    size={20}
                                 />
                             )}
                         </Pressable>
@@ -489,8 +489,9 @@ const ClientRequest = (props) => {
                     const { subDetailId, numOfInviters } = resDetail[detailIndex];
                     const filteredSubDetails = filterSubDetails(subDetailId);
                     filteredSubDetails.forEach((subDetail) => {
+
                         subDetail.subDetailArray.forEach((detail) => {
-                            total += parseInt(detail.detailSubtitleCost) * (numOfInviters || 0);
+                            total += parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : (numOfInviters / numberPerTable)));
                         });
                     });
                 }
@@ -501,16 +502,18 @@ const ClientRequest = (props) => {
                 const { subDetailId, numOfInviters } = resDetail[0];
                 const filteredSubDetails = filterSubDetails(subDetailId);
                 filteredSubDetails.forEach((subDetail) => {
+                    const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
+                    const numberPerTable = subDetail.numberPerTable
                     subDetail.subDetailArray.forEach((detail) => {
-                        console.log("detail ", detail);
-                        total += parseInt(detail.detailSubtitleCost) * (numOfInviters || 0);
+                        const price = parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : (numOfInviters / numberPerTable)));
+                        total += price
+                        console.log("price -> ", price);
                     });
                 });
             }
         }
 
         // Update the totalPrice state
-        console.log("total ", total);
         setTotalPrice(total);
     };
 
@@ -676,12 +679,11 @@ const ClientRequest = (props) => {
         const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
         let price = 0;
         subDetail.subDetailArray.forEach((detail) => price += parseInt(detail.detailSubtitleCost));
-
         return (
             <>
                 <View key={index} style={styles.reciptDetailItem}>
-                    {renderFinalReciptPrice(price * (details.numOfInviters || 0))}
-                    {renderReciptComponent(additionType, price, details.numOfInviters || 0, subDetail.perTable)}
+                    {renderFinalReciptPrice(price * (additionType === "perPerson" ? details.numOfInviters || 0 : additionType === "perRequest" ? 1 : (details.numOfInviters / subDetail.numberPerTable)))}
+                    {renderReciptComponent(additionType, price, details.numOfInviters || 0, subDetail.numberPerTable)}
                     <Pressable onPress={() => details.setShowSupDetRecipt(!details.showSupDetRecipt)} style={styles.reciptClom}>
                         <Text style={styles.text}>{subDetail?.detailTitle || ''}</Text>
                     </Pressable>
@@ -711,10 +713,11 @@ const ClientRequest = (props) => {
         if (perTable == 0) {
             perTable = 1;
         }
+        const tables = Math.ceil((invited / perTable))
         return (
             <View style={styles.reciptMidClom}>
                 <Text>السعر للطاولة الواحدة</Text>
-                <Text style={styles.text}>{`₪ ${price}  X  ${invited || 0 / perTable}`}</Text>
+                <Text style={styles.text}>{`₪ ${price}  X  ${(tables)}`}</Text>
             </View>
         )
     }
@@ -937,8 +940,8 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     selectEvent: {
-        width: 20,
-        height: 20,
+        width: 25,
+        height: 25,
         borderWidth: 2,
         borderColor: 'white'
     },

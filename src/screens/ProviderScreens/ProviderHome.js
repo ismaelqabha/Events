@@ -493,7 +493,7 @@ const ProviderHome = props => {
                     color={colors.BGScereen}
                     size={25} />
                 </Pressable>
-                <Text style={styles.basicInfo}>{item.numRecivedRequest}</Text>
+                <Text style={styles.basicInfo}>{item.maxNumberOFRequest}</Text>
               </View>
               <View style={styles.IconView}>
                 <Entypo name={'info'} color={colors.puprble} size={25} />

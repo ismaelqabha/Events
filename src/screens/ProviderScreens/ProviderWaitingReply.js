@@ -37,6 +37,11 @@ const ProviderWaitingReply = () => {
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
+  const today = moment(new Date(), "YYYY-MM-DD")
+  const day = today.format('D')
+  const month = today.format('M')
+  const year = today.format('YYYY')
+  const todayDate = year + '-' + month + '-' + day
 
 
   const allRequestingDates = []
@@ -76,7 +81,8 @@ const ProviderWaitingReply = () => {
   }
 
   const getBookingInfo = () => {
-    if (requestInfoByService !== '{message : no Request}') {
+
+    if (requestInfoByService.message !== "no Request") {
       const reqInfo = requestInfoByService.filter(item => {
         return item.ReqStatus === 'waiting reply'
       })
@@ -87,11 +93,7 @@ const ProviderWaitingReply = () => {
   }
 
   const getRequestsAccDates = () => {
-    const today = moment(new Date(), "YYYY-MM-DD")
-    const day = today.format('D')
-    const month = today.format('M')
-    const year = today.format('YYYY')
-    const todayDate = year + '-' + month + '-' + day
+
 
     const data = getBookingInfo()
     const reqInfo = data.filter(item => {
@@ -116,8 +118,8 @@ const ProviderWaitingReply = () => {
   /// searching all requests
   const getBookingInfoByDate = (rseDate) => {
     const data = getRequestsAccDates()
-    console.log("data>>",data);
-   
+    //console.log("data>>", data);
+
     const reqInfo = data.filter(req => {
       if (req.reservationDetail.length > 1) {
         const multiReqInfo = req.reservationDetail.find(multiItem => {
@@ -129,9 +131,9 @@ const ProviderWaitingReply = () => {
         return req.reservationDetail[0].reservationDate.slice(0, 10) == rseDate
       }
     })
-    console.log("reqInfo>>",reqInfo);
+    console.log("reqInfo>>", reqInfo);
     return reqInfo
-    
+
 
 
 
@@ -213,10 +215,12 @@ const ProviderWaitingReply = () => {
 
   const renderBookingCard = (rseDate) => {
     const data = getBookingInfoByDate(rseDate)
-    console.log("ddddd", data);
+    console.log("ddddd", data.length);
     return data.map(item => {
+      
+      
       return (
-        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
+        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item } rseDate = {rseDate} />
       )
     })
   }
@@ -237,21 +241,23 @@ const ProviderWaitingReply = () => {
   }
 
   const renderFilter = () => {
-    return (
-      <View style={styles.choicesView}>
-        <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
-          <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>شهر</Text>
-        </Pressable>
-        <Pressable style={[styles.Dview, spacificDate ? styles.DviewPress : styles.Dview]} onPress={spacificDatePress}>
-          <Text style={[styles.filtertxt, spacificDate ? styles.filtertxtPress : styles.filtertxt]}>تاريخ</Text>
-        </Pressable>
-        <Pressable style={[styles.Dview, clientName ? styles.DviewPress : styles.Dview]} onPress={clientNamePress}>
-          <Text style={[styles.filtertxt, clientName ? styles.filtertxtPress : styles.filtertxt]}>زبون</Text>
-        </Pressable>
-        <Pressable style={[styles.Dview, allRequests ? styles.DviewPress : styles.Dview]} onPress={allReqPress}>
-          <Text style={[styles.filtertxt, allRequests ? styles.filtertxtPress : styles.filtertxt]}>الكل</Text>
-        </Pressable>
-      </View>)
+    if (requestInfoByService.message !== "no Request") {
+      return (
+        <View style={styles.choicesView}>
+          <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
+            <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>شهر</Text>
+          </Pressable>
+          <Pressable style={[styles.Dview, spacificDate ? styles.DviewPress : styles.Dview]} onPress={spacificDatePress}>
+            <Text style={[styles.filtertxt, spacificDate ? styles.filtertxtPress : styles.filtertxt]}>تاريخ</Text>
+          </Pressable>
+          <Pressable style={[styles.Dview, clientName ? styles.DviewPress : styles.Dview]} onPress={clientNamePress}>
+            <Text style={[styles.filtertxt, clientName ? styles.filtertxtPress : styles.filtertxt]}>زبون</Text>
+          </Pressable>
+          <Pressable style={[styles.Dview, allRequests ? styles.DviewPress : styles.Dview]} onPress={allReqPress}>
+            <Text style={[styles.filtertxt, allRequests ? styles.filtertxtPress : styles.filtertxt]}>الكل</Text>
+          </Pressable>
+        </View>)
+    }
   }
 
   // seraching By Client Name
@@ -466,7 +472,7 @@ const ProviderWaitingReply = () => {
   const inputMonth = () => {
     return (
       <View>
-        <MonthCom
+        <MonthCom onMonthSelected={(num) => setselectMonthforSearch(num)}
           isChecked={selectedMonth && selectedYear}
           onCatPress={(m, y) => {
             setSelectedMonth(m)

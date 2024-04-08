@@ -12,7 +12,7 @@ import UsersContext from '../../../store/UsersContext';
 
 const ProviderWaitingPay = () => {
 
-  const { requestInfoByService, selectMonthforSearch, yearforSearch } = useContext(SearchContext);
+  const { requestInfoByService, setselectMonthforSearch, selectMonthforSearch, yearforSearch } = useContext(SearchContext);
   const { allUserData } = useContext(UsersContext);
   const [fromWaitingPayScreen, setFromWaitingPayScreen] = useState(true)
 
@@ -34,6 +34,12 @@ const ProviderWaitingPay = () => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
+
+  const today = moment(new Date(), "YYYY-MM-DD")
+  const day = today.format('D')
+  const month = today.format('M')
+  const year = today.format('YYYY')
+  const todayDate = year + '-' + month + '-' + day
 
   const allRequestingDates = []
   const manageArrayDates = []
@@ -71,9 +77,9 @@ const ProviderWaitingPay = () => {
     setuseMonthToSearch(false)
   }
 
- 
+
   const getBookingInfo = () => {
-    if (requestInfoByService !== '{message : no Request}') {
+    if (requestInfoByService.message !== "no Request") {
       const reqInfo = requestInfoByService.filter(item => {
         return item.ReqStatus === 'waiting pay'
       })
@@ -83,28 +89,38 @@ const ProviderWaitingPay = () => {
     }
   }
 
-  const getRequestsAccDates = () => {
-    const today = moment(new Date(), "YYYY-MM-DD")
-    const day = today.format('D')
-    const month = today.format('M')
-    const year = today.format('YYYY')
-    const todayDate = year + '-' + month + '-' + day
+  const checkDate = (d) => {
+    const resDate = moment(d, "YYYY-MM-DD")
+    const Day = resDate.format('D')
+    const Month = resDate.format('M')
+    const Year = resDate.format('YYYY')
+  
+    if (Year >= year && Month >= month) {
+      if (Day < day) {
+        return true
+      }
+    }else{
+      return false
+    }
+  }
 
+  const getRequestsAccDates = () => {
     const data = getBookingInfo()
     const reqInfo = data.filter(item => {
       if (item.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         let result = item.reservationDetail.find(multiItem => {
-          return multiItem.reservationDate.slice(0, 10) > todayDate
+          return checkDate(multiItem.reservationDate)
         })
-        
+
         return result
 
       } else {
 
         //if reservation detail has one date
-        //console.log(item.reservationDetail[0].reservationDate,'>', todayDate.slice(0, 10), item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10));
-        return item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10)
+        console.log(item.reservationDetail[0].reservationDate, '>', todayDate.slice(0, 10), item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10));
+    
+        return checkDate(item.reservationDetail[0].reservationDate)
       }
     })
 
@@ -113,23 +129,20 @@ const ProviderWaitingPay = () => {
 
   /// searching all requests
   const getBookingInfoByDate = (rseDate) => {
+   
     const data = getRequestsAccDates()
-    const reqInfo = data.filter(item => {
-
-      if (item.reservationDetail.length > 1) {
-        //if reservation detail has more than one date
-        let result = item.reservationDetail.find(multiItem => {
-
-          return multiItem.reservationDate === rseDate
+    const reqInfo = data.filter(req => {
+      if (req.reservationDetail.length > 1) {
+        const multiReqInfo = req.reservationDetail.find(multiItem => {
+          return multiItem.reservationDate.slice(0, 10) == rseDate
         })
-        return result
+        
+        return multiReqInfo
       } else {
-        //if reservation detail has one date
-
-        return item.reservationDetail[0].reservationDate === rseDate
+        return req.reservationDetail[0].reservationDate.slice(0, 10) == rseDate
       }
     })
-
+    
     return reqInfo
   }
 
@@ -209,21 +222,23 @@ const ProviderWaitingPay = () => {
   }
 
   const renderFilter = () => {
-    return (
-      <View style={styles.choicesView}>
-        <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
-          <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>شهر</Text>
-        </Pressable>
-        <Pressable style={[styles.Dview, spacificDate ? styles.DviewPress : styles.Dview]} onPress={spacificDatePress}>
-          <Text style={[styles.filtertxt, spacificDate ? styles.filtertxtPress : styles.filtertxt]}>تاريخ</Text>
-        </Pressable>
-        <Pressable style={[styles.Dview, clientName ? styles.DviewPress : styles.Dview]} onPress={clientNamePress}>
-          <Text style={[styles.filtertxt, clientName ? styles.filtertxtPress : styles.filtertxt]}>زبون</Text>
-        </Pressable>
-        <Pressable style={[styles.Dview, allRequests ? styles.DviewPress : styles.Dview]} onPress={allReqPress}>
-          <Text style={[styles.filtertxt, allRequests ? styles.filtertxtPress : styles.filtertxt]}>الكل</Text>
-        </Pressable>
-      </View>)
+    if (requestInfoByService.message !== "no Request") {
+      return (
+        <View style={styles.choicesView}>
+          <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
+            <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>شهر</Text>
+          </Pressable>
+          <Pressable style={[styles.Dview, spacificDate ? styles.DviewPress : styles.Dview]} onPress={spacificDatePress}>
+            <Text style={[styles.filtertxt, spacificDate ? styles.filtertxtPress : styles.filtertxt]}>تاريخ</Text>
+          </Pressable>
+          <Pressable style={[styles.Dview, clientName ? styles.DviewPress : styles.Dview]} onPress={clientNamePress}>
+            <Text style={[styles.filtertxt, clientName ? styles.filtertxtPress : styles.filtertxt]}>زبون</Text>
+          </Pressable>
+          <Pressable style={[styles.Dview, allRequests ? styles.DviewPress : styles.Dview]} onPress={allReqPress}>
+            <Text style={[styles.filtertxt, allRequests ? styles.filtertxtPress : styles.filtertxt]}>الكل</Text>
+          </Pressable>
+        </View>)
+    }
   }
   // seraching By Client Name
   const filterUsersAccName = () => {
@@ -434,7 +449,7 @@ const ProviderWaitingPay = () => {
   const inputMonth = () => {
     return (
       <View>
-        <MonthCom />
+        <MonthCom onMonthSelected={(num) => setselectMonthforSearch(num)} />
       </View>
     )
   }

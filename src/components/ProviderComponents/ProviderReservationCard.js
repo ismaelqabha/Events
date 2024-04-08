@@ -11,11 +11,13 @@ import moment from "moment";
 
 
 const ProviderReservationCard = (props) => {
-    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen, reservationDetail } = props
+    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen, reservationDetail , rseDate } = props
     const { allUserData } = useContext(UsersContext);
     const { setRequestInfoByService } = useContext(SearchContext);
     const navigation = useNavigation();
     const reqInfo = { ...props }
+
+    var filteredRes = reservationDetail.filter((detail)=> detail.reservationDate.slice(0, 10) == rseDate)
 
 
     const filterUsersAccID = () => {
@@ -193,7 +195,7 @@ const ProviderReservationCard = (props) => {
         )
     }
     const multiRequestWaitingReplyCard = () => {
-        return reservationDetail.map(item => {
+        return filteredRes.map(item => {
             return (
                 <View style={styles.card}>
                     <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
