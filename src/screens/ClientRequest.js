@@ -500,7 +500,6 @@ const ClientRequest = (props) => {
                 const filteredSubDetails = filterSubDetails(subDetailId);
                 filteredSubDetails.forEach((subDetail) => {
                     subDetail.subDetailArray.forEach((detail) => {
-                        console.log("detail ", detail);
                         total += parseInt(detail.detailSubtitleCost) * (numOfInviters || 0);
                     });
                 });

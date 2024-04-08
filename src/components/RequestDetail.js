@@ -145,6 +145,9 @@ const RequestDetail = (props) => {
 
     useEffect(() => {
         try {
+            if (!offer) {
+                return
+            }
             let result1 = offer.map(id => campiegnsAccordingServiceId?.find((camp) => camp.CampId === id));
             updateReservationDet(result1, 'campaigns')
         } catch (error) {
@@ -233,15 +236,25 @@ const RequestDetail = (props) => {
 
 
     useEffect(() => {
-        const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
-        if (reservation) {
-            setstartTimeText(reservation.startingTime)
-            setendTimeText(reservation.EndTime)
-            setInvitersValue(reservation.numOfInviters)
-            setOffer(reservation.offerId)
-            setSelectedSupDet(reservation.subDetailId)
+        if (Array.isArray(resDetail)) {
+            const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
+            if (reservation) {
+                setstartTimeText(reservation.startingTime)
+                setendTimeText(reservation.EndTime)
+                setInvitersValue(reservation.numOfInviters)
+                setOffer(reservation.offerId)
+                setSelectedSupDet(reservation.subDetailId)
+            }
+        } else {
+            const reservation = resDetail;
+            if (reservation) {
+                setstartTimeText(reservation.startingTime)
+                setendTimeText(reservation.EndTime)
+                setInvitersValue(reservation.numOfInviters)
+                setOffer(reservation.offerId)
+                setSelectedSupDet(reservation.subDetailId)
+            }
         }
-
     }, [selectedDate]);
 
     useEffect(() => {
@@ -516,13 +529,14 @@ const RequestDetail = (props) => {
                 </View>
                 {element.subDetailArray.map(item => {
                     const found = selectedSupDet?.find((det) => det === item.id)
-
+                    // console.log("found ", found );
+                    // console.log("selectedSupDet ", selectedSupDet );
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
                             <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.id)}>
                                 {found && <Entypo
-                                    style={{ alignSelf: 'center' }}
+                                    style={{ alignSelf: 'center', position: 'absolute' }}
                                     name={"check"}
                                     color={colors.puprble}
                                     size={25} />}
@@ -569,7 +583,7 @@ const RequestDetail = (props) => {
     const renderCampaighnContentFromSub = (camp) => {
         return (
 
-            camp.contentFromSubDet.map(item => {
+            camp?.contentFromSubDet?.map(item => {
                 return (
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
                         <Text style={styles.subDetText}>{item}</Text>
