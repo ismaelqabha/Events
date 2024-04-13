@@ -23,7 +23,6 @@ const ProviderReservationCard = (props) => {
 
     var filteredRes = reservationDetail.filter((detail)=> detail.reservationDate.slice(0, 10) == rseDate)
 
-
     const filterUsersAccID = () => {
         const filterUsers = allUserData.user.filter(item => {
             return item.USER_ID === props.ReqUserId

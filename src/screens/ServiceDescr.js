@@ -24,10 +24,12 @@ const ServiceDescr = (props) => {
     const { userId } = useContext(UsersContext);
     const {
         campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
+        resDetail,
+        setResDetail,
         requestInfo, setRequestInfo,
         requestedDate, setrequestedDate,
         setReachCampaignfrom } = useContext(SearchContext);
-        
+
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
             setRequestInfo(res)
@@ -40,16 +42,25 @@ const ServiceDescr = (props) => {
     }
 
     useEffect(() => {
-        getRequestfromApi()
-        getCampeignsfromApi()
+        getRequestfromApi();
+        getCampeignsfromApi();
 
-    }, [])
+        // Cleanup function to reset resDetail when component unmounts or re-renders
+        return () => {
+            resetResDetail();
+        };
+    }, []);
+
+    const resetResDetail = () => {
+        setResDetail([]);
+    };
+
 
     const modalDeletePress = () => {
         setShowModal(false);
     };
 
-   
+
 
     const onRequestPressHandler = () => {
         // if (!checkIfInEvent()) {

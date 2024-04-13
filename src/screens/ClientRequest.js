@@ -479,43 +479,78 @@ const ClientRequest = (props) => {
 
     const calculateTotalPrice = () => {
         let total = 0;
-
-        // Check if requestedDate is an array
-        if (Array.isArray(requestedDate)) {
-            requestedDate.forEach((date) => {
-                // For each date in the array, calculate the total price
-                const detailIndex = resDetail.findIndex((item) => item.reservationDate === moment(date).format('L'));
-                if (detailIndex !== -1) {
-                    const { subDetailId, numOfInviters } = resDetail[detailIndex];
-                    const filteredSubDetails = filterSubDetails(subDetailId);
-                    filteredSubDetails.forEach((subDetail) => {
-
-                        subDetail.subDetailArray.forEach((detail) => {
-                            total += parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : (numOfInviters / numberPerTable)));
-                        });
+        const calculateDateTotal = (date) => {
+            const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
+            if (detailIndex !== -1) {
+                const { subDetailId, numOfInviters, campaigns } = resDetail[detailIndex];
+                const dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
+                if (campaigns) {
+                    campaigns.forEach((campaign) => {
+                        const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
+                        total += (campaign.campCost || 0) * multiplier;
                     });
                 }
-            });
-        } else {
-            // If requestedDate is a string, calculate the total price for that single date
-            if (resDetail.length > 0) {
-                const { subDetailId, numOfInviters } = resDetail[0];
-                const filteredSubDetails = filterSubDetails(subDetailId);
-                filteredSubDetails.forEach((subDetail) => {
-                    const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
-                    const numberPerTable = subDetail.numberPerTable
-                    subDetail.subDetailArray.forEach((detail) => {
-                        const price = parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : (numOfInviters / numberPerTable)));
-                        total += price
-                        console.log("price -> ", price);
-                    });
-                });
+                updateReservationObject(detailIndex, dateTotal);
+                total += dateTotal;
             }
+        };
+
+        const calculateSingleDateTotal = () => {
+            if (resDetail.length > 0) {
+                const { subDetailId, numOfInviters, campaigns } = resDetail[0];
+                const dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
+                if (campaigns) {
+                    campaigns.forEach((campaign) => {
+                        const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
+                        total += (campaign.campCost || 0) * multiplier;
+                    });
+                }
+                updateReservationObject(0, dateTotal);
+                total += dateTotal;
+            }
+        };
+
+        const calculateSubDetailTotal = (subDetailId, numOfInviters) => {
+            let dateTotal = 0;
+            const filteredSubDetails = filterSubDetails(subDetailId);
+            filteredSubDetails.forEach((subDetail) => {
+                const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
+                const numberPerTable = subDetail.numberPerTable;
+                subDetail.subDetailArray.forEach((detail) => {
+                    const price = parseInt(detail.detailSubtitleCost) * calculateMultiplier(additionType, numOfInviters, numberPerTable);
+                    dateTotal += price;
+                });
+            });
+            return dateTotal;
+        };
+
+        const calculateMultiplier = (priceInclude, numOfInviters, numberPerTable) => {
+            switch (priceInclude) {
+                case "perPerson":
+                    return numOfInviters || 0;
+                case "perTable":
+                    return Math.ceil(numOfInviters / numberPerTable);
+                default:
+                    return 1;
+            }
+        };
+
+        const updateReservationObject = (index, dateTotal) => {
+            resDetail[index].datePrice = dateTotal;
+        };
+        if (Array.isArray(requestedDate)) {
+            requestedDate.forEach((date)=>calculateDateTotal(date));
+        } else {
+            calculateSingleDateTotal();
         }
 
-        // Update the totalPrice state
         setTotalPrice(total);
+
+
     };
+
+
+
 
     // Call the function to calculate the initial total price
     useEffect(() => {
@@ -579,7 +614,7 @@ const ClientRequest = (props) => {
         }
 
         // sub details 
-        var detailIndex = resDetail.findIndex(item => item.reservationDate === moment(date).format('L'))
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === date)
 
         if (Array.isArray(requestedDate)) {
             if (detailIndex === -1) {
@@ -599,7 +634,6 @@ const ClientRequest = (props) => {
             showSupDetRecipt: showSupDetRecipt,
             filteredSubDetials: showList ? filteredSubDetials : false,
             numOfInviters: numOfInviters,
-
         }
 
         return (
@@ -613,7 +647,7 @@ const ClientRequest = (props) => {
                     {renderMainReciptDetails(details)}
                 </View>
                 {/* shows the deals choosen */}
-                {showCamp && renderDeals(campaigns)}
+                {showCamp && renderDeals(campaigns, numOfInviters)}
             </View>
         )
     }
@@ -682,7 +716,7 @@ const ClientRequest = (props) => {
         return (
             <>
                 <View key={index} style={styles.reciptDetailItem}>
-                    {renderFinalReciptPrice(price * (additionType === "perPerson" ? details.numOfInviters || 0 : additionType === "perRequest" ? 1 : (details.numOfInviters / subDetail.numberPerTable)))}
+                    {renderFinalReciptPrice(price * (additionType === "perPerson" ? details.numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(details.numOfInviters / subDetail.numberPerTable)))}
                     {renderReciptComponent(additionType, price, details.numOfInviters || 0, subDetail.numberPerTable)}
                     <Pressable onPress={() => details.setShowSupDetRecipt(!details.showSupDetRecipt)} style={styles.reciptClom}>
                         <Text style={styles.text}>{subDetail?.detailTitle || ''}</Text>
@@ -752,19 +786,19 @@ const ClientRequest = (props) => {
         }
     };
 
-    const renderDeals = (campaigns) => {
+    const renderDeals = (campaigns, numOfInviters) => {
         return (
             <View style={styles.reciptDetail}>
                 {renderDealsHeader()}
-                {campaigns.map((camp, index) => renderSingleDealRecipt(camp, index))}
+                {campaigns.map((camp, index) => renderSingleDealRecipt({ ...camp, numOfInviters }, index))}
             </View>
         )
     }
     const renderSingleDealRecipt = (camp, index) => {
         return (
             <View key={index} style={styles.reciptDetailItem}>
-                {renderFinalReciptPrice()}
-                {renderReciptComponent('perTable', camp?.campCost)}
+                {renderFinalReciptPrice(camp?.campCost * (camp?.priceInclude === "perPerson" ? camp?.numOfInviters || 0 : camp?.priceInclude === "perRequest" ? 1 : Math.ceil(camp?.numOfInviters / camp?.numberPerTable)))}
+                {renderReciptComponent(camp?.priceInclude, camp?.campCost, camp?.numOfInviters)}
                 {renderDealTitle(camp?.campTitle)}
             </View>
         )

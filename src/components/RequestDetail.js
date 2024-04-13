@@ -12,15 +12,14 @@ import { AppStyles } from '../assets/res/AppStyles';
 import { request } from 'react-native-permissions';
 
 const RequestDetail = (props) => {
-     const { additionalServices } = props
-     
+    const { additionalServices, maxCapasity } = props
     const {
         selectedDate,
         setSelectedDate, handleScrollToPosition, pressed, setPressed } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
 
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
-        
+
         return date
     }) : [requestedDate]
 
@@ -41,8 +40,7 @@ const RequestDetail = (props) => {
     }, []);
 
     useEffect(() => {
-        const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
-
+        const reservation = resDetail.find((detail) => detail.reservationDate === selectedDate);
         if (reservation) {
             const subDetailId = reservation.subDetailId || [];
             const campaigns = reservation.campaigns || [];
@@ -147,6 +145,9 @@ const RequestDetail = (props) => {
 
     useEffect(() => {
         try {
+            if (!offer) {
+                return
+            }
             let result1 = offer.map(id => campiegnsAccordingServiceId?.find((camp) => camp.CampId === id));
             updateReservationDet(result1, 'campaigns')
         } catch (error) {
@@ -235,15 +236,25 @@ const RequestDetail = (props) => {
 
 
     useEffect(() => {
-        const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
-        if (reservation) {
-            setstartTimeText(reservation.startingTime)
-            setendTimeText(reservation.EndTime)
-            setInvitersValue(reservation.numOfInviters)
-            setOffer(reservation.offerId)
-            setSelectedSupDet(reservation.subDetailId)
+        if (Array.isArray(resDetail)) {
+            const reservation = resDetail.find((detail) => detail.reservationDate === selectedDate);
+            if (reservation) {
+                setstartTimeText(reservation.startingTime)
+                setendTimeText(reservation.EndTime)
+                setInvitersValue(reservation.numOfInviters)
+                setOffer(reservation.offerId)
+                setSelectedSupDet(reservation.subDetailId)
+            }
+        } else {
+            const reservation = resDetail;
+            if (reservation) {
+                setstartTimeText(reservation.startingTime)
+                setendTimeText(reservation.EndTime)
+                setInvitersValue(reservation.numOfInviters)
+                setOffer(reservation.offerId)
+                setSelectedSupDet(reservation.subDetailId)
+            }
         }
-
     }, [selectedDate]);
 
     useEffect(() => {
@@ -292,13 +303,15 @@ const RequestDetail = (props) => {
      * @param {'startingTime' | 'endTime' | 'invited' | 'subDetail' | 'offerId' | 'campaigns'} type - The type of update.
      */
     const updateReservationDet = (val, type) => {
-        var detailIndex = resDetail.findIndex(item => item.reservationDate === moment(selectedDate).format('L'))
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === selectedDate)
         if (Array.isArray(requestedDate)) {
             if (detailIndex === -1) {
+                console.log("no res found ");
                 return
             }
         } else {
             detailIndex = 0
+            return;
         }
         const detail = resDetail
         switch (type) {
@@ -365,10 +378,31 @@ const RequestDetail = (props) => {
         setShowModal(false)
     }
     const onInvitersInputChange = (val) => {
-        setInvitersValue(val)
-        updateReservationDet(val, 'invited')
-    }
+        // Ensure the value is not empty
+        if (val === '') {
+            setInvitersValue('');
+            updateReservationDet('', 'invited'); // Clear the value in reservation detail
+        } else {
+            // Parse the value as an integer and apply limits
+            let intValue = parseInt(val);
+            if (isNaN(intValue)) {
+                // If the value is not a number, do not update the state and reservation detail
+                return;
+            } else {
+                // Apply the limit of 500
+                intValue = Math.min(intValue, maxCapasity || 0);
+                // Update the state with the sanitized value
+                setInvitersValue(intValue.toString());
+                // Update reservation detail with the sanitized value
+                updateReservationDet(intValue.toString(), 'invited');
+            }
+        }
+    };
+
     const whenSupDetailPress = (SubId) => {
+        if (!SubId) {
+            return
+        }
         updateReservationDet(SubId, 'subDetail')
     }
     const checkStartTime = () => {
@@ -493,12 +527,36 @@ const RequestDetail = (props) => {
     }
     const renderInput = () => {
         return CatOfService[cat].map(type => {
-            return (<TextInput style={styles.input}
+            return (<TextInput
+                style={styles.input}
                 {...type}
                 value={invitersValue}
-                onChangeText={val => onInvitersInputChange(val)} />)
+                keyboardType='numeric'
+                onChangeText={onInvitersInputChange}
+                onKeyPress={handleKeyPress}
+            />)
         })
     }
+
+    const handleKeyPress = ({ nativeEvent }) => {
+        const { key } = nativeEvent;
+        const newValue = invitersValue + key;
+
+        // Prevent non-numeric characters
+        if (isNaN(newValue)) {
+            nativeEvent.preventDefault();
+        }
+
+        // Prevent negative values
+        if (newValue < 0) {
+            nativeEvent.preventDefault();
+        }
+
+        // Limit to maximum value of 500
+        if (parseInt(newValue) > 500) {
+            nativeEvent.preventDefault();
+        }
+    };
     const renderInviters = () => {
         return (
             <View style={styles.invitView}>
@@ -519,15 +577,12 @@ const RequestDetail = (props) => {
                 </View>
                 {element.subDetailArray.map(item => {
                     const found = selectedSupDet?.find((det) => det === item.id)
-                    console.log("found ", found);
-                    console.log("selectedSupDet ", selectedSupDet);
-                    console.log("item ", item.id);
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
                             <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.id)}>
                                 {found && <Entypo
-                                    style={{ alignSelf: 'center' }}
+                                    style={{ alignSelf: 'center', position: 'absolute' }}
                                     name={"check"}
                                     color={colors.puprble}
                                     size={25} />}
@@ -573,7 +628,7 @@ const RequestDetail = (props) => {
     }
 
     const getServiceDetail = (id) => {
-        
+
         const serviceData = additionalServices.filter(element => {
             return element.subDetailArray.find(itemId => {
                 return itemId.id === id
@@ -744,33 +799,19 @@ const RequestDetail = (props) => {
     }
 
     const handlePreviousDate = () => {
-        const formattedSelectedDate = moment(selectedDate).format('L');
-        const currentIndex = resivedDate.findIndex(date => date === formattedSelectedDate);
+        const currentIndex = resivedDate.findIndex(date => date === selectedDate);
         if (currentIndex !== -1) {
             const previousIndex = (currentIndex === 0) ? resivedDate.length - 1 : currentIndex - 1;
-            const date = moment(resivedDate[previousIndex], 'DD/MM/YYYY')
-            const originalDate = new Date(date);
-            const year = originalDate.getFullYear();
-            const month = originalDate.getMonth() + 1;
-            const day = originalDate.getDate();
-            const formattedDate = `${year}-${month}-${day}`;
-            setSelectedDate(formattedDate);
+            setSelectedDate(resivedDate[previousIndex]);
         }
         handleScrollToPosition()
     };
 
     const handleNextDate = () => {
-        const formattedSelectedDate = moment(selectedDate).format('L');
-        const currentIndex = resivedDate.findIndex(date => date === formattedSelectedDate);
+        const currentIndex = resivedDate.findIndex(date => date === selectedDate);
         if (currentIndex !== -1) {
             const nextIndex = (currentIndex + 1) % resivedDate.length;
-            const date = moment(resivedDate[nextIndex], 'DD/MM/YYYY')
-            const originalDate = new Date(date);
-            const year = originalDate.getFullYear();
-            const month = originalDate.getMonth() + 1;
-            const day = originalDate.getDate();
-            const formattedDate = `${year}-${month}-${day}`;
-            setSelectedDate(formattedDate);
+            setSelectedDate(resivedDate[nextIndex]);
         }
         handleScrollToPosition()
     };
