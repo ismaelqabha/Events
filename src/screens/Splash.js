@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useContext, useEffect } from 'react'
-import { getCampaigns, getEventList, getFavoritesforUser, getHomePageData, getUserData } from '../resources/API';
+import { getAllUsersInfo, getCampaigns, getEventList, getFavoritesforUser, getHomePageData, getUserData } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ImageBackground } from 'react-native';
@@ -9,7 +9,7 @@ import UsersContext from '../../store/UsersContext';
 
 export default function Splash(props) {
     const { setServiceDataInfo, setUserFavorates, servType, setCampInfo, setEventTypeInfo} = useContext(SearchContext);
-    const { setUserInfo, userId } = useContext(UsersContext);
+    const { setUserInfo, userId, setAllUserData } = useContext(UsersContext);
     const getFavoritesFromApi = () => {
         getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
             !resjson?.message &&
@@ -42,7 +42,14 @@ export default function Splash(props) {
         })
     }
 
+    const getAllUserfromApi = () => {
+        getAllUsersInfo({}).then(res => {
+            setAllUserData(res)
+        })
+    }
+
     useEffect(() => {
+        getAllUserfromApi()
         getDataFromApi()
         getEventListfromApi()
         getUserfromApi()

@@ -12,14 +12,16 @@ import { AppStyles } from '../assets/res/AppStyles';
 import { request } from 'react-native-permissions';
 
 const RequestDetail = (props) => {
-    // const { requestedDate } = props
+     const { additionalServices } = props
+     
     const {
         selectedDate,
         setSelectedDate, handleScrollToPosition, pressed, setPressed } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
 
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
-        return moment(date).format('L')
+        
+        return date
     }) : [requestedDate]
 
     const [selectTime, setSelectTime] = useState(true);
@@ -333,6 +335,7 @@ const RequestDetail = (props) => {
                 } else {
                     detail[detailIndex].subDetailId = subDetails.slice(0, index).concat(subDetails.slice(index + 1));
                 }
+                setSelectedSupDet(detail[detailIndex].subDetailId)
                 setResDetail([...detail]);
                 break;
             case 'offerId':
@@ -529,8 +532,9 @@ const RequestDetail = (props) => {
                 </View>
                 {element.subDetailArray.map(item => {
                     const found = selectedSupDet?.find((det) => det === item.id)
-                    // console.log("found ", found );
-                    // console.log("selectedSupDet ", selectedSupDet );
+                    console.log("found ", found);
+                    console.log("selectedSupDet ", selectedSupDet);
+                    console.log("item ", item.id);
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
@@ -580,13 +584,31 @@ const RequestDetail = (props) => {
             </View>
         )
     }
+
+    const getServiceDetail = (id) => {
+        
+        const serviceData = additionalServices.filter(element => {
+            return element.subDetailArray.find(itemId => {
+                return itemId.id === id
+            })
+        })
+        return serviceData
+    }
+
+    const getSerSubDet = (id) => {
+        const data = getServiceDetail(id)
+        const subDetInfo = data[0].subDetailArray.filter(item => {
+            return item.id === id
+        })
+        return subDetInfo
+    }
     const renderCampaighnContentFromSub = (camp) => {
         return (
-
-            camp?.contentFromSubDet?.map(item => {
+            camp.contentFromSubDet.map(itemID => {
+                const titleInfo = getSerSubDet(itemID)
                 return (
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
-                        <Text style={styles.subDetText}>{item}</Text>
+                        <Text style={styles.subDetText}>{titleInfo[0].detailSubtitle}</Text>
                         <Feather
                             style={{ alignSelf: 'center' }}
                             name={"corner-down-left"}
@@ -625,7 +647,7 @@ const RequestDetail = (props) => {
                     {renderCampaighnSubHeader()}
 
                     {renderCampaighnContentFromSub(camp)}
-                    {renderCampaighnContent(camp)}
+                    {/* {renderCampaighnContent(camp)} */}
 
                 </View >
             });

@@ -57,6 +57,29 @@ const ProviderOfferDesc = (props) => {
     let completeDate = year + '-' + month + '-' + day
 
 
+    const filterServiceInfo = () => {
+        return serviceInfoAccorUser.filter(item => {
+            return item.service_id === data.serviceId
+        })
+    }
+    const getServiceDetail = (id) => {
+        const data = filterServiceInfo()
+        const serviceData = data[0].additionalServices.filter(element => {
+            return element.subDetailArray.find(itemId => {
+                return itemId.id === id
+            })
+        })
+        return serviceData
+    }
+
+    const getSerSubDet = (id) => {
+        const data = getServiceDetail(id)
+        const subDetInfo = data[0].subDetailArray.filter(item => {
+            return item.id === id
+        })
+        return subDetInfo
+    }
+
     useEffect(() => {
         if (completeDate > data.campExpirDate) {
             setIsRenewDate(true)
@@ -67,19 +90,19 @@ const ProviderOfferDesc = (props) => {
         setPerPackage(true)
         setPerPerson(false)
         setPerTable(false)
-        setOfferPriceInclude('لكل الحجز')
+        setOfferPriceInclude("perRequest")
     }
     const Person = () => {
         setPerPackage(false)
         setPerPerson(true)
         setPerTable(false)
-        setOfferPriceInclude("حسب الشخص")
+        setOfferPriceInclude("perPerson")
     }
     const Table = () => {
         setPerPackage(false)
         setPerPerson(false)
         setPerTable(true)
-        setOfferPriceInclude("حسب الطاولة")
+        setOfferPriceInclude("perTable")
     }
 
     const getServiceForDetail = () => {
@@ -548,6 +571,14 @@ const ProviderOfferDesc = (props) => {
         )
     }
     const renderOfferPriceInclude = () => {
+        let includeLabel = ''
+        if(data.priceInclude === "perPerson" ){
+            includeLabel = "للشخص الواحد"
+        } else if(data.priceInclude === "perTable"){
+            includeLabel = "للطاولة"
+        }else {
+            includeLabel = "لكل الحجز"
+        }
         return (<View>
             {editIncludingPrice ? editPriceInclude() :
                 <View style={styles.itemOffer}>
@@ -560,7 +591,7 @@ const ProviderOfferDesc = (props) => {
                                 size={25} />
                         </Pressable>
                         <View>
-                            <Text style={styles.Infotxt}>{' السعر يشمل'+ ' ' + data.priceInclude }</Text>
+                            <Text style={styles.Infotxt}>{' السعر يشمل'+ ' ' + includeLabel }</Text>
                         </View>
                     </View>
                     <View style={styles.IconView}>
@@ -587,10 +618,11 @@ const ProviderOfferDesc = (props) => {
         )
     }
     const OfferContentItems = () => {
-        return data.contentFromSubDet.map(item => {
+        return data.contentFromSubDet.map(itemID => {
+            const titleInfo = getSerSubDet(itemID)
             return (
                 <View style={styles.contentItem}>
-                    <Text style={styles.Infotxt}>{item}</Text>
+                    <Text style={styles.Infotxt}>{titleInfo[0].detailSubtitle}</Text>
                     <View style={styles.IconView}>
                         <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
                     </View>
@@ -825,7 +857,7 @@ const ProviderOfferDesc = (props) => {
                 <View style={styles.content}>
                     {renderOfferContent()}
                 </View>
-                {isOtherContent()}
+                {/* {isOtherContent()} */}
                 <Text style={styles.titletxt}>أماكن العمل</Text>
                 <View style={styles.content}>
                     {renderOfferRegion()}

@@ -2,26 +2,22 @@ import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-nati
 import React, { useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
-import { getUserData } from '../resources/API';
 import { colors } from '../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 
 const UserProfile = (props) => {
-    const { userId, userInfo, setUserInfo } = useContext(SearchContext);
+    const {  } = useContext(SearchContext);
 
+    const { data } = props.route?.params || {}
+    
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    //console.log("userId", userId);
+    
 
-    const getUserfromApi = () => {
-        getUserData({ USER_ID: userId }).then(res => {
-            setUserInfo(res)
-            //console.log("setUserInfo", res);
-        })
-    }
+   
     useEffect(() => {
-        getUserfromApi()
+        
     }, [])
 
     const header = () => {
@@ -41,8 +37,8 @@ const UserProfile = (props) => {
         return (
             <View style={styles.mainView}>
                 <View style={styles.nameView}>
-                    <View style={styles.profilImg}><Image source={require('../assets/photos/user.png')} /></View>
-                    <Text style={styles.nameTxt}>اسماعيل كبها</Text>
+                    <View style={styles.profilImg}><Image style={styles.userImg} source={{uri : data[0].UserPhoto}} /></View>
+                    <Text style={styles.nameTxt}>{data[0].User_name}</Text>
                 </View>
                 <View style={styles.reviewView}>
                     <View style={{}}><Text style={styles.txt}>3 شهور في مناسباتي</Text></View>
@@ -52,7 +48,6 @@ const UserProfile = (props) => {
             </View>
         )
     }
-
     const renderReviews = () => {
         return (
                 <View style={styles.reView}>
@@ -81,12 +76,11 @@ const UserProfile = (props) => {
            
         )
     }
-
     const renderUserContacts = () => {
         return (
             <View style={styles.userContacts}>
                 <View style={styles.contactItem}>
-                    <View><Text style={styles.basicInfo}>0546126692</Text>
+                    <View><Text style={styles.basicInfo}>{data[0].UserPhone}</Text>
                         <Text style={styles.basicInfoTitle}>الموبايل</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -99,7 +93,7 @@ const UserProfile = (props) => {
 
                 </View>
                 <View style={styles.contactItem}>
-                    <View><Text style={styles.basicInfo}>exsample@gmail.com</Text>
+                    <View><Text style={styles.basicInfo}>{data[0].Email}</Text>
                         <Text style={styles.basicInfoTitle}>Email</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -153,7 +147,7 @@ const UserProfile = (props) => {
                 {renderUserName()}
                 {createRelation()}
                 {renderUserContacts()}
-                <Text style={styles.titleRevTxt}>ماذا قالوا عن اسماعيل كبها </Text>
+                <Text style={styles.titleRevTxt}>{' ماذا قالوا عن  ' +  data[0].User_name }</Text>
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
@@ -230,7 +224,13 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        borderWidth: 3
+        borderWidth: 3,
+        borderColor: colors.puprble
+    },
+    userImg: {
+        width: 95,
+        height: 95,
+        borderRadius: 50,
     },
     nameTxt: {
         fontSize: 20,

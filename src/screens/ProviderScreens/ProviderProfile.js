@@ -20,7 +20,7 @@ const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
   const { setIsfirst, isFirst, setserviceTitle,
     serviceCat, setServiceCat, campInfo, setCampInfo,
-    requestInfoByService, setRequestInfoByService } = useContext(SearchContext);
+   setRequestInfoByService } = useContext(SearchContext);
   const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
   const { userName } = useContext(UsersContext);
 
@@ -52,6 +52,7 @@ const ProviderProfile = props => {
       setCampInfo(res);
     });
   }; 
+  
   const getRequestInfo = () => {
     getRequestByServiceId({ ReqServId: isFirst }).then(res => {
       setRequestInfoByService(res)

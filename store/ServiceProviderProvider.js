@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import ServiceProviderContext from '../store/ServiceProviderContext';
-import SearchContext from './SearchContext';
+
+import UsersContext from './UsersContext';
 
 const ProviderProvider = props => {
 
-  const { userId } = useContext(SearchContext);
+  const { userId } = useContext(UsersContext);
 
   //   service Data
   const [serviceAddress, setserviceAddress] = useState(null);

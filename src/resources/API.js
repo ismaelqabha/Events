@@ -3,6 +3,11 @@ const baseUrl = 'https://ev-server.onrender.com/';
 
 
 // Users
+export const getAllUsersInfo = async (body) => {
+  const url = 'Users/getAllUsers'
+  return await AppFetch(url, 'POST', body)
+}
+
 export const getUserData = async (body) => {
   const url = 'Users/getUserInfo'
   return await AppFetch(url, 'POST', body)
@@ -96,10 +101,7 @@ export const getEventList = async body => {
   return await AppFetch(url, 'POST', body);
 };
 // Request
-export const getRequestByDate = async (body) => {
-  const url = 'Request/getRequestByDate'
-  return await AppFetch(url, 'POST', body)
-}
+
 export const getRequestByServiceId = async (body) => {
   const url = 'Request/getRequestByServiceId'
   return await AppFetch(url, 'POST', body)

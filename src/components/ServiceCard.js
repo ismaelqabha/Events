@@ -12,7 +12,6 @@ const ServiceCard = (props) => {
     const { setCat, ServiceDataInfo, setServiceDataInfo, ServId, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
 
-    const [pressed, setPressed] = useState(true)
 
     const chickIfChecked = () => {
         return isChecked
@@ -58,7 +57,8 @@ const ServiceCard = (props) => {
         if (isFromChooseServiceClick === true) {
             const ServiceCard = props;
             const clicked = chickIfChecked(ServiceCard);
-            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody, styles.shadow]} onPress={() => onCatPress(ServiceCard)}>
+            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody, styles.shadow]} 
+            onPress={() => onCatPress(ServiceCard)}>
                 <Image
                     source={ServiceCard.img}
 
@@ -117,32 +117,32 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     body: {
-        height: 100,
-        width: 100,
-        borderRadius: 30,
+        height: 80,
+        width: 80,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        margin: 10,
+        margin: 5,
         paddingVertical: 20,
         backgroundColor: '#ffff',
         elevation: 5,
     },
     pressBody: {
-        height: 100,
-        width: 100,
-        borderRadius: 30,
+        height: 80,
+        width: 80,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        margin: 10,
+        margin: 5,
         paddingVertical: 20,
         backgroundColor: '#ffff',
         elevation: 5,
-        borderColor: 'gray',
+        borderColor: colors.puprble,
         borderWidth: 2
     },
     img: {
-        width: 100,
-        height: 100,
+        width: 60,
+        height: 60,
     },
     HomeScreenView: {
         alignItems: 'center',

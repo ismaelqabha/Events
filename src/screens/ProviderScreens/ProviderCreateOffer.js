@@ -73,17 +73,6 @@ const ProviderCreateOffer = (props) => {
         })
     }
 
-    // const selectedOfferData = () => {
-    //     return campInfo.filter(element => {
-    //         return element.CampId === OfferId
-    //     })
-    // }
-
-    // const showOfferData = () => {
-    //     const offerData = selectedOfferData()
-    //     console.log("offerData", offerData);
-    // }
-
     const sperator = () => {
         return <View style={styles.seperator}></View>
     }
@@ -91,19 +80,19 @@ const ProviderCreateOffer = (props) => {
         setPerPackage(true)
         setPerPerson(false)
         setPerTable(true)
-        setPriceInclude('لكل الحجز')
+        setPriceInclude('perRequest')
     }
     const Person = () => {
         setPerPackage(false)
         setPerPerson(true)
         setPerTable(false)
-        setPriceInclude('حسب الشخص')
+        setPriceInclude('perPerson')
     }
     const Table = () => {
         setPerPackage(false)
         setPerPerson(false)
         setPerTable(true)
-        setPriceInclude('حسب الطاولة')
+        setPriceInclude('perTable')
     }
 
 
@@ -241,7 +230,7 @@ const ProviderCreateOffer = (props) => {
                         <View style={styles.item}>
                             <Text style={styles.Addtxt}>{element.detailSubtitle}</Text>
                             <Pressable style={styles.regionPressable}
-                                onPress={() => whenSubDetailPress(element.detailSubtitle, setselectedSubDetail, selectedSubDetail)}>
+                                onPress={() => whenSubDetailPress(element.id, setselectedSubDetail, selectedSubDetail)}>
                                 {selectedSubDetail &&
                                     <Entypo
                                         style={{ alignSelf: 'center' }}
