@@ -178,7 +178,7 @@ const ClientRequest = (props) => {
         if (!checkAllDetails()) {
             return
         }
-            const requestBody = {
+        const requestBody = {
             ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
             ReqStatus: 'waiting reply',
             ReqEventId: selectedEvent,
@@ -609,9 +609,9 @@ const ClientRequest = (props) => {
             showSupDetRecipt: showSupDetRecipt,
             filteredSubDetials: showList ? filteredSubDetials : false,
             numOfInviters: numOfInviters,
-
         }
 
+        console.log(" campaigns ", campaigns);
         return (
             // showDetailRes
             <View key={index}>
@@ -623,7 +623,7 @@ const ClientRequest = (props) => {
                     {renderMainReciptDetails(details)}
                 </View>
                 {/* shows the deals choosen */}
-                {showCamp && renderDeals(campaigns)}
+                {showCamp && renderDeals(campaigns, numOfInviters)}
             </View>
         )
     }
@@ -762,19 +762,20 @@ const ClientRequest = (props) => {
         }
     };
 
-    const renderDeals = (campaigns) => {
+    const renderDeals = (campaigns, numOfInviters) => {
         return (
             <View style={styles.reciptDetail}>
                 {renderDealsHeader()}
-                {campaigns.map((camp, index) => renderSingleDealRecipt(camp, index))}
+                {campaigns.map((camp, index) => renderSingleDealRecipt({ ...camp, numOfInviters }, index))}
             </View>
         )
     }
     const renderSingleDealRecipt = (camp, index) => {
+        console.log("camp ", camp);
         return (
             <View key={index} style={styles.reciptDetailItem}>
-                {renderFinalReciptPrice()}
-                {renderReciptComponent('perTable', camp?.campCost)}
+                {renderFinalReciptPrice(camp?.campCost * (camp?.priceInclude === "perPerson" ? camp?.numOfInviters || 0 : camp?.priceInclude === "perRequest" ? 1 : Math.ceil(camp?.numOfInviters / camp?.numberPerTable)))}
+                {renderReciptComponent(camp?.priceInclude, camp?.campCost, camp?.numOfInviters)}
                 {renderDealTitle(camp?.campTitle)}
             </View>
         )
