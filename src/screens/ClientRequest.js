@@ -163,8 +163,8 @@ const ClientRequest = (props) => {
         for (const detail of resDetail) {
             if (!detail.reservationDate || !detail.startingTime || !detail.EndTime ||
                 detail.numOfInviters === null || !Array.isArray(detail.subDetailId) ||
-                !Array.isArray(detail.offerId) || detail.subDetailId.length === 0 ||
-                detail.offerId.length === 0) {
+                !Array.isArray(detail.offerId) || (detail.subDetailId.length === 0 &&
+                    detail.offerId.length === 0)) {
                 showMessage("Please fill all reservation details.");
                 return false;
             }
@@ -178,6 +178,7 @@ const ClientRequest = (props) => {
         if (!checkAllDetails()) {
             return
         }
+        delete resDetail["campaigns"]
         const requestBody = {
             ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
             ReqStatus: 'waiting reply',
@@ -483,10 +484,11 @@ const ClientRequest = (props) => {
             const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
             if (detailIndex !== -1) {
                 const { subDetailId, numOfInviters, campaigns } = resDetail[detailIndex];
-                const dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
+                var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
                 if (campaigns) {
                     campaigns.forEach((campaign) => {
                         const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
+                        dateTotal += (campaign.campCost || 0) * multiplier
                         total += (campaign.campCost || 0) * multiplier;
                     });
                 }
@@ -539,7 +541,7 @@ const ClientRequest = (props) => {
             resDetail[index].datePrice = dateTotal;
         };
         if (Array.isArray(requestedDate)) {
-            requestedDate.forEach((date)=>calculateDateTotal(date));
+            requestedDate.forEach((date) => calculateDateTotal(date));
         } else {
             calculateSingleDateTotal();
         }
