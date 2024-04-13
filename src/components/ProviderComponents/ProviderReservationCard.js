@@ -17,6 +17,10 @@ const ProviderReservationCard = (props) => {
     const navigation = useNavigation();
     const reqInfo = { ...props }
 
+
+
+   
+
     var filteredRes = reservationDetail.filter((detail)=> detail.reservationDate.slice(0, 10) == rseDate)
 
 
@@ -241,7 +245,7 @@ const ProviderReservationCard = (props) => {
     }
     const requestReservationCard = () => {
         return (
-            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest)}>
+            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                 {renderPrice()}
                 {renderPayRemain()}
             </Pressable>

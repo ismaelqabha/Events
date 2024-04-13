@@ -94,12 +94,19 @@ const ProviderWaitingPay = () => {
     const Day = resDate.format('D')
     const Month = resDate.format('M')
     const Year = resDate.format('YYYY')
-  
+
     if (Year >= year && Month >= month) {
-      if (Day < day) {
+      if (Year == year && Month == month) {
+        console.log(Day, '>', day, Day > day);
+        if (Day > day) {
+          return true
+        } else {
+          return false
+        }
+      } else {
         return true
       }
-    }else{
+    } else {
       return false
     }
   }
@@ -118,8 +125,8 @@ const ProviderWaitingPay = () => {
       } else {
 
         //if reservation detail has one date
-        console.log(item.reservationDetail[0].reservationDate, '>', todayDate.slice(0, 10), item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10));
-    
+        // console.log(item.reservationDetail[0].reservationDate, '>', todayDate.slice(0, 10), item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10));
+        console.log(checkDate(item.reservationDetail[0].reservationDate));
         return checkDate(item.reservationDetail[0].reservationDate)
       }
     })
@@ -129,20 +136,20 @@ const ProviderWaitingPay = () => {
 
   /// searching all requests
   const getBookingInfoByDate = (rseDate) => {
-   
+
     const data = getRequestsAccDates()
     const reqInfo = data.filter(req => {
       if (req.reservationDetail.length > 1) {
         const multiReqInfo = req.reservationDetail.find(multiItem => {
           return multiItem.reservationDate.slice(0, 10) == rseDate
         })
-        
+
         return multiReqInfo
       } else {
         return req.reservationDetail[0].reservationDate.slice(0, 10) == rseDate
       }
     })
-    
+
     return reqInfo
   }
 
@@ -153,6 +160,7 @@ const ProviderWaitingPay = () => {
     let completeDate = ''
     let requestBookingDate = ''
     const data = getBookingInfo()
+    console.log("data", data);
     return data.map(item => {
 
       if (item.reservationDetail.length > 1) {

@@ -80,6 +80,30 @@ const ProviderWaitingReply = () => {
     setuseMonthToSearch(false)
   }
 
+  const checkDate = (d) => {
+    const resDate = moment(d, "YYYY-MM-DD")
+    const Day = resDate.format('D')
+    const Month = resDate.format('M')
+    const Year = resDate.format('YYYY')
+
+    if (Year >= year && Month >= month) {
+      //console.log(Year, '>=', year, Year >= year, Month, '>=', month, Month >= month);
+
+      if (Year == year && Month == month) {
+        if (Day > day) {
+         // console.log(Day, '>', day, Day > day);
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return true
+      }
+    } else {
+      return false
+    }
+  }
+
   const getBookingInfo = () => {
 
     if (requestInfoByService.message !== "no Request") {
@@ -94,20 +118,21 @@ const ProviderWaitingReply = () => {
 
   const getRequestsAccDates = () => {
 
-
     const data = getBookingInfo()
     const reqInfo = data.filter(item => {
       if (item.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         let result = item.reservationDetail.find(multiItem => {
-          return multiItem.reservationDate.slice(0, 10) > todayDate
+          // console.log(multiItem.reservationDate.slice(0, 10) , todayDate, multiItem.reservationDate.slice(0, 10) > todayDate);
+          return checkDate(multiItem.reservationDate)
         })
         return result
 
       } else {
 
         //if reservation detail has one date
-        return item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate
+        //console.log(item.reservationDetail[0].reservationDate.slice(0, 10) , todayDate, item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate);
+        return checkDate(item.reservationDetail[0].reservationDate)
       }
     })
 
@@ -125,13 +150,13 @@ const ProviderWaitingReply = () => {
         const multiReqInfo = req.reservationDetail.find(multiItem => {
           return multiItem.reservationDate.slice(0, 10) == rseDate
         })
-        console.log("multiReqInfo", multiReqInfo);
+        //console.log("multiReqInfo", multiReqInfo);
         return multiReqInfo
       } else {
         return req.reservationDetail[0].reservationDate.slice(0, 10) == rseDate
       }
     })
-    console.log("reqInfo>>", reqInfo);
+    //console.log("reqInfo>>", reqInfo);
     return reqInfo
 
 
@@ -215,12 +240,10 @@ const ProviderWaitingReply = () => {
 
   const renderBookingCard = (rseDate) => {
     const data = getBookingInfoByDate(rseDate)
-    console.log("ddddd", data.length);
+
     return data.map(item => {
-      
-      
       return (
-        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item } rseDate = {rseDate} />
+        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} rseDate={rseDate} />
       )
     })
   }

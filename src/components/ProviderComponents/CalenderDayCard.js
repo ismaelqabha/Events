@@ -8,6 +8,7 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import { colors } from '../../assets/AppColors';
 
 const CalenderDayCard = (props) => {
+
     const [date, setDate] = useState(new Date())
     const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
     const [currentYear, setcurrentYear] = useState(date.getFullYear())
@@ -75,13 +76,13 @@ const CalenderDayCard = (props) => {
                 </Text>
             </View>
             <View style={styles.footer}>
-                <Pressable style={{}}>
+                {/* <Pressable style={{}}>
                     <Entypo
                         name={"dots-three-horizontal"}
                         color={'gray'}
                         size={20} />
-                </Pressable>
-                <Text style={styles.resText}>(2)</Text>
+                </Pressable> */}
+                <Text style={styles.resText}>حجوزات (2)</Text>
             </View>
         </Pressable>
     )
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
     },
     body: {
         alignItems: 'center',
-        backgroundColor: 'lightgray',
+        backgroundColor: colors.silver,
         height: '40%',
         justifyContent:'center',
          //borderWidth: 1
@@ -172,12 +173,12 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         backgroundColor: colors.silver,
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         height: '30%'
         //borderWidth: 1
     },
     text: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
     },
     resText: {

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React, {useContext, useState} from 'react'
+import React, { useContext, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard';
 import { colors } from '../../assets/AppColors';
@@ -7,26 +7,20 @@ import moment from "moment";
 import SearchContext from '../../../store/SearchContext';
 
 const ProviderBookingRequest = (props) => {
-  const { fulDate } = props.route?.params || {}
+  const { fulDate, mutibleReservation, multibleDataRes, fiteredUsers } = props.route?.params || {}
+  console.log(fulDate);
 
-  const { requestInfoByService } =useContext(SearchContext);
+  const { requestInfoByService } = useContext(SearchContext);
+
   const [fromReservationScreen, setfromReservationScreen] = useState(true)
 
   const selectedDate = moment(fulDate).format('L')
 
+  const manageArrayDates = []
+
   const onPressHandler = () => {
     props.navigation.goBack();
   }
-  
-  const getBookingInfo = () => {
-    const reqInfo =  requestInfoByService.filter(item => {
-      return item.ReqStatus === 'paid' && moment(item.reservationDetail[0].reservationDate).format('L') === selectedDate
-    })
-    return reqInfo
-  }
-
-  
-  
 
   const header = () => {
     return (
@@ -44,15 +38,16 @@ const ProviderBookingRequest = (props) => {
     )
   }
 
-  const renderSelectedDate = () => {
-    return (
-      <View style={styles.dateView}>
-        <Text style={styles.txt}>{moment(fulDate).format('dddd')}</Text>
-        <Text style={styles.txt}>{selectedDate}</Text>
-      </View>
-    )
-  }
+  ///// searching according spacific data
 
+
+  const getBookingInfo = () => {
+    const reqInfo = requestInfoByService.filter(item => {
+      return item.ReqStatus === 'paid' && item.reservationDetail[0].reservationDate === fulDate
+    })
+
+    return reqInfo
+  }
 
   const renderBookingCard = () => {
     const data = getBookingInfo()
@@ -63,22 +58,103 @@ const ProviderBookingRequest = (props) => {
     })
   }
 
+  const renderSelectedDate = () => {
+    return (
+      <View>
+        <View style={styles.dateView}>
+          <Text style={styles.txt}>{moment(fulDate).format('dddd')}</Text>
+          <Text style={styles.txt}>{selectedDate}</Text>
+        </View>
+        {renderBookingCard()}
+      </View>
+    )
+  }
+
+
+ 
+//////// Searching by Client Name
+
+  const manageDatesusingSearchbyName = () => {
+    let requestBookingDate = ''
+    const data = multibleDataRes
+    return data.map(item => {
+
+      if (item.reservationDetail.length > 1) {
+        return item.reservationDetail.map(multiItem => {
+          requestBookingDate = multiItem.reservationDate
+
+          if (!(manageArrayDates.includes(requestBookingDate))) {
+            manageArrayDates.push(requestBookingDate)
+          }
+        })
+      } else {
+        requestBookingDate = item.reservationDetail[0].reservationDate
+
+        if (!(manageArrayDates.includes(requestBookingDate))) {
+          manageArrayDates.push(requestBookingDate)
+        }
+      }
+      manageArrayDates.sort();
+    })
+  }
+
+  const filterReqAccUserId = (resDate) => {
+    const data = fiteredUsers
+    const userid = data[0].USER_ID
+    const reqInfo = requestInfoByService.filter(item => {
+      if (item.reservationDetail.length > 1) {
+        return item.reservationDetail.find(multiItem => {
+          return item.ReqStatus === 'paid' && item.ReqUserId === userid && multiItem.reservationDate === resDate
+        })
+      } else {
+        return item.ReqStatus === 'paid' && item.ReqUserId === userid && item.reservationDetail[0].reservationDate === resDate
+      }
+
+    })
+    return reqInfo
+  }
+
+
+  const renderBookingCardforSearch = (resDate) => {
+    const data = filterReqAccUserId(resDate)
+
+    return data.map(item => {
+      return (
+        <ProviderReservationCard fromReservationScreen={fromReservationScreen}  {...item} resDate={resDate} />
+      )
+    })
+  }
+
+  const renderRequestAccUserName = () => {
+    manageDatesusingSearchbyName()
+    return manageArrayDates.map(item => {
+      return (
+        <View>
+          <View style={styles.dateView}>
+            <Text style={styles.txt}>{moment(item).format('dddd')}</Text>
+            <Text style={styles.txt}>{moment(item).format('L')}</Text>
+          </View>
+          {renderBookingCardforSearch(item)}
+        </View>
+      )
+    })
+  }
+
+
   return (
     <View style={styles.container}>
       {header()}
-      {renderSelectedDate()}
-      {renderBookingCard()}
-
+      {mutibleReservation ? renderRequestAccUserName() : renderSelectedDate()}
     </View>
   )
 }
+
 
 export default ProviderBookingRequest
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-//backgroundColor: 'white'
   },
   title: {
     flexDirection: 'row',
