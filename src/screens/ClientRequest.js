@@ -178,7 +178,7 @@ const ClientRequest = (props) => {
         if (!checkAllDetails()) {
             return
         }
-        const requestBody = {
+            const requestBody = {
             ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
             ReqStatus: 'waiting reply',
             ReqEventId: selectedEvent,
@@ -484,16 +484,22 @@ const ClientRequest = (props) => {
         if (Array.isArray(requestedDate)) {
             requestedDate.forEach((date) => {
                 // For each date in the array, calculate the total price
-                const detailIndex = resDetail.findIndex((item) => item.reservationDate === moment(date).format('L'));
+                const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
                 if (detailIndex !== -1) {
                     const { subDetailId, numOfInviters } = resDetail[detailIndex];
                     const filteredSubDetails = filterSubDetails(subDetailId);
+                    let dateTotal = 0; // Initialize total price for this date
                     filteredSubDetails.forEach((subDetail) => {
-
+                        const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
+                        const numberPerTable = subDetail.numberPerTable
                         subDetail.subDetailArray.forEach((detail) => {
-                            total += parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : (numOfInviters / numberPerTable)));
+                            const price = parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(numOfInviters / numberPerTable)));
+                            dateTotal += price; // Add price to total for this date
                         });
                     });
+                    // Update reservation object with price for this date
+                    resDetail[detailIndex].datePrice = dateTotal;
+                    total += dateTotal; // Add date total to overall total
                 }
             });
         } else {
@@ -501,21 +507,25 @@ const ClientRequest = (props) => {
             if (resDetail.length > 0) {
                 const { subDetailId, numOfInviters } = resDetail[0];
                 const filteredSubDetails = filterSubDetails(subDetailId);
+                let dateTotal = 0; // Initialize total price for this date
                 filteredSubDetails.forEach((subDetail) => {
                     const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
                     const numberPerTable = subDetail.numberPerTable
                     subDetail.subDetailArray.forEach((detail) => {
-                        const price = parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : (numOfInviters / numberPerTable)));
-                        total += price
-                        console.log("price -> ", price);
+                        const price = parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(numOfInviters / numberPerTable)));
+                        dateTotal += price; // Add price to total for this date
                     });
                 });
+                // Update reservation object with price for this date
+                resDetail[0].datePrice = dateTotal;
+                total += dateTotal; // Add date total to overall total
             }
         }
 
         // Update the totalPrice state
         setTotalPrice(total);
     };
+
 
     // Call the function to calculate the initial total price
     useEffect(() => {
@@ -579,7 +589,7 @@ const ClientRequest = (props) => {
         }
 
         // sub details 
-        var detailIndex = resDetail.findIndex(item => item.reservationDate === moment(date).format('L'))
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === date)
 
         if (Array.isArray(requestedDate)) {
             if (detailIndex === -1) {
@@ -682,7 +692,7 @@ const ClientRequest = (props) => {
         return (
             <>
                 <View key={index} style={styles.reciptDetailItem}>
-                    {renderFinalReciptPrice(price * (additionType === "perPerson" ? details.numOfInviters || 0 : additionType === "perRequest" ? 1 : (details.numOfInviters / subDetail.numberPerTable)))}
+                    {renderFinalReciptPrice(price * (additionType === "perPerson" ? details.numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(details.numOfInviters / subDetail.numberPerTable)))}
                     {renderReciptComponent(additionType, price, details.numOfInviters || 0, subDetail.numberPerTable)}
                     <Pressable onPress={() => details.setShowSupDetRecipt(!details.showSupDetRecipt)} style={styles.reciptClom}>
                         <Text style={styles.text}>{subDetail?.detailTitle || ''}</Text>
