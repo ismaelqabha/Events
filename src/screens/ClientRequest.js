@@ -479,72 +479,76 @@ const ClientRequest = (props) => {
 
     const calculateTotalPrice = () => {
         let total = 0;
-
-        // Check if requestedDate is an array
-        if (Array.isArray(requestedDate)) {
-            requestedDate.forEach((date) => {
-                // For each date in the array, calculate the total price
-                const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
-                if (detailIndex !== -1) {
-                    const { subDetailId, numOfInviters, campaigns } = resDetail[detailIndex];
-                    const filteredSubDetails = filterSubDetails(subDetailId);
-                    let dateTotal = 0; // Initialize total price for this date
-                    // Calculate price for each sub detail
-                    filteredSubDetails.forEach((subDetail) => {
-                        const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
-                        const numberPerTable = subDetail.numberPerTable;
-                        subDetail.subDetailArray.forEach((detail) => {
-                            const price = parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(numOfInviters / numberPerTable)));
-                            dateTotal += price; // Add price to total for this date
-                        });
+        const calculateDateTotal = (date) => {
+            const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
+            if (detailIndex !== -1) {
+                const { subDetailId, numOfInviters, campaigns } = resDetail[detailIndex];
+                const dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
+                if (campaigns) {
+                    campaigns.forEach((campaign) => {
+                        const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
+                        total += (campaign.campCost || 0) * multiplier;
                     });
-                    // Add campaign prices for this date
-                    if (campaigns) {
-                        campaigns.forEach(campaign => {
-                            const additionType = campaign.priceInclude || 'perRequest'; // Default to 'perRequest' if not specified
-                            const numberPerTable = campaign.numberPerTable || 1; // Default to 1 if not specified
-                            const multiplier = additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(numOfInviters / numberPerTable);
-                            dateTotal += (campaign.campCost || 0) * multiplier;
-                        });
-                    }
-                    // Update reservation object with price for this date
-                    resDetail[detailIndex].datePrice = dateTotal;
-                    total += dateTotal; // Add date total to overall total
                 }
-            });
-        } else {
-            // If requestedDate is a string, calculate the total price for that single date
+                updateReservationObject(detailIndex, dateTotal);
+                total += dateTotal;
+            }
+        };
+
+        const calculateSingleDateTotal = () => {
             if (resDetail.length > 0) {
                 const { subDetailId, numOfInviters, campaigns } = resDetail[0];
-                const filteredSubDetails = filterSubDetails(subDetailId);
-                let dateTotal = 0; // Initialize total price for this date
-                // Calculate price for each sub detail
-                filteredSubDetails.forEach((subDetail) => {
-                    const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
-                    const numberPerTable = subDetail.numberPerTable;
-                    subDetail.subDetailArray.forEach((detail) => {
-                        const price = parseInt(detail.detailSubtitleCost) * ((additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(numOfInviters / numberPerTable)));
-                        dateTotal += price; // Add price to total for this date
-                    });
-                });
-                // Add campaign prices for this date
+                const dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
                 if (campaigns) {
-                    campaigns.forEach(campaign => {
-                        const additionType = campaign.priceInclude || 'perRequest'; // Default to 'perRequest' if not specified
-                        const numberPerTable = campaign.numberPerTable || 1; // Default to 1 if not specified
-                        const multiplier = additionType === "perPerson" ? numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(numOfInviters / numberPerTable);
-                        dateTotal += (campaign.campCost || 0) * multiplier;
+                    campaigns.forEach((campaign) => {
+                        const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
+                        total += (campaign.campCost || 0) * multiplier;
                     });
                 }
-                // Update reservation object with price for this date
-                resDetail[0].datePrice = dateTotal;
-                total += dateTotal; // Add date total to overall total
+                updateReservationObject(0, dateTotal);
+                total += dateTotal;
             }
+        };
+
+        const calculateSubDetailTotal = (subDetailId, numOfInviters) => {
+            let dateTotal = 0;
+            const filteredSubDetails = filterSubDetails(subDetailId);
+            filteredSubDetails.forEach((subDetail) => {
+                const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
+                const numberPerTable = subDetail.numberPerTable;
+                subDetail.subDetailArray.forEach((detail) => {
+                    const price = parseInt(detail.detailSubtitleCost) * calculateMultiplier(additionType, numOfInviters, numberPerTable);
+                    dateTotal += price;
+                });
+            });
+            return dateTotal;
+        };
+
+        const calculateMultiplier = (priceInclude, numOfInviters, numberPerTable) => {
+            switch (priceInclude) {
+                case "perPerson":
+                    return numOfInviters || 0;
+                case "perTable":
+                    return Math.ceil(numOfInviters / numberPerTable);
+                default:
+                    return 1;
+            }
+        };
+
+        const updateReservationObject = (index, dateTotal) => {
+            resDetail[index].datePrice = dateTotal;
+        };
+        if (Array.isArray(requestedDate)) {
+            requestedDate.forEach((date)=>calculateDateTotal(date));
+        } else {
+            calculateSingleDateTotal();
         }
 
-        // Update the totalPrice state
         setTotalPrice(total);
+
+
     };
+
 
 
 
