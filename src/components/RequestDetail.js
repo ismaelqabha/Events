@@ -12,15 +12,15 @@ import { AppStyles } from '../assets/res/AppStyles';
 import { request } from 'react-native-permissions';
 
 const RequestDetail = (props) => {
-     const { additionalServices } = props
-     
+    const { additionalServices } = props
+
     const {
         selectedDate,
         setSelectedDate, handleScrollToPosition, pressed, setPressed } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
 
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
-        
+
         return date
     }) : [requestedDate]
 
@@ -41,8 +41,7 @@ const RequestDetail = (props) => {
     }, []);
 
     useEffect(() => {
-        const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
-
+        const reservation = resDetail.find((detail) => detail.reservationDate === selectedDate);
         if (reservation) {
             const subDetailId = reservation.subDetailId || [];
             const campaigns = reservation.campaigns || [];
@@ -239,7 +238,7 @@ const RequestDetail = (props) => {
 
     useEffect(() => {
         if (Array.isArray(resDetail)) {
-            const reservation = resDetail.find((detail) => detail.reservationDate === moment(selectedDate).format('L'));
+            const reservation = resDetail.find((detail) => detail.reservationDate === selectedDate);
             if (reservation) {
                 setstartTimeText(reservation.startingTime)
                 setendTimeText(reservation.EndTime)
@@ -305,13 +304,15 @@ const RequestDetail = (props) => {
      * @param {'startingTime' | 'endTime' | 'invited' | 'subDetail' | 'offerId' | 'campaigns'} type - The type of update.
      */
     const updateReservationDet = (val, type) => {
-        var detailIndex = resDetail.findIndex(item => item.reservationDate === moment(selectedDate).format('L'))
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === selectedDate)
         if (Array.isArray(requestedDate)) {
             if (detailIndex === -1) {
+                console.log("no res found ");
                 return
             }
         } else {
             detailIndex = 0
+            return;
         }
         const detail = resDetail
         switch (type) {
@@ -382,6 +383,9 @@ const RequestDetail = (props) => {
         updateReservationDet(val, 'invited')
     }
     const whenSupDetailPress = (SubId) => {
+        if (!SubId) {
+            return
+        }
         updateReservationDet(SubId, 'subDetail')
     }
     const checkStartTime = () => {
@@ -532,9 +536,6 @@ const RequestDetail = (props) => {
                 </View>
                 {element.subDetailArray.map(item => {
                     const found = selectedSupDet?.find((det) => det === item.id)
-                    console.log("found ", found);
-                    console.log("selectedSupDet ", selectedSupDet);
-                    console.log("item ", item.id);
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
@@ -586,7 +587,7 @@ const RequestDetail = (props) => {
     }
 
     const getServiceDetail = (id) => {
-        
+
         const serviceData = additionalServices.filter(element => {
             return element.subDetailArray.find(itemId => {
                 return itemId.id === id
@@ -757,33 +758,19 @@ const RequestDetail = (props) => {
     }
 
     const handlePreviousDate = () => {
-        const formattedSelectedDate = moment(selectedDate).format('L');
-        const currentIndex = resivedDate.findIndex(date => date === formattedSelectedDate);
+        const currentIndex = resivedDate.findIndex(date => date === selectedDate);
         if (currentIndex !== -1) {
             const previousIndex = (currentIndex === 0) ? resivedDate.length - 1 : currentIndex - 1;
-            const date = moment(resivedDate[previousIndex], 'DD/MM/YYYY')
-            const originalDate = new Date(date);
-            const year = originalDate.getFullYear();
-            const month = originalDate.getMonth() + 1;
-            const day = originalDate.getDate();
-            const formattedDate = `${year}-${month}-${day}`;
-            setSelectedDate(formattedDate);
+            setSelectedDate(resivedDate[previousIndex]);
         }
         handleScrollToPosition()
     };
 
     const handleNextDate = () => {
-        const formattedSelectedDate = moment(selectedDate).format('L');
-        const currentIndex = resivedDate.findIndex(date => date === formattedSelectedDate);
+        const currentIndex = resivedDate.findIndex(date => date === selectedDate);
         if (currentIndex !== -1) {
             const nextIndex = (currentIndex + 1) % resivedDate.length;
-            const date = moment(resivedDate[nextIndex], 'DD/MM/YYYY')
-            const originalDate = new Date(date);
-            const year = originalDate.getFullYear();
-            const month = originalDate.getMonth() + 1;
-            const day = originalDate.getDate();
-            const formattedDate = `${year}-${month}-${day}`;
-            setSelectedDate(formattedDate);
+            setSelectedDate(resivedDate[nextIndex]);
         }
         handleScrollToPosition()
     };
