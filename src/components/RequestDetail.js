@@ -12,8 +12,7 @@ import { AppStyles } from '../assets/res/AppStyles';
 import { request } from 'react-native-permissions';
 
 const RequestDetail = (props) => {
-    const { additionalServices } = props
-
+    const { additionalServices, maxCapasity } = props
     const {
         selectedDate,
         setSelectedDate, handleScrollToPosition, pressed, setPressed } = props
@@ -379,9 +378,27 @@ const RequestDetail = (props) => {
         setShowModal(false)
     }
     const onInvitersInputChange = (val) => {
-        setInvitersValue(val)
-        updateReservationDet(val, 'invited')
-    }
+        // Ensure the value is not empty
+        if (val === '') {
+            setInvitersValue('');
+            updateReservationDet('', 'invited'); // Clear the value in reservation detail
+        } else {
+            // Parse the value as an integer and apply limits
+            let intValue = parseInt(val);
+            if (isNaN(intValue)) {
+                // If the value is not a number, do not update the state and reservation detail
+                return;
+            } else {
+                // Apply the limit of 500
+                intValue = Math.min(intValue, maxCapasity || 0);
+                // Update the state with the sanitized value
+                setInvitersValue(intValue.toString());
+                // Update reservation detail with the sanitized value
+                updateReservationDet(intValue.toString(), 'invited');
+            }
+        }
+    };
+
     const whenSupDetailPress = (SubId) => {
         if (!SubId) {
             return
@@ -510,12 +527,36 @@ const RequestDetail = (props) => {
     }
     const renderInput = () => {
         return CatOfService[cat].map(type => {
-            return (<TextInput style={styles.input}
+            return (<TextInput
+                style={styles.input}
                 {...type}
                 value={invitersValue}
-                onChangeText={val => onInvitersInputChange(val)} />)
+                keyboardType='numeric'
+                onChangeText={onInvitersInputChange}
+                onKeyPress={handleKeyPress}
+            />)
         })
     }
+
+    const handleKeyPress = ({ nativeEvent }) => {
+        const { key } = nativeEvent;
+        const newValue = invitersValue + key;
+
+        // Prevent non-numeric characters
+        if (isNaN(newValue)) {
+            nativeEvent.preventDefault();
+        }
+
+        // Prevent negative values
+        if (newValue < 0) {
+            nativeEvent.preventDefault();
+        }
+
+        // Limit to maximum value of 500
+        if (parseInt(newValue) > 500) {
+            nativeEvent.preventDefault();
+        }
+    };
     const renderInviters = () => {
         return (
             <View style={styles.invitView}>
