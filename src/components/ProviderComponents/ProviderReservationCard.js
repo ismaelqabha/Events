@@ -207,7 +207,7 @@ const ProviderReservationCard = (props) => {
 
                         <View style={styles.dateview}>
                             <View>
-                                <Text style={styles.dateTxt}>{item.Cost}</Text>
+                                <Text style={styles.dateTxt}>{item.datePrice}</Text>
                             </View>
                             <Image style={styles.shekeImg} source={require('../../assets/photos/shekelSign.png')} />
                         </View>
@@ -253,7 +253,6 @@ const ProviderReservationCard = (props) => {
 
     const renderCard = () => {
         if (fromWaitingScreen) {
-
             return (
                 <View>
                     {reservationDetail.length > 1 ?

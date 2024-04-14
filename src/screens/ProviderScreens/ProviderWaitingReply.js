@@ -82,16 +82,16 @@ const ProviderWaitingReply = () => {
 
   const checkDate = (d) => {
     const resDate = moment(d, "YYYY-MM-DD")
+    console.log("resDate", resDate);
     const Day = resDate.format('D')
     const Month = resDate.format('M')
     const Year = resDate.format('YYYY')
 
+    console.log(Year, '>=', year, Year >= year, Month, '>=', month, Month >= month);
     if (Year >= year && Month >= month) {
-      //console.log(Year, '>=', year, Year >= year, Month, '>=', month, Month >= month);
-
       if (Year == year && Month == month) {
+        console.log(Day, '>', day, Day > day);
         if (Day > day) {
-         // console.log(Day, '>', day, Day > day);
           return true
         } else {
           return false
@@ -105,7 +105,6 @@ const ProviderWaitingReply = () => {
   }
 
   const getBookingInfo = () => {
-
     if (requestInfoByService.message !== "no Request") {
       const reqInfo = requestInfoByService.filter(item => {
         return item.ReqStatus === 'waiting reply'

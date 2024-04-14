@@ -66,7 +66,7 @@ const ProviderProfile = props => {
 
   useEffect(() => {
     getRegionsfromApi()
-    getCampignsfromApi()
+    //getCampignsfromApi()
     getRequestInfo()
   }, [isFirst])
 

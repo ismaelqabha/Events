@@ -97,7 +97,7 @@ const ProviderWaitingPay = () => {
 
     if (Year >= year && Month >= month) {
       if (Year == year && Month == month) {
-        console.log(Day, '>', day, Day > day);
+        //console.log(Day, '>', day, Day > day);
         if (Day > day) {
           return true
         } else {
@@ -126,7 +126,7 @@ const ProviderWaitingPay = () => {
 
         //if reservation detail has one date
         // console.log(item.reservationDetail[0].reservationDate, '>', todayDate.slice(0, 10), item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10));
-        console.log(checkDate(item.reservationDetail[0].reservationDate));
+        //console.log(checkDate(item.reservationDetail[0].reservationDate));
         return checkDate(item.reservationDetail[0].reservationDate)
       }
     })
@@ -160,7 +160,6 @@ const ProviderWaitingPay = () => {
     let completeDate = ''
     let requestBookingDate = ''
     const data = getBookingInfo()
-    console.log("data", data);
     return data.map(item => {
 
       if (item.reservationDetail.length > 1) {

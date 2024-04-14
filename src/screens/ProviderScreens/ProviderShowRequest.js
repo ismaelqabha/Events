@@ -14,10 +14,6 @@ const ProviderShowRequest = (props) => {
     const { isFirst, campInfo } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const { reqInfo } = props.route?.params || {}
-    
-    // console.log("reqInfo", reqInfo);
-    const [listSelectedDet, setListSelectedDet] = useState([])
-    const subDetArray = []
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
@@ -52,13 +48,13 @@ const ProviderShowRequest = (props) => {
                 <Text style={styles.headerText}>تفاصيل الحجز</Text>
             </View>)
     }
-    const renderReqDate = () => {
+    const renderSendingReqDate = () => {
         return (
             <View style={styles.ContentView}>
                 <View style={styles.dateview}>
                     <View style={{ alignItems: 'flex-end' }}>
-                        <Text style={styles.dateTxt}>{moment(reqInfo.reservationDetail[0].reservationDate).format('L')}</Text>
-                        <Text style={styles.labelDateTxt}>تاريخ الحجز</Text>
+                        <Text style={styles.dateTxt}>{reqInfo.ReqDate}</Text>
+                        <Text style={styles.labelDateTxt}>تاريخ طلب الحجز</Text>
                     </View>
                     <View style={styles.IconView}>
                         <Fontisto
@@ -70,13 +66,15 @@ const ProviderShowRequest = (props) => {
             </View>
         )
     }
-    const renderSendingReqDate = () => {
+
+
+    const renderReqDate = (item) => {
         return (
             <View style={styles.ContentView}>
                 <View style={styles.dateview}>
                     <View style={{ alignItems: 'flex-end' }}>
-                        <Text style={styles.dateTxt}>{reqInfo.ReqDate}</Text>
-                        <Text style={styles.labelDateTxt}>تاريخ طلب الحجز</Text>
+                        <Text style={styles.dateTxt}>{moment(item.reservationDate).format('L')}</Text>
+                        <Text style={styles.labelDateTxt}>تاريخ الحجز</Text>
                     </View>
                     <View style={styles.IconView}>
                         <Fontisto
@@ -106,17 +104,17 @@ const ProviderShowRequest = (props) => {
             </View>
         )
     }
-    const renderReqTime = () => {
+    const renderReqTime = (item) => {
         return (
             <View style={styles.ContentView}>
                 <View style={styles.dateview}>
                     <View style={styles.timeView}>
                         <View style={{ alignItems: 'flex-end' }}>
-                            <Text style={styles.dateTxt}>{reqInfo.reservationDetail[0].EndTime}</Text>
+                            <Text style={styles.dateTxt}>{item.EndTime}</Text>
                             <Text style={styles.labelDateTxt}>الى الساعة</Text>
                         </View>
                         <View style={{ alignItems: 'flex-end' }}>
-                            <Text style={styles.dateTxt}>{reqInfo.reservationDetail[0].startingTime}</Text>
+                            <Text style={styles.dateTxt}>{item.startingTime}</Text>
                             <Text style={styles.labelDateTxt}>من الساعة</Text>
                         </View>
                     </View>
@@ -130,18 +128,18 @@ const ProviderShowRequest = (props) => {
             </View>
         )
     }
-    const isHall = () => {
+    const isHall = (item) => {
         return (<View>
-            {serviceData[0].servType === 'قاعات' && renderInviters()}
+            {serviceData[0].servType === 'قاعات' && renderInviters(item)}
         </View>
         )
     }
-    const renderInviters = () => {
+    const renderInviters = (item) => {
         return (
             <View style={styles.ContentView}>
                 <View style={styles.dateview}>
                     <View style={{ alignItems: 'flex-end' }}>
-                        <Text style={styles.dateTxt}>{reqInfo.reservationDetail[0].numOfInviters}</Text>
+                        <Text style={styles.dateTxt}>{item.numOfInviters}</Text>
                         <Text style={styles.labelDateTxt}>عدد المدعوين</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -154,20 +152,17 @@ const ProviderShowRequest = (props) => {
             </View>
         )
     }
-
-    const isSelectedFromDetail = () => {
-        //console.log("l",reqInfo.reservationDetail[0].subDetailId.length);
-        if (reqInfo.reservationDetail[0].subDetailId.length > 0) {
+    const isSelectedFromDetail = (item) => {
+        if (item.subDetailId.length > 0) {
             return (<View>
                 <Text style={styles.labelText}>الخدمات المختارة</Text>
-                <View style={styles.ContentView}>{renderServiceDetail()}</View>
+                <View style={styles.ContentView}>{renderServiceDetail(item)}</View>
             </View>)
         }
     }
-
-    const renderServiceDetail = () => {
+    const renderServiceDetail = (data) => {
         return serviceData[0].additionalServices.map(item => {
-            return reqInfo.reservationDetail[0].subDetailId.map(subItem => {
+            return data.subDetailId.map(subItem => {
                 if (item.subDetailArray[0].subDetail_Id.includes(subItem)) {
                     return (
                         <View>
@@ -187,13 +182,20 @@ const ProviderShowRequest = (props) => {
             })
         })
     }
-   
+    const isSelectedFromCampign = (item) => {
+        if (item.offerId.length > 0) {
+            return (<View>
+                <Text style={styles.labelText}>العرض المختار</Text>
+                <View style={styles.ContentView}>{renderCampigns(item)}</View>
+            </View>)
+        } else {
+            return []
+        }
+    }
+    const renderCampigns = (item) => {
+        return item.offerId.map(Offid => {
 
-    const renderCampigns = () => {
-        return reqInfo.reservationDetail[0].offerId.map(Offid => {
-        
             const data = filterSelectedCampign(Offid)
-           
             return (
                 <View>
                     <View style={styles.dateview}>
@@ -209,27 +211,40 @@ const ProviderShowRequest = (props) => {
             )
         })
     }
-    const isSelectedFromCampign = () => {
-        console.log("len", reqInfo.reservationDetail[0].offerId.length);
-        if (reqInfo.reservationDetail[0].offerId.length > 0) {
-            return (<View>
-                <Text style={styles.labelText}>العروض المختارة</Text>
-                <View style={styles.ContentView}>{renderCampigns()}</View>
+
+
+    const renderMultibleDatesRequest = () => {
+        return reqInfo.reservationDetail.map(item => {
+            return (<View style={styles.ContentView}>
+                {renderReqDate(item)}
+                {renderReqTime(item)}
+                {isHall(item)}
+                {isSelectedFromDetail(item)}
+                {isSelectedFromCampign(item)}
             </View>)
-        }
+        })
     }
+
+    const renderSingleDateRequest = () => {
+        return (<View>
+            {renderReqDate(reqInfo.reservationDetail[0])}
+            {renderReqTime(reqInfo.reservationDetail[0])}
+            {isHall(reqInfo.reservationDetail[0])}
+            {isSelectedFromDetail(reqInfo.reservationDetail[0])}
+            {/* {isSelectedFromCampign(reqInfo.reservationDetail[0])} */}
+        </View>)
+    }
+
 
     return (
         <View style={styles.container}>
             {header()}
             <ScrollView>
                 {renderSendingReqDate()}
-                {renderReqDate()}
+
+                {reqInfo.reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
+
                 {renderfinalCost()}
-                {renderReqTime()}
-                {isHall()}
-                {isSelectedFromDetail()}
-                {/* {isSelectedFromCampign()} */}
             </ScrollView>
         </View>
     )
@@ -243,13 +258,12 @@ const styles = StyleSheet.create({
     },
     head: {
         flexDirection: 'row',
-        //width: '90%',
         alignItems: 'center',
         height: 40,
         justifyContent: 'space-between'
     },
     icon: {
-        //alignSelf: 'flex-start',
+
         marginLeft: 10,
     },
     headerText: {
