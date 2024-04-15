@@ -6,11 +6,12 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
-import { createNewEvent, getEventsInfo } from '../resources/API';
+import { createNewEvent, getEventList, getEventsInfo } from '../resources/API';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { SelectList } from 'react-native-dropdown-select-list';
 import UsersContext from '../../store/UsersContext';
+import { colors } from '../assets/AppColors';
 
 
 const ClientEvents = (props) => {
@@ -21,7 +22,7 @@ const ClientEvents = (props) => {
     const { eventInfo, setEventInfo, eventTypeInfo, setEventTypeInfo } = useContext(SearchContext);
     const [eventTypeName, setEventTypeName] = useState()
     const [eventName, setEventName] = useState()
-    const [eventTypeId, setEventTypeId] = useState()
+    // const [eventTypeId, setEventTypeId] = useState()
 
 
     const onPressHandler = () => {
@@ -38,8 +39,9 @@ const ClientEvents = (props) => {
     const onModalSavePress = () => {
         if (fileEventName !== undefined) {
             if (eventName !== undefined) {
-                getEventTypeID(eventName)
-                creatNewEvent()
+                const evTitID = getEventTypeID(eventName)
+                
+                creatNewEvent(evTitID)
                 ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM
@@ -75,13 +77,13 @@ const ClientEvents = (props) => {
     }
     const getEventsfromApi = () => {
         getEventsInfo({ userId: userId }).then(res => {
+           
             setEventInfo(res)
         })
     }
     const getEventsType = () => {
         getEventList({}).then(res => {
             setEventTypeInfo(res)
-
         })
     }
     const getEventTypeInfo = () => {
@@ -92,16 +94,20 @@ const ClientEvents = (props) => {
         eventList.sort()
         setEventTypeName(eventList)
     }
+
     const getEventTypeID = (val) => {
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
-        const eventTypeId = eventTypeInfo[eventTypeIndex].Id
-        setEventTypeId(eventTypeId)
+        const TypeId = eventTypeInfo[eventTypeIndex].Id
+        return TypeId
     }
-    const creatNewEvent = () => {
+
+    const creatNewEvent = (eventTypeId) => {
         const newEventItem = {
             userId: userId,
             eventName: fileEventName,
-            eventTitleId: eventTypeId
+            eventTitleId: eventTypeId,
+            eventDate: '',
+            eventCost: 0
         }
         createNewEvent(newEventItem).then(res => {
             const evnt = eventInfo || [];
@@ -113,23 +119,14 @@ const ClientEvents = (props) => {
         getEventsfromApi()
     }, [])
 
-    //console.log("eventInfo",eventInfo);
-    const query = () => {
-        return eventInfo || [];
-    }
-    const renderCard = ({ item }) => {
-        return <EventsCard  {...item} service_id={data?.service_id} isFromAddEventClick={isFromAddEventClick} />;
-
-    };
-
-    return (
-        <View style={styles.container}>
+    const renderHeader = () => {
+        return (
             <View style={styles.header}>
                 <Pressable onPress={onPressHandler}>
                     <AntDesign
                         style={styles.iconBack}
                         name={"left"}
-                        color={"black"}
+                        color={colors.puprble}
                         size={20} />
                 </Pressable>
 
@@ -140,16 +137,14 @@ const ClientEvents = (props) => {
                     <Entypo
                         style={styles.icon}
                         name={"plus"}
-                        color={"black"}
+                        color={colors.puprble}
                         size={30} />
                 </Pressable>
             </View>
-
-            <FlatList
-                data={query()}
-                renderItem={renderCard}
-                numColumns={2}
-            />
+        )
+    }
+    const createEventModal = () => {
+        return (
             <Modal
                 transparent
                 visible={showModal}
@@ -164,7 +159,7 @@ const ClientEvents = (props) => {
                             <Text style={styles.text}>انشاء مناسبة</Text>
                         </View>
                         <View style={styles.body}>
-                            <Text style={styles.text}>اسم المناسبة</Text>
+                            {/* <Text style={styles.text}>اسم المناسبة</Text> */}
                             <TextInput
                                 style={styles.input}
                                 keyboardType='default'
@@ -196,6 +191,29 @@ const ClientEvents = (props) => {
                 </View>
 
             </Modal>
+        )
+    }
+
+   // console.log("eventInfo",eventInfo);
+    const query = () => {
+        return eventInfo || [];
+    }
+    const renderCard = ({ item }) => {
+        return <EventsCard  {...item} service_id={data?.service_id} isFromAddEventClick={isFromAddEventClick} />;
+
+    };
+
+    return (
+        <View style={styles.container}>
+            {renderHeader()}
+
+            <FlatList
+                data={query()}
+                renderItem={renderCard}
+                numColumns={1}
+            />
+            {createEventModal()}
+
         </View>
     );
 }
@@ -207,25 +225,24 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 20,
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        height: 50,
     },
     iconBack: {
-        marginLeft: 10
+         marginLeft: 10
     },
     icon: {
-        marginLeft: 40
+         marginRight: 10
     },
     txt: {
         fontSize: 20,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
-        color: 'black',
-        marginRight: 20
+        color: colors.puprble,
     },
 
     detailModal: {
         width: '90%',
-        height: 200,
+        height: 250,
         backgroundColor: '#ffffff',
         borderRadius: 20,
     },

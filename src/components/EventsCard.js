@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from "../../route/ScreenNames";
@@ -10,22 +10,32 @@ import { updateEvent, updateRequest as updateRequestAPI } from '../resources/API
 import moment from 'moment';
 import 'moment/locale/ar-dz'
 import CalculetRemaingTime from './CalculetRemaingTime';
+import { colors } from '../assets/AppColors';
+
 
 
 const EventsCard = (props) => {
     const { isFromAddEventClick, service_id } = props
     const navigation = useNavigation();
-    const { eventName, eventDate, eventCost } = props;
+    const { eventName, eventDate, eventCost, eventTitleId } = props;
     const [date, setDate] = useState(new Date())
 
-    const { TimeText, requestInfo, setRequestInfo, requestedDate, RequestIdState, userId, eventInfo, setEventInfo } = useContext(SearchContext);
+    const { eventTypeInfo, TimeText, requestInfo, setRequestInfo,
+        requestedDate, RequestIdState, userId, eventInfo, setEventInfo } = useContext(SearchContext);
 
-    // console.log("requestedDate", props.eventDate);
+
     const requestItemIndex = requestInfo?.findIndex(item => item.request_Id === RequestIdState && item.ReqUserId === userId);
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === props.EventId && item.userId === userId)
 
 
+    const getEventTitle = () => {
+        return eventTypeInfo.filter(item => {
+            return item.Id === eventTitleId
+        })
+    }
 
+    const eventType = getEventTitle()
+    // console.log("eventType", eventType);
 
     const UpdateRequest = () => {
         const newRequestInfo = {
@@ -59,67 +69,50 @@ const EventsCard = (props) => {
 
 
     const onCaardPress = () => {
-
-        if (!isFromAddEventClick) {
-            console.log("navigate without adding");
-            navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
-            return;
-        }
-
-        console.log("Update request");
-        UpdateRequest()
-        UpdateEventInfo()
         navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
+
+
+        // console.log("Update request");
+        // UpdateRequest()
+        // UpdateEventInfo()
+        // navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
 
     }
 
 
     return (
         <View style={styles.container}>
-            {/* <Card >
-                <Card.Title style={styles.title}>{eventName}</Card.Title>
-                <Card.Divider />
-                <TouchableOpacity onPress={onCaardPress} style={styles.body}>
-                    <Text style={{ marginBottom: 10, fontSize: 18, color: 'black' }}>
-                        {eventDate}
-                    </Text>
-                    <Text style={{ marginBottom: 10, fontSize: 18, color: 'black' }}>
-                        
-                    </Text>
-                    <Text style={styles.text}>
-                        {eventCost ? ("₪" + eventCost) : ''}
-                    </Text>
-                </TouchableOpacity>
+            <Pressable style={styles.card} onPress={onCaardPress}>
 
-            </Card> */}
-
-            <View style={styles.card}>
                 <View style={styles.titlee}>
                     <Text style={styles.eventTxt}>{eventName}</Text>
                 </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <View style={styles.leftView}></View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: "50%" }}>
+
                     <View style={styles.rightView}>
-                        <Text style={styles.text}>
-                            {/* {moment(eventDate).format('dddd')} */}
-                        </Text>
-                        <Text style={styles.text}>
-                            {eventDate}
-                        </Text>
-                        <Text style={styles.text}>
-                            {eventCost ? ("₪" + eventCost) : ''}
-                        </Text>
+                        {eventDate ?
+                            <View>
+                                <Text style={styles.text}>
+                                    {moment(eventDate).format('dddd')}
+                                </Text>
+                                <Text style={styles.text}>
+                                    {moment(eventDate).format('L')}
+                                </Text>
+                            </View> :
+                            <Text style={styles.text}>أكثر من يوم</Text>}
+                    </View>
+
+                    <View style={styles.leftView}>
+                        <Image style={styles.eventLogo} source={{ uri: eventType[0].eventImg }} />
                     </View>
                 </View>
-                <TouchableOpacity onPress={onCaardPress} style={styles.footer}>
-                    <View>
-                        <Text style={styles.text}>
-                            باقي 45 يوم
-                            {/* <CalculetRemaingTime targetDate={props.eventDate}/> */}
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
+                <View style={styles.footer}>
+                    <Text style={styles.text}>
+                        {eventCost ? ("₪" + eventCost) : 0}
+                    </Text>
+                </View>
+            </Pressable>
         </View>
     );
 }
@@ -133,54 +126,52 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: 'white',
         elevation: 5,
-        width: '80%',
-        height: 250,
-        marginTop: 30,
+        width: '90%',
+        height: 200,
+        // marginTop: 30,
         margin: 10
     },
     titlee: {
         width: '100%',
-        height: 50,
+        height: "25%",
         alignItems: 'center',
         justifyContent: 'center',
-        //position: 'absolute',
-        //top: 0,
-        //borderWidth: 1
+
     },
     eventTxt: {
         fontSize: 15,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
-        color: 'black',
+        color: colors.puprble,
     },
     footer: {
         width: '100%',
-        height: '35%',
+        height: "25%",
         borderRadius: 20,
-        borderWidth: 0.5,
-        position: 'absolute',
-        bottom: 0,
-        borderColor: 'lightgray',
+        borderWidth: 1,
+        borderColor: colors.silver,
         alignItems: 'center',
         justifyContent: 'center'
     },
 
-    body: {
-        alignItems: 'center',
-
-    },
     leftView: {
         width: '50%',
-        height: 120,
+        // height: 120,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    eventLogo: {
+        width: 100,
+        height: 100,
     },
     rightView: {
         width: '50%',
-        height: 120,
-        alignItems: 'center'
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     text: {
         marginBottom: 10,
         fontSize: 18,
-        color: 'black',
+        color: colors.puprble,
     },
     title: {
         fontSize: 18,
