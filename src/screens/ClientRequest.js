@@ -25,7 +25,7 @@ const ClientRequest = (props) => {
         setResDetail,
         requestInfo, setRequestInfo,
         eventInfo, setEventInfo,
-        eventTypeInfo, setEventTypeInfo } = useContext(SearchContext);
+        eventTypeInfo, setEventTypeInfo , totalPrice, setTotalPrice } = useContext(SearchContext);
 
 
     const [date, setDate] = useState(new Date());
@@ -52,7 +52,6 @@ const ClientRequest = (props) => {
     const [selectedEvent, setSelectedEvent] = useState('');
 
     // price calculation states 
-    const [totalPrice, setTotalPrice] = useState(0)
 
 
     const handleScrollToPosition = () => {

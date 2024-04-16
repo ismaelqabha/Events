@@ -32,13 +32,14 @@ const SearchProvider = props => {
 
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
-  
+
   const [serviceSubDetail, setserviceSubDetail] = useState([])
   const [detailIdState, setdetailIdState] = useState();
 
   // Request
   const [requestInfoByService, setRequestInfoByService] = useState([])
   const [resDetail, setResDetail] = useState([])
+  const [totalPrice, setTotalPrice] = useState(0)
 
 
   const [orderSubdetail, setOrderSubdetail] = useState([])
@@ -70,7 +71,7 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
-        userInfoBySpiceficId, 
+        userInfoBySpiceficId,
         setUserInfoBySpiceficId,
         cat,
         setCat,
@@ -88,9 +89,9 @@ const SearchProvider = props => {
         setUserFavorates,
         fileFavoriteState,
         setFileFavoriteState,
-        requestInfoByService, 
+        requestInfoByService,
         setRequestInfoByService,
-        resDetail, 
+        resDetail,
         setResDetail,
         ImgOfServeice,
         setImgOfServeice,
@@ -104,7 +105,7 @@ const SearchProvider = props => {
         setserviceSubDetail,
         ServiceDataInfo,
         setServiceDataInfo,
-        ServiceInfoById, 
+        ServiceInfoById,
         setServiceInfoById,
         detailIdState,
         setdetailIdState,
@@ -142,11 +143,12 @@ const SearchProvider = props => {
         setOrderSubdetail,
         eventInfo,
         setEventInfo,
-        eventTypeInfo, 
+        eventTypeInfo,
         setEventTypeInfo,
         campiegnsAccordingServiceId,
         setCampiegnsAccordingServiceId,
-        regionData, setRegionData
+        regionData, setRegionData,
+        totalPrice, setTotalPrice,
 
       }}>
       {props.children}
