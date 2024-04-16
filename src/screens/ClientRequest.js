@@ -25,7 +25,7 @@ const ClientRequest = (props) => {
         setResDetail,
         requestInfo, setRequestInfo,
         eventInfo, setEventInfo,
-        eventTypeInfo, setEventTypeInfo , totalPrice, setTotalPrice } = useContext(SearchContext);
+        eventTypeInfo, setEventTypeInfo, totalPrice, setTotalPrice } = useContext(SearchContext);
 
 
     const [date, setDate] = useState(new Date());
@@ -708,7 +708,9 @@ const ClientRequest = (props) => {
     const renderMainReciptDetails = (details) => {
         return (
             details.filteredSubDetials ?
-                details.filteredSubDetials.map((subDetail, index) => renderSingleReciptService(subDetail, index, details))
+                details.filteredSubDetials.map((subDetail, index) => {
+                    return subDetail?.subDetailArray?.length > 0 ? renderSingleReciptService(subDetail, index, details) : null
+                })
                 :
                 null
         )
