@@ -544,7 +544,10 @@ const ClientRequest = (props) => {
         } else {
             calculateSingleDateTotal();
         }
-
+        const price = data.servicePrice
+        if (price) {
+            total += price
+        }
         setTotalPrice(total);
 
 
