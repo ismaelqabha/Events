@@ -6,13 +6,9 @@ import { colors } from '../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import moment from 'moment';
-import Footer from './Footers/Footer';
-import { AppStyles } from '../assets/res/AppStyles';
-import { request } from 'react-native-permissions';
 
 const RequestDetail = (props) => {
-    const { additionalServices, maxCapasity } = props
+    const { additionalServices, maxCapasity, servicePrice } = props
     const {
         selectedDate,
         setSelectedDate, handleScrollToPosition, pressed, setPressed } = props
@@ -389,7 +385,6 @@ const RequestDetail = (props) => {
                 // If the value is not a number, do not update the state and reservation detail
                 return;
             } else {
-                // Apply the limit of 500
                 intValue = Math.min(intValue, maxCapasity || 0);
                 // Update the state with the sanitized value
                 setInvitersValue(intValue.toString());
@@ -533,30 +528,10 @@ const RequestDetail = (props) => {
                 value={invitersValue}
                 keyboardType='numeric'
                 onChangeText={onInvitersInputChange}
-                onKeyPress={handleKeyPress}
             />)
         })
     }
 
-    const handleKeyPress = ({ nativeEvent }) => {
-        const { key } = nativeEvent;
-        const newValue = invitersValue + key;
-
-        // Prevent non-numeric characters
-        if (isNaN(newValue)) {
-            nativeEvent.preventDefault();
-        }
-
-        // Prevent negative values
-        if (newValue < 0) {
-            nativeEvent.preventDefault();
-        }
-
-        // Limit to maximum value of 500
-        if (parseInt(newValue) > 500) {
-            nativeEvent.preventDefault();
-        }
-    };
     const renderInviters = () => {
         return (
             <View style={styles.invitView}>

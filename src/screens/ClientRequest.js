@@ -25,7 +25,7 @@ const ClientRequest = (props) => {
         setResDetail,
         requestInfo, setRequestInfo,
         eventInfo, setEventInfo,
-        eventTypeInfo, setEventTypeInfo } = useContext(SearchContext);
+        eventTypeInfo, setEventTypeInfo, totalPrice, setTotalPrice } = useContext(SearchContext);
 
 
     const [date, setDate] = useState(new Date());
@@ -52,7 +52,6 @@ const ClientRequest = (props) => {
     const [selectedEvent, setSelectedEvent] = useState('');
 
     // price calculation states 
-    const [totalPrice, setTotalPrice] = useState(0)
 
 
     const handleScrollToPosition = () => {
@@ -545,7 +544,10 @@ const ClientRequest = (props) => {
         } else {
             calculateSingleDateTotal();
         }
-
+        const price = data.servicePrice
+        if (price) {
+            total += price
+        }
         setTotalPrice(total);
 
 
@@ -706,7 +708,9 @@ const ClientRequest = (props) => {
     const renderMainReciptDetails = (details) => {
         return (
             details.filteredSubDetials ?
-                details.filteredSubDetials.map((subDetail, index) => renderSingleReciptService(subDetail, index, details))
+                details.filteredSubDetials.map((subDetail, index) => {
+                    return subDetail?.subDetailArray?.length > 0 ? renderSingleReciptService(subDetail, index, details) : null
+                })
                 :
                 null
         )
