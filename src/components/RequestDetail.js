@@ -307,7 +307,6 @@ const RequestDetail = (props) => {
             }
         } else {
             detailIndex = 0
-            return;
         }
         const detail = resDetail
         switch (type) {
@@ -552,6 +551,8 @@ const RequestDetail = (props) => {
                 </View>
                 {element.subDetailArray.map(item => {
                     const found = selectedSupDet?.find((det) => det === item.id)
+                    console.log("found ", found);
+                    console.log("selectedSupDet ", selectedSupDet);
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
