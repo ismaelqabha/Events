@@ -504,16 +504,6 @@ const RequestDetail = (props) => {
             style: styles.input,
             placeholder: 'ادخل عدد الايام',
         }],
-        'بطاقات دعوة': [
-            {
-                style: styles.input,
-                placeholder: 'ادخل عدد النسخ',
-            },
-            {
-                style: styles.input,
-                placeholder: 'نص البطاقة',
-            }
-        ],
         'حلويات': [{
             style: styles.input,
             placeholder: 'ادخل الكمية',
@@ -550,6 +540,7 @@ const RequestDetail = (props) => {
                     <Text style={styles.detailText}>{element.detailTitle}</Text>
                 </View>
                 {element.subDetailArray.map(item => {
+                    console.log("item.id", item.id);
                     const found = selectedSupDet?.find((det) => det === item.id)
                     return (
                         <View style={styles.subDetail}>

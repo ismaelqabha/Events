@@ -44,6 +44,8 @@ const ClientRequest = (props) => {
     const [eventTypeName, setEventTypeName] = useState()
     const [eventName, setEventName] = useState()
     const [eventTypeId, setEventTypeId] = useState()
+    const [eventTotalCost, setEventTotalCost] = useState()
+    const [EVENTID, setEVENTID] = useState()
 
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
@@ -192,6 +194,7 @@ const ClientRequest = (props) => {
         addNewRequest(requestBody).then((res) => {
             if (res.message && res.message === 'Request Created') {
                 showMessage("Request Created successfully")
+                UpdateEventInfo()
             } else {
                 showMessage("failed to create request")
             }
@@ -393,26 +396,35 @@ const ClientRequest = (props) => {
         })
     }
 
-    const UpdateEventInfo = (eventId) => {
-        const eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
-        const evCost = eventInfo[eventItemIndex].eventCost
-        const lastTotal = evCost + totalPrice
+    const UpdateEventInfo = () => {
         const newEventItem = {
-            EventId: props.EventId,
-            eventCost: lastTotal,
+            EventId: EVENTID,
+            eventCost: eventTotalCost,
         }
+        ///console.log("newEventItem", newEventItem);
         updateEvent(newEventItem).then(res => {
             const ev = eventInfo || [];
             if (eventItemIndex > -1) {
                 ev[eventItemIndex] = newEventItem;
             }
-            setEventInfo([...ev, newEventItem])
+            //console.log("res.message", res.message);
+            if(res.message === 'Updated Sucessfuly'){
+                setEventInfo([...ev, newEventItem])
+                console.log("Saved successfuly");
+            } 
         })
+    }
+    const UpdateEventCostState = (eventId) => {
+        const eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
+        const evCost = eventInfo[eventItemIndex].eventCost
+        const lastTotal = evCost + totalPrice
+        setEventTotalCost(lastTotal)
+        setEVENTID(eventId)
     }
 
     const whenEventPress = (eventId) => {
         setSelectedEvent(eventId || '');
-        UpdateEventInfo(eventId)
+        UpdateEventCostState(eventId)
     }
 
     const renderEventInfo = () => {
@@ -501,7 +513,7 @@ const ClientRequest = (props) => {
         let total = 0;
         const calculateDateTotal = (date) => {
             const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
-            console.log("detail index  ", detailIndex);
+           // console.log("detail index  ", detailIndex);
             if (detailIndex !== -1) {
                 const { subDetailId, numOfInviters, campaigns } = resDetail[detailIndex];
                 var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);

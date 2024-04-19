@@ -25,6 +25,7 @@ export const ScreenNames = {
     ReviewsScreen: 'ReviewsScreen',
     ClientSpecialDates: 'ClientSpecialDates',
     ClientRelations: 'ClientRelations',
+    ClientShowRequest:'ClientShowRequest',
 
     // Create User
     CreateUpersonalInfo: 'CreateUpersonalInfo',

@@ -59,6 +59,7 @@ import ProviderOfferDesc from "../src/screens/ProviderScreens/ProviderOfferDesc"
 import ClientSpecialDates from "../src/screens/ClientSpecialDates";
 import ClientRelations from "../src/screens/ClientRelations";
 import ProviderShowRequest from "../src/screens/ProviderScreens/ProviderShowRequest";
+import ClientShowRequest from "../src/screens/ClientShowRequest";
 
 
 
@@ -121,7 +122,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ReviewsScreen} component={ReviewsScreen} />
                 <Stack.Screen name={ScreenNames.ClientSpecialDates} component={ClientSpecialDates} />
                 <Stack.Screen name={ScreenNames.ClientRelations} component={ClientRelations} />
-                
+                <Stack.Screen name={ScreenNames.ClientShowRequest} component={ClientShowRequest} />
                 
                
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />

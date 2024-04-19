@@ -26,7 +26,7 @@ const EventsCard = (props) => {
     const { eventTypeInfo, requestInfo, RequestIdState, userId, eventInfo, requestInfoAccUser,
         setEventInfo, TimeText, setRequestInfo, requestedDate } = useContext(SearchContext);
 
-    
+
 
     const requestItemIndex = requestInfo?.findIndex(item => item.request_Id === RequestIdState && item.ReqUserId === userId);
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === props.EventId && item.userId === userId)
@@ -40,32 +40,30 @@ const EventsCard = (props) => {
 
     const eventType = getEventTitle()
 
-    const filterReqAccEvent = () => {
-        return requestInfoAccUser.filter(item => {
-            return item.requestInfo.ReqEventId === EventId
-        })
-    }
- const [total, setTotal] = useState ()
-    const getTotalCost = () => {
-        let sumTotal = 0
-        const data = filterReqAccEvent()
-       
-        data.forEach(element => {
-            console.log(element.requestInfo.Cost);
-            sumTotal = sumTotal + element.requestInfo.Cost
-            setTotal(sumTotal)
-        });
-         console.log("total", total);
-        // return sum
-       
-        
-    }
+    // const filterReqAccEvent = () => {
+    //     return requestInfoAccUser.filter(item => {
+    //         return item.requestInfo.ReqEventId === EventId
+    //     })
+    // }
+    // const [total, setTotal] = useState()
+    // const getTotalCost = () => {
+    //     let sumTotal = 0
+    //     const data = filterReqAccEvent()
 
-   
+    //     data.forEach(element => {
+    //         console.log(element.requestInfo.Cost);
+    //         sumTotal = sumTotal + element.requestInfo.Cost
+    //         setTotal(sumTotal)
+    //     });
+    //     console.log("total", total);
+    //     // return sum  
+    // }
+
+
 
 
     useEffect(() => {
-        getTotalCost()
+       
     }, [])
 
     // console.log("eventType", eventType);
@@ -114,7 +112,7 @@ const EventsCard = (props) => {
     const whenPressLong = () => {
         setEditing(true)
     }
-    //console.log("eventDate.length", eventDate.length);
+   // console.log("eventDate.length", eventDate.length);
     return (
         <View style={styles.container}>
             <Pressable style={styles.card} onPress={onCaardPress} onLongPress={whenPressLong}>

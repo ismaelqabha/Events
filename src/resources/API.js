@@ -97,7 +97,7 @@ export const createNewEvent = async body => {
 };
 export const updateEvent = async body => {
   const url = 'Events/updateByid';
-  return await AppFetch(url, 'POST', body);
+  return await AppFetch(url, 'PATCH', body);
 };
 export const getEventList = async body => {
   const url = 'EventList/getEventItem';

@@ -5,9 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Fontisto from "react-native-vector-icons/Fontisto"
+import { ScreenNames } from '../../route/ScreenNames';
 
 
 const BookingCard = (props) => {
+    const reqInfo = { ...props }
+   //console.log("reqInfo", reqInfo);
     const { userPayment } = useContext(SearchContext);
     const navigation = useNavigation();
 
@@ -68,7 +71,7 @@ const BookingCard = (props) => {
                     {renderServTitle()}
 
                     <Pressable style={styles.detailView}
-                    //onPress={() => navigation.navigate(props.page)}
+                    onPress={() => navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo })}
                     >
                         <View style={styles.requestStuts}>
                             <Text style={styles.itemTxt}>{stutesType}</Text>
@@ -95,7 +98,7 @@ const BookingCard = (props) => {
                         {renderServTitle()}
                         <View>
                             <Pressable style={styles.detailView}
-                            //onPress={() => navigation.navigate(props.page)}
+                            onPress={() => navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo })}
                             >
                                 <View style={styles.requestStuts}>
                                     <Text style={styles.itemTxt}>{stutesType}</Text>
