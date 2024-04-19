@@ -163,22 +163,26 @@ const ProviderShowRequest = (props) => {
     const renderServiceDetail = (data) => {
         return serviceData[0].additionalServices.map(item => {
             return data.subDetailId.map(subItem => {
-                if (item.subDetailArray[0].subDetail_Id.includes(subItem)) {
-                    return (
-                        <View>
-                            {/* <Text style={styles.dateTxt}>{item.detailTitle}</Text> */}
-                            <View style={styles.dateview}>
-                                <Text style={styles.dateTxt}>{item.subDetailArray[0].detailSubtitle}</Text>
-                                <View style={styles.IconView}>
-                                    <AntDesign
-                                        name={"checkcircle"}
-                                        color={colors.puprble}
-                                        size={20} />
+               
+                return item.subDetailArray .map(elem =>{
+                 
+                    if (elem.id === subItem) {
+                        return (
+                            <View>
+                                
+                                <View style={styles.dateview}>
+                                    <Text style={styles.dateTxt}>{elem.detailSubtitle}</Text>
+                                    <View style={styles.IconView}>
+                                        <AntDesign
+                                            name={"checkcircle"}
+                                            color={colors.puprble}
+                                            size={20} />
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    )
-                }
+                        )
+                    }
+                })
             })
         })
     }

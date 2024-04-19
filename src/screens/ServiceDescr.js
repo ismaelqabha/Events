@@ -30,6 +30,7 @@ const ServiceDescr = (props) => {
         requestedDate, setrequestedDate,
         setReachCampaignfrom } = useContext(SearchContext);
 
+
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
             setRequestInfo(res)
@@ -84,6 +85,7 @@ const ServiceDescr = (props) => {
         setrequestedDate([])
         props.navigation.goBack();
     }
+
     const renderImg = () => {
         const imageArray = data.images[0].serviceImages.map(photos => {
             return photos;
@@ -121,6 +123,7 @@ const ServiceDescr = (props) => {
         />
     }
     const renderDescription = () => {
+    
         const serviceDescription = data.desc.map(item => {
             return (
                 <View style={styles.description}>
@@ -138,7 +141,7 @@ const ServiceDescr = (props) => {
         return serviceDescription
     }
 
-    // render Service Dates Info
+    // render Service Dates Info from result screen
     const SelectDatePressed = (dat, setIsPressed, pressed) => {
         const index = requestedDate.findIndex((date) => date === dat);
         if (index === -1) {
@@ -270,8 +273,10 @@ const ServiceDescr = (props) => {
         if (!!data.servicePrice && data.additionalServices.length > 0) {
             return (
                 <View>
-                    {renderInitialPrice()}
+                    <View style={{marginVertical: 20}}>{renderInitialPrice()}</View>
+                    <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
                     {renderMandatoryDetail()}
+                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
                     {renderOptionalDetail()}
                 </View>
             )
@@ -286,7 +291,9 @@ const ServiceDescr = (props) => {
         if (!!data.servicePrice || data.additionalServices.length > 0) {
             return (
                 <View>
+                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
                     {renderMandatoryDetail()}
+                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
                     {renderOptionalDetail()}
                 </View>
             )
@@ -336,7 +343,6 @@ const ServiceDescr = (props) => {
         const serviceDetailInfo = data.map((item) => {
             return (
                 <View style={styles.detailItem}>
-                    <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
                     <Pressable style={styles.detailTypeView} onPress={() => subDetailPressed(item.detail_Id)}>
                         <Text style={styles.detailTxt}>{item.detailTitle}</Text>
                         <AntDesign
@@ -360,7 +366,6 @@ const ServiceDescr = (props) => {
         const serviceDetailInfo = data.map((item) => {
             return (
                 <View style={styles.detailItem}>
-                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
                     <Pressable style={styles.detailTypeView} onPress={() => subDetailPressed(item.detail_Id)}>
                         <Text style={styles.detailTxt}>{item.detailTitle}</Text>
                         <AntDesign
@@ -374,6 +379,7 @@ const ServiceDescr = (props) => {
         })
         return serviceDetailInfo
     }
+
     ///////
     const renderClientReview = () => {
         return (
@@ -643,7 +649,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     detailItem: {
-        marginVertical: 10,
+        //marginVertical: 10,
     },
     detailTypeView: {
         flexDirection: 'row',

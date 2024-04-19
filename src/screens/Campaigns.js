@@ -98,7 +98,6 @@ const Campaigns = (props) => {
         }
     }
     const renderBody = () => {
-
         return (
             <View style={styles.body}>
                 <View style={styles.Offertitle}>
@@ -127,7 +126,7 @@ const Campaigns = (props) => {
                     {data.campContents.map(content => {
                         return (
                             <View style={styles.contentItem}>
-                                <Text style={styles.itemtxt}>{content}</Text>
+                                <Text style={styles.itemtxt}>{content.contentItem}</Text>
                                 <View style={styles.IconView}>
                                     <AntDesign
                                         style={{ alignSelf: 'center' }}
@@ -158,9 +157,11 @@ const Campaigns = (props) => {
         <View style={styles.container}>
             {renderHeader()}
             {/* <ScrollView> */}
-            {renderImg()}
-            {renderBody()}
-            {renderFooter()}
+                <View>
+                    {renderImg()}
+                    {renderBody()}
+                    {renderFooter()}
+                </View>
             {/* </ScrollView> */}
 
         </View>

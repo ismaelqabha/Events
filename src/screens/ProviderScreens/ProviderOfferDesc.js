@@ -665,7 +665,7 @@ const ProviderOfferDesc = (props) => {
                         return (
                             <View style={styles.subDetView}>
                                 <Text style={styles.subTxt}>{sub.detailSubtitle}</Text>
-                                <Pressable style={styles.checkView} onPress={() => whenSubDetailPress(sub.detailSubtitle, setselectedSubDetail, selectedSubDetail)}>
+                                <Pressable style={styles.checkView} onPress={() => whenSubDetailPress(sub.id, setselectedSubDetail, selectedSubDetail)}>
                                     {selectedSubDetail &&
                                         <Entypo
                                             style={{ alignSelf: 'center' }}
@@ -733,7 +733,7 @@ const ProviderOfferDesc = (props) => {
                                     size={25} />
                             </Pressable>
                             <View>
-                                <Text style={styles.Infotxt}>{item}</Text>
+                                <Text style={styles.Infotxt}>{item.contentItem}</Text>
                             </View>
                         </View>
                         <View style={styles.IconView}>
@@ -857,7 +857,7 @@ const ProviderOfferDesc = (props) => {
                 <View style={styles.content}>
                     {renderOfferContent()}
                 </View>
-                {/* {isOtherContent()} */}
+                {isOtherContent()}
                 <Text style={styles.titletxt}>أماكن العمل</Text>
                 <View style={styles.content}>
                     {renderOfferRegion()}

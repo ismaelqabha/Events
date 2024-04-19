@@ -10,13 +10,13 @@ import { ScreenNames } from '../../route/ScreenNames';
 
 const BookingCard = (props) => {
     const reqInfo = { ...props }
-   //console.log("reqInfo", reqInfo);
     const { userPayment } = useContext(SearchContext);
     const navigation = useNavigation();
+    const data = { ...props }
 
     const renderLogo = () => {
-        const index = props.image[0].logoArray?.findIndex((val) => val === true)
-        const img = props.image[0]?.serviceImages[index]
+        const index = props.images[0].logoArray?.findIndex((val) => val === true)
+        const img = props.images[0]?.serviceImages[index]
         return <Image
             source={{ uri: img }}
             style={styles.img}
@@ -24,12 +24,15 @@ const BookingCard = (props) => {
     }
 
     const renderServTitle = () => {
-        const data = props.services;
-        const cardsArray = data?.map(card => {
-            return <View style={styles.cardHeader}>
-                <View><Text style={styles.titleText}>{card.title}</Text></View>
-            </View>;
-        }); return cardsArray;
+        const serData = props.services;
+        const cardsArray = serData?.map(card => {
+            return <Pressable style={styles.cardHeader} 
+            //onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { data })}
+            >
+                <Text style={styles.titleText}>{card.title}</Text>
+            </Pressable>;
+        }); 
+        return cardsArray;
     };
 
     const renderPrice = (item) => {
@@ -71,7 +74,7 @@ const BookingCard = (props) => {
                     {renderServTitle()}
 
                     <Pressable style={styles.detailView}
-                    onPress={() => navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo })}
+                        onPress={() => navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo })}
                     >
                         <View style={styles.requestStuts}>
                             <Text style={styles.itemTxt}>{stutesType}</Text>
@@ -98,7 +101,7 @@ const BookingCard = (props) => {
                         {renderServTitle()}
                         <View>
                             <Pressable style={styles.detailView}
-                            onPress={() => navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo })}
+                                onPress={() => navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo })}
                             >
                                 <View style={styles.requestStuts}>
                                     <Text style={styles.itemTxt}>{stutesType}</Text>
@@ -117,7 +120,7 @@ const BookingCard = (props) => {
 
 
     const renderReqInfo = () => {
-         let stutesType = ''
+        let stutesType = ''
         if (props.reservationDetail.length > 1) {
             if (props.ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
@@ -192,7 +195,7 @@ const BookingCard = (props) => {
 
     return (
         <View style={styles.container}>
-           {renderReqInfo()}
+            {renderReqInfo()}
         </View>
     );
 
@@ -200,7 +203,7 @@ const BookingCard = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-       
+
     },
     img: {
         width: '100%',

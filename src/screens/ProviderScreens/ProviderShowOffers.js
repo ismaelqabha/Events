@@ -17,7 +17,7 @@ const ProviderShowOffers = (props) => {
     };
 
     useEffect(() => {
-        getCampignsfromApi()
+        // getCampignsfromApi()
     }, [])
 
     const onPressHandler = () => {
