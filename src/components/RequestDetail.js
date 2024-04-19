@@ -307,7 +307,6 @@ const RequestDetail = (props) => {
             }
         } else {
             detailIndex = 0
-            return;
         }
         const detail = resDetail
         switch (type) {

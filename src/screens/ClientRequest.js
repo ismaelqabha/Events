@@ -501,6 +501,7 @@ const ClientRequest = (props) => {
         let total = 0;
         const calculateDateTotal = (date) => {
             const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
+            console.log("detail index  ", detailIndex);
             if (detailIndex !== -1) {
                 const { subDetailId, numOfInviters, campaigns } = resDetail[detailIndex];
                 var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
@@ -508,7 +509,6 @@ const ClientRequest = (props) => {
                     campaigns.forEach((campaign) => {
                         const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
                         dateTotal += (campaign.campCost || 0) * multiplier
-                        total += (campaign.campCost || 0) * multiplier;
                     });
                 }
                 updateReservationObject(detailIndex, dateTotal);
@@ -523,7 +523,7 @@ const ClientRequest = (props) => {
                 if (campaigns) {
                     campaigns.forEach((campaign) => {
                         const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
-                        total += (campaign.campCost || 0) * multiplier;
+                        dateTotal += (campaign.campCost || 0) * multiplier;
                     });
                 }
                 updateReservationObject(0, dateTotal);
