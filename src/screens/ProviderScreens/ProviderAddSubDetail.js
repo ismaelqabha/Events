@@ -105,6 +105,7 @@ const ProviderAddSubDetail = props => {
   const onBackPress = () => {
     props.navigation.goBack();
   };
+  
   const deleteItem = (subDetail_Id) => {
     // Show an alert to confirm the delete
     Alert.alert(

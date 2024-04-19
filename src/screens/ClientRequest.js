@@ -7,7 +7,7 @@ import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { addNewRequest, createNewEvent, deleteRequestbyId, getEventList, getEventsInfo } from '../resources/API';
+import { addNewRequest, createNewEvent, deleteRequestbyId, getEventList, getEventsInfo, updateEvent } from '../resources/API';
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -392,9 +392,29 @@ const ClientRequest = (props) => {
             return result
         })
     }
+
+    const UpdateEventInfo = (eventId) => {
+        const eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
+        const evCost = eventInfo[eventItemIndex].eventCost
+        const lastTotal = evCost + totalPrice
+        const newEventItem = {
+            EventId: props.EventId,
+            eventCost: lastTotal,
+        }
+        updateEvent(newEventItem).then(res => {
+            const ev = eventInfo || [];
+            if (eventItemIndex > -1) {
+                ev[eventItemIndex] = newEventItem;
+            }
+            setEventInfo([...ev, newEventItem])
+        })
+    }
+
     const whenEventPress = (eventId) => {
         setSelectedEvent(eventId || '');
+        UpdateEventInfo(eventId)
     }
+
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {

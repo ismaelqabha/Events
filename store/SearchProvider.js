@@ -38,6 +38,7 @@ const SearchProvider = props => {
 
   // Request
   const [requestInfoByService, setRequestInfoByService] = useState([])
+  const [requestInfoAccUser, setRequestInfoAccUser] = useState([])
   const [resDetail, setResDetail] = useState([])
   const [totalPrice, setTotalPrice] = useState(0)
 
@@ -91,6 +92,8 @@ const SearchProvider = props => {
         setFileFavoriteState,
         requestInfoByService,
         setRequestInfoByService,
+        requestInfoAccUser, 
+        setRequestInfoAccUser,
         resDetail,
         setResDetail,
         ImgOfServeice,

@@ -5,8 +5,8 @@ import { FlatList } from 'react-native-gesture-handler';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
-import { v4 as uuidv4 } from 'uuid';
-import { createNewEvent, getEventList, getEventsInfo } from '../resources/API';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { createNewEvent, getEventList, getEventsInfo, getRequestInfoWithservice, getRequestbyUserId } from '../resources/API';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -19,9 +19,15 @@ const ClientEvents = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [fileEventName, setfileEventName] = useState();
     const { userId } = useContext(UsersContext);
-    const { eventInfo, setEventInfo, eventTypeInfo, setEventTypeInfo } = useContext(SearchContext);
+    const { eventInfo, setEventInfo, eventTypeInfo, requestInfoAccUser, setRequestInfoAccUser } = useContext(SearchContext);
     const [eventTypeName, setEventTypeName] = useState()
     const [eventName, setEventName] = useState()
+
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+
+    const [dateOfEvent, setDateOfEvent] = useState([])
     // const [eventTypeId, setEventTypeId] = useState()
 
 
@@ -29,9 +35,9 @@ const ClientEvents = (props) => {
         props.navigation.goBack();
     }
     const onPressModalHandler = () => {
-        getEventsType()
+       
         setShowModal(true);
-        getEventTypeInfo()
+       
     }
     const onModalCancelPress = () => {
         setShowModal(false)
@@ -40,7 +46,7 @@ const ClientEvents = (props) => {
         if (fileEventName !== undefined) {
             if (eventName !== undefined) {
                 const evTitID = getEventTypeID(eventName)
-                
+
                 creatNewEvent(evTitID)
                 ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
                     ToastAndroid.SHORT,
@@ -77,15 +83,16 @@ const ClientEvents = (props) => {
     }
     const getEventsfromApi = () => {
         getEventsInfo({ userId: userId }).then(res => {
-           
             setEventInfo(res)
         })
     }
-    const getEventsType = () => {
-        getEventList({}).then(res => {
-            setEventTypeInfo(res)
+   
+    const getRequestfromApi = () => {
+        getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
+            setRequestInfoAccUser(res) 
         })
     }
+
     const getEventTypeInfo = () => {
         const eventList = []
         eventTypeInfo.forEach(element => {
@@ -106,7 +113,7 @@ const ClientEvents = (props) => {
             userId: userId,
             eventName: fileEventName,
             eventTitleId: eventTypeId,
-            eventDate: '',
+            eventDate: dateOfEvent,
             eventCost: 0
         }
         createNewEvent(newEventItem).then(res => {
@@ -117,6 +124,8 @@ const ClientEvents = (props) => {
     }
     useEffect(() => {
         getEventsfromApi()
+        getEventTypeInfo()
+        getRequestfromApi()
     }, [])
 
     const renderHeader = () => {
@@ -143,6 +152,44 @@ const ClientEvents = (props) => {
             </View>
         )
     }
+    const onChange = (event, selectedDate) => {
+        setShow(false)
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
+        setDateOfEvent(fDate);
+    }
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    }
+    const renderExpireDate = () => {
+        return (
+            <View>
+                <Pressable onPress={() => showMode('date')} >
+                    <View style={styles.viewDate}>
+                        <Text style={styles.datetxt}>{dateOfEvent || "تاريخ المناسبة"}</Text>
+                        <Entypo
+                            name='calendar'
+                            style={{ fontSize: 30, color: colors.silver, paddingRight: 20 }}
+                        />
+                    </View>
+                </Pressable>
+                {show && (
+                    <DateTimePicker
+                        testID='dateTimePicker'
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        display='calendar'
+                        onChange={onChange}
+                    />
+                )}
+            </View>
+        )
+    }
     const createEventModal = () => {
         return (
             <Modal
@@ -155,18 +202,12 @@ const ClientEvents = (props) => {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.detailModal}>
-                        <View style={styles.Motitle}>
+                        {/* <View style={styles.Motitle}>
                             <Text style={styles.text}>انشاء مناسبة</Text>
-                        </View>
+                        </View> */}
                         <View style={styles.body}>
                             {/* <Text style={styles.text}>اسم المناسبة</Text> */}
-                            <TextInput
-                                style={styles.input}
-                                keyboardType='default'
-                                placeholder='ادخل اسم المناسبة '
-                                onChangeText={setfileEventName}
-                            />
-                            <View style={{ width: '100%', marginVertical: 20 }}>
+                            <View style={{ width: '100%', marginTop: 20 }}>
                                 <SelectList
                                     data={eventTypeName}
                                     setSelected={val => {
@@ -178,6 +219,13 @@ const ClientEvents = (props) => {
                                     dropdownTextStyles={styles.dropstyle}
                                 />
                             </View>
+                            <TextInput
+                                style={styles.input}
+                                keyboardType='default'
+                                placeholder='ادخل اسم المناسبة '
+                                onChangeText={setfileEventName}
+                            />
+                            {renderExpireDate()}
                         </View>
                         <View style={styles.btn}>
                             <Pressable onPress={() => onModalCancelPress()} >
@@ -194,7 +242,7 @@ const ClientEvents = (props) => {
         )
     }
 
-   // console.log("eventInfo",eventInfo);
+    // console.log("eventInfo",eventInfo);
     const query = () => {
         return eventInfo || [];
     }
@@ -229,10 +277,10 @@ const styles = StyleSheet.create({
         height: 50,
     },
     iconBack: {
-         marginLeft: 10
+        marginLeft: 10
     },
     icon: {
-         marginRight: 10
+        marginRight: 10
     },
     txt: {
         fontSize: 20,
@@ -242,7 +290,7 @@ const styles = StyleSheet.create({
 
     detailModal: {
         width: '90%',
-        height: 250,
+        height: 480,
         backgroundColor: '#ffffff',
         borderRadius: 20,
     },
@@ -269,11 +317,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: 50,
         width: '100%',
-        borderWidth: 1,
+        borderWidth: 0.6,
         borderRadius: 10,
         borderColor: 'gray',
         fontSize: 15,
         color: 'black',
+        marginVertical: 20
     },
     btn: {
         flexDirection: 'row',
@@ -301,11 +350,28 @@ const styles = StyleSheet.create({
     },
     dropstyle: {
         color: 'black',
-        fontSize: 18,
+        fontSize: 15,
+        textAlign: 'center'
     },
     droptext: {
-        fontSize: 18,
-        color: 'black',
+        fontSize: 15,
+        // color: 'black',
+    },
+    viewDate: {
+        flexDirection: 'row',
+        height: 50,
+        width: '100%',
+        borderRadius: 10,
+        alignItems: 'center',
+        //backgroundColor: 'lightgray',
+        justifyContent: 'flex-end',
+        borderWidth: 0.6,
+        borderColor: 'gray',
+    },
+    datetxt: {
+        fontSize: 15,
+        marginRight: 90,
+        color: colors.puprble,
     },
 })
 

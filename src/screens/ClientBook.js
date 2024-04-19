@@ -8,41 +8,41 @@ import { getRequestInfoWithservice } from '../resources/API';
 
 const ClientBook = (props) => {
 
-    const { requestInfo, setRequestInfo } = useContext(SearchContext);
+    const { requestInfoAccUser } = useContext(SearchContext);
     const { data } = props?.route.params;
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    // console.log("data.EventId", data.EventId);
+   
 
-    const getRequestfromApi = () => {
-        getRequestInfoWithservice({ ReqEventId: data?.EventId }).then(res => {
-            setRequestInfo(res)
-            //console.log("requestInfo", res);
-        })
-    }
+   
     useEffect(() => {
-        getRequestfromApi()
+        
     }, [])
 
-    // const query = () => {
-    //     if (!data.EventId) {
-    //         return requestInfo || [];
-    //     }
-    //     return requestInfo.filter(event => {
-    //         return event.ReqEventId == data.EventId;
-    //     })++
-    // }
-    const renderCard = () => {
-        const dataa = requestInfo;
-        const cardsArray = dataa.map(card => {
-            return <BookingCard {...card.requestInfo}
-                services={card?.serviceData}
-                image={card?.serviceImage} />;
-        });
-        return cardsArray;
-    };
+   
+   
+    const queryRequest = () => {
+        if (requestInfoAccUser.message !== "no Request") {
+            const clientReq = requestInfoAccUser.filter(item => {
+                return item.requestInfo.ReqEventId == data.EventId;
+            })
+          
+            return clientReq
+        } else {
+            return []
+        }
+    }
+
+    const renderRequestData = () => {
+        const reqData = queryRequest()
+        return reqData.map(item => {
+            return <BookingCard {...item.requestInfo}
+            services={item?.serviceData}
+            image={item?.serviceImage} />
+        })
+    }
 
 
     return (
@@ -50,8 +50,7 @@ const ClientBook = (props) => {
 
             <View style={styles.headerImg}>
                 <View style={styles.viewIcon}>
-                    <Pressable onPress={onPressHandler}
-                    >
+                    <Pressable onPress={onPressHandler}>
                         <AntDesign
                             style={styles.icon}
                             name={"left"}
@@ -65,7 +64,7 @@ const ClientBook = (props) => {
                 </View>
             </View>
             <ScrollView contentContainerStyle={styles.home}>
-                {renderCard()}
+                {renderRequestData()}
             </ScrollView>
         </View>
     );

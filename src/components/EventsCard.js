@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Image, Pressable } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
@@ -9,7 +9,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { updateEvent, updateRequest as updateRequestAPI } from '../resources/API';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
-import CalculetRemaingTime from './CalculetRemaingTime';
+import AntDesign from 'react-native-vector-icons/AntDesign'
+import Feather from 'react-native-vector-icons/Feather'
 import { colors } from '../assets/AppColors';
 
 
@@ -17,12 +18,15 @@ import { colors } from '../assets/AppColors';
 const EventsCard = (props) => {
     const { isFromAddEventClick, service_id } = props
     const navigation = useNavigation();
-    const { eventName, eventDate, eventCost, eventTitleId } = props;
+    const { eventName, eventDate, eventCost, eventTitleId, EventId } = props;
     const [date, setDate] = useState(new Date())
+    const [editing, setEditing] = useState(false)
 
-    const { eventTypeInfo, TimeText, requestInfo, setRequestInfo,
-        requestedDate, RequestIdState, userId, eventInfo, setEventInfo } = useContext(SearchContext);
 
+    const { eventTypeInfo, requestInfo, RequestIdState, userId, eventInfo, requestInfoAccUser,
+        setEventInfo, TimeText, setRequestInfo, requestedDate } = useContext(SearchContext);
+
+    
 
     const requestItemIndex = requestInfo?.findIndex(item => item.request_Id === RequestIdState && item.ReqUserId === userId);
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === props.EventId && item.userId === userId)
@@ -35,37 +39,66 @@ const EventsCard = (props) => {
     }
 
     const eventType = getEventTitle()
+
+    const filterReqAccEvent = () => {
+        return requestInfoAccUser.filter(item => {
+            return item.requestInfo.ReqEventId === EventId
+        })
+    }
+ const [total, setTotal] = useState ()
+    const getTotalCost = () => {
+        let sumTotal = 0
+        const data = filterReqAccEvent()
+       
+        data.forEach(element => {
+            console.log(element.requestInfo.Cost);
+            sumTotal = sumTotal + element.requestInfo.Cost
+            setTotal(sumTotal)
+        });
+         console.log("total", total);
+        // return sum
+       
+        
+    }
+
+   
+
+
+    useEffect(() => {
+        getTotalCost()
+    }, [])
+
     // console.log("eventType", eventType);
 
-    const UpdateRequest = () => {
-        const newRequestInfo = {
-            RequestId: RequestIdState,
-            ReqEventId: props.EventId,
-            reservationTime: TimeText
-        }
-        updateRequestAPI(newRequestInfo).then(res => {
-            const req = requestInfo || [];
-            if (requestItemIndex > -1) {
-                req[requestItemIndex] = newRequestInfo;
-            }
-            setRequestInfo([...req])
-        })
-    }
-    const UpdateEventInfo = () => {
-        const newEventItem = {
-            EventId: props.EventId,
-            userId: userId,
-            eventDate: moment(requestedDate).format('L'),
-            // eventCost: "50890",
-        }
-        updateEvent(newEventItem).then(res => {
-            const ev = eventInfo || [];
-            if (eventItemIndex > -1) {
-                ev[eventItemIndex] = newEventItem;
-            }
-            setEventInfo([...ev, newEventItem])
-        })
-    }
+    // const UpdateRequest = () => {
+    //     const newRequestInfo = {
+    //         RequestId: RequestIdState,
+    //         ReqEventId: props.EventId,
+    //         reservationTime: TimeText
+    //     }
+    //     updateRequestAPI(newRequestInfo).then(res => {
+    //         const req = requestInfo || [];
+    //         if (requestItemIndex > -1) {
+    //             req[requestItemIndex] = newRequestInfo;
+    //         }
+    //         setRequestInfo([...req])
+    //     })
+    // }
+    // const UpdateEventInfo = () => {
+    //     const newEventItem = {
+    //         EventId: props.EventId,
+    //         userId: userId,
+    //         eventDate: moment(requestedDate).format('L'),
+    //         // eventCost: "50890",
+    //     }
+    //     updateEvent(newEventItem).then(res => {
+    //         const ev = eventInfo || [];
+    //         if (eventItemIndex > -1) {
+    //             ev[eventItemIndex] = newEventItem;
+    //         }
+    //         setEventInfo([...ev, newEventItem])
+    //     })
+    // }
 
 
     const onCaardPress = () => {
@@ -78,29 +111,42 @@ const EventsCard = (props) => {
         // navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
 
     }
-
-
+    const whenPressLong = () => {
+        setEditing(true)
+    }
+    //console.log("eventDate.length", eventDate.length);
     return (
         <View style={styles.container}>
-            <Pressable style={styles.card} onPress={onCaardPress}>
+            <Pressable style={styles.card} onPress={onCaardPress} onLongPress={whenPressLong}>
 
                 <View style={styles.titlee}>
                     <Text style={styles.eventTxt}>{eventName}</Text>
+                    {editing &&
+                        <View style={{ flexDirection: 'row', position: 'absolute', right: 0 }}>
+                            <Pressable style={{ margin: 10 }} //onPress={() => { props.deleteItem(props.subDetail_Id) }}
+                            >
+                                <AntDesign name='delete' size={20} color={colors.silver} />
+                            </Pressable>
+                            <Pressable style={{ margin: 10 }} //onPress={() => { props.openEdit(props) }}
+                            >
+                                <Feather name='edit' size={20} color={colors.silver} />
+                            </Pressable>
+                        </View>}
                 </View>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: "50%" }}>
 
                     <View style={styles.rightView}>
-                        {eventDate ?
+                        {eventDate.length > 1 ?
+                            <Text style={styles.text}>في أكثر من يوم</Text> :
                             <View>
                                 <Text style={styles.text}>
-                                    {moment(eventDate).format('dddd')}
+                                    {moment(eventDate[0]).format('dddd')}
                                 </Text>
                                 <Text style={styles.text}>
-                                    {moment(eventDate).format('L')}
+                                    {moment(eventDate[0]).format('L')}
                                 </Text>
-                            </View> :
-                            <Text style={styles.text}>أكثر من يوم</Text>}
+                            </View>}
                     </View>
 
                     <View style={styles.leftView}>
@@ -129,13 +175,14 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 200,
         // marginTop: 30,
-        margin: 10
+        margin: 5
     },
     titlee: {
-        width: '100%',
-        height: "25%",
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        width: '100%',
+        height: "25%",
 
     },
     eventTxt: {

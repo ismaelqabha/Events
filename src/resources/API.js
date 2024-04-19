@@ -7,7 +7,6 @@ export const getAllUsersInfo = async (body) => {
   const url = 'Users/getAllUsers'
   return await AppFetch(url, 'POST', body)
 }
-
 export const getUserData = async (body) => {
   const url = 'Users/getUserInfo'
   return await AppFetch(url, 'POST', body)
@@ -41,6 +40,7 @@ export const updateUserData = async body => {
   return await AppFetch(url, 'PATCH', body);
 };
 
+
 // Service Data
 export const getHomePageData = async body => {
   const url = 'servicesData/getServiceAccordingCategory';
@@ -69,6 +69,8 @@ export const getServiceDetail = async body => {
   const url = 'serviceDetail/getServiceDetailByServID';
   return await AppFetch(url, 'POST', body);
 };
+
+
 //Service sub Detail
 export const getServiceSubDetail = async body => {
   const url = 'subDetail/getSubDetail';
@@ -82,6 +84,8 @@ export const addNewOrderDetail = async body => {
   const url = 'OrderServiceDetail/addOrderDetail';
   return await AppFetch(url, 'POST', body);
 };
+
+
 //Event
 export const getEventsInfo = async body => {
   const url = 'Events/getEvent';
@@ -95,13 +99,13 @@ export const updateEvent = async body => {
   const url = 'Events/updateByid';
   return await AppFetch(url, 'POST', body);
 };
-
 export const getEventList = async body => {
   const url = 'EventList/getEventItem';
   return await AppFetch(url, 'POST', body);
 };
-// Request
 
+
+// Request
 export const getRequestByServiceId = async (body) => {
   const url = 'Request/getRequestByServiceId'
   return await AppFetch(url, 'POST', body)
@@ -110,7 +114,6 @@ export const getRequestsAndUsersByServiceId = async (body) => {
   const url = 'Request/getAllClientsRequestService'
   return await AppFetch(url, 'POST', body)
 }
-
 export const getRequestInfoWithservice = async (body) => {
   const url = 'Request/getRequestService'
   return await AppFetch(url, 'POST', body)
@@ -131,6 +134,7 @@ export const deleteRequestbyId = async (body) => {
   const url = 'Request/deleteByid'
   return await AppFetch(url, 'DELETE', body)
 }
+
 // Camaighns
 export const getCampaigns = async (body) => {
   const url = 'Campaigns/getCampaigns'

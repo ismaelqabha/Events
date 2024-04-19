@@ -8,16 +8,17 @@ import UsersContext from '../../store/UsersContext';
 
 
 export default function Splash(props) {
-    const { setServiceDataInfo, setUserFavorates, servType, setCampInfo, setEventTypeInfo} = useContext(SearchContext);
+    const { setServiceDataInfo, setUserFavorates, servType, setCampInfo, setEventTypeInfo } = useContext(SearchContext);
     const { setUserInfo, userId, setAllUserData } = useContext(UsersContext);
+
     const getFavoritesFromApi = () => {
         getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
             !resjson?.message &&
-                setUserFavorates(resjson)        
+                setUserFavorates(resjson)
             props.navigation.replace('Drawr')
         })
     }
-    
+
     const getDataFromApi = () => {
         getHomePageData({ servType: servType }).then(res => {
             setServiceDataInfo(res)
@@ -29,9 +30,7 @@ export default function Splash(props) {
     const getEventListfromApi = () => {
         getEventList().then(res => {
             //console.log("res", res);
-            if (res.message == 'No EventLog') {
-
-            } else {
+            if (res.message !== 'No EventLog') {
                 setEventTypeInfo(res)
             }
         })
@@ -42,6 +41,8 @@ export default function Splash(props) {
         })
     }
 
+
+    ////
     const getAllUserfromApi = () => {
         getAllUsersInfo({}).then(res => {
             setAllUserData(res)
@@ -55,10 +56,10 @@ export default function Splash(props) {
         getUserfromApi()
     }, [servType])
 
-    
+
 
     const getCampaignfromApi = () => {
-        getCampaigns({}) .then (res => {
+        getCampaigns({}).then(res => {
             setCampInfo(res)
         })
     }
@@ -68,7 +69,7 @@ export default function Splash(props) {
 
         // </View>
         <ImageBackground style={styles.container} source={require('../assets/photos/backgroundSplash.png')}>
-           
+
         </ImageBackground>
     )
 }
@@ -76,7 +77,7 @@ export default function Splash(props) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-       
+
     },
-    
+
 })
