@@ -53,6 +53,8 @@ const ClientRequest = (props) => {
     const [pressed, setPressed] = useState([])
     const [selectedEvent, setSelectedEvent] = useState('');
 
+    let eventItemIndex
+
     // price calculation states 
 
 
@@ -189,7 +191,6 @@ const ClientRequest = (props) => {
             ReqUserId: userId,
             reservationDetail: resDetail,
         }
-
 
         addNewRequest(requestBody).then((res) => {
             if (res.message && res.message === 'Request Created') {
@@ -338,20 +339,20 @@ const ClientRequest = (props) => {
         )
     }
     const handleEventChoosen = (eventId) => {
-        setChoosenEvents(prevEvents => {
-            // Check if eventId exists in prevEvents array
-            const eventIndex = prevEvents.indexOf(eventId);
+        // setChoosenEvents(prevEvents => {
+        //     // Check if eventId exists in prevEvents array
+        //     const eventIndex = prevEvents.indexOf(eventId);
 
-            // If eventId is not in prevEvents, add it
-            if (eventIndex === -1) {
-                return [...prevEvents, eventId];
-            } else {
-                // If eventId is in prevEvents, remove it
-                const updatedEvents = [...prevEvents];
-                updatedEvents.splice(eventIndex, 1);
-                return updatedEvents;
-            }
-        });
+        //     // If eventId is not in prevEvents, add it
+        //     if (eventIndex === -1) {
+        //         return [...prevEvents, eventId];
+        //     } else {
+        //         // If eventId is in prevEvents, remove it
+        //         const updatedEvents = [...prevEvents];
+        //         updatedEvents.splice(eventIndex, 1);
+        //         return updatedEvents;
+        //     }
+        // });
     }
     // Event Section
     const onPressModalHandler = () => {
@@ -401,21 +402,27 @@ const ClientRequest = (props) => {
             EventId: EVENTID,
             eventCost: eventTotalCost,
         }
-        ///console.log("newEventItem", newEventItem);
+
         updateEvent(newEventItem).then(res => {
             const ev = eventInfo || [];
             if (eventItemIndex > -1) {
                 ev[eventItemIndex] = newEventItem;
             }
-            //console.log("res.message", res.message);
-            if(res.message === 'Updated Sucessfuly'){
+            
+            if (res.message === 'Updated Sucessfuly') {
                 setEventInfo([...ev, newEventItem])
-                console.log("Saved successfuly");
-            } 
+                showMessage("تم التعديل")
+            } else {
+                showMessage("لم يتم التعديل")
+            }
+
+        }).catch((E) => {
+            console.error("error creating request E:", E);
         })
+              
     }
     const UpdateEventCostState = (eventId) => {
-        const eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
+        eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
         const evCost = eventInfo[eventItemIndex].eventCost
         const lastTotal = evCost + totalPrice
         setEventTotalCost(lastTotal)
@@ -513,7 +520,7 @@ const ClientRequest = (props) => {
         let total = 0;
         const calculateDateTotal = (date) => {
             const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
-           // console.log("detail index  ", detailIndex);
+            // console.log("detail index  ", detailIndex);
             if (detailIndex !== -1) {
                 const { subDetailId, numOfInviters, campaigns } = resDetail[detailIndex];
                 var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
@@ -531,7 +538,7 @@ const ClientRequest = (props) => {
         const calculateSingleDateTotal = () => {
             if (resDetail.length > 0) {
                 const { subDetailId, numOfInviters, campaigns } = resDetail[0];
-                const dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
+                var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
                 if (campaigns) {
                     campaigns.forEach((campaign) => {
                         const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);

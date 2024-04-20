@@ -29,7 +29,7 @@ const ServiceDescr = (props) => {
         requestInfo, setRequestInfo,
         requestedDate, setrequestedDate,
         setReachCampaignfrom } = useContext(SearchContext);
-
+console.log("data", data);
 
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {

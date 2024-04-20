@@ -540,7 +540,7 @@ const RequestDetail = (props) => {
                     <Text style={styles.detailText}>{element.detailTitle}</Text>
                 </View>
                 {element.subDetailArray.map(item => {
-                    console.log("item.id", item.id);
+                   // console.log("item.id", item.id);
                     const found = selectedSupDet?.find((det) => det === item.id)
                     return (
                         <View style={styles.subDetail}>
@@ -567,9 +567,9 @@ const RequestDetail = (props) => {
     }
 
     const renderCampaighnHeader = (camp, index) => {
-        const found = offer?.findIndex((det) => det === camp?.CampId)
-        return (
-            <Pressable onPress={() => onCampPress(camp?.CampId || index)} style={found === -1 ? styles.offerTitle : styles.offerTitleSelected}>
+        var found = offer?.find((det) => det === camp?.CampId)
+         return (
+            <Pressable onPress={() => onCampPress(camp?.CampId || index)} style={!found ? styles.offerTitle : styles.offerTitleSelected}>
                 <Text style={styles.campText}>{camp.campTitle}</Text>
                 {camp.priceInclude == 'حسب الشخص' ?
                     <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :

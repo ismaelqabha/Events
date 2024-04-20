@@ -67,7 +67,7 @@ const PersonalInfo = (props) => {
             <View style={styles.seprater}></View>
         )
     }
-   
+
     useEffect(() => {
         getRegionsfromApi()
 
@@ -338,7 +338,7 @@ const PersonalInfo = (props) => {
                 )}
             </View>)
     }
-   
+
 
     // Update Functions
     const updateInfo = (infoData, setstate) => {
@@ -347,7 +347,7 @@ const PersonalInfo = (props) => {
             if (selectedUserIndex > -1) {
                 data[selectedUserIndex] = { ...data[selectedUserIndex], ...infoData };
             }
-            console.log("res.message", res.message);
+
             if (res.message === 'Updated Sucessfuly') {
                 setUserInfo([...data])
                 setstate(false)
@@ -357,6 +357,8 @@ const PersonalInfo = (props) => {
                     ToastAndroid.BOTTOM,
                 );
             }
+        }).catch((E) => {
+            console.error("error creating request E:", E);
         })
     }
     const updateGender = () => {
@@ -830,7 +832,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginVertical: 5
     },
-    inputUserName:{
+    inputUserName: {
         textAlign: 'center',
         height: 50,
         width: '60%',

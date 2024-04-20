@@ -25,13 +25,18 @@ const BookingCard = (props) => {
 
     const renderServTitle = () => {
         const serData = props.services;
+        var obj = {
+            ...data.services,
+            ...data
+        }
+        obj = obj['0']
         const cardsArray = serData?.map(card => {
-            return <Pressable style={styles.cardHeader} 
-            //onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { data })}
+            return <Pressable style={styles.cardHeader}
+                onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { obj })}
             >
                 <Text style={styles.titleText}>{card.title}</Text>
             </Pressable>;
-        }); 
+        });
         return cardsArray;
     };
 
