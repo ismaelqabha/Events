@@ -23,8 +23,9 @@ const ProviderShowRequest = (props) => {
     const serviceData = filterService()
 
     const filterSelectedCampign = (id) => {
-        return campInfo?.filter(item => {
-            return item.CampId === id;
+        const data = campInfo || []
+        return data?.filter(item => {
+                return item.CampId === id;
         });
     }
 
@@ -165,7 +166,6 @@ const ProviderShowRequest = (props) => {
             return data.subDetailId.map(subItem => {
                
                 return item.subDetailArray .map(elem =>{
-                 
                     if (elem.id === subItem) {
                         return (
                             <View>
@@ -235,7 +235,7 @@ const ProviderShowRequest = (props) => {
             {renderReqTime(reqInfo.reservationDetail[0])}
             {isHall(reqInfo.reservationDetail[0])}
             {isSelectedFromDetail(reqInfo.reservationDetail[0])}
-            {/* {isSelectedFromCampign(reqInfo.reservationDetail[0])} */}
+            {isSelectedFromCampign(reqInfo.reservationDetail[0])}
         </View>)
     }
 

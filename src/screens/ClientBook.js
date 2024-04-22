@@ -40,7 +40,8 @@ const ClientBook = (props) => {
         return reqData.map(item => {
             return <BookingCard {...item.requestInfo}
             services={item?.serviceData}
-            images={item?.serviceImage} />
+            images={item?.serviceImage}
+            relatedCamp={item?.serviceCamp} />
         })
     }
 

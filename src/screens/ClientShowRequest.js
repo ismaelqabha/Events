@@ -1,36 +1,49 @@
 
 
-import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Modal, ScrollView } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
-
-
 import moment from "moment";
 import SearchContext from '../../store/SearchContext';
-import ServiceProviderContext from '../../store/ServiceProviderContext';
 import { colors } from '../assets/AppColors';
+import { getCampaignsByServiceId } from '../resources/API';
 
 
 
 const ClientShowRequest = (props) => {
-    const { isFirst, campInfo } = useContext(SearchContext);
-    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+    const {  } = useContext(SearchContext);
     const { reqInfo } = props.route?.params || {}
 
-   // console.log("reqInfo", reqInfo);
+    const [showModal, setShowModal] = useState(false);
 
-    const filterService = () => {
-        return serviceInfoAccorUser?.filter(item => {
-            return item.service_id === isFirst;
-        });
+    //console.log("reqInfo", reqInfo.reservationDetail[0].campaigns);
+
+
+    const getSerDetail = (id) => {
+        const serviceData = reqInfo.services[0].additionalServices.filter(element => {
+            return element.subDetailArray.find(itemId => {
+                return itemId.id === id
+            })
+        })
+
+        return serviceData
     }
-   // const serviceData = filterService()
+
+    const getSerSubDet = (id) => {
+        const data = getSerDetail(id)
+        const subDetInfo = data[0].subDetailArray.filter(item => {
+            return item.id === id
+        })
+        return subDetInfo
+    }
+
 
     const filterSelectedCampign = (id) => {
-        return campInfo?.filter(item => {
+        const data = reqInfo.relatedCamp
+        return data?.filter(item => {
             return item.CampId === id;
         });
     }
@@ -39,6 +52,71 @@ const ClientShowRequest = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
+    const onOfferPress = () => {
+        setShowModal(true)
+    }
+
+    const showOfferDetail = (contentFromSubDet, campContents) => {
+        return <View style={styles.contentView}>
+            {contentFromSubDet.map(itemID => {
+                const titleInfo = getSerSubDet(itemID)
+                return (
+                    <View style={styles.contentItem}>
+                        <Text style={styles.itemtxt}>{titleInfo[0].detailSubtitle}</Text>
+                        <View style={styles.IconView}>
+                            <AntDesign
+                                style={{ alignSelf: 'center' }}
+                                name={"checksquareo"}
+                                color={colors.puprble}
+                                size={30} />
+                        </View>
+                    </View>
+                )
+            })}
+            {campContents.map(content => {
+                return (
+                    <View style={styles.contentItem}>
+                        <Text style={styles.itemtxt}>{content.contentItem}</Text>
+                        <View style={styles.IconView}>
+                            <AntDesign
+                                style={{ alignSelf: 'center' }}
+                                name={"checksquareo"}
+                                color={colors.puprble}
+                                size={30} />
+                        </View>
+                    </View>
+                )
+            })}
+        </View>
+    }
+    const offerDetailModal = (contentFromSubDet, campContents) => {
+        return (
+            <Modal
+                transparent
+                visible={showModal}
+                animationType="slide"
+                onRequestClose={() => setShowModal(false)}>
+                <View style={styles.centeredView}>
+                    <View style={styles.detailModal}>
+
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalHeaderTxt}> مكونات العرض </Text>
+                        </View>
+
+                        <View style={styles.modalbody}>
+                            <ScrollView>{showOfferDetail(contentFromSubDet, campContents)}</ScrollView>
+                        </View>
+
+                        <Pressable style={styles.Modalbtn} onPress={() => setShowModal(false)}>
+                           <Text>OK</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+
 
 
     const header = () => {
@@ -168,15 +246,15 @@ const ClientShowRequest = (props) => {
     }
     const renderServiceDetail = (data) => {
         return reqInfo.services[0].additionalServices.map(item => {
-        
+
             return data.subDetailId.map(subItem => {
-               
-                return item.subDetailArray .map(elem =>{
-                 
+
+                return item.subDetailArray.map(elem => {
+
                     if (elem.id === subItem) {
                         return (
                             <View>
-                                
+
                                 <View style={styles.dateview}>
                                     <Text style={styles.dateTxt}>{elem.detailSubtitle}</Text>
                                     <View style={styles.IconView}>
@@ -190,7 +268,7 @@ const ClientShowRequest = (props) => {
                         )
                     }
                 })
-               
+
             })
         })
     }
@@ -206,20 +284,21 @@ const ClientShowRequest = (props) => {
     }
     const renderCampigns = (item) => {
         return item.offerId.map(Offid => {
-
             const data = filterSelectedCampign(Offid)
-            return (
-                <View>
-                    <View style={styles.dateview}>
-                        <Text style={styles.dateTxt}>{data[0].campTitle}</Text>
-                        <View style={styles.IconView}>
-                            <AntDesign
-                                name={"checkcircle"}
-                                color={colors.puprble}
-                                size={20} />
-                        </View>
+            return (<View>
+                <Pressable style={styles.dateview}
+                    onPress={() => onOfferPress()}
+                >
+                    <Text style={styles.dateTxt}>{data[0].campTitle}</Text>
+                    <View style={styles.IconView}>
+                        <AntDesign
+                            name={"checkcircle"}
+                            color={colors.puprble}
+                            size={20} />
                     </View>
-                </View>
+                </Pressable>
+                {offerDetailModal(data[0].contentFromSubDet, data[0].campContents)}
+            </View>
             )
         })
     }
@@ -243,7 +322,7 @@ const ClientShowRequest = (props) => {
             {renderReqTime(reqInfo.reservationDetail[0])}
             {isHall(reqInfo.reservationDetail[0])}
             {isSelectedFromDetail(reqInfo.reservationDetail[0])}
-            {/* {isSelectedFromCampign(reqInfo.reservationDetail[0])} */}
+            {isSelectedFromCampign(reqInfo.reservationDetail[0])}
         </View>)
     }
 
@@ -324,5 +403,54 @@ const styles = StyleSheet.create({
         backgroundColor: colors.BGScereen,
         borderRadius: 30,
         marginLeft: 15
+    },
+    detailModal: {
+        width: '95%',
+        height: 350,
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    modalHeader: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: 50,
+    },
+    modalHeaderTxt: {
+        fontSize: 18
+    },
+    Modalbtn: {
+       // flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems:'center',
+        position: 'absolute',
+        bottom: 10,
+        width: '100%',
+        height:40
+    },
+    modalbody: {
+        paddingHorizontal: 5
+    },
+    contentItem: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        borderRadius: 5,
+        height: 30,
+        alignItems: 'center',
+        width: '90%',
+        alignSelf: 'center',
+        marginVertical: 10
+    },
+    contentView: {
+        marginVertical: 5,
+        // borderWidth: 1,
+        borderRadius: 8,
+        borderColor: 'lightgray'
     },
 })

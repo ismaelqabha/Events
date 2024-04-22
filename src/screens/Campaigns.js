@@ -107,7 +107,6 @@ const Campaigns = (props) => {
                 {seperator()}
                 <Text style={styles.titletxt}>العرض يشمل</Text>
                 <View style={styles.contentView}>
-
                     {data.contentFromSubDet.map(itemID => {
                         const titleInfo = getSerSubDet(itemID)
                         return (

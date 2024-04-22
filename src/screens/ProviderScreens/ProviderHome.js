@@ -876,8 +876,8 @@ const ProviderHome = props => {
 
   //Social Media
   const deleteSocialMediaItem = (Socialitem, setShowModal) => {
-    console.log("serviceSocialMedia", serviceSocialMedia);
-    console.log("Socialitem", Socialitem);
+    // console.log("serviceSocialMedia", serviceSocialMedia);
+    // console.log("Socialitem", Socialitem);
     const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
     setServiceSocialMedia(lastUpdate)
 
