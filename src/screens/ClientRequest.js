@@ -12,7 +12,7 @@ import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { v4 as uuidv4 } from 'uuid';
-import { showMessage } from '../resources/Functions'
+import { calculateTotalPrice, filterSubDetails, showMessage } from '../resources/Functions'
 
 
 
@@ -408,7 +408,7 @@ const ClientRequest = (props) => {
             if (eventItemIndex > -1) {
                 ev[eventItemIndex] = newEventItem;
             }
-            
+
             if (res.message === 'Updated Sucessfuly') {
                 setEventInfo([...ev, newEventItem])
                 showMessage("تم التعديل")
@@ -419,7 +419,7 @@ const ClientRequest = (props) => {
         }).catch((E) => {
             console.error("error creating request E:", E);
         })
-              
+
     }
     const UpdateEventCostState = (eventId) => {
         eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
@@ -514,90 +514,9 @@ const ClientRequest = (props) => {
         )
     }
 
-    // pricing 
-
-    const calculateTotalPrice = () => {
-        let total = 0;
-        const calculateDateTotal = (date) => {
-            const detailIndex = resDetail.findIndex((item) => item.reservationDate === date);
-            // console.log("detail index  ", detailIndex);
-            if (detailIndex !== -1) {
-                const { subDetailId, numOfInviters, campaigns } = resDetail[detailIndex];
-                var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
-                if (campaigns) {
-                    campaigns.forEach((campaign) => {
-                        const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
-                        dateTotal += (campaign.campCost || 0) * multiplier
-                    });
-                }
-                updateReservationObject(detailIndex, dateTotal);
-                total += dateTotal;
-            }
-        };
-
-        const calculateSingleDateTotal = () => {
-            if (resDetail.length > 0) {
-                const { subDetailId, numOfInviters, campaigns } = resDetail[0];
-                var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
-                if (campaigns) {
-                    campaigns.forEach((campaign) => {
-                        const multiplier = calculateMultiplier(campaign.priceInclude, numOfInviters, campaign.numberPerTable);
-                        dateTotal += (campaign.campCost || 0) * multiplier;
-                    });
-                }
-                updateReservationObject(0, dateTotal);
-                total += dateTotal;
-            }
-        };
-
-        const calculateSubDetailTotal = (subDetailId, numOfInviters) => {
-            let dateTotal = 0;
-            const filteredSubDetails = filterSubDetails(subDetailId);
-            filteredSubDetails.forEach((subDetail) => {
-                const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
-                const numberPerTable = subDetail.numberPerTable;
-                subDetail.subDetailArray.forEach((detail) => {
-                    const price = parseInt(detail.detailSubtitleCost) * calculateMultiplier(additionType, numOfInviters, numberPerTable);
-                    dateTotal += price;
-                });
-            });
-            return dateTotal;
-        };
-
-        const calculateMultiplier = (priceInclude, numOfInviters, numberPerTable) => {
-            switch (priceInclude) {
-                case "perPerson":
-                    return numOfInviters || 0;
-                case "perTable":
-                    return Math.ceil(numOfInviters / numberPerTable);
-                default:
-                    return 1;
-            }
-        };
-
-        const updateReservationObject = (index, dateTotal) => {
-            resDetail[index].datePrice = dateTotal;
-        };
-        if (Array.isArray(requestedDate)) {
-            requestedDate.forEach((date) => calculateDateTotal(date));
-        } else {
-            calculateSingleDateTotal();
-        }
-        const price = data.servicePrice
-        if (price) {
-            total += price
-        }
-        setTotalPrice(total);
-
-
-    };
-
-
-
-
     // Call the function to calculate the initial total price
     useEffect(() => {
-        calculateTotalPrice();
+        calculateTotalPrice(resDetail, requestedDate, data, setTotalPrice);
     }, [requestedDate, resDetail]);
 
     const showDetaiPress = () => {
@@ -634,20 +553,7 @@ const ClientRequest = (props) => {
         )
     }
 
-    const filterSubDetails = (subDetailId) => {
-        return data.additionalServices.map(service => {
-            // Filter sub details based on whether their id exists in subDetailId array
-            const filteredSubDetailArray = service.subDetailArray.filter(subDetail =>
-                subDetailId.includes(subDetail.id)
-            );
 
-            // Return the service object with modified subDetailArray
-            return {
-                ...service,
-                subDetailArray: filteredSubDetailArray
-            };
-        });
-    };
     const renderFullReciptDate = (date, index = 0) => {
         // common states
 
@@ -667,7 +573,7 @@ const ClientRequest = (props) => {
             detailIndex = 0
         }
         const { subDetailId, numOfInviters } = resDetail[detailIndex]
-        const filteredSubDetials = filterSubDetails(subDetailId)
+        const filteredSubDetials = filterSubDetails(data, subDetailId)
         const showList = filteredSubDetials.some(item => item.subDetailArray && item.subDetailArray.length > 0);
         const campaigns = resDetail[detailIndex].campaigns || [];
         const showCamp = campaigns && campaigns.length > 0 ? true : false
