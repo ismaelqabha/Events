@@ -123,8 +123,7 @@ const ServiceDescr = (props) => {
         />
     }
     const renderDescription = () => {
-    
-        const serviceDescription = data.desc.map(item => {
+        const serviceDescription = data?.desc?.map(item => {
             return (
                 <View style={styles.description}>
                     <Text style={styles.descText}>{item.descItem}</Text>
@@ -138,7 +137,7 @@ const ServiceDescr = (props) => {
                 </View>
             )
         })
-        return serviceDescription
+        return serviceDescription || null
     }
 
     // render Service Dates Info from result screen
@@ -273,7 +272,7 @@ const ServiceDescr = (props) => {
         if (!!data.servicePrice && data.additionalServices.length > 0) {
             return (
                 <View>
-                    <View style={{marginVertical: 20}}>{renderInitialPrice()}</View>
+                    <View style={{ marginVertical: 20 }}>{renderInitialPrice()}</View>
                     <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
                     {renderMandatoryDetail()}
                     <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
@@ -528,7 +527,7 @@ const ServiceDescr = (props) => {
                     {renderDescription()}
                 </View>
                 {seperator()}
-                <View style={styles.ditailView}>
+                {/*<View style={styles.ditailView}>
                     <Text style={styles.text}>التفاصيل لتحديد تكلفة الحجز</Text>
                     {renderServiceDetail()}
                     <Text style={styles.text}>أو يمكنك اختيار احد العروض التالية</Text>
@@ -542,7 +541,7 @@ const ServiceDescr = (props) => {
                 <View style={styles.icon}>
                     {renderSoialMedia()}
                     {renderPhoneContact()}
-                </View>
+                </View> */}
 
             </View >
         )
