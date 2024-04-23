@@ -7,15 +7,11 @@ import moment from "moment";
 import SearchContext from '../../../store/SearchContext';
 
 const ProviderBookingRequest = (props) => {
-  const { fulDate, mutibleReservation, multibleDataRes, fiteredUsers } = props.route?.params || {}
-  console.log(fulDate);
-
+  const { fulDate, mutibleReservation, filterdRequestAccUser } = props.route?.params || {}
   const { requestInfoByService } = useContext(SearchContext);
 
   const [fromReservationScreen, setfromReservationScreen] = useState(true)
-
   const selectedDate = moment(fulDate).format('L')
-
   const manageArrayDates = []
 
   const onPressHandler = () => {
@@ -40,12 +36,10 @@ const ProviderBookingRequest = (props) => {
 
   ///// searching according spacific data
 
-
   const getBookingInfo = () => {
     const reqInfo = requestInfoByService.filter(item => {
-      return item.ReqStatus === 'paid' && item.reservationDetail[0].reservationDate === fulDate
+      return item.requestInfo.ReqStatus === 'paid' && item.requestInfo.reservationDetail[0].reservationDate === fulDate
     })
-
     return reqInfo
   }
 
@@ -76,11 +70,12 @@ const ProviderBookingRequest = (props) => {
 
   const manageDatesusingSearchbyName = () => {
     let requestBookingDate = ''
-    const data = multibleDataRes
+    const data = filterdRequestAccUser
+
     return data.map(item => {
 
-      if (item.reservationDetail.length > 1) {
-        return item.reservationDetail.map(multiItem => {
+      if (item.requestInfo.reservationDetail.length > 1) {
+        return item.requestInfo.reservationDetail.map(multiItem => {
           requestBookingDate = multiItem.reservationDate
 
           if (!(manageArrayDates.includes(requestBookingDate))) {
@@ -88,7 +83,7 @@ const ProviderBookingRequest = (props) => {
           }
         })
       } else {
-        requestBookingDate = item.reservationDetail[0].reservationDate
+        requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
 
         if (!(manageArrayDates.includes(requestBookingDate))) {
           manageArrayDates.push(requestBookingDate)
@@ -99,15 +94,15 @@ const ProviderBookingRequest = (props) => {
   }
 
   const filterReqAccUserId = (resDate) => {
-    const data = fiteredUsers
-    const userid = data[0].USER_ID
-    const reqInfo = requestInfoByService.filter(item => {
-      if (item.reservationDetail.length > 1) {
-        return item.reservationDetail.find(multiItem => {
-          return item.ReqStatus === 'paid' && item.ReqUserId === userid && multiItem.reservationDate === resDate
+    const data = filterdRequestAccUser
+   
+    const reqInfo = data.filter(item => {
+      if (item.requestInfo.reservationDetail.length > 1) {
+        return item.requestInfo.reservationDetail.find(multiItem => {
+          return  multiItem.reservationDate === resDate
         })
       } else {
-        return item.ReqStatus === 'paid' && item.ReqUserId === userid && item.reservationDetail[0].reservationDate === resDate
+        return item.requestInfo.reservationDetail[0].reservationDate === resDate
       }
 
     })

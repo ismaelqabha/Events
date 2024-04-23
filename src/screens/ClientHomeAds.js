@@ -28,26 +28,38 @@ const ClientHomeAds = (props) => {
     const deltaY = new Animated.Value(0);
 
 
-    const queryCampaign = () => {
-        if (!campInfo || !Array.isArray(campInfo)) {
-            return null; // Return early if campInfo is undefined or not an array
-        }
+    console.log("ServiceDataInfo", ServiceDataInfo[1].serviceCamp);
 
-        return campInfo.filter(res => {
-            const serType = res.campCatType === cat;
-            const matchRegion = res.campRigon.includes(userRegion);
-            const result = serType && matchRegion;
-            return result;
-        });
-    };
-    const CampData = queryCampaign();
+    useEffect(() => {
+        setCat('قاعات')
+    }, [])
+    
+    const getHallServices = () => {
+        return ServiceDataInfo?.filter(item => {
+            return item.serviceData.servType == cat
+        })
+    }
+
+    const getCampaign = () => {
+        return ServiceDataInfo?.filter(item => {
+            return item.serviceCamp.find(elem => {
+                return item.serviceData.servType == cat && elem.campCatType === cat && elem.campRigon.includes(userRegion)
+            })
+
+        })
+    }
 
     const renderCampaigns = () => {
+        const CampData = getCampaign();
         const campArray = CampData?.map(camp => {
-            return < CampaignCard {...camp} />
+            return < CampaignCard {...camp.serviceCamp}
+            />
         });
+        console.log(campArray);
         return campArray;
     }
+
+
 
     const Categoryquery = () => {
         return servicesCategory || [];
@@ -62,11 +74,6 @@ const ClientHomeAds = (props) => {
         )
     };
 
-    const getHallServices = () => {
-        return ServiceDataInfo?.filter(item => {
-            return item.serviceData.servType == cat
-        })
-    }
     const renderTopServices = () => {
         const data = getHallServices()
         const ServiceArray = data?.map(card => {
@@ -98,9 +105,7 @@ const ClientHomeAds = (props) => {
         return ServiceArray
     }
 
-    useEffect(() => {
-        setCat('قاعات')
-    }, [])
+   
 
     const renderSeeAll = () => {
         return (
@@ -210,18 +215,18 @@ const ClientHomeAds = (props) => {
                     </View>
 
                 </View>
-                {CampData &&
-                    <View style={styles.centents}>
-                        <View style={styles.itemView}>
-                            {renderSeeAll()}
-                            <Text style={styles.titleText}>{'أفضل العروض من' + ' ' + cat}</Text>
-                        </View>
-                        <View style={styles.campBox}>
-                            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} >
-                                {renderCampaigns()}
-                            </ScrollView>
-                        </View>
-                    </View>}
+                {/* {CampData && */}
+                <View style={styles.centents}>
+                    <View style={styles.itemView}>
+                        {renderSeeAll()}
+                        <Text style={styles.titleText}>{'أفضل العروض من' + ' ' + cat}</Text>
+                    </View>
+                    <View style={styles.campBox}>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} >
+                            {renderCampaigns()}
+                        </ScrollView>
+                    </View>
+                </View>
 
 
 

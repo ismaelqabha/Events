@@ -259,6 +259,7 @@ const Results = (props) => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
+                relatedCamp={card?.serviceCamp}
                 availableDates={readyDates}
             />;
         });
@@ -295,6 +296,7 @@ const Results = (props) => {
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
+                relatedCamp={card?.serviceCamp}
                 availableDates={readyDates}
             />;
         });

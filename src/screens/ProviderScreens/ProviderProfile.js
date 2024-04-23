@@ -58,11 +58,6 @@ const ProviderProfile = props => {
       setRequestInfoByService(res)
     })
   }
-  const getRequestUsersfromApi = () => {
-    getRequestsAndUsersByServiceId({ ReqServId: isFirst }).then(res => {
-      setRequestInfoByService(res)
-    })
-  }
 
   useEffect(() => {
     getRegionsfromApi()

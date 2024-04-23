@@ -3,7 +3,6 @@ import { View, StyleSheet, Text, Pressable, ScrollView, Image } from 'react-nati
 import BookingCard from '../../src/components/BookingCard';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import SearchContext from '../../store/SearchContext';
-import { getRequestInfoWithservice } from '../resources/API';
 
 
 const ClientBook = (props) => {
@@ -15,20 +14,11 @@ const ClientBook = (props) => {
         props.navigation.goBack();
     }
    
-
-   
-    useEffect(() => {
-        
-    }, [])
-
-   
-   
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
             const clientReq = requestInfoAccUser.filter(item => {
                 return item.requestInfo.ReqEventId == data.EventId;
             })
-          
             return clientReq
         } else {
             return []

@@ -14,7 +14,6 @@ const UserProfile = (props) => {
         props.navigation.goBack();
     }
     
-
    
     useEffect(() => {
         
@@ -37,8 +36,8 @@ const UserProfile = (props) => {
         return (
             <View style={styles.mainView}>
                 <View style={styles.nameView}>
-                    <View style={styles.profilImg}><Image style={styles.userImg} source={{uri : data[0].UserPhoto}} /></View>
-                    <Text style={styles.nameTxt}>{data[0].User_name}</Text>
+                    <View style={styles.profilImg}><Image style={styles.userImg} source={{uri : data.UserPhoto}} /></View>
+                    <Text style={styles.nameTxt}>{data.User_name}</Text>
                 </View>
                 <View style={styles.reviewView}>
                     <View style={{}}><Text style={styles.txt}>3 شهور في مناسباتي</Text></View>
@@ -80,7 +79,7 @@ const UserProfile = (props) => {
         return (
             <View style={styles.userContacts}>
                 <View style={styles.contactItem}>
-                    <View><Text style={styles.basicInfo}>{data[0].UserPhone}</Text>
+                    <View><Text style={styles.basicInfo}>{data.UserPhone}</Text>
                         <Text style={styles.basicInfoTitle}>الموبايل</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -93,7 +92,7 @@ const UserProfile = (props) => {
 
                 </View>
                 <View style={styles.contactItem}>
-                    <View><Text style={styles.basicInfo}>{data[0].Email}</Text>
+                    <View><Text style={styles.basicInfo}>{data.Email}</Text>
                         <Text style={styles.basicInfoTitle}>Email</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -147,7 +146,7 @@ const UserProfile = (props) => {
                 {renderUserName()}
                 {createRelation()}
                 {renderUserContacts()}
-                <Text style={styles.titleRevTxt}>{' ماذا قالوا عن  ' +  data[0].User_name }</Text>
+                <Text style={styles.titleRevTxt}>{' ماذا قالوا عن  ' +  data.User_name }</Text>
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}

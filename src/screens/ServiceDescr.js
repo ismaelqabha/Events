@@ -30,6 +30,7 @@ const ServiceDescr = (props) => {
         requestedDate, setrequestedDate,
         setReachCampaignfrom } = useContext(SearchContext);
 
+      
 
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
@@ -397,16 +398,13 @@ const ServiceDescr = (props) => {
         )
     }
     const renderCampeigns = () => {
-        //setReachCampaignfrom('fromServiceDescr')
-        const CampData = campiegnsAccordingServiceId;
-        if (CampData.message !== 'No Campaigns') {
-            const campArray = CampData?.map(camp => {
+            const campArray = data.relatedCamp?.map(offer => {
                 return <View style={styles.HallView}>
-                    < CampaignCard  {...camp} />
+                    < CampaignCard  {...offer} />
                 </View>
             });
+            //console.log("campArray", campArray);
             return campArray;
-        }
     }
     const renderSoialMedia = () => {
         return data.socialMedia.map(item => {
@@ -527,7 +525,7 @@ const ServiceDescr = (props) => {
                     {renderDescription()}
                 </View>
                 {seperator()}
-                {/*<View style={styles.ditailView}>
+                <View style={styles.ditailView}>
                     <Text style={styles.text}>التفاصيل لتحديد تكلفة الحجز</Text>
                     {renderServiceDetail()}
                     <Text style={styles.text}>أو يمكنك اختيار احد العروض التالية</Text>
@@ -541,7 +539,7 @@ const ServiceDescr = (props) => {
                 <View style={styles.icon}>
                     {renderSoialMedia()}
                     {renderPhoneContact()}
-                </View> */}
+                </View>
 
             </View >
         )

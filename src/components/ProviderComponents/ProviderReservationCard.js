@@ -11,31 +11,22 @@ import moment from "moment";
 
 
 const ProviderReservationCard = (props) => {
-    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen, reservationDetail , rseDate } = props
-    const { allUserData } = useContext(UsersContext);
+    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen , rseDate } = props
+    const {  } = useContext(UsersContext);
     const { setRequestInfoByService } = useContext(SearchContext);
     const navigation = useNavigation();
     const reqInfo = { ...props }
+    
 
 
-
-   
-
-    var filteredRes = reservationDetail.filter((detail)=> detail.reservationDate.slice(0, 10) == rseDate)
-
-    const filterUsersAccID = () => {
-        const filterUsers = allUserData.user.filter(item => {
-            return item.USER_ID === props.ReqUserId
-        })
-        return filterUsers
-    }
+    var filteredRes = reqInfo.requestInfo.reservationDetail.filter((detail)=> detail.reservationDate.slice(0, 10) == rseDate)
 
     const renderClientInfo = () => {
-        const data = filterUsersAccID()
+        const data = props.userInfo[0]
         return (
             <Pressable style={styles.info} onPress={() => navigation.navigate(ScreenNames.UserProfile, { data })}>
-                <Image style={styles.profilImg} source={{ uri: data[0].UserPhoto }} />
-                <Text style={styles.userName}>{data[0].User_name}</Text>
+                <Image style={styles.profilImg} source={{ uri: props.userInfo[0].UserPhoto }} />
+                <Text style={styles.userName}>{props.userInfo[0].User_name}</Text>
             </Pressable>
         )
     }
@@ -43,7 +34,7 @@ const ProviderReservationCard = (props) => {
         return (
             <View style={styles.dateview}>
                 <View>
-                    <Text style={styles.dateTxt}>{props.ReqDate}</Text>
+                    <Text style={styles.dateTxt}>{props.requestInfo.ReqDate}</Text>
                     <Text style={styles.labelDateTxt}>تاريخ الطلب</Text>
                 </View>
                 <View style={styles.IconView}>
@@ -75,7 +66,7 @@ const ProviderReservationCard = (props) => {
         return (
             <View style={styles.dateview}>
                 <View>
-                    <Text style={styles.dateTxt}>{props.Cost}</Text>
+                    <Text style={styles.dateTxt}>{props.requestInfo.Cost}</Text>
                 </View>
                 <Image style={styles.shekeImg} source={require('../../assets/photos/shekelSign.png')} />
             </View>
@@ -84,8 +75,8 @@ const ProviderReservationCard = (props) => {
     const time = () => {
         return (
             <View style={styles.dateview}>
-                <Text style={styles.dateTxt}>{'  الى  ' + props.reservationDetail[0].EndTime}</Text>
-                <Text style={styles.dateTxt}>{'  من   ' + props.reservationDetail[0].startingTime}</Text>
+                <Text style={styles.dateTxt}>{'  الى  ' + props.requestInfo.reservationDetail[0].EndTime}</Text>
+                <Text style={styles.dateTxt}>{'  من   ' + props.requestInfo.reservationDetail[0].startingTime}</Text>
             </View>
         )
 
@@ -129,14 +120,14 @@ const ProviderReservationCard = (props) => {
     }
     const accept = () => {
         const newData = {
-            RequestId: props.RequestId,
+            RequestId: props.requestInfo.RequestId,
             ReqStatus: 'waiting pay'
         }
         updateInfo(newData)
     }
     const refuse = () => {
         const newData = {
-            RequestId: props.RequestId,
+            RequestId: props.requestInfo.RequestId,
             ReqStatus: 'refuse'
         }
         updateInfo(newData)
@@ -255,7 +246,7 @@ const ProviderReservationCard = (props) => {
         if (fromWaitingScreen) {
             return (
                 <View>
-                    {reservationDetail.length > 1 ?
+                    {reqInfo.requestInfo.reservationDetail.length > 1 ?
                         multiRequestWaitingReplyCard()
                         :
                         requestWaitingReplyCard()

@@ -10,7 +10,7 @@ import { ScreenNames } from '../../../route/ScreenNames';
 
 const ProviderCalender = (props) => {
     const { serviceTitle, requestInfoByService } = useContext(SearchContext);
-    const { allUserData } = useContext(UsersContext);
+    const { } = useContext(UsersContext);
     const [client, setClient] = useState(null)
 
     const [mutibleReservation, setMutibleReservation] = useState(true)
@@ -24,42 +24,31 @@ const ProviderCalender = (props) => {
         setClient('بحث الزبائن')
     }, [])
 
+
+    const getBookingInfo = () => {
+        if (requestInfoByService.message !== "no Request") {
+            const reqInfo = requestInfoByService.filter(item => {
+                return item.requestInfo.ReqStatus === 'paid'
+            })
+            return reqInfo
+        } else {
+            return []
+        }
+    }
+
     const filterUsersAccName = () => {
-        const filterUsers = allUserData.user.filter(item => {
-            return item.User_name.includes(client)
+        const data = getBookingInfo()
+        const filterUsers = data.filter(item => {
+            return item.userInfo.find(elem => {
+                return elem.User_name.includes(client)
+            })
         })
         return filterUsers
     }
-   
-    const getRequestsAccUserId = () => {
-        let userid = '0'
-        const data = filterUsersAccName()
-
-        if (data.length > 0) {
-            userid = data[0].USER_ID
-        }
-        const reqInfo = requestInfoByService.filter(item => {
-            // if (item.reservationDetail.length > 1) {
-            //     //if reservation detail has more than one date
-            //     let result = item.reservationDetail.find(multiItem => {
-
-            //         return item.ReqStatus === 'paid' && item.ReqUserId === userid
-            //     })
-            //     return result
-
-            // } else {
-                //if reservation detail has one date
-                return item.ReqStatus === 'paid' && item.ReqUserId === userid //&& item.Cost === 12500
-            // }
-        })
-        
-        return reqInfo
-    }
 
     const renderSearchResult = () => {
-        const multibleDataRes = getRequestsAccUserId()
-        const fiteredUsers = filterUsersAccName()
-        props.navigation.navigate(ScreenNames.ProviderBookingRequest, { mutibleReservation, multibleDataRes, fiteredUsers })
+        const filterdRequestAccUser = filterUsersAccName()
+        props.navigation.navigate(ScreenNames.ProviderBookingRequest, { mutibleReservation, filterdRequestAccUser })
     }
 
     const renderInputClientName = () => {
@@ -81,7 +70,7 @@ const ProviderCalender = (props) => {
             </View>
         )
     }
-    //console.log("serviceTitle", serviceTitle);
+  
     return (
         <View style={styles.container}>
             <View style={styles.title}>
@@ -93,7 +82,7 @@ const ProviderCalender = (props) => {
                         color={"black"}
                         size={25} />
                 </Pressable>
-                {/* <Text style={styles.txt}>{serviceTitle}</Text> */}
+                
                 <Text style={styles.txt}>تقويم الحجوزات</Text>
             </View>
 
@@ -151,6 +140,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         color: 'black',
-       // borderWidth: 1
+        // borderWidth: 1
     },
 })
