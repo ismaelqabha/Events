@@ -10,10 +10,6 @@ const CampaignCard = (props) => {
     const navigation = useNavigation();
     const { reachCampaignfrom } = useContext(SearchContext);
 
-    //const data = props.serviceCamp[0]
-   
-    //console.log("props", props);
-
     const onCaardPress = () => {
         navigation.navigate(ScreenNames.Campaigns, { data: { ...props } })
     }

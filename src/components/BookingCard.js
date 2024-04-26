@@ -30,6 +30,7 @@ const BookingCard = (props) => {
             ...serData[0]
         }
         delete obj.services
+        
         const cardsArray = serData?.map(card => {
             return <Pressable style={styles.cardHeader}
                 onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { data: obj })}

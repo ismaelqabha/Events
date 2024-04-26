@@ -1,6 +1,6 @@
 
 
-import { StyleSheet, Text, View, Pressable, Modal, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Modal, ScrollView,Image } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -9,15 +9,16 @@ import Entypo from "react-native-vector-icons/Entypo";
 import moment from "moment";
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
-import { getCampaignsByServiceId } from '../resources/API';
+
 
 
 
 const ClientShowRequest = (props) => {
-    const {  } = useContext(SearchContext);
+    const { } = useContext(SearchContext);
     const { reqInfo } = props.route?.params || {}
 
     const [showModal, setShowModal] = useState(false);
+    const [showMoreModal, setShowMoreModal] = useState(false);
 
     //console.log("reqInfo", reqInfo.reservationDetail[0].campaigns);
 
@@ -109,28 +110,96 @@ const ClientShowRequest = (props) => {
                         </View>
 
                         <Pressable style={styles.Modalbtn} onPress={() => setShowModal(false)}>
-                           <Text>OK</Text>
+                            <Text>OK</Text>
                         </Pressable>
                     </View>
                 </View>
             </Modal>
         )
     }
+    const moreModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={showMoreModal}
+                animationType='slide'
+                onRequestClose={() => setShowMoreModal(false)}>
+                <View style={styles.centeredMoreView}>
+                    <View style={styles.moreModal}>
 
+                        <Pressable style={styles.modalHeader} onPress={() => setShowMoreModal(false)}>
+                            <Text style={styles.modalHeaderTxt}>...</Text>
+                        </Pressable>
+
+                        <View style={styles.modalbody}>
+                            {moreOperation()}
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+
+    const moreOperation = () => {
+        if (reqInfo.ReqStatus === 'waiting reply') {
+            return (
+                <View>
+                    <Pressable style={styles.moreItem}>
+                        <Text style={styles.moreTxt}>تعديل</Text>
+                    </Pressable>
+
+                    <Pressable style={styles.moreItem}>
+                        <Text style={styles.moreTxt}>اِلغاء الحجز</Text>
+                    </Pressable>
+                </View>
+            )
+        }
+        if (reqInfo.ReqStatus === 'waiting pay') {
+            return (
+                <View>
+                    <Pressable style={styles.moreItem}>
+                        <Text style={styles.moreTxt}>اِجراء عملية دفع</Text>
+                    </Pressable>
+                    <Pressable style={styles.moreItem}>
+                        <Text style={styles.moreTxt}>تعديل</Text>
+                    </Pressable>
+                </View>
+            )
+        }
+        if (reqInfo.ReqStatus === 'paid') {
+            return (
+                <View>
+                    <Pressable style={styles.moreItem}>
+                        <Text style={styles.moreTxt}>اِجراء عملية دفع</Text>
+                    </Pressable>
+                </View>
+            )
+        }
+    }
+    const moreModalPress = () => {
+        setShowMoreModal(true)
+    }
 
 
     const header = () => {
         return (
             <View style={styles.head}>
-                <Pressable onPress={onPressHandler}
-                >
+                <Pressable onPress={onPressHandler}>
                     <Ionicons
                         style={styles.icon}
                         name={"arrow-back"}
                         color={"black"}
                         size={25} />
                 </Pressable>
-                <Text style={styles.headerText}>تفاصيل الحجز</Text>
+                {/* <Text style={styles.headerText}>تفاصيل الحجز</Text> */}
+                <Pressable onPress={moreModalPress}
+                >
+                    <Fontisto
+                        style={styles.icon}
+                        name={"more-v"}
+                        color={"black"}
+                        size={20} />
+                </Pressable>
             </View>)
     }
     const renderSendingReqDate = () => {
@@ -154,7 +223,7 @@ const ClientShowRequest = (props) => {
 
     const renderReqDate = (item) => {
         return (
-            <View style={styles.ContentView}>
+            <View>
                 <View style={styles.dateview}>
                     <View style={{ alignItems: 'flex-end' }}>
                         <Text style={styles.dateTxt}>{moment(item.reservationDate).format('L')}</Text>
@@ -173,16 +242,22 @@ const ClientShowRequest = (props) => {
     const renderfinalCost = () => {
         return (
             <View style={styles.ContentView}>
-                <View style={styles.dateview}>
-                    <View style={{ alignItems: 'flex-end' }}>
-                        <Text style={styles.dateTxt}>{reqInfo.Cost}</Text>
-                        <Text style={styles.labelDateTxt}>السعر</Text>
-                    </View>
-                    <View style={styles.IconView}>
-                        <Entypo
-                            name={"price-tag"}
-                            color={colors.puprble}
-                            size={20} />
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Pressable //onPress={showDetaiPress} 
+                    >
+                        <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
+                    </Pressable>
+                    <View style={styles.dateview}>
+                        <View style={{ alignItems: 'flex-end' }}>
+                            <Text style={styles.dateTxt}>{reqInfo.Cost}</Text>
+                            <Text style={styles.labelDateTxt}>السعر</Text>
+                        </View>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                name={"price-tag"}
+                                color={colors.puprble}
+                                size={20} />
+                        </View>
                     </View>
                 </View>
             </View>
@@ -190,7 +265,7 @@ const ClientShowRequest = (props) => {
     }
     const renderReqTime = (item) => {
         return (
-            <View style={styles.ContentView}>
+            <View>
                 <View style={styles.dateview}>
                     <View style={styles.timeView}>
                         <View style={{ alignItems: 'flex-end' }}>
@@ -220,7 +295,7 @@ const ClientShowRequest = (props) => {
     }
     const renderInviters = (item) => {
         return (
-            <View style={styles.ContentView}>
+            <View>
                 <View style={styles.dateview}>
                     <View style={{ alignItems: 'flex-end' }}>
                         <Text style={styles.dateTxt}>{item.numOfInviters}</Text>
@@ -317,7 +392,7 @@ const ClientShowRequest = (props) => {
     }
 
     const renderSingleDateRequest = () => {
-        return (<View>
+        return (<View style={styles.ContentView}>
             {renderReqDate(reqInfo.reservationDetail[0])}
             {renderReqTime(reqInfo.reservationDetail[0])}
             {isHall(reqInfo.reservationDetail[0])}
@@ -336,6 +411,7 @@ const ClientShowRequest = (props) => {
                 {reqInfo.reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
                 {renderfinalCost()}
+                {moreModal()}
             </ScrollView>
         </View>
     )
@@ -350,12 +426,14 @@ const styles = StyleSheet.create({
     head: {
         flexDirection: 'row',
         alignItems: 'center',
-        height: 40,
-        justifyContent: 'space-between'
+        height: 60,
+        justifyContent: 'space-between',
+        width: '90%',
+        alignSelf: 'center',
+        //borderWidth: 1
     },
     icon: {
-
-        marginLeft: 10,
+        //marginLeft: 10,
     },
     headerText: {
         fontSize: 18,
@@ -420,19 +498,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        height: 50,
+        height: 40,
     },
     modalHeaderTxt: {
         fontSize: 18
     },
     Modalbtn: {
-       // flexDirection: 'row',
+        // flexDirection: 'row',
         justifyContent: 'center',
-        alignItems:'center',
+        alignItems: 'center',
         position: 'absolute',
         bottom: 10,
         width: '100%',
-        height:40
+        height: 40
     },
     modalbody: {
         paddingHorizontal: 5
@@ -452,5 +530,32 @@ const styles = StyleSheet.create({
         // borderWidth: 1,
         borderRadius: 8,
         borderColor: 'lightgray'
+    },
+    moreModal: {
+        width: '95%',
+        height: 120,
+        backgroundColor: '#ffffff',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    centeredMoreView: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    moreItem: {
+        alignSelf: 'center',
+        marginVertical: 5,
+    },
+    moreTxt: {
+        fontSize: 18
+    },
+    iconImg: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 10,
+        width: 30,
+        height: 30
     },
 })

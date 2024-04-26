@@ -6,12 +6,11 @@ import UsersContext from '../../store/UsersContext';
 import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
 import Entypo from "react-native-vector-icons/Entypo";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { addNewRequest, createNewEvent, deleteRequestbyId, getEventList, getEventsInfo, updateEvent } from '../resources/API';
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { v4 as uuidv4 } from 'uuid';
+
 import { calculateTotalPrice, filterSubDetails, showMessage } from '../resources/Functions'
 
 
@@ -35,10 +34,11 @@ const ClientRequest = (props) => {
     const [selectTime, setSelectTime] = useState(true);
 
     const [fileEventName, setfileEventName] = useState();
+    const [selectedDate, setSelectedDate] = useState()
+
     const [requestStatus, setRequestStatus] = useState('')
     const [requestCost, setRequestCost] = useState()
     const [requestDiscount, setRequestDiscount] = useState()
-    const [selectedDate, setSelectedDate] = useState()
     const [choosenEvents, setChoosenEvents] = useState([])
 
     const [eventTypeName, setEventTypeName] = useState()
@@ -55,8 +55,20 @@ const ClientRequest = (props) => {
 
     let eventItemIndex
 
-    // price calculation states 
+    const onPressHandler = () => {
+        props.navigation.goBack();
+    }
 
+    const getEventsfromApi = () => {
+        getEventsInfo({ userId: userId }).then(res => {
+            if (res.message == 'No Event') {
+                setIveEvent(false)
+            } else {
+                setIveEvent(true)
+                setEventInfo(res)
+            }
+        })
+    }
 
     const handleScrollToPosition = () => {
         if (targetComponentRef.current) {
@@ -69,76 +81,6 @@ const ClientRequest = (props) => {
             );
         }
     };
-
-    const creatNewRequest = () => {
-        const newRequestItem = {
-            ReqServId: data?.service_id,
-            ReqUserId: userId,
-            ReqStatus: requestStatus,
-            ReqDate: moment(date).format('DD/MM/YYYY, h:mm:ss a'),
-            Cost: requestCost,
-            discountPercentage: requestDiscount,
-            reservationDetail: resDetail
-        }
-        addNewRequest(newRequestItem).then(res => {
-            const req = requestInfo || [];
-            req.push(newRequestItem)
-            setRequestInfo([...req])
-        })
-    }
-    const onModalCancelPress = () => {
-        setShowModal(false)
-    }
-    const onModalSavePress = () => {
-        if (fileEventName !== undefined) {
-            if (eventName !== undefined) {
-                getEventTypeID(eventName)
-                creatNewEvent()
-                ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM
-                )
-
-            } else {
-                Alert.alert(
-                    'تنبية',
-                    'الرجاء اختيار نوع المناسبة',
-                    [
-                        {
-                            text: 'Ok',
-                            // style: 'cancel',
-                        },
-                    ],
-                    { cancelable: false } // Prevent closing the alert by tapping outside
-                );
-            }
-        } else {
-            Alert.alert(
-                'تنبية',
-                'الرجاء اختيار اسم المناسبة',
-                [
-                    {
-                        text: 'Ok',
-                        // style: 'cancel',
-                    },
-                ],
-                { cancelable: false } // Prevent closing the alert by tapping outside
-            );
-        }
-
-    }
-    const creatNewEvent = () => {
-        const newEventItem = {
-            userId: userId,
-            eventName: fileEventName,
-            eventTitleId: eventTypeId
-        }
-        createNewEvent(newEventItem).then(res => {
-            const evnt = eventInfo || [];
-            evnt.push(newEventItem)
-            setEventInfo([...evnt])
-        })
-    }
 
 
     const checkAllDetails = () => {
@@ -175,8 +117,6 @@ const ClientRequest = (props) => {
 
         return true;
     };
-
-
     const onServiceRequest = () => {
         if (!checkAllDetails()) {
             return
@@ -206,45 +146,18 @@ const ClientRequest = (props) => {
         // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
 
-    const onPressHandler = () => {
-        props.navigation.goBack();
-    }
+   
 
-    const getEventsfromApi = () => {
-        getEventsInfo({ userId: userId }).then(res => {
-            if (res.message == 'No Event') {
-                setIveEvent(false)
-            } else {
-                setIveEvent(true)
-                setEventInfo(res)
-            }
-        })
-    }
-
-    const getEventsType = () => {
-        getEventList({}).then(res => {
-            setEventTypeInfo(res)
-
-        })
-    }
-
-    const getEventTypeInfo = () => {
-        const eventList = []
-        eventTypeInfo.forEach(element => {
-            eventList.push(element?.eventTitle)
-        })
-        eventList.sort()
-        setEventTypeName(eventList)
-    }
-    const getEventTypeID = (val) => {
-        const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
-        const eventTypeId = eventTypeInfo[eventTypeIndex].Id
-        setEventTypeId(eventTypeId)
-    }
+   
 
     useEffect(() => {
         getEventsfromApi()
     }, [])
+
+    useEffect(() => {
+        setSelectedDate(requestedDate[0])
+    }, [])
+
 
 
     const renderHeader = () => {
@@ -261,6 +174,28 @@ const ClientRequest = (props) => {
                 <Text style={styles.txt}>طلب حجز</Text>
             </View>
         )
+    }
+
+    // render service logo and title
+    const renderServiceinfo = () => {
+        return <View >
+            <View style={styles.titleView}>
+                <View style={{ margin: 10, alignItems: 'flex-end' }}>
+                    <Text style={styles.titleText}>{data?.title}</Text>
+                    <Text style={styles.titleText}>{data?.address}</Text>
+                    <Text style={styles.titleText}>5★</Text>
+                </View>
+                {renderServiceImage()}
+            </View>
+        </View>;
+    }
+    const renderServiceImage = () => {
+        const index = data.images[0].logoArray?.findIndex((val) => val === true)
+        const image = data.images[0]?.serviceImages[index]
+        return <Image
+            source={{ uri: image }}
+            style={styles.img}
+        />
     }
 
     // render reservation Dates
@@ -283,9 +218,6 @@ const ClientRequest = (props) => {
     const handleDatePress = (item) => {
         setSelectedDate(item)
     }
-    useEffect(() => {
-        setSelectedDate(requestedDate[0])
-    }, [])
     const renderDate = (item, index) => {
         return (
             <Pressable ref={targetComponentRef} onPress={() => handleDatePress(item)} key={index} style={selectedDate === item ? styles.dateItemPressed : styles.dateItem}
@@ -299,33 +231,15 @@ const ClientRequest = (props) => {
         )
     }
 
-    // render service logo and title
-    const renderServiceImage = () => {
-        const index = data.images[0].logoArray?.findIndex((val) => val === true)
-        const image = data.images[0]?.serviceImages[index]
-        return <Image
-            source={{ uri: image }}
-            style={styles.img}
-        />
-    }
-    const renderServiceinfo = () => {
-        return <View >
-            <View style={styles.titleView}>
-                <View style={{ margin: 10, alignItems: 'flex-end' }}>
-                    <Text style={styles.titleText}>{data?.title}</Text>
-                    <Text style={styles.titleText}>{data?.address}</Text>
-                    <Text style={styles.titleText}>5★</Text>
-                </View>
-                {renderServiceImage()}
-            </View>
-        </View>;
-    }
-
+   
+    /// request information and reservation detail
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
             <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} handleScrollToPosition={handleScrollToPosition} pressed={pressed} setPressed={setPressed} />
         </View>
     }
+
+    
     const renderFoter = () => {
         return (
             <View style={styles.foter}>
@@ -338,23 +252,82 @@ const ClientRequest = (props) => {
             </View>
         )
     }
-    const handleEventChoosen = (eventId) => {
-        // setChoosenEvents(prevEvents => {
-        //     // Check if eventId exists in prevEvents array
-        //     const eventIndex = prevEvents.indexOf(eventId);
-
-        //     // If eventId is not in prevEvents, add it
-        //     if (eventIndex === -1) {
-        //         return [...prevEvents, eventId];
-        //     } else {
-        //         // If eventId is in prevEvents, remove it
-        //         const updatedEvents = [...prevEvents];
-        //         updatedEvents.splice(eventIndex, 1);
-        //         return updatedEvents;
-        //     }
-        // });
-    }
+  
     // Event Section
+    const getEventsType = () => {
+        getEventList({}).then(res => {
+            setEventTypeInfo(res)
+        })
+    }
+    const getEventTypeInfo = () => {
+        const eventList = []
+        eventTypeInfo.forEach(element => {
+            eventList.push(element?.eventTitle)
+        })
+        eventList.sort()
+        setEventTypeName(eventList)
+    }
+    const getEventTypeID = (val) => {
+        const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
+        const eventTypeId = eventTypeInfo[eventTypeIndex].Id
+        setEventTypeId(eventTypeId)
+    }
+    const onModalCancelPress = () => {
+        setShowModal(false)
+    }
+    const onModalSavePress = () => {
+        if (fileEventName !== undefined) {
+            if (eventName !== undefined) {
+                getEventTypeID(eventName)
+                creatNewEvent()
+                ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+                )
+                setShowModal(false)
+
+            } else {
+                Alert.alert(
+                    'تنبية',
+                    'الرجاء اختيار نوع المناسبة',
+                    [
+                        {
+                            text: 'Ok',
+                            // style: 'cancel',
+                        },
+                    ],
+                    { cancelable: false } // Prevent closing the alert by tapping outside
+                );
+            }
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء اختيار اسم المناسبة',
+                [
+                    {
+                        text: 'Ok',
+                        // style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
+
+    }
+    const creatNewEvent = () => {
+        const newEventItem = {
+            userId: userId,
+            eventName: fileEventName,
+            eventTitleId: eventTypeId,
+            eventDate: requestedDate,
+            eventCost: eventTotalCost
+        }
+        createNewEvent(newEventItem).then(res => {
+            const evnt = eventInfo || [];
+            evnt.push(newEventItem)
+            setEventInfo([...evnt])
+        })
+    }
     const onPressModalHandler = () => {
         getEventsType()
         setShowModal(true);
@@ -379,10 +352,6 @@ const ClientRequest = (props) => {
         </View>
         )
     }
-    const getEventLogo = (id) => {
-        const logo = eventTypeInfo.filter(item => item.Id === id)
-        return logo
-    }
     const filtereventInfo = () => {
         const currentDate = moment(date, "YYYY-MM-DD")
         let day = currentDate.format('D')
@@ -396,7 +365,6 @@ const ClientRequest = (props) => {
             return result
         })
     }
-
     const UpdateEventInfo = () => {
         const newEventItem = {
             EventId: EVENTID,
@@ -428,18 +396,16 @@ const ClientRequest = (props) => {
         setEventTotalCost(lastTotal)
         setEVENTID(eventId)
     }
-
     const whenEventPress = (eventId) => {
         setSelectedEvent(eventId || '');
         UpdateEventCostState(eventId)
     }
-
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
             const isSelected = selectedEvent === item.EventId;
             return (
-                <Pressable key={index} style={styles.eventItem} onPress={() => handleEventChoosen(item.EventId)}>
+                <Pressable key={index} style={styles.eventItem}>
                     <View >
                         <Text style={styles.text}>{item.eventName}</Text>
                     </View>
@@ -456,7 +422,6 @@ const ClientRequest = (props) => {
                                 />
                             )}
                         </Pressable>
-                        {/* <Image style={styles.iconImg} source={{ uri: document[0].eventImg }} /> */}
                     </View>
 
                 </Pressable>
@@ -515,91 +480,11 @@ const ClientRequest = (props) => {
     }
 
     // Call the function to calculate the initial total price
+
     useEffect(() => {
         calculateTotalPrice(resDetail, requestedDate, data, setTotalPrice);
     }, [requestedDate, resDetail]);
 
-    const showDetaiPress = () => {
-        setShowDetailRecipt(!showDetailRecipt)
-    }
-    const renderFinalPrice = () => {
-        return (
-            <View style={styles.reciptDetail}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Pressable onPress={showDetaiPress} >
-                        <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
-                    </Pressable>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                        <Text style={styles.text}>السعر النهائي   {totalPrice} ₪</Text>
-                        <View style={styles.IconView}>
-                            <Entypo
-                                style={{ alignSelf: 'center' }}
-                                name={"price-tag"}
-                                color={colors.puprble}
-                                size={30} />
-                        </View>
-                    </View>
-                </View>
-            </View>
-        )
-    }
-    const createRecipt = () => {
-        return (
-            <View style={styles.reciptView}>
-                {renderFinalPrice()}
-                {Array.isArray(requestedDate) ? requestedDate.map((date, index) => renderFullReciptDate(date, index)) : renderFullReciptDate(requestedDate)}
-            </View >
-
-        )
-    }
-
-
-    const renderFullReciptDate = (date, index = 0) => {
-        // common states
-
-        const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
-        if (!showDetailRecipt) {
-            return null
-        }
-
-        // sub details 
-        var detailIndex = resDetail.findIndex(item => item.reservationDate === date)
-
-        if (Array.isArray(requestedDate)) {
-            if (detailIndex === -1) {
-                return
-            }
-        } else {
-            detailIndex = 0
-        }
-        const { subDetailId, numOfInviters } = resDetail[detailIndex]
-        const filteredSubDetials = filterSubDetails(data, subDetailId)
-        const showList = filteredSubDetials.some(item => item.subDetailArray && item.subDetailArray.length > 0);
-        const campaigns = resDetail[detailIndex].campaigns || [];
-        const showCamp = campaigns && campaigns.length > 0 ? true : false
-        // details 
-        const details = {
-            setShowSupDetRecipt: setShowSupDetRecipt,
-            showSupDetRecipt: showSupDetRecipt,
-            filteredSubDetials: showList ? filteredSubDetials : false,
-            numOfInviters: numOfInviters,
-        }
-
-        return (
-            // showDetailRes
-            <View key={index}>
-                {/* shows the date */}
-                {!(showList === false && showCamp === false) && renderReciptDate(date)}
-                {/* shows the services choosen */}
-                <View style={styles.reciptDetail}>
-                    {showList && renderReciptServices()}
-                    {renderMainReciptDetails(details)}
-                </View>
-                {/* shows the deals choosen */}
-                {showCamp && renderDeals(campaigns, numOfInviters)}
-            </View>
-        )
-    }
     const renderSubDetRecipt = (subArray) => {
         return (
             <View style={styles.reciptLabel}>
@@ -777,6 +662,85 @@ const ClientRequest = (props) => {
             </View>
         )
     }
+    const renderFullReciptDate = (date, index = 0) => {
+        // common states
+
+        const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
+        if (!showDetailRecipt) {
+            return null
+        }
+
+        // sub details 
+        var detailIndex = resDetail.findIndex(item => item.reservationDate === date)
+
+        if (Array.isArray(requestedDate)) {
+            if (detailIndex === -1) {
+                return
+            }
+        } else {
+            detailIndex = 0
+        }
+        const { subDetailId, numOfInviters } = resDetail[detailIndex]
+        const filteredSubDetials = filterSubDetails(data, subDetailId)
+        const showList = filteredSubDetials.some(item => item.subDetailArray && item.subDetailArray.length > 0);
+        const campaigns = resDetail[detailIndex].campaigns || [];
+        const showCamp = campaigns && campaigns.length > 0 ? true : false
+        // details 
+        const details = {
+            setShowSupDetRecipt: setShowSupDetRecipt,
+            showSupDetRecipt: showSupDetRecipt,
+            filteredSubDetials: showList ? filteredSubDetials : false,
+            numOfInviters: numOfInviters,
+        }
+
+        return (
+            // showDetailRes
+            <View key={index}>
+                {/* shows the date */}
+                {!(showList === false && showCamp === false) && renderReciptDate(date)}
+                {/* shows the services choosen */}
+                <View style={styles.reciptDetail}>
+                    {showList && renderReciptServices()}
+                    {renderMainReciptDetails(details)}
+                </View>
+                {/* shows the deals choosen */}
+                {showCamp && renderDeals(campaigns, numOfInviters)}
+            </View>
+        )
+    }
+    const showDetaiPress = () => {
+        setShowDetailRecipt(!showDetailRecipt)
+    }
+    const renderFinalPrice = () => {
+        return (
+            <View style={styles.reciptDetail}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Pressable onPress={showDetaiPress} >
+                        <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
+                    </Pressable>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                        <Text style={styles.text}>السعر النهائي   {totalPrice} ₪</Text>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                style={{ alignSelf: 'center' }}
+                                name={"price-tag"}
+                                color={colors.puprble}
+                                size={30} />
+                        </View>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+    const createRecipt = () => {
+        return (
+            <View style={styles.reciptView}>
+                {renderFinalPrice()}
+                {Array.isArray(requestedDate) ? requestedDate.map((date, index) => renderFullReciptDate(date, index)) : renderFullReciptDate(requestedDate)}
+            </View >
+
+        )
+    }
     const renderPrice = () => {
         return (
             <View style={styles.priceView}>
@@ -784,6 +748,7 @@ const ClientRequest = (props) => {
             </View>
         )
     }
+
 
     return (
         <View style={styles.container}>

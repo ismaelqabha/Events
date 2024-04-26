@@ -28,12 +28,10 @@ const ClientHomeAds = (props) => {
     const deltaY = new Animated.Value(0);
 
 
-    console.log("ServiceDataInfo", ServiceDataInfo[1].serviceCamp);
-
     useEffect(() => {
         setCat('قاعات')
     }, [])
-    
+
     const getHallServices = () => {
         return ServiceDataInfo?.filter(item => {
             return item.serviceData.servType == cat
@@ -52,10 +50,14 @@ const ClientHomeAds = (props) => {
     const renderCampaigns = () => {
         const CampData = getCampaign();
         const campArray = CampData?.map(camp => {
-            return < CampaignCard {...camp.serviceCamp}
+            const serCamp = camp.serviceCamp
+            const obj = {
+                ...camp,
+                ...serCamp[0]
+            }
+            return < CampaignCard {...obj}
             />
         });
-        console.log(campArray);
         return campArray;
     }
 

@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React, { useContext, useEffect } from 'react'
-import {  getCampaigns, getEventList, getFavoritesforUser, getHomePageData, getUserData } from '../resources/API';
+import { getEventList, getFavoritesforUser, getHomePageData, getUserData } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ImageBackground } from 'react-native';
@@ -8,7 +8,7 @@ import UsersContext from '../../store/UsersContext';
 
 
 export default function Splash(props) {
-    const { setServiceDataInfo, setUserFavorates, servType, setCampInfo, setEventTypeInfo } = useContext(SearchContext);
+    const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo } = useContext(SearchContext);
     const { setUserInfo, userId } = useContext(UsersContext);
 
     const getFavoritesFromApi = () => {
@@ -23,8 +23,6 @@ export default function Splash(props) {
         getHomePageData({ servType: servType }).then(res => {
             setServiceDataInfo(res)
             getFavoritesFromApi()
-            
-            //getCampaignfromApi()
         })
     }
     const getEventListfromApi = () => {
@@ -42,27 +40,13 @@ export default function Splash(props) {
     }
 
 
-    ////
-    // const getAllUserfromApi = () => {
-    //     getAllUsersInfo({}).then(res => {
-    //         setAllUserData(res)
-    //     })
-    // }
 
     useEffect(() => {
-        // getAllUserfromApi()
         getDataFromApi()
         getEventListfromApi()
         getUserfromApi()
     }, [servType])
 
-
-
-    const getCampaignfromApi = () => {
-        getCampaigns({}).then(res => {
-            setCampInfo(res)
-        })
-    }
 
     return (
         // <View style={styles.container}>

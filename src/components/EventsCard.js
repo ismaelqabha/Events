@@ -112,7 +112,7 @@ const EventsCard = (props) => {
     const whenPressLong = () => {
         setEditing(true)
     }
-   // console.log("eventDate.length", eventDate.length);
+    console.log("eventDate.length", eventDate.length);
     return (
         <View style={styles.container}>
             <Pressable style={styles.card} onPress={onCaardPress} onLongPress={whenPressLong}>
