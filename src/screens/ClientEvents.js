@@ -19,7 +19,7 @@ const ClientEvents = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [fileEventName, setfileEventName] = useState();
     const { userId } = useContext(UsersContext);
-    const { eventInfo, setEventInfo, eventTypeInfo, requestInfoAccUser, setRequestInfoAccUser } = useContext(SearchContext);
+    const { eventInfo, setEventInfo, eventTypeInfo, setRequestInfoAccUser } = useContext(SearchContext);
     const [eventTypeName, setEventTypeName] = useState()
     const [eventName, setEventName] = useState()
 

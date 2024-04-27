@@ -14,6 +14,8 @@ import HallTypeCard from '../components/HallTypeCard';
 import ClientCalender from '../components/ClientCalender';
 import ServiceProviderContext from '../../store/ServiceProviderContext';
 import { logProfileData } from 'react-native-calendars/src/Profiler';
+import { getRequestbyUserId } from '../resources/API';
+import UsersContext from '../../store/UsersContext';
 
 
 
@@ -26,9 +28,10 @@ const Results = (props) => {
         selectMonthforSearch,
         yearforSearch,
         periodDatesforSearch, setperiodDatesforSearch,
-        regionData,
+        regionData, setRequestInfo,
     } = useContext(SearchContext);
     const { hallType } = useContext(ServiceProviderContext)
+    const { userId } = useContext(UsersContext);
 
     const [date, setDate] = useState(new Date());
     const [currentDate, setcurrentDate] = useState(date.getDate() + 1)
@@ -46,7 +49,6 @@ const Results = (props) => {
     const [selectHallType, setSelectHallType] = useState('')
 
     const [sliding, setSliding] = useState('Inactive');
-
 
     const [chozenfilter, setchozenfilter] = useState({ ...objectFilter })
     var readyDates = ''
@@ -66,9 +68,10 @@ const Results = (props) => {
     }
 
 
+
     useEffect(() => {
         fillCities(regionData)
-
+        // getRequestfromApi()
     }, [])
 
     const fillCities = (regions) => {

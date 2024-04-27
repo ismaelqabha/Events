@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { favoritesList, fileFavorites, Events, Request, Payment, serviceDetail, subDetail, subDetailData, servicesData, ServiceImages, Users } from '../src/resources/data';
+import {   Payment } from '../src/resources/data';
 import SearchContext from '../store/SearchContext';
 
 

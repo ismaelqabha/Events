@@ -12,7 +12,7 @@ import UsersContext from '../../store/UsersContext';
 const SignIn = (props) => {
     //const { userId,setuserId, } = useContext(SearchContext);
         const {
-            setuserId,
+            setuserId,userId,
             userEmail,
             password,
             setPassword,

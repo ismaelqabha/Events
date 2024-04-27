@@ -36,10 +36,7 @@ const ClientRequest = (props) => {
     const [fileEventName, setfileEventName] = useState();
     const [selectedDate, setSelectedDate] = useState()
 
-    const [requestStatus, setRequestStatus] = useState('')
-    const [requestCost, setRequestCost] = useState()
     const [requestDiscount, setRequestDiscount] = useState()
-    const [choosenEvents, setChoosenEvents] = useState([])
 
     const [eventTypeName, setEventTypeName] = useState()
     const [eventName, setEventName] = useState()
@@ -117,6 +114,7 @@ const ClientRequest = (props) => {
 
         return true;
     };
+    
     const onServiceRequest = () => {
         if (!checkAllDetails()) {
             return
@@ -145,8 +143,6 @@ const ClientRequest = (props) => {
         // setrequestedDate([])
         // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
-
-   
 
    
 

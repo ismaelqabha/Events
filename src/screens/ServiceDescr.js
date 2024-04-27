@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
-import UsersContext from '../../store/SearchContext';
+import UsersContext from '../../store/UsersContext';
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
 import { getCampaignsByServiceId, getRequestbyUserId } from '../resources/API';
@@ -21,31 +21,28 @@ const ServiceDescr = (props) => {
     const { data } = props?.route.params
     const [showModal, setShowModal] = useState(false);
     const [subDetArray, setSubDetArray] = useState([]);
-    const { userId } = useContext(UsersContext);
-    const {
-        campiegnsAccordingServiceId, setCampiegnsAccordingServiceId,
-        resDetail,
-        setResDetail,
-        requestInfo, setRequestInfo,
-        requestedDate, setrequestedDate,
-        setReachCampaignfrom } = useContext(SearchContext);
 
-      
+    const [requestData, setRequestData] = useState([]);
+
+    const { userId } = useContext(UsersContext);
+
+    const { requestedDate, setrequestedDate,setResDetail } = useContext(SearchContext);
+
+
 
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
-            setRequestInfo(res)
+            if (res.message == 'no Request') {
+                setRequestData([])
+            } else {
+                setRequestData(res)
+            }
         })
     }
-    const getCampeignsfromApi = () => {
-        getCampaignsByServiceId({ serviceId: data?.service_id }).then(res => {
-            setCampiegnsAccordingServiceId(res)
-        })
-    }
+    
 
     useEffect(() => {
         getRequestfromApi();
-        getCampeignsfromApi();
 
         // Cleanup function to reset resDetail when component unmounts or re-renders
         return () => {
@@ -62,24 +59,54 @@ const ServiceDescr = (props) => {
         setShowModal(false);
     };
 
+    const filterRequestAccServiceId = () => {
+        return requestData.filter(item => {
+            return item.ReqServId === data.service_id
+        })
+    }
 
+    const checkRequestBeforSending = () => {
+        const filterdRequest = filterRequestAccServiceId()
+
+        const result = filterdRequest.find(item => {
+            if (item.reservationDetail.length > 1) {
+                console.log(item.reservationDetail.length);
+
+                const x = item.reservationDetail.find(resDate => {
+                    if (Array.isArray(requestedDate)) {
+
+                        return requestedDate.find(elemDate => {
+                            return elemDate == resDate.reservationDate
+                        })
+                    } else {
+                        return resDate.reservationDate == requestedDate
+                    }
+                })
+                return x
+            } else {
+                //console.log(item.reservationDetail[0].reservationDate , requestedDate, item.reservationDetail[0].reservationDate == requestedDate);
+                return item.reservationDetail[0].reservationDate == requestedDate
+            }
+        })
+        return !!result
+    }
 
     const onRequestPressHandler = () => {
-        // if (!checkIfInEvent()) {
-        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
-        // } else {
-        //     Alert.alert(
-        //         'تنبية',
-        //         '  الرجاء اختيار تفاصيل حجز اخرى التفاصيل الحالية محجوزة مسبقا لديك',
-        //         [
-        //             {
-        //                 text: 'Ok',
-        //                 style: 'cancel',
-        //             },
-        //         ],
-        //         { cancelable: false } // Prevent closing the alert by tapping outside
-        //     );
-        // }
+        if (!checkRequestBeforSending()) {
+            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
+        } else {
+            Alert.alert(
+                'تنبية',
+                '  الرجاء اختيار تفاصيل حجز اخرى التفاصيل الحالية محجوزة مسبقا لديك',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
 
     }
     const onPressBack = () => {
@@ -398,13 +425,13 @@ const ServiceDescr = (props) => {
         )
     }
     const renderCampeigns = () => {
-            const campArray = data.relatedCamp?.map(offer => {
-                return <View style={styles.HallView}>
-                    < CampaignCard  {...offer} />
-                </View>
-            });
-            //console.log("campArray", campArray);
-            return campArray;
+        const campArray = data.relatedCamp?.map(offer => {
+            return <View style={styles.HallView}>
+                < CampaignCard  {...offer} />
+            </View>
+        });
+        //console.log("campArray", campArray);
+        return campArray;
     }
     const renderSoialMedia = () => {
         return data.socialMedia.map(item => {

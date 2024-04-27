@@ -14,6 +14,7 @@ import { servicesCategory } from '../resources/data';
 import ServiceCard from '../components/ServiceCard';
 import HomeServiceCard from '../components/HomeServiceCard';
 import Interactable from 'react-native-interactable';
+import UsersContext from '../../store/UsersContext';
 
 const ClientHomeAds = (props) => {
     const { cat, setCat,
@@ -21,13 +22,14 @@ const ClientHomeAds = (props) => {
         campInfo,
         userRegion } = useContext(SearchContext);
 
+
     const [selectServiceType, setSelectServiceType] = useState('');
     const navigation = useNavigation();
 
     const deltaX = new Animated.Value(0);
     const deltaY = new Animated.Value(0);
 
-
+    
     useEffect(() => {
         setCat('قاعات')
     }, [])
