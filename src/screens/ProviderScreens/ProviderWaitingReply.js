@@ -99,6 +99,17 @@ const ProviderWaitingReply = () => {
     }
   }
 
+  useEffect(() => {
+    setMonthly(false)
+    setspacificDate(false)
+    setClientName(false)
+    setAllRequests(true)
+    setUseDefultSearch(true)
+    setUseClientToSearch(false)
+    setUseSpacificDateToSearch(false)
+    setuseMonthToSearch(false)
+}, [])
+
   const checkDate = (d) => {
     const resDate = moment(d, "YYYY-MM-DD")
 
@@ -159,17 +170,17 @@ const ProviderWaitingReply = () => {
 
 
   /// searching all requests
-  const getBookingInfoByDate = (rseDate) => {
+  const getBookingInfoByDate = (resDate) => {
     const data = getRequestsAccDates()
 
     const reqInfo = data.filter(req => {
       if (req.requestInfo.reservationDetail.length > 1) {
         const multiReqInfo = req.requestInfo.reservationDetail.find(multiItem => {
-          return multiItem.reservationDate.slice(0, 10) == rseDate
+          return multiItem.reservationDate.slice(0, 10) == resDate
         })
         return multiReqInfo
       } else {
-        return req.requestInfo.reservationDetail[0].reservationDate.slice(0, 10) == rseDate
+        return req.requestInfo.reservationDetail[0].reservationDate.slice(0, 10) == resDate
       }
     })
     return reqInfo
@@ -225,12 +236,12 @@ const ProviderWaitingReply = () => {
       allRequestingDates.sort();
     })
   }
-  const renderBookingCard = (rseDate) => {
-    const data = getBookingInfoByDate(rseDate)
+  const renderBookingCard = (resDate) => {
+    const data = getBookingInfoByDate(resDate)
 
     return data.map(item => {
       return (
-        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} rseDate={rseDate} />
+        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} resDate={resDate} />
       )
     })
   }
@@ -306,7 +317,7 @@ const ProviderWaitingReply = () => {
 
     return data.map(item => {
       return (
-        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} />
+        <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} resDate={resDate}/>
       )
     })
   }

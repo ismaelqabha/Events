@@ -117,6 +117,7 @@ const ClientShowRequest = (props) => {
             </Modal>
         )
     }
+    
     const moreModal = () => {
         return (
             <Modal
@@ -139,7 +140,6 @@ const ClientShowRequest = (props) => {
             </Modal>
         )
     }
-
     const moreOperation = () => {
         if (reqInfo.ReqStatus === 'waiting reply') {
             return (

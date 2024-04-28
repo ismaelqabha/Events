@@ -49,7 +49,13 @@ const ProviderProfile = props => {
 
   const getCampignsfromApi = () => {
     getCampaignsByServiceId({ serviceId: isFirst }).then(res => {
-      setCampInfo(res);
+      
+      if(res.message === 'No Campaigns'){
+        setCampInfo([]);
+      }else{
+        setCampInfo(res);
+      }
+      
     });
   }; 
   

@@ -3,7 +3,6 @@ import React, { useContext } from 'react'
 import { colors } from '../../assets/AppColors'
 import Fontisto from "react-native-vector-icons/Fontisto"
 import UsersContext from '../../../store/UsersContext'
-import { updateRequest } from '../../resources/API'
 import SearchContext from '../../../store/SearchContext'
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames'
@@ -11,15 +10,15 @@ import moment from "moment";
 
 
 const ProviderReservationCard = (props) => {
-    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen , rseDate } = props
-    const {  } = useContext(UsersContext);
-    const { setRequestInfoByService } = useContext(SearchContext);
+    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen, resDate } = props
+    const { } = useContext(UsersContext);
+    const {  } = useContext(SearchContext);
     const navigation = useNavigation();
     const reqInfo = { ...props }
-    
 
 
-    var filteredRes = reqInfo.requestInfo.reservationDetail.filter((detail)=> detail.reservationDate.slice(0, 10) == rseDate)
+
+    var filteredRes = reqInfo.requestInfo.reservationDetail.filter((detail) => detail.reservationDate.slice(0, 10) == resDate)
 
     const renderClientInfo = () => {
         const data = props.userInfo[0]
@@ -36,22 +35,6 @@ const ProviderReservationCard = (props) => {
                 <View>
                     <Text style={styles.dateTxt}>{props.requestInfo.ReqDate}</Text>
                     <Text style={styles.labelDateTxt}>تاريخ الطلب</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Fontisto
-                        name={"date"}
-                        color={colors.puprble}
-                        size={15} />
-                </View>
-            </View>
-        )
-    }
-    const renderBookingDate = () => {
-        return (
-            <View style={styles.dateview}>
-                <View>
-                    <Text style={styles.dateTxt}>10/8/2024</Text>
-                    <Text style={styles.labelDateTxt}>تاريخ الحجز</Text>
                 </View>
                 <View style={styles.IconView}>
                     <Fontisto
@@ -83,13 +66,6 @@ const ProviderReservationCard = (props) => {
 
     }
 
-
-    const renderMultiReq = () => {
-        return (<View>
-            {MultiReqtime()}
-        </View>
-        )
-    }
     const renderSingleReq = () => {
         return (<View>
             {renderPrice()}
@@ -105,69 +81,69 @@ const ProviderReservationCard = (props) => {
             </View>
         )
     }
-    const updateInfo = (infoData) => {
-        updateRequest(infoData).then(res => {
-            if (res.message === 'Updated Sucessfuly') {
-                setRequestInfoByService([...data])
+    // const updateInfo = (infoData) => {
+    //     updateRequest(infoData).then(res => {
+    //         if (res.message === 'Updated Sucessfuly') {
+    //             setRequestInfoByService([...data])
 
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
-    }
-    const accept = () => {
-        const newData = {
-            RequestId: props.requestInfo.RequestId,
-            ReqStatus: 'waiting pay'
-        }
-        updateInfo(newData)
-    }
-    const refuse = () => {
-        const newData = {
-            RequestId: props.requestInfo.RequestId,
-            ReqStatus: 'refuse'
-        }
-        updateInfo(newData)
-    }
-    const onAcceptReqPress = () => {
-        Alert.alert(
-            'تأكيد',
-            'هل انت متأكد من قبول طلب الحجز ؟ ',
-            [
-                {
-                    text: 'لا',
-                    style: 'cancel',
-                },
-                {
-                    text: 'نعم',
-                    onPress: () => accept(),
-                    style: 'destructive', // Use 'destructive' for a red-colored button
-                },
-            ],
-            { cancelable: false } // Prevent closing the alert by tapping outside
-        );
-    }
-    const onRefuseReqPress = () => {
-        Alert.alert(
-            'تأكيد',
-            'هل انت متأكد من رفض طلب الحجز ؟ ',
-            [
-                {
-                    text: 'لا',
-                    style: 'cancel',
-                },
-                {
-                    text: 'نعم',
-                    onPress: () => refuse(),
-                    style: 'destructive', // Use 'destructive' for a red-colored button
-                },
-            ],
-            { cancelable: false } // Prevent closing the alert by tapping outside
-        );
-    }
+    //             ToastAndroid.showWithGravity(
+    //                 'تم التعديل بنجاح',
+    //                 ToastAndroid.SHORT,
+    //                 ToastAndroid.BOTTOM,
+    //             );
+    //         }
+    //     })
+    // }
+    // const accept = () => {
+    //     const newData = {
+    //         RequestId: props.requestInfo.RequestId,
+    //         ReqStatus: 'waiting pay'
+    //     }
+    //     updateInfo(newData)
+    // }
+    // const refuse = () => {
+    //     const newData = {
+    //         RequestId: props.requestInfo.RequestId,
+    //         ReqStatus: 'refuse'
+    //     }
+    //     updateInfo(newData)
+    // }
+    // const onAcceptReqPress = () => {
+    //     Alert.alert(
+    //         'تأكيد',
+    //         'هل انت متأكد من قبول طلب الحجز ؟ ',
+    //         [
+    //             {
+    //                 text: 'لا',
+    //                 style: 'cancel',
+    //             },
+    //             {
+    //                 text: 'نعم',
+    //                 onPress: () => accept(),
+    //                 style: 'destructive', // Use 'destructive' for a red-colored button
+    //             },
+    //         ],
+    //         { cancelable: false } // Prevent closing the alert by tapping outside
+    //     );
+    // }
+    // const onRefuseReqPress = () => {
+    //     Alert.alert(
+    //         'تأكيد',
+    //         'هل انت متأكد من رفض طلب الحجز ؟ ',
+    //         [
+    //             {
+    //                 text: 'لا',
+    //                 style: 'cancel',
+    //             },
+    //             {
+    //                 text: 'نعم',
+    //                 onPress: () => refuse(),
+    //                 style: 'destructive', // Use 'destructive' for a red-colored button
+    //             },
+    //         ],
+    //         { cancelable: false } // Prevent closing the alert by tapping outside
+    //     );
+    // }
 
     const requestWaitingReplyCard = () => {
         return (
@@ -175,14 +151,6 @@ const ProviderReservationCard = (props) => {
                 <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                     {renderRequestDate()}
                     {renderSingleReq()}
-                    <View style={styles.buttonView}>
-                        <Pressable onPress={onRefuseReqPress}>
-                            <Text style={styles.buttonTxt}>رفض</Text>
-                        </Pressable>
-                        <Pressable onPress={onAcceptReqPress}>
-                            <Text style={styles.buttonTxt}>قبول</Text>
-                        </Pressable>
-                    </View>
                 </Pressable>
                 {renderClientInfo()}
             </View>
@@ -193,7 +161,7 @@ const ProviderReservationCard = (props) => {
             return (
                 <View style={styles.card}>
                     <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
-                    <Text style={styles.dateTxt}>حجز متعدد الايام</Text>
+                        <Text style={styles.dateTxt}>حجز متعدد الايام</Text>
                         {renderRequestDate()}
 
                         <View style={styles.dateview}>
@@ -207,14 +175,6 @@ const ProviderReservationCard = (props) => {
                             <Text style={styles.dateTxt}>{'  الى  ' + item.EndTime}</Text>
                             <Text style={styles.dateTxt}>{'  من   ' + item.startingTime}</Text>
                         </View>
-                        <View style={styles.buttonView}>
-                            <Pressable onPress={onRefuseReqPress}>
-                                <Text style={styles.buttonTxt}>رفض</Text>
-                            </Pressable>
-                            <Pressable onPress={onAcceptReqPress}>
-                                <Text style={styles.buttonTxt}>قبول</Text>
-                            </Pressable>
-                        </View>
                     </Pressable>
                     {renderClientInfo()}
                 </View>
@@ -223,15 +183,39 @@ const ProviderReservationCard = (props) => {
     }
     const requestWaitingPayCard = () => {
         return (
-            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
-                {renderRequestDate()}
-                {renderPrice()}
-                <View style={styles.buttonView}>
-                    <Pressable><Text style={styles.buttonTxt}>اٍلغاء الطلب</Text></Pressable>
-                    <Pressable><Text style={styles.buttonTxt}>اِجراء دفع</Text></Pressable>
-                </View>
-            </Pressable>
+            <View style={styles.card}>
+                <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                    {renderRequestDate()}
+                    {renderPrice()}
+                </Pressable>
+                {renderClientInfo()}
+            </View>
         )
+    }
+    const multiRequestWaitingPayCard = () => {
+        return filteredRes.map(item => {
+            return (
+                <View style={styles.card}>
+                    <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                        <Text style={styles.dateTxt}>حجز متعدد الايام</Text>
+                        {renderRequestDate()}
+
+                        <View style={styles.dateview}>
+                            <View>
+                                <Text style={styles.dateTxt}>{item.datePrice}</Text>
+                            </View>
+                            <Image style={styles.shekeImg} source={require('../../assets/photos/shekelSign.png')} />
+                        </View>
+
+                        <View style={styles.dateview}>
+                            <Text style={styles.dateTxt}>{'  الى  ' + item.EndTime}</Text>
+                            <Text style={styles.dateTxt}>{'  من   ' + item.startingTime}</Text>
+                        </View>
+                    </Pressable>
+                    {renderClientInfo()}
+                </View>
+            )
+        })
     }
     const requestReservationCard = () => {
         return (
@@ -257,8 +241,12 @@ const ProviderReservationCard = (props) => {
         if (fromWaitingPayScreen) {
             return (
                 <View style={styles.card}>
-                    {requestWaitingPayCard()}
-                    {renderClientInfo()}
+                    {reqInfo.requestInfo.reservationDetail.length > 1 ?
+                        multiRequestWaitingPayCard()
+                        :
+                        requestWaitingPayCard()
+                    }
+
                 </View>
             )
         }
@@ -314,8 +302,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: 'white',
         elevation: 5,
-        padding: 5
-        //alignItems: 'center',
+        padding: 5,
+       
     },
     profilImg: {
         width: 70,
@@ -328,24 +316,13 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: 'white'
     },
-    buttonView: {
-        flexDirection: 'row',
-        width: '100%',
-        height: 30,
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        position: 'absolute',
-        bottom: 0
-    },
     infoTxt: {
         marginVertical: 5,
         marginRight: 10,
         color: colors.puprble,
         fontSize: 15
     },
-    buttonTxt: {
-        fontSize: 17
-    },
+    
     dateview: {
         flexDirection: 'row',
         justifyContent: 'flex-end',

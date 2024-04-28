@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState,useEffect } from 'react'
 import { colors } from '../../assets/AppColors'
 import moment from "moment";
 import Fontisto from "react-native-vector-icons/Fontisto"
@@ -77,6 +77,17 @@ const ProviderWaitingPay = () => {
     setuseMonthToSearch(false)
   }
 
+  useEffect(() => {
+    setMonthly(false)
+    setspacificDate(false)
+    setClientName(false)
+    setAllRequests(true)
+    setUseDefultSearch(true)
+    setUseClientToSearch(false)
+    setUseSpacificDateToSearch(false)
+    setuseMonthToSearch(false)
+}, [])
+
 
   const renderFilter = () => {
     if (requestInfoByService.message !== "no Request") {
@@ -103,6 +114,7 @@ const ProviderWaitingPay = () => {
       const reqInfo = requestInfoByService.filter(item => {
         return item.requestInfo.ReqStatus === 'waiting pay'
       })
+     
       return reqInfo
     } else {
       return []
@@ -133,10 +145,13 @@ const ProviderWaitingPay = () => {
 
   const getRequestsAccDates = () => {
     const data = getBookingInfo()
+    
     const reqInfo = data.filter(item => {
+      console.log(item.requestInfo.reservationDetail.length);
       if (item.requestInfo.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         let result = item.requestInfo.reservationDetail.find(multiItem => {
+          
           return checkDate(multiItem.reservationDate)
         })
 
@@ -146,27 +161,27 @@ const ProviderWaitingPay = () => {
 
         //if reservation detail has one date
         // console.log(item.reservationDetail[0].reservationDate, '>', todayDate.slice(0, 10), item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10));
-        //console.log(checkDate(item.reservationDetail[0].reservationDate));
+        console.log(checkDate(item.requestInfo.reservationDetail[0].reservationDate));
         return checkDate(item.requestInfo.reservationDetail[0].reservationDate)
       }
     })
-
+    
     return reqInfo
   }
 
   /// searching all requests
-  const getBookingInfoByDate = (rseDate) => {
+  const getBookingInfoByDate = (resDate) => {
 
     const data = getRequestsAccDates()
     const reqInfo = data.filter(req => {
       if (req.requestInfo.reservationDetail.length > 1) {
         const multiReqInfo = req.requestInfo.reservationDetail.find(multiItem => {
-          return multiItem.reservationDate.slice(0, 10) == rseDate
+          return multiItem.reservationDate.slice(0, 10) == resDate
         })
 
         return multiReqInfo
       } else {
-        return req.requestInfo.reservationDetail[0].reservationDate.slice(0, 10) == rseDate
+        return req.requestInfo.reservationDetail[0].reservationDate.slice(0, 10) == resDate
       }
     })
 
@@ -178,7 +193,7 @@ const ProviderWaitingPay = () => {
     let year = ''
     let completeDate = ''
     let requestBookingDate = ''
-    const data = getBookingInfo()
+    const data = getRequestsAccDates()
     return data.map(item => {
 
       if (item.requestInfo.reservationDetail.length > 1) {
@@ -221,12 +236,11 @@ const ProviderWaitingPay = () => {
       allRequestingDates.sort();
     })
   }
-  const renderBookingCard = (rseDate) => {
-    const data = getBookingInfoByDate(rseDate)
-
+  const renderBookingCard = (resDate) => {
+    const data = getBookingInfoByDate(resDate)
     return data.map(item => {
       return (
-        <ProviderReservationCard fromWaitingPayScreen={fromWaitingPayScreen}  {...item} />
+        <ProviderReservationCard fromWaitingPayScreen={fromWaitingPayScreen}  {...item} resDate={resDate} />
       )
     })
   }
@@ -300,9 +314,10 @@ const ProviderWaitingPay = () => {
   }
   const renderResCard = (resDate) => {
     const data = filterReqAccUserId(resDate)
+   
     return data.map(item => {
       return (
-        <ProviderReservationCard fromWaitingPayScreen={fromWaitingPayScreen}  {...item} />
+        <ProviderReservationCard fromWaitingPayScreen={fromWaitingPayScreen}  {...item} resDate={resDate}/>
       )
     })
   }

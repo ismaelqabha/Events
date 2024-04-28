@@ -6,7 +6,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { createNewEvent, getEventList, getEventsInfo, getRequestInfoWithservice, getRequestbyUserId } from '../resources/API';
+import { createNewEvent, getEventsInfo, getRequestInfoWithservice } from '../resources/API';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { SelectList } from 'react-native-dropdown-select-list';
