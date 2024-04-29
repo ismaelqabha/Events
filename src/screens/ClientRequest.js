@@ -3,15 +3,15 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, Alert, Modal, ToastAndroid } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
-import { ScreenNames } from '../../route/ScreenNames';
 import moment from 'moment';
 import Entypo from "react-native-vector-icons/Entypo";
-import { addNewRequest, createNewEvent, deleteRequestbyId, getEventList, getEventsInfo, updateEvent } from '../resources/API';
+import { addNewRequest, createNewEvent, getEventList, getEventsInfo, updateEvent } from '../resources/API';
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
 import { SelectList } from 'react-native-dropdown-select-list';
 
-import { calculateTotalPrice, filterSubDetails, showMessage } from '../resources/Functions'
+import { calculateTotalPrice, showMessage } from '../resources/Functions'
+import Recipt from '../components/ProviderComponents/recipt';
 
 
 
@@ -144,7 +144,6 @@ const ClientRequest = (props) => {
         // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
 
-   
 
     useEffect(() => {
         getEventsfromApi()
@@ -227,7 +226,7 @@ const ClientRequest = (props) => {
         )
     }
 
-   
+
     /// request information and reservation detail
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
@@ -235,7 +234,7 @@ const ClientRequest = (props) => {
         </View>
     }
 
-    
+
     const renderFoter = () => {
         return (
             <View style={styles.foter}>
@@ -248,7 +247,7 @@ const ClientRequest = (props) => {
             </View>
         )
     }
-  
+
     // Event Section
     const getEventsType = () => {
         getEventList({}).then(res => {
@@ -481,269 +480,7 @@ const ClientRequest = (props) => {
         calculateTotalPrice(resDetail, requestedDate, data, setTotalPrice);
     }, [requestedDate, resDetail]);
 
-    const renderSubDetRecipt = (subArray) => {
-        return (
-            <View style={styles.reciptLabel}>
-                {subDetReciptHeader()}
-                { }
-                {subArray.map((detail, index) => {
-                    return (
-                        renderSubDetailSingleService(detail.detailSubtitleCost, detail.detailSubtitle, index)
-                    )
-                })}
-            </View>
-        )
-    }
-    const subDetReciptHeader = () => {
-        return (
-            <View style={styles.reciptSupDet}>
-                <View style={{ alignItems: 'center', width: '50%' }}><Text>السعر</Text></View>
-                <View style={{ alignItems: 'center', width: '50%' }}><Text >التفاصيل</Text></View>
-            </View>
-        )
-    }
-    const renderSubDetailSingleService = (price = 0, title = 'random', index) => {
-        return (
-            <View key={index} style={styles.reciptSupDet}>
-                {subDetailReciptPrice(price)}
-                {subDetailTitle(title)}
-            </View>
-        )
-    }
-    const subDetailReciptPrice = (price) => {
-        return (
-            <View style={{ alignItems: 'center', width: '50%' }}>
-                <Text style={styles.text}>{price}</Text>
-            </View>
-        )
-    }
-    const subDetailTitle = (title) => {
-        return (
-            <View style={{ alignItems: 'center', width: '50%' }}>
-                <Text style={styles.text}>{title}</Text>
-            </View>
-        )
-    }
-    const renderReciptServices = () => {
-        return (
-            <View style={styles.reciptLabel}>
-                <Text style={styles.text}>الخدمات</Text>
-            </View>
-        )
-    }
-    const renderMainReciptDetails = (details) => {
-        return (
-            details.filteredSubDetials ?
-                details.filteredSubDetials.map((subDetail, index) => {
-                    return subDetail?.subDetailArray?.length > 0 ? renderSingleReciptService(subDetail, index, details) : null
-                })
-                :
-                null
-        )
-    }
-    const renderSingleReciptService = (subDetail, index, details) => {
-        const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
-        let price = 0;
-        subDetail.subDetailArray.forEach((detail) => price += parseInt(detail.detailSubtitleCost));
-        return (
-            <>
-                <View key={index} style={styles.reciptDetailItem}>
-                    {renderFinalReciptPrice(price * (additionType === "perPerson" ? details.numOfInviters || 0 : additionType === "perRequest" ? 1 : Math.ceil(details.numOfInviters / subDetail.numberPerTable)))}
-                    {renderReciptComponent(additionType, price, details.numOfInviters || 0, subDetail.numberPerTable)}
-                    <Pressable onPress={() => details.setShowSupDetRecipt(!details.showSupDetRecipt)} style={styles.reciptClom}>
-                        <Text style={styles.text}>{subDetail?.detailTitle || ''}</Text>
-                    </Pressable>
 
-                </View>
-                {details.showSupDetRecipt && renderSubDetRecipt(subDetail.subDetailArray)}
-            </>
-        );
-    };
-
-    const renderReciptDate = (date) => {
-        return (
-            <View style={styles.reciptDateLabel}>
-                <Text style={styles.text}>{moment(date).format('L')}</Text>
-            </View>
-        )
-    }
-    const renderPerPerson = (price = 0, invited = 0) => {
-        return (
-            <View style={styles.reciptMidClom}>
-                <Text>السعر للشخص الواحد</Text>
-                <Text style={styles.text}>{`₪ ${price}  X  ${invited || 0}`}</Text>
-            </View>
-        )
-    }
-    const renderPerTable = (price = 0, invited = 0, perTable = 1) => {
-        if (perTable == 0) {
-            perTable = 1;
-        }
-        const tables = Math.ceil((invited / perTable))
-        return (
-            <View style={styles.reciptMidClom}>
-                <Text>السعر للطاولة الواحدة</Text>
-                <Text style={styles.text}>{`₪ ${price}  X  ${(tables)}`}</Text>
-            </View>
-        )
-    }
-    const renderRequest = (price = 0) => {
-        return (
-            <View style={styles.reciptMidClom}>
-                <Text>السعر للحجز</Text>
-                <Text style={styles.text}>{`₪ ${price}  X  ${1}`}</Text>
-            </View>
-        )
-    }
-
-    /**
-    * Renders the appropriate receipt component based on the addition type.
-    * 
-    * @param additionType - The type of addition ('perPerson', 'perTable', 'perRequest').
-    * @param price - The price of the component.
-    * @param invited - The number of invited persons (optional).
-    * @param perTable - The number of persons per table (optional).
-    * @returns The rendered component.
-    */
-    const renderReciptComponent = (additionType, price, invited, perTable) => {
-        switch (additionType) {
-            case 'perPerson':
-                return renderPerPerson(price, invited);
-            case 'perTable':
-                return renderPerTable(price, invited, perTable);
-            case 'perRequest':
-                return renderRequest(price);
-            default:
-                return null;
-        }
-    };
-
-    const renderDeals = (campaigns, numOfInviters) => {
-        return (
-            <View style={styles.reciptDetail}>
-                {renderDealsHeader()}
-                {campaigns.map((camp, index) => renderSingleDealRecipt({ ...camp, numOfInviters }, index))}
-            </View>
-        )
-    }
-    const renderSingleDealRecipt = (camp, index) => {
-        return (
-            <View key={index} style={styles.reciptDetailItem}>
-                {renderFinalReciptPrice(camp?.campCost * (camp?.priceInclude === "perPerson" ? camp?.numOfInviters || 0 : camp?.priceInclude === "perRequest" ? 1 : Math.ceil(camp?.numOfInviters / camp?.numberPerTable)))}
-                {renderReciptComponent(camp?.priceInclude, camp?.campCost, camp?.numOfInviters)}
-                {renderDealTitle(camp?.campTitle)}
-            </View>
-        )
-    }
-    const renderDealTitle = (title) => {
-        return (
-            <Pressable style={styles.reciptClom}>
-                <Text style={styles.text}>{title}</Text>
-            </Pressable>
-        )
-    }
-    const renderDealsHeader = () => {
-        return (
-            <View style={styles.reciptLabel}>
-                <Text style={styles.text}>العروض</Text>
-            </View>
-        )
-    }
-
-    const renderFinalReciptPrice = (price) => {
-        return (
-            <View style={styles.reciptClom}>
-                <Text>السعر النهائي</Text>
-                <Text style={styles.text}>{price || 0}</Text>
-            </View>
-        )
-    }
-    const renderFullReciptDate = (date, index = 0) => {
-        // common states
-
-        const [showSupDetRecipt, setShowSupDetRecipt] = useState(false)
-        if (!showDetailRecipt) {
-            return null
-        }
-
-        // sub details 
-        var detailIndex = resDetail.findIndex(item => item.reservationDate === date)
-
-        if (Array.isArray(requestedDate)) {
-            if (detailIndex === -1) {
-                return
-            }
-        } else {
-            detailIndex = 0
-        }
-        const { subDetailId, numOfInviters } = resDetail[detailIndex]
-        const filteredSubDetials = filterSubDetails(data, subDetailId)
-        const showList = filteredSubDetials.some(item => item.subDetailArray && item.subDetailArray.length > 0);
-        const campaigns = resDetail[detailIndex].campaigns || [];
-        const showCamp = campaigns && campaigns.length > 0 ? true : false
-        // details 
-        const details = {
-            setShowSupDetRecipt: setShowSupDetRecipt,
-            showSupDetRecipt: showSupDetRecipt,
-            filteredSubDetials: showList ? filteredSubDetials : false,
-            numOfInviters: numOfInviters,
-        }
-
-        return (
-            // showDetailRes
-            <View key={index}>
-                {/* shows the date */}
-                {!(showList === false && showCamp === false) && renderReciptDate(date)}
-                {/* shows the services choosen */}
-                <View style={styles.reciptDetail}>
-                    {showList && renderReciptServices()}
-                    {renderMainReciptDetails(details)}
-                </View>
-                {/* shows the deals choosen */}
-                {showCamp && renderDeals(campaigns, numOfInviters)}
-            </View>
-        )
-    }
-    const showDetaiPress = () => {
-        setShowDetailRecipt(!showDetailRecipt)
-    }
-    const renderFinalPrice = () => {
-        return (
-            <View style={styles.reciptDetail}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Pressable onPress={showDetaiPress} >
-                        <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
-                    </Pressable>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                        <Text style={styles.text}>السعر النهائي   {totalPrice} ₪</Text>
-                        <View style={styles.IconView}>
-                            <Entypo
-                                style={{ alignSelf: 'center' }}
-                                name={"price-tag"}
-                                color={colors.puprble}
-                                size={30} />
-                        </View>
-                    </View>
-                </View>
-            </View>
-        )
-    }
-    const createRecipt = () => {
-        return (
-            <View style={styles.reciptView}>
-                {renderFinalPrice()}
-                {Array.isArray(requestedDate) ? requestedDate.map((date, index) => renderFullReciptDate(date, index)) : renderFullReciptDate(requestedDate)}
-            </View >
-
-        )
-    }
-    const renderPrice = () => {
-        return (
-            <View style={styles.priceView}>
-                {createRecipt()}
-            </View>
-        )
-    }
 
 
     return (
@@ -760,7 +497,14 @@ const ClientRequest = (props) => {
                 {renderRequestInfo()}
                 {renderEvents()}
 
-                {renderPrice()}
+                <Recipt
+                    totalPrice={totalPrice}
+                    requestedDate={requestedDate}
+                    resDetail={resDetail}
+                    showDetailRecipt={showDetailRecipt}
+                    setShowDetailRecipt={setShowDetailRecipt}
+                    data={data}
+                />
                 <View style={styles.body}>
                     <Text style={styles.text}>لن يتم تأكيد الحجز حتى يقوم صاحب الخدمة بقبول الطلب خلال 24 ساعة</Text>
                 </View>
@@ -913,12 +657,6 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         marginLeft: 10
     },
-    iconImg: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 30,
-        height: 30
-    },
 
     modaltext: {
         textAlign: 'center',
@@ -1050,69 +788,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: 'black',
     },
-    // priceLabel: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     justifyContent: 'flex-end',
-    //     marginVertical: 10
-    //     //borderWidth: 1
-
-    // },
-    priceView: {
-        width: '95%',
-        backgroundColor: 'white',
-        alignSelf: 'center',
-        marginBottom: 5,
-        borderRadius: 15,
-    },
-
-    reciptView: {
-        width: '100%',
-        marginVertical: 10,
-        alignSelf: 'center',
-        // borderWidth: 1
-    },
-    reciptDetail: {
-        width: '100%',
-        alignSelf: 'flex-end',
-        marginVertical: 10,
-        paddingHorizontal: 10,
-    },
-    reciptDetailItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        marginVertical: 10
-    },
-    reciptClom: {
-        alignItems: 'center',
-        width: '30%'
-    },
-    reciptMidClom: {
-        alignItems: 'center',
-        width: '40%'
-    },
-    reciptSupDet: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        marginBottom: 10
-    },
-    reciptLabel: {
-        width: '90%',
-        backgroundColor: colors.silver,
-        alignSelf: 'center',
-        borderRadius: 10
-    },
-    reciptDateLabel: {
-        width: '90%',
-        backgroundColor: colors.silver,
-        alignSelf: 'center',
-        borderRadius: 10,
-        height: 40,
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
 })
 
 export default ClientRequest;
