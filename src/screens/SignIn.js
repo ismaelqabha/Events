@@ -26,7 +26,7 @@ const SignIn = (props) => {
 
     const logUser = () => {
         signIn({ Email: userEmail, Password: password }).then(res => {
-            if (res.message === 'Authentecatin successed') {
+            if (res.message === 'Authentication succeeded') {
                 showMessage('تم التسجيل بنجاح')
                 getUserInfo()
                 props.navigation.navigate(ScreenNames.Splash);
