@@ -1,5 +1,6 @@
 export const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
 export const emailVerification = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+export const phoneNumberRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
 // const phoneByCountry = {
 //     US: /(\([0-9]{3}\)[\s-]|[0-9]{3}[\s-])[0-9]{3}[-\s][0-9]{4}/g,
 //     GB: /(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|\+)?(44)\)?[\s-]?(? (...),
