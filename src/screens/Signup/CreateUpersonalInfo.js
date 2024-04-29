@@ -11,6 +11,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import SearchContext from '../../../store/SearchContext';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
+import { emailVerification, phoneNumberRegex } from '../../resources/Regex';
 
 const CreateUpersonalInfo = (props) => {
     const { userId } = useContext(SearchContext);
@@ -68,21 +69,40 @@ const CreateUpersonalInfo = (props) => {
             ? props.navigation.navigate(ScreenNames.SetUserAddress, { data: { ...props } })
             : missingData();
     };
-
-    const checkStrings = val => {
+    /**
+     * Checks the validity of a string based on the specified type.
+     * 
+     * @param {string} val - The value to be checked.
+     * @param {'email' | 'BD' | 'name' | 'phone'} type - The type of verification.
+     * @returns {boolean} - Returns true if the string is valid according to the specified type, otherwise false.
+     */
+    const checkStrings = (val, type) => {
         if (!val) {
             return false;
         } else if (val.trim().length <= 0) {
             return false;
         }
-        return true;
+
+        switch (type) {
+            case 'email':
+                // Validates email using regex
+                return emailVerification.test(val.trim());
+            case 'BD': // birthDate
+                return true
+            case 'name':
+                return true; // Example: No specific validation for name
+            case 'phone':
+                return phoneNumberRegex.test(val.trim()); // Example: Phone number must be 10 digits
+            default:
+                return true;
+        }
     };
 
     const missingData = () => {
-        checkStrings(userName) ? showMissingUserName() : null;
-        checkStrings(userEmail) ? showMissingMail() : null;
-        checkStrings(userPhone) ? showMissingPhone() : null;
-        checkStrings(userBD) ? showMissingBirthDate() : null;
+        checkStrings(userName, 'name') ? showMissingUserName() : null;
+        checkStrings(userEmail, 'email') ? showMissingMail() : null;
+        checkStrings(userPhone, 'phone') ? showMissingPhone() : null;
+        checkStrings(userBD, 'BD') ? showMissingBirthDate() : null;
     };
 
     const showMissingUserName = () => { };
@@ -94,11 +114,28 @@ const CreateUpersonalInfo = (props) => {
     const showMissingBirthDate = () => { };
 
     useEffect(() => {
-        setUserNameError(!checkStrings(userName));
-        setEmailError(!checkStrings(userEmail));
-        setUserPhoneError(!checkStrings(userPhone));
-        setUserBDError(!checkStrings(userBD));
-    }, [userName, userEmail, userPhone, userBD]);
+        setUserNameError(!checkStrings(userName, 'name'));
+        setUserBDError(!checkStrings(userBD, 'BD'));
+    }, [userName, userBD]);
+    useEffect(() => {
+        let isEmailFilled;
+        let isPhoneFilled;
+
+        userEmail && userEmail.trim().length > 0 ? isEmailFilled = true : isEmailFilled = false;
+        userPhone && userPhone.trim().length > 0 ? isPhoneFilled = true : isPhoneFilled = false;
+
+        if (isEmailFilled && !isPhoneFilled) {
+            setEmailError(!checkStrings(userEmail, 'email'));
+        } else if (isPhoneFilled && !isEmailFilled) {
+            setUserPhoneError(!checkStrings(userPhone, 'phone'));
+        } else if (isEmailFilled && isPhoneFilled) {
+            setEmailError(!checkStrings(userEmail, 'email'));
+            setUserPhoneError(!checkStrings(userPhone, 'phone'));
+        } else {
+            setEmailError(true);
+            setUserPhoneError(true);
+        }
+    }, [userEmail, userPhone]);
 
     const onMalePress = () => {
         setMalePress(true)
