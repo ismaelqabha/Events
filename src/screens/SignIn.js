@@ -11,15 +11,15 @@ import UsersContext from '../../store/UsersContext';
 
 const SignIn = (props) => {
     //const { userId,setuserId, } = useContext(SearchContext);
-        const {
-            setuserId,userId,
-            userEmail,
-            password,
-            setPassword,
-            setUserEmail,
-            userInfo,
-            setUserInfo,
-            setUserName } = useContext(UsersContext);
+    const {
+        setuserId, userId,
+        userEmail,
+        password,
+        setPassword,
+        setUserEmail,
+        userInfo,
+        setUserInfo,
+        setUserName } = useContext(UsersContext);
 
     const [verifyUser, setVerifyUser] = useState()
 
@@ -33,7 +33,7 @@ const SignIn = (props) => {
                 )
                 getUserInfo()
                 props.navigation.navigate(ScreenNames.Splash);
-                
+
             } else {
                 if (res.message === 'not found') {
                     ToastAndroid.showWithGravity('عذرا لا يوجد حساب لهذة البيانات المدخلة',
@@ -41,10 +41,12 @@ const SignIn = (props) => {
                         ToastAndroid.BOTTOM
                     )
                 } else {
-                    ToastAndroid.showWithGravity('there has been an erro '+ res.message,
+                    ToastAndroid.showWithGravity('there has been an erro ' + res.message,
                         ToastAndroid.SHORT,
                         ToastAndroid.BOTTOM
                     )
+                    getUserInfo()
+                    props.navigation.navigate(ScreenNames.Splash);
                 }
             }
         })
@@ -55,7 +57,7 @@ const SignIn = (props) => {
             setUserInfo(res)
             setuserId(res.user[0].USER_ID)
             setUserName(res.user[0].User_name)
-            console.log("res.user[0].USER_ID",res.user[0].USER_ID);
+            console.log("res.user[0].USER_ID", res.user[0].USER_ID);
         })
     }
 
@@ -79,7 +81,7 @@ const SignIn = (props) => {
         <ImageBackground style={styles.container}
             source={require('../assets/photos/backgroundMain.png')}
         >
-             <Image
+            <Image
                 source={require('../assets/photos/logoIcon.png')}
                 style={styles.image}
             />
@@ -171,8 +173,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginVertical: 10,
     },
-    or:{
-      marginVertical: 10
+    or: {
+        marginVertical: 10
     },
     txtُEnter: {
         fontSize: 15,

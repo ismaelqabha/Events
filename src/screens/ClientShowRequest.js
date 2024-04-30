@@ -9,17 +9,19 @@ import Entypo from "react-native-vector-icons/Entypo";
 import moment from "moment";
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
+import { calculateTotalPrice } from '../resources/Functions';
+import Recipt from '../components/ProviderComponents/recipt';
 
 
 
 
 const ClientShowRequest = (props) => {
-    const { } = useContext(SearchContext);
+    const { totalPrice, setTotalPrice} = useContext(SearchContext);
     const { reqInfo } = props.route?.params || {}
 
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
-
+    const [showDetailRecipt, setShowDetailRecipt] = useState(false)
     //console.log("reqInfo", reqInfo.reservationDetail[0].campaigns);
 
 
@@ -57,6 +59,13 @@ const ClientShowRequest = (props) => {
     const onOfferPress = () => {
         setShowModal(true)
     }
+
+    console.log("reqInfo", reqInfo.services);
+
+    useEffect(() => {
+        calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
+    }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
+
 
     const showOfferDetail = (contentFromSubDet, campContents) => {
         return <View style={styles.contentView}>
@@ -117,7 +126,7 @@ const ClientShowRequest = (props) => {
             </Modal>
         )
     }
-    
+
     const moreModal = () => {
         return (
             <Modal
@@ -401,6 +410,11 @@ const ClientShowRequest = (props) => {
         </View>)
     }
 
+    
+
+    useEffect(() => {
+        calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
+    }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
 
     return (
         <View style={styles.container}>
@@ -410,7 +424,15 @@ const ClientShowRequest = (props) => {
 
                 {reqInfo.reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
-                {renderfinalCost()}
+                {/* {renderfinalCost()} */}
+                <Recipt
+                    totalPrice={totalPrice}
+                    requestedDate={reqInfo.reservationDetail.reservationDate}
+                    resDetail={reqInfo.reservationDetail}
+                    showDetailRecipt={showDetailRecipt}
+                    setShowDetailRecipt={setShowDetailRecipt}
+                    data={reqInfo.services}
+                />
                 {moreModal()}
             </ScrollView>
         </View>

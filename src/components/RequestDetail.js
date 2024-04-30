@@ -9,9 +9,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 const RequestDetail = (props) => {
     const { additionalServices, maxCapasity, servicePrice } = props
-    const {
-        selectedDate,
-        setSelectedDate, handleScrollToPosition, pressed, setPressed } = props
+    const {selectedDate, setSelectedDate, 
+            handleScrollToPosition,pressed, setPressed } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
 
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {

@@ -114,7 +114,7 @@ const ClientRequest = (props) => {
 
         return true;
     };
-    
+
     const onServiceRequest = () => {
         if (!checkAllDetails()) {
             return
