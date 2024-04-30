@@ -7,46 +7,38 @@ import EvilIcons from "react-native-vector-icons/EvilIcons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { getUserData, signIn } from '../resources/API';
 import UsersContext from '../../store/UsersContext';
+import { showMessage } from '../resources/Functions';
 
 
 const SignIn = (props) => {
     //const { userId,setuserId, } = useContext(SearchContext);
-    const {
-        setuserId, userId,
-        userEmail,
-        password,
-        setPassword,
-        setUserEmail,
-        userInfo,
-        setUserInfo,
-        setUserName } = useContext(UsersContext);
+        const {
+            setuserId,userId,
+            userEmail,
+            password,
+            setPassword,
+            setUserEmail,
+            userInfo,
+            setUserInfo,
+            setUserName } = useContext(UsersContext);
 
     const [verifyUser, setVerifyUser] = useState()
 
     const logUser = () => {
         signIn({ Email: userEmail, Password: password }).then(res => {
-            if (res.message === 'Authentecatin successed') {
-                //setVerifyUser(res)
-                ToastAndroid.showWithGravity('تم التسجيل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM
-                )
+            if (res.message === 'Authentication succeeded') {
+                showMessage('تم التسجيل بنجاح')
                 getUserInfo()
                 props.navigation.navigate(ScreenNames.Splash);
 
             } else {
                 if (res.message === 'not found') {
-                    ToastAndroid.showWithGravity('عذرا لا يوجد حساب لهذة البيانات المدخلة',
-                        ToastAndroid.SHORT,
-                        ToastAndroid.BOTTOM
-                    )
+                    showMessage('عذرا لا يوجد حساب لهذة البيانات المدخلة')
                 } else {
-                    ToastAndroid.showWithGravity('there has been an erro ' + res.message,
+                    ToastAndroid.showWithGravity('there has been an erro '+ res.message,
                         ToastAndroid.SHORT,
                         ToastAndroid.BOTTOM
                     )
-                    getUserInfo()
-                    props.navigation.navigate(ScreenNames.Splash);
                 }
             }
         })
@@ -57,7 +49,7 @@ const SignIn = (props) => {
             setUserInfo(res)
             setuserId(res.user[0].USER_ID)
             setUserName(res.user[0].User_name)
-            console.log("res.user[0].USER_ID", res.user[0].USER_ID);
+            console.log("res.user[0].USER_ID",res.user[0].USER_ID);
         })
     }
 
