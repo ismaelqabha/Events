@@ -60,8 +60,6 @@ const ClientShowRequest = (props) => {
         setShowModal(true)
     }
 
-    console.log("reqInfo", reqInfo.services);
-
     useEffect(() => {
         calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
     }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);

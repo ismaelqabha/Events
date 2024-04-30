@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '95%',
         alignSelf: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     requestStuts: {
         width: '20%',

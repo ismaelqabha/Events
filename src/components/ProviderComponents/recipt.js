@@ -225,7 +225,7 @@ const Recipt = ({
 
         const { subDetailId, numOfInviters } = resDetail[detailIndex];
         const filteredSubDetials = filterSubDetails(data, subDetailId);
-        const showList = filteredSubDetials.some(item => item.subDetailArray && item.subDetailArray.length > 0);
+        const showList = filteredSubDetials?.some(item => item.subDetailArray && item.subDetailArray.length > 0);
         const campaigns = resDetail[detailIndex].campaigns || [];
         const showCamp = campaigns && campaigns.length > 0 ? true : false;
 
