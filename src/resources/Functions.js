@@ -2,6 +2,7 @@ import { Alert } from "react-native";
 import { ToastAndroid } from "react-native";
 import { Platform } from "react-native";
 import { addService, addServiceImages } from "./API";
+import * as asyncFunctions from './common/asyncStorageFunctions'
 
 
 export const showMessage = (msg) => {
@@ -28,7 +29,6 @@ export const onPublishPress = async (allData) => {
 };
 
 
-
 /**
  * Calculate the total price based on reservation details and service data.
  * 
@@ -39,6 +39,7 @@ export const onPublishPress = async (allData) => {
  */
 export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPrice) => {
   let total = 0;
+
 
   // Function to calculate total price for a single date
   const calculateDateTotal = (date) => {
@@ -61,6 +62,7 @@ export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPric
   const calculateSingleDateTotal = () => {
     if (resDetail.length > 0) {
       const { subDetailId, numOfInviters, campaigns } = resDetail[0];
+      // console.log("subDetailId", subDetailId, "campaigns", campaigns);
       var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
       if (campaigns) {
         campaigns.forEach((campaign) => {
@@ -77,7 +79,7 @@ export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPric
   const calculateSubDetailTotal = (subDetailId, numOfInviters) => {
     let dateTotal = 0;
     const filteredSubDetails = filterSubDetails(data, subDetailId);
-    filteredSubDetails.forEach((subDetail) => {
+    filteredSubDetails?.forEach((subDetail) => {
       const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
       const numberPerTable = subDetail.numberPerTable;
       subDetail.subDetailArray.forEach((detail) => {
@@ -123,7 +125,7 @@ export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPric
 };
 
 export const filterSubDetails = (data, subDetailId) => {
-  return data.additionalServices.map(service => {
+  return data.additionalServices?.map(service => {
     // Filter sub details based on whether their id exists in subDetailId array
     const filteredSubDetailArray = service.subDetailArray.filter(subDetail =>
       subDetailId.includes(subDetail.id)
@@ -136,3 +138,8 @@ export const filterSubDetails = (data, subDetailId) => {
     };
   });
 };
+
+export {
+  asyncFunctions
+}
+
