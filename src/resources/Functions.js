@@ -3,6 +3,7 @@ import { ToastAndroid } from "react-native";
 import { Platform } from "react-native";
 import { addService, addServiceImages } from "./API";
 import * as asyncFunctions from './common/asyncStorageFunctions'
+import { images } from "../assets/photos/images";
 
 
 export const showMessage = (msg) => {
@@ -137,6 +138,18 @@ export const filterSubDetails = (data, subDetailId) => {
       subDetailArray: filteredSubDetailArray
     };
   });
+};
+
+export const getProfileImageSource = (profilePhoto, userGender) => {
+  if (profilePhoto) {
+    return { uri: profilePhoto };
+  } else {
+    return userGender === 'ذكر'
+      ? images.profileMalePicture
+      : userGender === 'أنثى'
+        ? images.profileFemalePicture
+        : images.profileMalePicture;
+  }
 };
 
 export {
