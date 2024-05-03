@@ -15,7 +15,8 @@ import SearchContext from '../../../store/SearchContext';
 import { addUser } from '../../resources/API';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
-import { getProfileImageSource } from '../../resources/Functions';
+import { getProfileImageSource, showMessage } from '../../resources/Functions';
+import { passwordRegex } from '../../resources/Regex';
 
 const CreatePassword = props => {
   const { userId } = useContext(SearchContext);
@@ -97,24 +98,23 @@ const CreatePassword = props => {
       }
     });
   };
+  const passwordRegCheck = () => {
+    return passwordRegex.test(password)
+  }
 
   const onCreateUser = () => {
-    if (checkPassword()) {
-      if (!chickIfExist()) {
-        addNewUser();
+    if (passwordRegCheck()) {
+      if (checkPassword()) {
+        if (!chickIfExist()) {
+          addNewUser();
+        } else {
+          showMessage('لديك حساب مسبقا')
+        }
       } else {
-        ToastAndroid.showWithGravity(
-          'لديك حساب مسبقا',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-        );
+        showMessage('لا يوجد تطابق بين كلمات المرور المكتوبة')
       }
     } else {
-      ToastAndroid.showWithGravity(
-        'لا يوجد تطابق بين كلمات المرور المكتوبة',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-      );
+      showMessage('كلمة المرور يجب أن تحتوي على الأقل 7 أحرف وأرقام')
     }
   };
 
