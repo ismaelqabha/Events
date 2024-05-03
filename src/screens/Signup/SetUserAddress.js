@@ -82,48 +82,6 @@ const SetUserAddress = (props) => {
     return address;
   };
 
-
-  // const RenderFooter = () => {
-  //   return (
-  //     <View style={AppStyles.footer}>
-  //       {renderDots()}
-  //       <View style={AppStyles.footerPart}>
-  //         {RenderBackButton()}
-  //         {RenderNextButton()}
-  //       </View>
-  //     </View>);
-  // };
-
-  // const renderDots = () => {
-  //   return (
-  //     <View style={AppStyles.createuserDots}>
-  //       <View style={AppStyles.dots}></View>
-  //       <View style={AppStyles.pressDot}></View>
-  //       <View style={AppStyles.dots}></View>
-  //       <View style={AppStyles.dots}></View>
-  //     </View>
-  //   )
-  // }
-  // const RenderNextButton = () => {
-  //   return (
-  //     <Pressable
-  //       style={AppStyles.createUserNext}
-  //       onPress={() => onNextPress()}
-  //     >
-  //       <Text style={AppStyles.createUserNextTxt}>التالي</Text>
-  //     </Pressable>
-  //   );
-  // };
-  // const RenderBackButton = () => {
-  //   return (
-  //     <Pressable
-  //       style={AppStyles.createUserBack}
-  //       onPress={() => onPressBack()}>
-  //       <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
-  //     </Pressable>
-  //   );
-  // };
-
   const onNextPress = () => {
     true
       ? props.navigation.navigate(ScreenNames.SetUserStatus

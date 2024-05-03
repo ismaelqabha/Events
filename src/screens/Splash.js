@@ -1,21 +1,80 @@
 import { StyleSheet } from 'react-native'
 import React, { useContext, useEffect } from 'react'
-import { getEventList, getFavoritesforUser, getHomePageData, getUserData } from '../resources/API';
+import { getEventList, getFavoritesforUser, getHomePageData, getUserData, signIn } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ImageBackground } from 'react-native';
 import UsersContext from '../../store/UsersContext';
-
+import { ScreenNames } from '../../route/ScreenNames';
+import { asyncFunctions, showMessage } from '../resources/Functions';
 
 export default function Splash(props) {
     const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo } = useContext(SearchContext);
-    const { setUserInfo, userId } = useContext(UsersContext);
+    const { setUserInfo, userId, setuserId, setUserName } = useContext(UsersContext);
+
+    let userEmail
+    let userPassword
+    const signInFlag = props?.route?.params?.signIn || false
+
+    useEffect(() => {
+        if (!signInFlag) {
+            console.log("looking for existing user ");
+            asyncFunctions.getItem("userInfo")
+                .then(userInfo => {
+                    userEmail = userInfo?.Email
+                    userPassword = userInfo?.Password
+                    if (!userEmail || !userPassword) {
+                        props.navigation.replace(ScreenNames.SignIn)
+                    }
+                })
+                .catch(error => {
+                    console.error("error : ", error);
+                    props.navigation.replace(ScreenNames.SignIn)
+                });
+        }
+    }, []);
+
+    const LoginUser = () => {
+        if (signInFlag) {
+            props.navigation.replace('Drawr')
+            return
+        }
+        if (userEmail && userPassword) {
+            signIn({ Email: userEmail, Password: userPassword })
+                .then(res => {
+                    if (res.message === 'Authentication succeeded') {
+                        showMessage('تم تسجيل الدخول بنجاح');
+                        getUserInfo();
+                        props.navigation.replace('Drawr')
+                    } else {
+                        showMessage('حدث خطأ: ' + res.message);
+                        console.error("error : ", error);
+                        props.navigation.replace(ScreenNames.SignIn)
+                    }
+                })
+                .catch(error => {
+                    showMessage('حدث خطأ: ' + error.message);
+                    console.error("error : ", error);
+                    props.navigation.replace(ScreenNames.SignIn)
+                });
+        }
+
+
+    }
+
+    const getUserInfo = () => {
+        getUserData({ Email: userEmail }).then(res => {
+            setUserInfo(res)
+            setuserId(res.user[0].USER_ID)
+            setUserName(res.user[0].User_name)
+        })
+    }
 
     const getFavoritesFromApi = () => {
         getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
             !resjson?.message &&
                 setUserFavorates(resjson)
-            props.navigation.replace('Drawr')
+            LoginUser()
         })
     }
 

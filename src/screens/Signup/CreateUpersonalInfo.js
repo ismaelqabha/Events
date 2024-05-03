@@ -12,6 +12,8 @@ import SearchContext from '../../../store/SearchContext';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
 import { emailVerification, phoneNumberRegex } from '../../resources/Regex';
+import { images } from '../../assets/photos/images';
+import { getProfileImageSource } from '../../resources/Functions';
 
 const CreateUpersonalInfo = (props) => {
     const { userId } = useContext(SearchContext);
@@ -27,7 +29,8 @@ const CreateUpersonalInfo = (props) => {
         setUserGender,
         setUserStatus,
         profilePhoto,
-        setProfilePhoto
+        setProfilePhoto,
+        userGender
     } = useContext(UsersContext);
 
     const [userNameError, setUserNameError] = useState(false)
@@ -323,7 +326,7 @@ const CreateUpersonalInfo = (props) => {
     const renderProfilePhoto = () => {
         return (
             <View style={styles.userImg}>
-                <Image style={styles.profilImg} source={profilePhoto ? { uri: profilePhoto } : require('../../assets/photos/user.png')} />
+                <Image style={styles.profilImg} source={getProfileImageSource(profilePhoto, userGender)} />
                 <Pressable style={styles.editImg} onPress={onAddImgPress}>
                     <Entypo
                         name={"camera"}
@@ -336,7 +339,6 @@ const CreateUpersonalInfo = (props) => {
     return (
         <View style={styles.container}>
             {renderHeader()}
-
             <ScrollWrapper
                 onNextPress={onNextPress}
                 onPressBack={onPressBack}

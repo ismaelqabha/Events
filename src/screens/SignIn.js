@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Image, TextInput, Pressable, ImageBackground, ToastAndroid } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
@@ -7,7 +7,7 @@ import EvilIcons from "react-native-vector-icons/EvilIcons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { getUserData, signIn } from '../resources/API';
 import UsersContext from '../../store/UsersContext';
-import { showMessage } from '../resources/Functions';
+import { asyncFunctions, showMessage } from '../resources/Functions';
 
 
 const SignIn = (props) => {
@@ -27,21 +27,35 @@ const SignIn = (props) => {
     const logUser = () => {
         signIn({ Email: userEmail, Password: password }).then(res => {
             if (res.message === 'Authentication succeeded') {
-                showMessage('تم التسجيل بنجاح')
-                getUserInfo()
-                props.navigation.navigate(ScreenNames.Splash);
+                showMessage('تم التسجيل بنجاح');
+                // Save user info in AsyncStorage
+                let userInfo = {
+                    Email: userEmail,
+                    Password: password
+                };
 
+                asyncFunctions.setItem("userInfo", userInfo)
+                    .then(() => {
+                        // Clear password field for security
+                        setPassword("");
+
+                        // Fetch user info and navigate to next screen
+                        getUserInfo();
+                        props.navigation.navigate(ScreenNames.Splash, {signIn:true});
+                    })
+                    .catch(error => {
+                        showMessage('Failed to save user info: ' + error.message);
+                    });
             } else {
                 if (res.message === 'not found') {
-                    showMessage('عذرا لا يوجد حساب لهذة البيانات المدخلة')
+                    showMessage('عذرا لا يوجد حساب لهذة البيانات المدخلة');
                 } else {
-                    ToastAndroid.showWithGravity('there has been an erro '+ res.message,
-                        ToastAndroid.SHORT,
-                        ToastAndroid.BOTTOM
-                    )
+                    showMessage('An error occurred: ' + res.message);
                 }
             }
-        })
+        }).catch(error => {
+            showMessage('An error occurred: ' + error.message);
+        });
     }
 
     const getUserInfo = () => {

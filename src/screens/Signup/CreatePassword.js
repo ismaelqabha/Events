@@ -6,18 +6,20 @@ import {
   TextInput,
   ToastAndroid,
 } from 'react-native';
-import React, {useState, useContext, useEffect} from 'react';
-import {colors} from '../../assets/AppColors';
+import React, { useState, useContext, useEffect } from 'react';
+import { colors } from '../../assets/AppColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {AppStyles} from '../../assets/res/AppStyles';
-import {ScreenNames} from '../../../route/ScreenNames';
+import { AppStyles } from '../../assets/res/AppStyles';
+import { ScreenNames } from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
-import {addUser} from '../../resources/API';
+import { addUser } from '../../resources/API';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
+import { getProfileImageSource, showMessage } from '../../resources/Functions';
+import { passwordRegex } from '../../resources/Regex';
 
 const CreatePassword = props => {
-  const {userId} = useContext(SearchContext);
+  const { userId } = useContext(SearchContext);
 
   const {
     password,
@@ -54,7 +56,7 @@ const CreatePassword = props => {
   };
 
   const chickIfExist = () => {
-  
+
     const isChecked = userInfo.user.find(item => item.Email === userEmail);
     console.log(!!isChecked);
     return !!isChecked;
@@ -76,14 +78,9 @@ const CreatePassword = props => {
       SpecialDates: userSpecialDate,
       Userstatus: userStatus,
     };
-    addUser(AddNewUser, profilePhoto).then(res => {
+    addUser(AddNewUser, getProfileImageSource(profilePhoto, userGender)).then(res => {
       setUserInfo([...UsersArr]);
       let UsersArr = userInfo || [];
-      // console.log("res ");
-      // console.log('UsersArr', UsersArr);
-
-      // console.log('res', res);
-
       if (res.message === 'User Created') {
         UsersArr.push(AddNewUser);
         ToastAndroid.showWithGravity(
@@ -92,33 +89,32 @@ const CreatePassword = props => {
           ToastAndroid.BOTTOM,
         );
         props.navigation.navigate(ScreenNames.ClientHomeAds);
-      }else{
+      } else {
         ToastAndroid.showWithGravity(
-          'there has been an error'+res.message,
+          'there has been an error' + res.message,
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         );
       }
     });
   };
+  const passwordRegCheck = () => {
+    return passwordRegex.test(password)
+  }
 
   const onCreateUser = () => {
-    if (checkPassword()) {
-      if (!chickIfExist()) {
-        addNewUser();
+    if (passwordRegCheck()) {
+      if (checkPassword()) {
+        if (!chickIfExist()) {
+          addNewUser();
+        } else {
+          showMessage('لديك حساب مسبقا')
+        }
       } else {
-        ToastAndroid.showWithGravity(
-          'لديك حساب مسبقا',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-        );
+        showMessage('لا يوجد تطابق بين كلمات المرور المكتوبة')
       }
     } else {
-      ToastAndroid.showWithGravity(
-        'لا يوجد تطابق بين كلمات المرور المكتوبة',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM,
-      );
+      showMessage('كلمة المرور يجب أن تحتوي على الأقل 7 أحرف وأرقام')
     }
   };
 
@@ -181,8 +177,8 @@ const CreatePassword = props => {
     checkStrings(confirmPassword) ? showMissingConfirmPassword() : null;
   };
 
-  const showMissingPasswrd = () => {};
-  const showMissingConfirmPassword = () => {};
+  const showMissingPasswrd = () => { };
+  const showMissingConfirmPassword = () => { };
 
   useEffect(() => {
     setFirstPasswordError(!checkStrings(password));
