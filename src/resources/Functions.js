@@ -2,6 +2,8 @@ import { Alert } from "react-native";
 import { ToastAndroid } from "react-native";
 import { Platform } from "react-native";
 import { addService, addServiceImages } from "./API";
+import * as asyncFunctions from './common/asyncStorageFunctions'
+import { images } from "../assets/photos/images";
 
 
 export const showMessage = (msg) => {
@@ -28,7 +30,6 @@ export const onPublishPress = async (allData) => {
 };
 
 
-
 /**
  * Calculate the total price based on reservation details and service data.
  * 
@@ -40,7 +41,6 @@ export const onPublishPress = async (allData) => {
 export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPrice) => {
   let total = 0;
 
-  console.log("dataSer", data);
 
   // Function to calculate total price for a single date
   const calculateDateTotal = (date) => {
@@ -139,3 +139,20 @@ export const filterSubDetails = (data, subDetailId) => {
     };
   });
 };
+
+export const getProfileImageSource = (profilePhoto, userGender) => {
+  if (profilePhoto) {
+    return { uri: profilePhoto };
+  } else {
+    return userGender === 'ذكر'
+      ? images.profileMalePicture
+      : userGender === 'أنثى'
+        ? images.profileFemalePicture
+        : images.profileMalePicture;
+  }
+};
+
+export {
+  asyncFunctions
+}
+
