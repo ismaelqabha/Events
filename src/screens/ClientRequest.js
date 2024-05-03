@@ -43,6 +43,7 @@ const ClientRequest = (props) => {
     const [eventTypeId, setEventTypeId] = useState()
     const [eventTotalCost, setEventTotalCost] = useState()
     const [EVENTID, setEVENTID] = useState()
+    const [updatedEventDate, setUpdatedEventDate] = useState()
 
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
@@ -360,10 +361,13 @@ const ClientRequest = (props) => {
             return result
         })
     }
+
     const UpdateEventInfo = () => {
+
         const newEventItem = {
             EventId: EVENTID,
             eventCost: eventTotalCost,
+            eventDate: updatedEventDate
         }
 
         updateEvent(newEventItem).then(res => {
@@ -389,6 +393,12 @@ const ClientRequest = (props) => {
         const evCost = eventInfo[eventItemIndex].eventCost
         const lastTotal = evCost + totalPrice
         setEventTotalCost(lastTotal)
+        const newExitDate = eventInfo[eventItemIndex].eventDate
+
+        if (!(newExitDate.includes(requestedDate))) {
+            newExitDate.push(requestedDate)
+        }
+        setUpdatedEventDate(newExitDate)
         setEVENTID(eventId)
     }
     const whenEventPress = (eventId) => {
@@ -745,12 +755,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
     },
-    // body: {
-    //     width: '90%',
-    //     alignSelf: 'center',
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    // },
+
     input: {
         textAlign: 'center',
         height: 50,

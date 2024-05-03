@@ -18,7 +18,7 @@ import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
 
 
 const ServiceDescr = (props) => {
-    const { data } = props?.route.params
+    const { data, isFromClientRequest } = props?.route.params
     const [showModal, setShowModal] = useState(false);
     const [subDetArray, setSubDetArray] = useState([]);
 
@@ -26,9 +26,9 @@ const ServiceDescr = (props) => {
 
     const { userId } = useContext(UsersContext);
 
-    const { requestedDate, setrequestedDate,setResDetail } = useContext(SearchContext);
+    const { requestedDate, setrequestedDate, setResDetail } = useContext(SearchContext);
 
-
+   
 
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
@@ -39,7 +39,7 @@ const ServiceDescr = (props) => {
             }
         })
     }
-    
+
 
     useEffect(() => {
         getRequestfromApi();
@@ -545,7 +545,8 @@ const ServiceDescr = (props) => {
                 <View style={styles.logo}>{renderLogo()}</View>
                 {renderTitle()}
                 {seperator()}
-                {renderDatesAvailable()}
+
+                { !isFromClientRequest && renderDatesAvailable()}
                 {seperator()}
                 <View>
                     <Text style={styles.text}>وصف الخدمات المقدمة</Text>
@@ -580,7 +581,7 @@ const ServiceDescr = (props) => {
                 {renderBody()}
             </ScrollView>
             {renderSubDetailModal()}
-            {renderFoter()}
+            { !isFromClientRequest && renderFoter()}
         </View>
 
     );

@@ -1,8 +1,10 @@
 
 
-import { StyleSheet, Text, View, Pressable, Modal, ScrollView,Image } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Modal, ScrollView, Image, Alert } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -11,19 +13,60 @@ import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import { calculateTotalPrice } from '../resources/Functions';
 import Recipt from '../components/ProviderComponents/recipt';
+import { deleteRequestbyId, updateEvent } from '../resources/API';
+import { ScreenNames } from '../../route/ScreenNames';
 
 
 
 
 const ClientShowRequest = (props) => {
-    const { totalPrice, setTotalPrice} = useContext(SearchContext);
+    const { totalPrice, setTotalPrice, setRequestInfoAccUser, eventInfo, setEventInfo, requestInfoAccUser } = useContext(SearchContext);
     const { reqInfo } = props.route?.params || {}
 
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
-    //console.log("reqInfo", reqInfo.reservationDetail[0].campaigns);
 
+    //console.log("reqInfo", reqInfo.reservationDetail[0].campaigns);
+    const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo.eventData.EventId )
+    
+    const queryRequest = () => {
+        if (requestInfoAccUser.message !== "no Request") {
+            const clientReq = requestInfoAccUser.filter(item => {
+                return item.requestInfo.ReqEventId == reqInfo.eventData.EventId;
+            })
+            return clientReq
+        } else {
+            return []
+        }
+    }
+
+    const checkEventDateHasMoreThanOneReq = () =>{
+        const data = queryRequest()
+       
+        const filteredData = data.filter(item => {
+            console.log(item.requestInfo.reservationDetail.length);
+            if (item.requestInfo.reservationDetail.length > 1) {
+              //if reservation detail has more than one date
+              let result = item.requestInfo.reservationDetail.find(multiItem => {
+                return reqInfo.reservationDetail.map(elementDate => {
+                    console.log("multiItem.reservationDate", multiItem.reservationDate,  "elementDate.reservationDate", elementDate.reservationDate);
+                    return multiItem.reservationDate == elementDate.reservationDate
+                })
+              })
+
+              return result
+      
+            } else {
+      
+              //if reservation detail has one date
+             console.log("item.requestInfo.reservationDetail[0].reservationDate", item.requestInfo.reservationDetail[0].reservationDate , "reqInfo.reservationDetail[0].reservationDate", reqInfo.reservationDetail[0].reservationDate);
+              return item.requestInfo.reservationDetail[0].reservationDate == reqInfo.reservationDetail[0].reservationDate
+            }
+          })
+          console.log("filteredData", filteredData);
+          return filteredData
+    }
 
     const getSerDetail = (id) => {
         const serviceData = reqInfo.services[0].additionalServices.filter(element => {
@@ -41,6 +84,66 @@ const ClientShowRequest = (props) => {
             return item.id === id
         })
         return subDetInfo
+    }
+
+    const callDeleteReqFunc = () => {
+        deleteRequestbyId({ RequestId: reqInfo.RequestId }).then(res => {
+            setRequestInfoAccUser(res)
+            updateEventData()
+            setShowMoreModal(false)
+            props.navigation.navigate(ScreenNames.ClientBook)
+        })
+    }
+    const deleteReqPress = () => {
+        Alert.alert(
+            'تأكيد',
+            'هل انت متأكد من حذف الطلب ؟ ',
+            [
+                {
+                    text: 'الغاء الامر',
+                    onPress: () => setShowMoreModal(false),
+                    style: 'cancel',
+                },
+                {
+                    text: 'حذف',
+                    onPress: () => callDeleteReqFunc(),
+                    style: 'destructive', // Use 'destructive' for a red-colored button
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+
+    }
+
+    const updateEventData = () => {
+        const reqdata = checkEventDateHasMoreThanOneReq()
+        const lastTotal = reqInfo.eventData.eventCost - reqInfo.Cost
+        console.log("reqInfo.eventData.eventCost", reqInfo.eventData.eventCost);
+        console.log("reqInfo.Cost", reqInfo.Cost);
+        console.log("lastTotal", lastTotal);
+        const editEventItem = {}
+        if(reqdata.length === 1){
+            editEventItem = {
+                EventId: reqInfo.eventData.EventId,
+                eventDate: reqInfo.reservationDetail[0].reservationDate,
+                eventCost: lastTotal
+            }
+        }else{
+            editEventItem = {
+                EventId: reqInfo.eventData.EventId,
+                eventCost: lastTotal
+            }
+        }
+       
+        updateEvent(editEventItem).then(res => {
+            const ev = eventInfo || [];
+            if (eventItemIndex > -1) {
+                ev[eventItemIndex] = editEventItem;
+            }
+            setEventInfo([...ev, editEventItem])
+
+        })
+
     }
 
 
@@ -150,24 +253,40 @@ const ClientShowRequest = (props) => {
     const moreOperation = () => {
         if (reqInfo.ReqStatus === 'waiting reply') {
             return (
-                <View>
-                    <Pressable style={styles.moreItem}>
-                        <Text style={styles.moreTxt}>تعديل</Text>
+                <View style={styles.moreChoice}>
+                    <Pressable style={styles.moreItem} onPress={deleteReqPress}>
+                        <AntDesign
+                            name={"delete"}
+                            color={"black"}
+                            size={30} />
+                        <Text style={styles.moreTxt}>اِلغاء الحجز</Text>
                     </Pressable>
 
                     <Pressable style={styles.moreItem}>
-                        <Text style={styles.moreTxt}>اِلغاء الحجز</Text>
+                        <Feather
+                            name={"edit"}
+                            color={"black"}
+                            size={30} />
+                        <Text style={styles.moreTxt}>تعديل</Text>
                     </Pressable>
                 </View>
             )
         }
         if (reqInfo.ReqStatus === 'waiting pay') {
             return (
-                <View>
+                <View style={styles.moreChoice}>
                     <Pressable style={styles.moreItem}>
+                        <MaterialIcons
+                            name={"payment"}
+                            color={"black"}
+                            size={30} />
                         <Text style={styles.moreTxt}>اِجراء عملية دفع</Text>
                     </Pressable>
                     <Pressable style={styles.moreItem}>
+                        <Feather
+                            name={"edit"}
+                            color={"black"}
+                            size={30} />
                         <Text style={styles.moreTxt}>تعديل</Text>
                     </Pressable>
                 </View>
@@ -177,6 +296,10 @@ const ClientShowRequest = (props) => {
             return (
                 <View>
                     <Pressable style={styles.moreItem}>
+                        <MaterialIcons
+                            name={"payment"}
+                            color={"black"}
+                            size={30} />
                         <Text style={styles.moreTxt}>اِجراء عملية دفع</Text>
                     </Pressable>
                 </View>
@@ -408,7 +531,7 @@ const ClientShowRequest = (props) => {
         </View>)
     }
 
-    
+
 
     useEffect(() => {
         calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
@@ -461,7 +584,7 @@ const styles = StyleSheet.create({
         marginRight: 10
     },
     ContentView: {
-        width: '90%',
+        width: '95%',
         alignSelf: 'center',
         backgroundColor: colors.silver,
         borderRadius: 10,
@@ -565,8 +688,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#00000099',
     },
     moreItem: {
+        // borderWidth: 1,
         alignSelf: 'center',
-        marginVertical: 5,
+        alignItems: 'center'
+
     },
     moreTxt: {
         fontSize: 18
@@ -578,4 +703,10 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30
     },
+    moreChoice: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        // borderWidth: 1
+    }
 })

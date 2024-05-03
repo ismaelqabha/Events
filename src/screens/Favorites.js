@@ -17,7 +17,7 @@ const Favorites = (props) => {
     
 
     const getFavoritesFromApi = () => {
-        console.log("fileId",fileId, "userId",userId);
+       // console.log("fileId",fileId, "userId",userId);
         getFavoritesServiceInfo({ favoListFileId: fileId, favoListUserId: userId }).then(res => {
              setUserFavorates(res)
             //console.log("UFavorates: ", res.map(i => i.favorateInfo.service_id)); 

@@ -14,6 +14,8 @@ const BookingCard = (props) => {
     const navigation = useNavigation();
     const data = { ...props }
 
+   
+
     const renderLogo = () => {
         const index = props.images[0].logoArray?.findIndex((val) => val === true)
         const img = props.images[0]?.serviceImages[index]
@@ -33,7 +35,7 @@ const BookingCard = (props) => {
         
         const cardsArray = serData?.map(card => {
             return <Pressable style={styles.cardHeader}
-                onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { data: obj })}
+                onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { data: obj , isFromClientRequest: true})}
             >
                 <Text style={styles.titleText}>{card.title}</Text>
             </Pressable>;

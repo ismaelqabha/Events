@@ -6,7 +6,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { createNewEvent, getEventsInfo, getRequestInfoWithservice } from '../resources/API';
+import { createNewEvent, getEventsInfo, getRequestInfoWithservice, updateEvent } from '../resources/API';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -35,9 +35,7 @@ const ClientEvents = (props) => {
         props.navigation.goBack();
     }
     const onPressModalHandler = () => {
-       
         setShowModal(true);
-       
     }
     const onModalCancelPress = () => {
         setShowModal(false)
@@ -108,6 +106,14 @@ const ClientEvents = (props) => {
         return TypeId
     }
 
+    const eventEditing = (props) => {
+        const id = getEventTypeID(props.eventTitleId)
+        setfileEventName(props.eventName)
+        // setEventName()
+        setDateOfEvent(props.eventDate)
+        setShowModal(true)
+    }
+
     const creatNewEvent = (eventTypeId) => {
         const newEventItem = {
             userId: userId,
@@ -122,6 +128,7 @@ const ClientEvents = (props) => {
             setEventInfo([...evnt])
         })
     }
+    
     useEffect(() => {
         getEventsfromApi()
         getEventTypeInfo()
@@ -202,9 +209,7 @@ const ClientEvents = (props) => {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.detailModal}>
-                        {/* <View style={styles.Motitle}>
-                            <Text style={styles.text}>انشاء مناسبة</Text>
-                        </View> */}
+                        
                         <View style={styles.body}>
                             {/* <Text style={styles.text}>اسم المناسبة</Text> */}
                             <View style={{ width: '100%', marginTop: 20 }}>
@@ -247,8 +252,7 @@ const ClientEvents = (props) => {
         return eventInfo || [];
     }
     const renderCard = ({ item }) => {
-        return <EventsCard  {...item} service_id={data?.service_id} isFromAddEventClick={isFromAddEventClick} />;
-
+        return <EventsCard  {...item} service_id={data?.service_id} eventEditing={eventEditing} />;
     };
 
     return (

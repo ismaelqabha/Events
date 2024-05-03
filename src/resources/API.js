@@ -65,25 +65,25 @@ export const updateService = async body => {
 
 
 //Service Detail
-export const getServiceDetail = async body => {
-  const url = 'serviceDetail/getServiceDetailByServID';
-  return await AppFetch(url, 'POST', body);
-};
+// export const getServiceDetail = async body => {
+//   const url = 'serviceDetail/getServiceDetailByServID';
+//   return await AppFetch(url, 'POST', body);
+// };
 
 
-//Service sub Detail
-export const getServiceSubDetail = async body => {
-  const url = 'subDetail/getSubDetail';
-  return await AppFetch(url, 'POST', body);
-};
-export const getOrderSubdetailInfo = async body => {
-  const url = 'OrderServiceDetail/getOrderDetailById';
-  return await AppFetch(url, 'POST', body);
-};
-export const addNewOrderDetail = async body => {
-  const url = 'OrderServiceDetail/addOrderDetail';
-  return await AppFetch(url, 'POST', body);
-};
+// //Service sub Detail
+// export const getServiceSubDetail = async body => {
+//   const url = 'subDetail/getSubDetail';
+//   return await AppFetch(url, 'POST', body);
+// };
+// export const getOrderSubdetailInfo = async body => {
+//   const url = 'OrderServiceDetail/getOrderDetailById';
+//   return await AppFetch(url, 'POST', body);
+// };
+// export const addNewOrderDetail = async body => {
+//   const url = 'OrderServiceDetail/addOrderDetail';
+//   return await AppFetch(url, 'POST', body);
+// };
 
 
 //Event
@@ -98,6 +98,10 @@ export const createNewEvent = async body => {
 export const updateEvent = async body => {
   const url = 'Events/updateByid';
   return await AppFetch(url, 'PATCH', body);
+};
+export const deleteEventInfo = async body => {
+  const url = 'Events/deleteById';
+  return await AppFetch(url, 'DELETE', body);
 };
 export const getEventList = async body => {
   const url = 'EventList/getEventItem';

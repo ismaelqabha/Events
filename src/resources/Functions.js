@@ -40,7 +40,6 @@ export const onPublishPress = async (allData) => {
 export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPrice) => {
   let total = 0;
 
-  console.log("dataSer", data);
 
   // Function to calculate total price for a single date
   const calculateDateTotal = (date) => {

@@ -26,6 +26,8 @@ const Recipt = ({
     setShowDetailRecipt, // State functions to change the value of showDetialRecipt  
     data                 // Additional data used in rendering the receipt
 }) => {
+
+    //console.log("resDetail multi", resDetail);
     const renderSubDetRecipt = (subArray) => {
         return (
             <View style={styles.reciptLabel}>

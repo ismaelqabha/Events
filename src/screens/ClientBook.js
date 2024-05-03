@@ -31,7 +31,8 @@ const ClientBook = (props) => {
             return <BookingCard {...item.requestInfo}
             services={item?.serviceData}
             images={item?.serviceImage}
-            relatedCamp={item?.serviceCamp} />
+            relatedCamp={item?.serviceCamp} 
+            eventData={data} />
         })
     }
 
