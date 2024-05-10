@@ -40,6 +40,7 @@ const EventsCard = (props) => {
 
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === EventId && item.userId === userId)
 
+    // console.log("eventTitleId", eventTitleId);
 
     const getEventTitle = () => {
         return eventTypeInfo.filter(item => {
@@ -48,10 +49,11 @@ const EventsCard = (props) => {
     }
 
     const eventTitle = getEventTitle()
+    // console.log("eventTitle", eventTitle);
 
     useEffect(() => {
         getEventTypeInfo()
-    
+
     }, [])
 
     //// editing event info section
@@ -290,8 +292,6 @@ const EventsCard = (props) => {
         if (eventDate.length < 1 && eventCost === 0) {
             setDeleteEvent(true)
         }
-
-
         setEditing(true)
     }
 
@@ -325,7 +325,7 @@ const EventsCard = (props) => {
 
                     <View style={styles.rightView}>
 
-                        {eventDate.length == 0 ? <Text style={styles.text}>الموعد غير محدد</Text> :
+                        {eventDate.length === 0 ? <Text style={styles.text}>الموعد غير محدد</Text> :
                             <View>
                                 {eventDate.length > 1 ?
                                     <Text style={styles.text}>في أكثر من يوم</Text> :

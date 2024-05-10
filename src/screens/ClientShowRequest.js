@@ -23,13 +23,14 @@ const ClientShowRequest = (props) => {
     const { totalPrice, setTotalPrice, setRequestInfoAccUser, eventInfo, setEventInfo, requestInfoAccUser } = useContext(SearchContext);
     const { reqInfo } = props.route?.params || {}
 
+
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
 
     //console.log("reqInfo", reqInfo.reservationDetail[0].campaigns);
-    const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo.eventData.EventId )
-    
+    const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo.eventData.EventId)
+
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
             const clientReq = requestInfoAccUser.filter(item => {
@@ -41,31 +42,70 @@ const ClientShowRequest = (props) => {
         }
     }
 
-    const checkEventDateHasMoreThanOneReq = () =>{
-        const data = queryRequest()
-       
-        const filteredData = data.filter(item => {
-            console.log(item.requestInfo.reservationDetail.length);
-            if (item.requestInfo.reservationDetail.length > 1) {
-              //if reservation detail has more than one date
-              let result = item.requestInfo.reservationDetail.find(multiItem => {
-                return reqInfo.reservationDetail.map(elementDate => {
-                    console.log("multiItem.reservationDate", multiItem.reservationDate,  "elementDate.reservationDate", elementDate.reservationDate);
-                    return multiItem.reservationDate == elementDate.reservationDate
-                })
-              })
+    const eventDatesArr = reqInfo.eventData.eventDate
 
-              return result
-      
-            } else {
-      
-              //if reservation detail has one date
-             console.log("item.requestInfo.reservationDetail[0].reservationDate", item.requestInfo.reservationDetail[0].reservationDate , "reqInfo.reservationDetail[0].reservationDate", reqInfo.reservationDetail[0].reservationDate);
-              return item.requestInfo.reservationDetail[0].reservationDate == reqInfo.reservationDetail[0].reservationDate
+
+    const checkEventDateHasMoreThanOneReq = () => {
+        const allRequests = queryRequest()
+
+
+        if (reqInfo.reservationDetail.length > 1) {
+            const multi = reqInfo.reservationDetail.map(item => {
+
+
+                const result = allRequests.filter(allreq => {
+
+                    // console.log("all requset", allreq.requestInfo.reservationDetail);
+                    // console.log(">>>current req>>>>", reqInfo.reservationDetail);
+
+                    if (allreq.requestInfo.reservationDetail.length > 1) {
+                         return allreq.requestInfo.reservationDetail.find(morethanOne => {
+                            // console.log(morethanOne.reservationDate, item.reservationDate, morethanOne.reservationDate.includes(item.reservationDate));
+                            return morethanOne.reservationDate.includes(item.reservationDate)
+                         })
+                    } else {
+                        // console.log(allreq.requestInfo.reservationDetail[0].reservationDate, item.reservationDate, allreq.requestInfo.reservationDetail[0].reservationDate.includes(item.reservationDate));
+                        return allreq.requestInfo.reservationDetail[0].reservationDate.includes(item.reservationDate)
+                    }
+                })
+
+                if (result.length === 1) {
+                    eventDatesArr.pop(item.reservationDate)
+                }
+                // console.log("result", result, result.length);
+
+                return result
+            })
+
+          
+            // console.log("multi", multi, multi.length);
+
+            return multi
+
+        } else {
+            const single = allRequests.filter(item => {
+
+
+                if (item.requestInfo.reservationDetail.length > 1) {
+                    return item.requestInfo.reservationDetail.find(multiDate => {
+                        // console.log(multiDate.reservationDate, reqInfo.reservationDetail[0].reservationDate, multiDate.reservationDate.includes(reqInfo.reservationDetail[0].reservationDate));
+                        return multiDate.reservationDate.includes(reqInfo.reservationDetail[0].reservationDate)
+                    })
+
+                } else {
+                    // console.log(item.requestInfo.reservationDetail[0].reservationDate, reqInfo.reservationDetail[0].reservationDate, item.requestInfo.reservationDetail[0].reservationDate.includes(reqInfo.reservationDetail[0].reservationDate));
+
+                    return item.requestInfo.reservationDetail[0].reservationDate.includes(reqInfo.reservationDetail[0].reservationDate)
+                }
+            })
+
+            if (single.length === 1) {
+                eventDatesArr.pop(reqInfo.reservationDetail[0].reservationDate)
             }
-          })
-          console.log("filteredData", filteredData);
-          return filteredData
+            // console.log("single", single, single.length);
+            return single
+        }
+
     }
 
     const getSerDetail = (id) => {
@@ -88,10 +128,14 @@ const ClientShowRequest = (props) => {
 
     const callDeleteReqFunc = () => {
         deleteRequestbyId({ RequestId: reqInfo.RequestId }).then(res => {
-            setRequestInfoAccUser(res)
+
+            // setRequestInfoAccUser(res)
+
             updateEventData()
             setShowMoreModal(false)
-            props.navigation.navigate(ScreenNames.ClientBook)
+            //props.navigation.navigate(ScreenNames.ClientBook, { data: { ...EvData } })
+            props.navigation.navigate(ScreenNames.ClientHomeAds)
+
         })
     }
     const deleteReqPress = () => {
@@ -115,35 +159,27 @@ const ClientShowRequest = (props) => {
 
     }
 
+
     const updateEventData = () => {
-        const reqdata = checkEventDateHasMoreThanOneReq()
-        const lastTotal = reqInfo.eventData.eventCost - reqInfo.Cost
-        console.log("reqInfo.eventData.eventCost", reqInfo.eventData.eventCost);
-        console.log("reqInfo.Cost", reqInfo.Cost);
-        console.log("lastTotal", lastTotal);
-        const editEventItem = {}
-        if(reqdata.length === 1){
-            editEventItem = {
-                EventId: reqInfo.eventData.EventId,
-                eventDate: reqInfo.reservationDetail[0].reservationDate,
-                eventCost: lastTotal
-            }
-        }else{
-            editEventItem = {
-                EventId: reqInfo.eventData.EventId,
-                eventCost: lastTotal
-            }
-        }
+
+        checkEventDateHasMoreThanOneReq()
        
+        const lastTotal = reqInfo.eventData.eventCost - reqInfo.Cost
+
+        const editEventItem = {
+            EventId: reqInfo.eventData.EventId,
+            eventDate: eventDatesArr,
+            eventCost: lastTotal,
+            eventTitleId: reqInfo.eventData.eventTitleId
+        }
+
         updateEvent(editEventItem).then(res => {
             const ev = eventInfo || [];
             if (eventItemIndex > -1) {
                 ev[eventItemIndex] = editEventItem;
             }
             setEventInfo([...ev, editEventItem])
-
         })
-
     }
 
 

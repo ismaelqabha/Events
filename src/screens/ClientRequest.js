@@ -42,6 +42,7 @@ const ClientRequest = (props) => {
     const [eventName, setEventName] = useState()
     const [eventTypeId, setEventTypeId] = useState()
     const [eventTotalCost, setEventTotalCost] = useState()
+    const [evTiltleId, setEvTiltleId] = useState()
     const [EVENTID, setEVENTID] = useState()
     const [updatedEventDate, setUpdatedEventDate] = useState()
 
@@ -58,14 +59,14 @@ const ClientRequest = (props) => {
     }
 
     const getEventsfromApi = () => {
-        getEventsInfo({ userId: userId }).then(res => {
-            if (res.message == 'No Event') {
-                setIveEvent(false)
-            } else {
-                setIveEvent(true)
-                setEventInfo(res)
-            }
-        })
+        // getEventsInfo({ userId: userId }).then(res => {
+        if (eventInfo.message == 'No Event') {
+            setIveEvent(false)
+        } else {
+            setIveEvent(true)
+            // setEventInfo(res)
+        }
+        // })
     }
 
     const handleScrollToPosition = () => {
@@ -132,7 +133,7 @@ const ClientRequest = (props) => {
         }
 
         addNewRequest(requestBody).then((res) => {
-            if (res.message && res.message === 'Request Created') {
+            if (res.message === 'Request Created') {
                 showMessage("Request Created successfully")
                 UpdateEventInfo()
             } else {
@@ -354,10 +355,12 @@ const ClientRequest = (props) => {
         let month = currentDate.format('M')
         let year = currentDate.format('YYYY')
         let completeDate = year + '-' + month + '-' + day
+
         return eventInfo.filter(item => {
             const EDate = item.eventDate
             const CDate = completeDate
-            const result = EDate >= CDate
+            const result = EDate >= CDate || EDate.length < 1
+
             return result
         })
     }
@@ -367,9 +370,10 @@ const ClientRequest = (props) => {
         const newEventItem = {
             EventId: EVENTID,
             eventCost: eventTotalCost,
-            eventDate: updatedEventDate
+            eventDate: updatedEventDate,
+            eventTitleId: evTiltleId
         }
-
+        //console.log("newEventItem", newEventItem);
         updateEvent(newEventItem).then(res => {
             const ev = eventInfo || [];
             if (eventItemIndex > -1) {
@@ -393,18 +397,34 @@ const ClientRequest = (props) => {
         const evCost = eventInfo[eventItemIndex].eventCost
         const lastTotal = evCost + totalPrice
         setEventTotalCost(lastTotal)
+
         const newExitDate = eventInfo[eventItemIndex].eventDate
 
-        if (!(newExitDate.includes(requestedDate))) {
-            newExitDate.push(requestedDate)
+        if (Array.isArray(requestedDate)) {
+
+            requestedDate.forEach((item) => {
+                if (!(newExitDate.includes(item))) {
+                    newExitDate.push(item)
+                }
+            });
+            console.log("newExitDate", newExitDate);
+        } else {
+            if (!(newExitDate.includes(requestedDate))) {
+                newExitDate.push(requestedDate)
+            }
+            console.log("newExitDate", newExitDate);
         }
+
         setUpdatedEventDate(newExitDate)
         setEVENTID(eventId)
     }
-    const whenEventPress = (eventId) => {
+
+    const whenEventPress = (eventId, eventTitleId) => {
         setSelectedEvent(eventId || '');
+        setEvTiltleId(eventTitleId)
         UpdateEventCostState(eventId)
     }
+
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
@@ -416,7 +436,7 @@ const ClientRequest = (props) => {
                     </View>
                     <View style={styles.IconView}>
                         <Pressable style={styles.selectEvent}
-                            onPress={() => whenEventPress(item.EventId)}
+                            onPress={() => whenEventPress(item.EventId, item.eventTitleId)}
                         >
                             {isSelected && (
                                 <Entypo

@@ -13,7 +13,6 @@ const ClientBook = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-   
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
             const clientReq = requestInfoAccUser.filter(item => {

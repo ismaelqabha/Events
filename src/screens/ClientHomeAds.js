@@ -5,7 +5,6 @@ import SearchContext from '../../store/SearchContext';
 import CampaignCard from '../components/CampaignCard';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
-import { SliderBox } from 'react-native-image-slider-box';
 import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -15,12 +14,14 @@ import ServiceCard from '../components/ServiceCard';
 import HomeServiceCard from '../components/HomeServiceCard';
 import Interactable from 'react-native-interactable';
 import UsersContext from '../../store/UsersContext';
+import { getEventsInfo } from '../resources/API';
 
 const ClientHomeAds = (props) => {
     const { cat, setCat,
         ServiceDataInfo,
         campInfo,
         userRegion } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
 
 
     const [selectServiceType, setSelectServiceType] = useState('');
@@ -29,10 +30,13 @@ const ClientHomeAds = (props) => {
     const deltaX = new Animated.Value(0);
     const deltaY = new Animated.Value(0);
 
-    
+
     useEffect(() => {
+       
         setCat('قاعات')
     }, [])
+
+   
 
     const getHallServices = () => {
         return ServiceDataInfo?.filter(item => {
@@ -109,7 +113,7 @@ const ClientHomeAds = (props) => {
         return ServiceArray
     }
 
-   
+
 
     const renderSeeAll = () => {
         return (
@@ -203,9 +207,6 @@ const ClientHomeAds = (props) => {
             </Interactable.View> */}
             <ScrollView contentContainerStyle={styles.home}>
 
-                <Pressable onPress={() => navigation.navigate(ScreenNames.SignIn)} >
-                    <Text style={styles.txt}>Login</Text>
-                </Pressable>
 
                 <View style={styles.centents}>
                     <View style={styles.itemView}>

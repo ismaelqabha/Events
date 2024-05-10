@@ -22,7 +22,6 @@ const SignIn = (props) => {
             setUserInfo,
             setUserName } = useContext(UsersContext);
 
-    const [verifyUser, setVerifyUser] = useState()
 
     const logUser = () => {
         signIn({ Email: userEmail, Password: password }).then(res => {
@@ -75,9 +74,7 @@ const SignIn = (props) => {
     }
 
     const renderUserId = () => {
-        console.log("userInfo", userInfo);
         const UserArray = userInfo.map(id => {
-            console.log("id.USER_ID", id.USER_ID);
             return setuserId(id.USER_ID)
         });
         return UserArray;

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import React, { useContext, useEffect } from 'react'
-import { getEventList, getFavoritesforUser, getHomePageData, getUserData, signIn } from '../resources/API';
+import { getEventList, getEventsInfo, getFavoritesforUser, getHomePageData, getUserData, signIn } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ImageBackground } from 'react-native';
@@ -9,7 +9,7 @@ import { ScreenNames } from '../../route/ScreenNames';
 import { asyncFunctions, showMessage } from '../resources/Functions';
 
 export default function Splash(props) {
-    const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo } = useContext(SearchContext);
+    const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo, setEventInfo } = useContext(SearchContext);
     const { setUserInfo, userId, setuserId, setUserName } = useContext(UsersContext);
 
     let userEmail
@@ -64,9 +64,12 @@ export default function Splash(props) {
 
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
-            setUserInfo(res)
-            setuserId(res.user[0].USER_ID)
-            setUserName(res.user[0].User_name)
+            //console.log("res", res[0].userInfo.USER_ID);
+            setUserInfo(res[0].userInfo)
+            setEventInfo(res[0].userEvents)
+            setuserId(res[0].userInfo.USER_ID)
+            setUserName(res[0].userInfo.User_name)
+    
         })
     }
 
@@ -92,18 +95,13 @@ export default function Splash(props) {
             }
         })
     }
-    const getUserfromApi = () => {
-        getUserData({ USER_ID: userId }).then(res => {
-            setUserInfo(res)
-        })
-    }
+
 
 
 
     useEffect(() => {
         getDataFromApi()
         getEventListfromApi()
-        getUserfromApi()
     }, [servType])
 
 

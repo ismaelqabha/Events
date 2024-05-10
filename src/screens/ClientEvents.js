@@ -29,7 +29,7 @@ const ClientEvents = (props) => {
 
     const [dateOfEvent, setDateOfEvent] = useState([])
     // const [eventTypeId, setEventTypeId] = useState()
-
+    // console.log("eventInfo", eventInfo);
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -79,15 +79,15 @@ const ClientEvents = (props) => {
         }
 
     }
-    const getEventsfromApi = () => {
-        getEventsInfo({ userId: userId }).then(res => {
-            setEventInfo(res)
-        })
-    }
-   
+    // const getEventsfromApi = () => {
+    //     getEventsInfo({ userId: userId }).then(res => {
+    //         setEventInfo(res)
+    //     })
+    // }
+
     const getRequestfromApi = () => {
         getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
-            setRequestInfoAccUser(res) 
+            setRequestInfoAccUser(res)
         })
     }
 
@@ -128,9 +128,9 @@ const ClientEvents = (props) => {
             setEventInfo([...evnt])
         })
     }
-    
+
     useEffect(() => {
-        getEventsfromApi()
+        // getEventsfromApi()
         getEventTypeInfo()
         getRequestfromApi()
     }, [])
@@ -209,7 +209,7 @@ const ClientEvents = (props) => {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.detailModal}>
-                        
+
                         <View style={styles.body}>
                             {/* <Text style={styles.text}>اسم المناسبة</Text> */}
                             <View style={{ width: '100%', marginTop: 20 }}>
