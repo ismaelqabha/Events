@@ -28,7 +28,7 @@ const ServiceDescr = (props) => {
 
     const { requestedDate, setrequestedDate, setResDetail } = useContext(SearchContext);
 
-   
+    
 
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
@@ -546,7 +546,7 @@ const ServiceDescr = (props) => {
                 {renderTitle()}
                 {seperator()}
 
-                { !isFromClientRequest && renderDatesAvailable()}
+                {!isFromClientRequest && renderDatesAvailable()}
                 {seperator()}
                 <View>
                     <Text style={styles.text}>وصف الخدمات المقدمة</Text>
@@ -581,7 +581,7 @@ const ServiceDescr = (props) => {
                 {renderBody()}
             </ScrollView>
             {renderSubDetailModal()}
-            { !isFromClientRequest && renderFoter()}
+            {!isFromClientRequest && renderFoter()}
         </View>
 
     );

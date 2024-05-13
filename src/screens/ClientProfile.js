@@ -13,13 +13,11 @@ import { updateUserData } from '../resources/API';
 
 const ClientProfile = (props) => {
     const { userInfo, setUserInfo, userId } = useContext(UsersContext);
-    const userData = userInfo.user
+    const userData = userInfo
     
-
-    const [spcialEvents, setSpcialEvents] = useState(userData[0].SpecialDates)
+    const [spcialEvents, setSpcialEvents] = useState(userData.SpecialDates)
 
     const clientReview = true
-    const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
 
     const [showSpecialDMoodal, setShowSpecialDMoodal] = useState(false)
     const [mode, setMode] = useState('date');
@@ -64,7 +62,7 @@ const ClientProfile = (props) => {
         addSpecialDateProcess(data)
     }
     const specialDatesItem = () => {
-        return userData[0].SpecialDates.map(item => {
+        return userData.SpecialDates.map(item => {
             return (
                 <View style={styles.item}>
                     <View><Text style={styles.basicInfo}>{item.eventDate}</Text>
@@ -134,16 +132,19 @@ const ClientProfile = (props) => {
         });
     };
     const updateUserSDates = () =>{
-        const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
+        //const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
         const newData = {
             USER_ID: userId,
             SpecialDates: spcialEvents
         }
         updateUserData(newData).then(res => {
-            const data = userInfo || [];
-            if (selectedUserIndex > -1) {
-                data[selectedUserIndex] = { ...data[selectedUserIndex], ...newData };
-            }
+            var data = userInfo || [];
+            data = { ...data, ...newData };
+
+            // if (selectedUserIndex > -1) {
+            //     data[selectedUserIndex] = { ...data[selectedUserIndex], ...newData };
+            // }
+
             if (res.message === 'Updated Sucessfuly') {
                 setUserInfo([...data])
                 setShowSpecialDMoodal(false)
@@ -340,9 +341,9 @@ const ClientProfile = (props) => {
         return (
             <View style={styles.imgView}>
                 <Pressable onPress={() => props.navigation.navigate(ScreenNames.UserProfile)}>
-                    <Text style={styles.userName}>{userData[0].User_name}</Text>
+                    <Text style={styles.userName}>{userData.User_name}</Text>
                 </Pressable>
-                <Image style={styles.profilImg} source={userData[0].UserPhoto ? { uri: userData[0].UserPhoto } : require('../assets/photos/user.png')} />
+                <Image style={styles.profilImg} source={userData.UserPhoto ? { uri: userData.UserPhoto } : require('../assets/photos/user.png')} />
             </View>
         )
     }

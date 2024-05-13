@@ -5,11 +5,15 @@ import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import moment from "moment";
 import 'moment/locale/ar-ly'
+import { SelectList } from 'react-native-dropdown-select-list';
 
 const MonthCom = (props) => {
     const { setselectMonthforSearch, setYearforSearch, yearforSearch } = useContext(SearchContext);
     const { onMonthSelected } = props
     const [date, setDate] = useState(new Date())
+
+    const [monthsData, setmonthsData] = useState()
+    const [selectedMonth, setSelectedMonth] = useState()
     const MonthItem = []
 
 
@@ -26,7 +30,7 @@ const MonthCom = (props) => {
 
 
 
-    
+
 
     const createMonth = () => {
         const today = moment(date, "YYYY-MM-DD")
@@ -48,10 +52,16 @@ const MonthCom = (props) => {
             month = 1
             year++
         }
+        
+    }
+
+    const x = () => {
+        createMonth()
+        // setmonthsData(MonthItem)
     }
 
     const renderM = () => {
-        createMonth()
+        //createMonth()
         const monthArray = MonthItem.map(item => {
             const [monthPressed, setMonthPress] = useState(false)
             return (<Pressable style={[styles.monthView, monthPressed ? styles.monthViewPress : styles.monthView]}
@@ -77,11 +87,32 @@ const MonthCom = (props) => {
 
     }
 
+    
+
+    const renderMoYe = () => {
+        x()
+        return (
+            <View>
+                <SelectList
+                    data={MonthItem}
+                    setSelected={val => {
+                        setSelectedMonth(val);
+                    }}
+                    placeholder={"أختر الشهر"}
+                    boxStyles={styles.dropdown}
+                    inputStyles={styles.droptext}
+                    dropdownTextStyles={styles.dropstyle}
+                />
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
             <ScrollView horizontal={true} contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
                 {/* {renderMonth()} */}
                 {renderM()}
+                {renderMoYe()}
             </ScrollView>
         </View>
     );
@@ -121,7 +152,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.BGScereen,
     },
-    monthText:{
+    monthText: {
         fontSize: 20,
         fontWeight: 'bold',
         color: colors.puprble,

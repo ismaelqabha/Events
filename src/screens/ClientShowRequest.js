@@ -23,12 +23,10 @@ const ClientShowRequest = (props) => {
     const { totalPrice, setTotalPrice, setRequestInfoAccUser, eventInfo, setEventInfo, requestInfoAccUser } = useContext(SearchContext);
     const { reqInfo } = props.route?.params || {}
 
-
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
 
-    //console.log("reqInfo", reqInfo.reservationDetail[0].campaigns);
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo.eventData.EventId)
 
     const queryRequest = () => {
@@ -45,10 +43,58 @@ const ClientShowRequest = (props) => {
     const eventDatesArr = reqInfo.eventData.eventDate
 
 
+   
+
+    const getSerDetail = (id) => {
+        const serviceData = reqInfo.services[0].additionalServices.filter(element => {
+            return element.subDetailArray.find(itemId => {
+                return itemId.id === id
+            })
+        })
+
+        return serviceData
+    }
+    const getSerSubDet = (id) => {
+        const data = getSerDetail(id)
+        const subDetInfo = data[0].subDetailArray.filter(item => {
+            return item.id === id
+        })
+        return subDetInfo
+    }
+
+    const callDeleteReqFunc = () => {
+        deleteRequestbyId({ RequestId: reqInfo.RequestId }).then(res => {
+
+            // setRequestInfoAccUser(res)
+
+            updateEventData()
+            setShowMoreModal(false)
+            props.navigation.navigate(ScreenNames.ClientHomeAds)
+
+        })
+    }
+    const deleteReqPress = () => {
+        Alert.alert(
+            'تأكيد',
+            'هل انت متأكد من حذف الطلب ؟ ',
+            [
+                {
+                    text: 'الغاء الامر',
+                    onPress: () => setShowMoreModal(false),
+                    style: 'cancel',
+                },
+                {
+                    text: 'حذف',
+                    onPress: () => callDeleteReqFunc(),
+                    style: 'destructive', // Use 'destructive' for a red-colored button
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+
+    }
     const checkEventDateHasMoreThanOneReq = () => {
         const allRequests = queryRequest()
-
-
         if (reqInfo.reservationDetail.length > 1) {
             const multi = reqInfo.reservationDetail.map(item => {
 
@@ -76,10 +122,6 @@ const ClientShowRequest = (props) => {
 
                 return result
             })
-
-          
-            // console.log("multi", multi, multi.length);
-
             return multi
 
         } else {
@@ -107,59 +149,6 @@ const ClientShowRequest = (props) => {
         }
 
     }
-
-    const getSerDetail = (id) => {
-        const serviceData = reqInfo.services[0].additionalServices.filter(element => {
-            return element.subDetailArray.find(itemId => {
-                return itemId.id === id
-            })
-        })
-
-        return serviceData
-    }
-
-    const getSerSubDet = (id) => {
-        const data = getSerDetail(id)
-        const subDetInfo = data[0].subDetailArray.filter(item => {
-            return item.id === id
-        })
-        return subDetInfo
-    }
-
-    const callDeleteReqFunc = () => {
-        deleteRequestbyId({ RequestId: reqInfo.RequestId }).then(res => {
-
-            // setRequestInfoAccUser(res)
-
-            updateEventData()
-            setShowMoreModal(false)
-            //props.navigation.navigate(ScreenNames.ClientBook, { data: { ...EvData } })
-            props.navigation.navigate(ScreenNames.ClientHomeAds)
-
-        })
-    }
-    const deleteReqPress = () => {
-        Alert.alert(
-            'تأكيد',
-            'هل انت متأكد من حذف الطلب ؟ ',
-            [
-                {
-                    text: 'الغاء الامر',
-                    onPress: () => setShowMoreModal(false),
-                    style: 'cancel',
-                },
-                {
-                    text: 'حذف',
-                    onPress: () => callDeleteReqFunc(),
-                    style: 'destructive', // Use 'destructive' for a red-colored button
-                },
-            ],
-            { cancelable: false } // Prevent closing the alert by tapping outside
-        );
-
-    }
-
-
     const updateEventData = () => {
 
         checkEventDateHasMoreThanOneReq()

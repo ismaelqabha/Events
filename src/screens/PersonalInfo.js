@@ -50,8 +50,12 @@ const PersonalInfo = (props) => {
     const [show, setShow] = useState(false);
 
 
-    const userData = userInfo.user
-    const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
+    const userData = userInfo
+    console.log("userData", userData.UserPhoto);
+
+    // const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
+    // const selectedUserIndex = userData[0].USER_ID
+
     const today = moment(date, "YYYY-MM-DD")
     let day = today.format('D')
     let month = today.format('M')
@@ -71,18 +75,18 @@ const PersonalInfo = (props) => {
     useEffect(() => {
         getRegionsfromApi()
 
-        if (userData[0].Usergender == 'ذكر') {
+        if (userData.Usergender == 'ذكر') {
             setMalePress(true)
             setFemalePress(false)
         } else {
             setFemalePress(true)
             setMalePress(false)
         }
-        if (userData[0].Userstatus == 'أعزب') {
+        if (userData.Userstatus == 'أعزب') {
             setSinglePress(true)
             setMarridPress(false)
             setEngagedPress(false)
-        } else if (userData[0].Userstatus == 'متزوج') {
+        } else if (userData.Userstatus == 'متزوج') {
             setMarridPress(true)
             setEngagedPress(false)
             setSinglePress(false)
@@ -343,10 +347,11 @@ const PersonalInfo = (props) => {
     // Update Functions
     const updateInfo = (infoData, setstate) => {
         updateUserData(infoData).then(res => {
-            const data = userInfo || [];
-            if (selectedUserIndex > -1) {
-                data[selectedUserIndex] = { ...data[selectedUserIndex], ...infoData };
-            }
+            var data = userInfo || [];
+            data = { ...data, ...infoData };
+            // if (selectedUserIndex > -1) {
+            //     data[selectedUserIndex] = { ...data[selectedUserIndex], ...infoData };
+            // }
 
             if (res.message === 'Updated Sucessfuly') {
                 setUserInfo([...data])
@@ -417,7 +422,7 @@ const PersonalInfo = (props) => {
     const renderContactInfo = () => {
         return (<View>
             <Text style={styles.txt}>معلومات التواصل </Text>
-            {editPhone ? editItem(userData[0].UserPhone, setUserPhone, updatePhone) :
+            {editPhone ? editItem(userData.UserPhone, setUserPhone, updatePhone) :
                 <View style={styles.userItem}>
                     <Pressable onPress={phoneEditPress}
                     >
@@ -428,7 +433,7 @@ const PersonalInfo = (props) => {
                             size={25} />
                     </Pressable>
                     <View style={styles.item}>
-                        <View><Text style={styles.basicInfo}>{userData[0].UserPhone}</Text>
+                        <View><Text style={styles.basicInfo}>{userData.UserPhone}</Text>
                             <Text style={styles.basicInfoTitle}>الموبايل</Text>
                         </View>
                         <View style={styles.IconView}>
@@ -440,7 +445,7 @@ const PersonalInfo = (props) => {
                         </View>
                     </View>
                 </View>}
-            {editMail ? editItem(userData[0].Email, setUserMail, updateMail) :
+            {editMail ? editItem(userData.Email, setUserMail, updateMail) :
                 <View style={styles.userItem}>
                     <Pressable onPress={mailEditPress}
                     >
@@ -451,7 +456,7 @@ const PersonalInfo = (props) => {
                             size={25} />
                     </Pressable>
                     <View style={styles.item}>
-                        <View><Text style={styles.basicInfo}>{userData[0].Email}</Text>
+                        <View><Text style={styles.basicInfo}>{userData.Email}</Text>
                             <Text style={styles.basicInfoTitle}>Email</Text>
                         </View>
                         <View style={styles.IconView}>
@@ -478,7 +483,7 @@ const PersonalInfo = (props) => {
                             size={25} />
                     </Pressable>
                     <View style={styles.item}>
-                        <View><Text style={styles.basicInfo}>{userData[0].Usergender}</Text>
+                        <View><Text style={styles.basicInfo}>{userData.Usergender}</Text>
                             <Text style={styles.basicInfoTitle}>الجنس</Text>
                         </View>
                         <View style={styles.IconView}>
@@ -499,7 +504,7 @@ const PersonalInfo = (props) => {
                             size={25} />
                     </Pressable>
                     <View style={styles.item}>
-                        <View><Text style={styles.basicInfo}>{userData[0].UserbirthDate}</Text>
+                        <View><Text style={styles.basicInfo}>{userData.UserbirthDate}</Text>
                             <Text style={styles.basicInfoTitle}>تاريخ الميلاد</Text>
                         </View>
                         <View style={styles.IconView}>
@@ -527,7 +532,7 @@ const PersonalInfo = (props) => {
             <Text style={styles.txt}>العنوان</Text>
 
             <View style={styles.item}>
-                <View><Text style={styles.basicInfo}>{userData[0].UserRegion}</Text>
+                <View><Text style={styles.basicInfo}>{userData.UserRegion}</Text>
                     <Text style={styles.basicInfoTitle}>المنطقة</Text>
                 </View>
                 <View style={styles.IconView}>
@@ -549,7 +554,7 @@ const PersonalInfo = (props) => {
                             size={25} />
                     </Pressable>
                     <View style={styles.item}>
-                        <View><Text style={styles.basicInfo}>{userData[0].UserCity}</Text>
+                        <View><Text style={styles.basicInfo}>{userData.UserCity}</Text>
                             <Text style={styles.basicInfoTitle}>المدينة</Text>
                         </View>
                         <View style={styles.IconView}>
@@ -571,7 +576,7 @@ const PersonalInfo = (props) => {
                         size={25} />
                 </Pressable>
                 <View style={styles.item}>
-                    <View><Text style={styles.basicInfo}>{userData[0].UserLocation} </Text>
+                    <View><Text style={styles.basicInfo}>{userData.UserLocation} </Text>
                         <Text style={styles.basicInfoTitle}>Location</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -598,7 +603,7 @@ const PersonalInfo = (props) => {
                             size={25} />
                     </Pressable>
                     <View style={styles.item}>
-                        <View><Text style={styles.basicInfo}>{userData[0].Userstatus}</Text>
+                        <View><Text style={styles.basicInfo}>{userData.Userstatus}</Text>
                             <Text style={styles.basicInfoTitle}>الحالة الاجتماعية</Text>
                         </View>
                         <View style={styles.IconView}>
@@ -615,7 +620,7 @@ const PersonalInfo = (props) => {
     const renderUserName = () => {
         return (
             <View style={styles.imgView}>
-                <Image style={styles.profilImg} source={userData[0].UserPhoto ? { uri: userData[0].UserPhoto } : require('../assets/photos/user.png')} />
+                <Image style={styles.profilImg} source={userData.UserPhoto ? { uri: userData.UserPhoto } : require('../assets/photos/user.png')} />
                 {editUserName ? editUsername() :
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Pressable style={styles.editName} onPress={userNameEditPress}>
@@ -624,7 +629,7 @@ const PersonalInfo = (props) => {
                                 color={'white'}
                                 size={20} />
                         </Pressable>
-                        <Text style={styles.userName}>{userData[0].User_name}</Text>
+                        <Text style={styles.userName}>{userData.User_name}</Text>
                     </View>}
                 <Pressable style={styles.editImg}>
                     <Entypo

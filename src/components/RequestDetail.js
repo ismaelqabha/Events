@@ -9,14 +9,25 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 const RequestDetail = (props) => {
     const { additionalServices, maxCapasity, servicePrice } = props
-    const {selectedDate, setSelectedDate, 
-            handleScrollToPosition,pressed, setPressed } = props
+    const { selectedDate, setSelectedDate, relatedCamp,
+        handleScrollToPosition, pressed, setPressed } = props
     const { cat, setResDetail, resDetail, requestedDate, campiegnsAccordingServiceId } = useContext(SearchContext);
 
     const resivedDate = Array.isArray(requestedDate) ? requestedDate.map((date) => {
-
         return date
     }) : [requestedDate]
+
+   
+    const [invitersValueError, setInvitersValueError] = useState(false);
+    const [selectedSupDet, setSelectedSupDet] = useState([]);
+    const [detailViewPressed, setDetailViewPressed] = useState(false);
+    const [campaignViewPressed, setCampaignViewPressed] = useState(false);
+    const [date, setDate] = useState(new Date());
+    const [date1, setDate1] = useState(new Date());
+    const [mode, setMode] = useState('time');
+    const [showStart, setShowStart] = useState(false);
+    const [showEnd, setShowEnd] = useState(false);
+
 
     const [selectTime, setSelectTime] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -31,7 +42,7 @@ const RequestDetail = (props) => {
     const [isCampaign, setIsCampaign] = useState(true)
 
     useEffect(() => {
-        setIsCampaign(campiegnsAccordingServiceId && campiegnsAccordingServiceId.length > 0);
+        setIsCampaign(relatedCamp && relatedCamp.length > 0);
     }, []);
 
     useEffect(() => {
@@ -52,7 +63,7 @@ const RequestDetail = (props) => {
         }
     }, [resDetail, selectedDate]);
 
-    // colors related ->
+    ///// descripe the creation of set of colors related ->
     const [bgColorDate, setColorDate] = useState('white');
     const mainColor = 'EBE4F7'; // Main color theme
     const [colors, setColors] = useState([]);
@@ -81,7 +92,6 @@ const RequestDetail = (props) => {
         }
         setColors(generatedColors);
     }
-
     const generateRandomColor = () => {
         // Generate random values to add/subtract to each RGB component
         const randomDelta = 5; // Adjust this value as needed
@@ -98,7 +108,6 @@ const RequestDetail = (props) => {
         // Convert the new RGB values back to hex format
         return rgbToHex(newR, newG, newB);
     }
-
     const hexToRgb = (hex) => {
         // Remove '#' if present
         hex = hex.replace(/^#/, '');
@@ -111,7 +120,6 @@ const RequestDetail = (props) => {
 
         return { r, g, b };
     }
-
     const rgbToHex = (r, g, b) => {
         // Convert RGB components to hex format
         return '#' + [r, g, b].map(x => {
@@ -119,31 +127,18 @@ const RequestDetail = (props) => {
             return hex.length === 1 ? '0' + hex : hex;
         }).join('');
     }
-
     const clamp = (value, min, max) => {
         // Ensure a value stays within a specified range
         return Math.min(Math.max(value, min), max);
     }
     // end of colors related 
 
-    const [invitersValueError, setInvitersValueError] = useState(false);
-    const [selectedSupDet, setSelectedSupDet] = useState([]);
-    const [detailViewPressed, setDetailViewPressed] = useState(false);
-    const [campaignViewPressed, setCampaignViewPressed] = useState(false);
-    const [date, setDate] = useState(new Date());
-    const [date1, setDate1] = useState(new Date());
-    const [mode, setMode] = useState('time');
-    const [showStart, setShowStart] = useState(false);
-    const [showEnd, setShowEnd] = useState(false);
-
-
-
     useEffect(() => {
         try {
             if (!offer) {
                 return
             }
-            let result1 = offer.map(id => campiegnsAccordingServiceId?.find((camp) => camp.CampId === id));
+            let result1 = offer.map(id => relatedCamp?.find((camp) => camp.CampId === id));
             updateReservationDet(result1, 'campaigns')
         } catch (error) {
             console.log("error ", error);
@@ -172,44 +167,6 @@ const RequestDetail = (props) => {
     };
 
 
-    const showStartMode = (currentMode) => {
-        setShowStart(true);
-        setMode(currentMode);
-    }
-    const showEndMode = (currentMode) => {
-        setShowEnd(true);
-        setMode(currentMode);
-    }
-    const onStartTimeChange = (event, selectedDate) => {
-        setShowStart(false)
-        const currentDate = selectedDate || date;
-        setDate(currentDate);
-
-        let tempDate = new Date(currentDate);
-        let startTime = tempDate.getHours() + ':' + tempDate.getMinutes();
-        // if (startTime < endTimeText && endTimeText != '00:00') {
-        updateReservationDet(startTime, 'startingTime')
-        setstartTimeText(startTime);
-        // } else {
-        //     console.log("Not valid time");
-        // }
-
-    }
-
-    const onEndTimeChange = (event, selectedDate) => {
-        setShowEnd(false)
-        const currentDate = selectedDate || date1;
-        setDate(currentDate);
-
-        let tempDate = new Date(currentDate);
-        let endTime = tempDate.getHours() + ':' + tempDate.getMinutes();
-        if (endTime > startTimeText) {
-            setendTimeText(endTime);
-            updateReservationDet(endTime, 'endTime')
-        } else {
-            console.log("Not valid time");
-        }
-    }
 
     const checkStrings = val => {
         if (!val) {
@@ -392,12 +349,9 @@ const RequestDetail = (props) => {
         }
     };
 
-    const whenSupDetailPress = (SubId) => {
-        if (!SubId) {
-            return
-        }
-        updateReservationDet(SubId, 'subDetail')
-    }
+   
+
+    //// set start and end time
     const checkStartTime = () => {
         showStartMode('time')
         if (startTimeText != "00:00") {
@@ -482,6 +436,45 @@ const RequestDetail = (props) => {
             )}
         </View>
     }
+    const showStartMode = (currentMode) => {
+        setShowStart(true);
+        setMode(currentMode);
+    }
+    const showEndMode = (currentMode) => {
+        setShowEnd(true);
+        setMode(currentMode);
+    }
+    const onStartTimeChange = (event, selectedDate) => {
+        setShowStart(false)
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let startTime = tempDate.getHours() + ':' + tempDate.getMinutes();
+        // if (startTime < endTimeText && endTimeText != '00:00') {
+        updateReservationDet(startTime, 'startingTime')
+        setstartTimeText(startTime);
+        // } else {
+        //     console.log("Not valid time");
+        // }
+
+    }
+    const onEndTimeChange = (event, selectedDate) => {
+        setShowEnd(false)
+        const currentDate = selectedDate || date1;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let endTime = tempDate.getHours() + ':' + tempDate.getMinutes();
+        if (endTime > startTimeText) {
+            setendTimeText(endTime);
+            updateReservationDet(endTime, 'endTime')
+        } else {
+            console.log("Not valid time");
+        }
+    }
+
+
     const CatOfService = {
         'قاعات': [{
             style: styles.input,
@@ -519,7 +512,6 @@ const RequestDetail = (props) => {
             />)
         })
     }
-
     const renderInviters = () => {
         return (
             <View style={styles.invitView}>
@@ -531,6 +523,15 @@ const RequestDetail = (props) => {
         )
     }
 
+
+
+    //// show service detail and sub detail
+    const whenSupDetailPress = (SubId) => {
+        if (!SubId) {
+            return
+        }
+        updateReservationDet(SubId, 'subDetail')
+    }
     const renderServiceDetail = () => {
         const detail = props.additionalServices
         return detail.map(element => {
@@ -539,7 +540,7 @@ const RequestDetail = (props) => {
                     <Text style={styles.detailText}>{element.detailTitle}</Text>
                 </View>
                 {element.subDetailArray.map(item => {
-                   // console.log("item.id", item.id);
+                    // console.log("item.id", item.id);
                     const found = selectedSupDet?.find((det) => det === item.id)
                     return (
                         <View style={styles.subDetail}>
@@ -559,116 +560,6 @@ const RequestDetail = (props) => {
             )
         })
     }
-
-    const onCampPress = (campId) => {
-        updateReservationDet(campId, 'offerId');
-
-    }
-
-    const renderCampaighnHeader = (camp, index) => {
-        var found = offer?.find((det) => det === camp?.CampId)
-         return (
-            <Pressable onPress={() => onCampPress(camp?.CampId || index)} style={!found ? styles.offerTitle : styles.offerTitleSelected}>
-                <Text style={styles.campText}>{camp.campTitle}</Text>
-                {camp.priceInclude == 'حسب الشخص' ?
-                    <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
-                    <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
-            </Pressable>
-        );
-    }
-    const renderCampaighnSubHeader = () => {
-        return (
-            <View style={styles.offerContentView}>
-                <Text style={styles.campText}>محتويات العرض</Text>
-                <View style={styles.IconView}>
-                    <MaterialCommunityIcons
-                        style={{ alignSelf: 'center' }}
-                        name={"table-of-contents"}
-                        color={colors.puprble}
-                        size={30} />
-                </View>
-            </View>
-        )
-    }
-
-    const getServiceDetail = (id) => {
-
-        const serviceData = additionalServices.filter(element => {
-            return element.subDetailArray.find(itemId => {
-                return itemId.id === id
-            })
-        })
-        return serviceData
-    }
-
-    const getSerSubDet = (id) => {
-        const data = getServiceDetail(id)
-        const subDetInfo = data[0].subDetailArray.filter(item => {
-            return item.id === id
-        })
-        return subDetInfo
-    }
-    const renderCampaighnContentFromSub = (camp) => {
-        return (
-            camp.contentFromSubDet.map(itemID => {
-                const titleInfo = getSerSubDet(itemID)
-                return (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
-                        <Text style={styles.subDetText}>{titleInfo[0].detailSubtitle}</Text>
-                        <Feather
-                            style={{ alignSelf: 'center' }}
-                            name={"corner-down-left"}
-                            color={colors.puprble}
-                            size={30} />
-                    </View>
-                )
-            })
-
-        )
-    }
-    const renderCampaighnContent = (camp) => {
-        return (
-            camp.campContents.map(elment => {
-                return (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
-                        <Text style={styles.subDetText}>{elment}</Text>
-                        <Feather
-                            style={{ alignSelf: 'center' }}
-                            name={"corner-down-left"}
-                            color={colors.puprble}
-                            size={30} />
-                    </View>
-                )
-            })
-        )
-    }
-    const renderCampaighn = () => {
-        const CampData = campiegnsAccordingServiceId;
-
-        if (CampData.message !== 'No Campaigns') {
-            const campArray = CampData?.map((camp, index) => {
-
-                return <View key={index} style={styles.campaignView}>
-                    {renderCampaighnHeader(camp, index)}
-                    {renderCampaighnSubHeader()}
-
-                    {renderCampaighnContentFromSub(camp)}
-                    {/* {renderCampaighnContent(camp)} */}
-
-                </View >
-            });
-            return campArray;
-        }
-    }
-    // this function will be show when there are some similer offers detail 
-    const renderCheckSelectedOffer = () => {
-        return (
-            <View style={styles.checkDataView}>
-                <Text style={styles.text}>تنبية !! لقد تم اختيار عروض تحتوي على تفاصيل متشابة</Text>
-            </View>
-        )
-    }
-
     const renderReservationDet = () => {
 
         const [pressed, setPressed] = useState(0)
@@ -725,6 +616,116 @@ const RequestDetail = (props) => {
 
         )
     }
+    const getServiceDetail = (id) => {
+
+        const serviceData = additionalServices.filter(element => {
+            return element.subDetailArray.find(itemId => {
+                return itemId.id === id
+            })
+        })
+        return serviceData
+    }
+    const getSerSubDet = (id) => {
+        const data = getServiceDetail(id)
+        const subDetInfo = data[0].subDetailArray.filter(item => {
+            return item.id === id
+        })
+        return subDetInfo
+    }
+
+///// descripe the the service campighns
+
+    const onCampPress = (campId) => {
+        updateReservationDet(campId, 'offerId');
+
+    }
+    const renderCampaighnHeader = (camp, index) => {
+        var found = offer?.find((det) => det === camp?.CampId)
+        return (
+            <Pressable onPress={() => onCampPress(camp?.CampId || index)} style={!found ? styles.offerTitle : styles.offerTitleSelected}>
+                <Text style={styles.campText}>{camp.campTitle}</Text>
+                {camp.priceInclude == 'حسب الشخص' ?
+                    <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
+                    <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
+            </Pressable>
+        );
+    }
+    const renderCampaighnSubHeader = () => {
+        return (
+            <View style={styles.offerContentView}>
+                <Text style={styles.campText}>محتويات العرض</Text>
+                <View style={styles.IconView}>
+                    <MaterialCommunityIcons
+                        style={{ alignSelf: 'center' }}
+                        name={"table-of-contents"}
+                        color={colors.puprble}
+                        size={30} />
+                </View>
+            </View>
+        )
+    }
+    const renderCampaighnContentFromSub = (camp) => {
+        return (
+            camp.contentFromSubDet.map(itemID => {
+                const titleInfo = getSerSubDet(itemID)
+                return (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                        <Text style={styles.subDetText}>{titleInfo[0].detailSubtitle}</Text>
+                        <Feather
+                            style={{ alignSelf: 'center' }}
+                            name={"corner-down-left"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                )
+            })
+
+        )
+    }
+    const renderCampaighnContent = (camp) => {
+        return (
+            camp.campContents.map(elment => {
+                return (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                        <Text style={styles.subDetText}>{elment.contentItem}</Text>
+                        <Feather
+                            style={{ alignSelf: 'center' }}
+                            name={"corner-down-left"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                )
+            })
+        )
+    }
+    const renderCampaighn = () => {
+        const CampData = relatedCamp || [];
+
+        const campArray = CampData?.map((camp, index) => {
+
+            return <View key={index} style={styles.campaignView}>
+                {renderCampaighnHeader(camp, index)}
+                {renderCampaighnSubHeader()}
+
+                {renderCampaighnContentFromSub(camp)}
+                {renderCampaighnContent(camp)}
+
+            </View >
+        });
+        return campArray;
+
+    }
+
+    // this function will be show when there are some similer offers detail 
+    const renderCheckSelectedOffer = () => {
+        return (
+            <View style={styles.checkDataView}>
+                <Text style={styles.text}>تنبية !! لقد تم اختيار عروض تحتوي على تفاصيل متشابة</Text>
+            </View>
+        )
+    }
+
+   
     const renderModal = () => {
         return (
             <Modal
@@ -780,6 +781,7 @@ const RequestDetail = (props) => {
         handleScrollToPosition()
     };
 
+    /// show the next and back button
     const renderNextBack = () => {
         return (
             <View style={styles.nextBackView}>
@@ -829,7 +831,7 @@ const RequestDetail = (props) => {
                 <Text style={styles.subDetText}>الى الساعة</Text>
             </View>
             {renderInviters()}
-            {campiegnsAccordingServiceId && renderReservationDet()}
+            {relatedCamp && renderReservationDet()}
             {similarity && renderCheckSelectedResDetail()}
             {chooseButton()}
 

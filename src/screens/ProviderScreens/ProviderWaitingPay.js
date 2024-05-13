@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput } from 'react-native'
-import React, { useContext, useState,useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { colors } from '../../assets/AppColors'
 import moment from "moment";
 import Fontisto from "react-native-vector-icons/Fontisto"
@@ -13,10 +13,12 @@ import UsersContext from '../../../store/UsersContext';
 const ProviderWaitingPay = () => {
 
   const { requestInfoByService, setselectMonthforSearch, selectMonthforSearch, yearforSearch } = useContext(SearchContext);
-  const {  } = useContext(UsersContext);
+  const { } = useContext(UsersContext);
   const [fromWaitingPayScreen, setFromWaitingPayScreen] = useState(true)
 
   const [monthly, setMonthly] = useState(false)
+  const [daily, setDaily] = useState(true)
+
   const [spacificDate, setspacificDate] = useState(false)
   const [clientName, setClientName] = useState(false)
   const [allRequests, setAllRequests] = useState(true)
@@ -28,8 +30,6 @@ const ProviderWaitingPay = () => {
 
   const [client, setClient] = useState(null)
   const [selectedSpacificDate, setSelectedSpacificDate] = useState(null)
-  const [selectedMonth, setSelectedMonth] = useState(null)
-  const [selectedYear, setSelectedYear] = useState(null)
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
@@ -47,55 +47,50 @@ const ProviderWaitingPay = () => {
 
   const monthlyPress = () => {
     setMonthly(true)
-    setspacificDate(false)
-    setClientName(false)
-    setAllRequests(false)
-    setuseMonthToSearch(true)
+    setDaily(false)
+    renderBookingCardAccorDate()
   }
-  const spacificDatePress = () => {
+  const dailyPress = () => {
     setMonthly(false)
+    setDaily(true)
+    renderBookingCardAccorDate()
+  }
+
+  const spacificDatePress = () => {
     setspacificDate(true)
     setClientName(false)
     setAllRequests(false)
-    setuseMonthToSearch(false)
   }
   const clientNamePress = () => {
-    setMonthly(false)
     setspacificDate(false)
     setClientName(true)
     setAllRequests(false)
-    setuseMonthToSearch(false)
   }
   const allReqPress = () => {
-    setMonthly(false)
     setspacificDate(false)
     setClientName(false)
     setAllRequests(true)
     setUseDefultSearch(true)
     setUseClientToSearch(false)
     setUseSpacificDateToSearch(false)
-    setuseMonthToSearch(false)
   }
 
   useEffect(() => {
-    setMonthly(false)
+    setDaily(true)
     setspacificDate(false)
     setClientName(false)
     setAllRequests(true)
     setUseDefultSearch(true)
     setUseClientToSearch(false)
     setUseSpacificDateToSearch(false)
-    setuseMonthToSearch(false)
-}, [])
+  }, [])
 
 
   const renderFilter = () => {
     if (requestInfoByService.message !== "no Request") {
       return (
         <View style={styles.choicesView}>
-          <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
-            <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>شهر</Text>
-          </Pressable>
+
           <Pressable style={[styles.Dview, spacificDate ? styles.DviewPress : styles.Dview]} onPress={spacificDatePress}>
             <Text style={[styles.filtertxt, spacificDate ? styles.filtertxtPress : styles.filtertxt]}>تاريخ</Text>
           </Pressable>
@@ -114,7 +109,7 @@ const ProviderWaitingPay = () => {
       const reqInfo = requestInfoByService.filter(item => {
         return item.requestInfo.ReqStatus === 'waiting pay'
       })
-     
+
       return reqInfo
     } else {
       return []
@@ -145,13 +140,13 @@ const ProviderWaitingPay = () => {
 
   const getRequestsAccDates = () => {
     const data = getBookingInfo()
-    
+
     const reqInfo = data.filter(item => {
       console.log(item.requestInfo.reservationDetail.length);
       if (item.requestInfo.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         let result = item.requestInfo.reservationDetail.find(multiItem => {
-          
+
           return checkDate(multiItem.reservationDate)
         })
 
@@ -160,12 +155,11 @@ const ProviderWaitingPay = () => {
       } else {
 
         //if reservation detail has one date
-        // console.log(item.reservationDetail[0].reservationDate, '>', todayDate.slice(0, 10), item.reservationDetail[0].reservationDate.slice(0, 10) > todayDate.slice(0, 10));
-        console.log(checkDate(item.requestInfo.reservationDetail[0].reservationDate));
+       
         return checkDate(item.requestInfo.reservationDetail[0].reservationDate)
       }
     })
-    
+
     return reqInfo
   }
 
@@ -188,49 +182,25 @@ const ProviderWaitingPay = () => {
     return reqInfo
   }
   const collectAllRequestDates = () => {
-    let startingDay = ''
-    let month = ''
-    let year = ''
-    let completeDate = ''
-    let requestBookingDate = ''
+  
     const data = getRequestsAccDates()
     return data.map(item => {
 
       if (item.requestInfo.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         return item.requestInfo.reservationDetail.map(multiItem => {
-          requestBookingDate = moment(multiItem.reservationDate, "YYYY-MM-DD")
-          startingDay = requestBookingDate.format('D')
-          month = requestBookingDate.format('M')
-          year = requestBookingDate.format('YYYY')
-          completeDate = year + '-' + month + '-' + startingDay
-
-          if (!(allRequestingDates.includes(completeDate))) {
-            if (useMonthToSearch) {
-              if (month == selectMonthforSearch && year == yearforSearch) {
-                allRequestingDates.push(completeDate)
-              }
-            } else {
-              allRequestingDates.push(completeDate)
-            }
+       
+          if (!(allRequestingDates.includes(multiItem.reservationDate))) {
+            allRequestingDates.push(multiItem.reservationDate)
           }
+          // }
         })
       } else {
         //if reservation detail has one date
-        requestBookingDate = moment(item.requestInfo.reservationDetail[0].reservationDate, "YYYY-MM-DD")
-        startingDay = requestBookingDate.format('D')
-        month = requestBookingDate.format('M')
-        year = requestBookingDate.format('YYYY')
-        completeDate = year + '-' + month + '-' + startingDay
-
-        if (!(allRequestingDates.includes(completeDate))) {
-          if (useMonthToSearch) {
-            if (month == selectMonthforSearch && year == yearforSearch) {
-              allRequestingDates.push(completeDate)
-            }
-          } else {
-            allRequestingDates.push(completeDate)
-          }
+        requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
+       
+        if (!(allRequestingDates.includes(requestBookingDate))) {
+          allRequestingDates.push(requestBookingDate)
         }
       }
       allRequestingDates.sort();
@@ -299,7 +269,7 @@ const ProviderWaitingPay = () => {
   }
   const filterReqAccUserId = (resDate) => {
     const data = filterUsersAccName()
-    
+
     const reqInfo = data.filter(item => {
       if (item.requestInfo.reservationDetail.length > 1) {
         return item.requestInfo.reservationDetail.find(multiItem => {
@@ -314,10 +284,10 @@ const ProviderWaitingPay = () => {
   }
   const renderResCard = (resDate) => {
     const data = filterReqAccUserId(resDate)
-   
+
     return data.map(item => {
       return (
-        <ProviderReservationCard fromWaitingPayScreen={fromWaitingPayScreen}  {...item} resDate={resDate}/>
+        <ProviderReservationCard fromWaitingPayScreen={fromWaitingPayScreen}  {...item} resDate={resDate} />
       )
     })
   }
@@ -354,7 +324,7 @@ const ProviderWaitingPay = () => {
     setUseSpacificDateToSearch(false)
   }
 
- 
+
 
 
   // searching By sepecific Date
@@ -375,15 +345,27 @@ const ProviderWaitingPay = () => {
   const inputSpecificDate = () => {
     return (
       <View>
-        <Pressable onPress={() => showMode('date')} >
-          <View style={styles.viewDate}>
-            <Text style={styles.dateTxt}>{selectedSpacificDate || "YYYY/MM/DD"}</Text>
-            <Entypo
-              name='calendar'
-              style={{ fontSize: 30, color: colors.puprble, paddingHorizontal: 20 }}
-            />
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 30 }}>
+
+          <View style={styles.viewSelectTypeDate}>
+            <Pressable style={[styles.datePeriodView, monthly ? styles.datePeriodViewPress : styles.datePeriodView]} onPress={monthlyPress}>
+              <Text style={[styles.filtertxt, monthly ? styles.filtertxtPress : styles.filtertxt]}>لشهر</Text>
+            </Pressable>
+            <Pressable style={[styles.datePeriodView, daily ? styles.datePeriodViewPress : styles.datePeriodView]} onPress={dailyPress}>
+              <Text style={[styles.filtertxt, daily ? styles.filtertxtPress : styles.filtertxt]}>ليوم</Text>
+            </Pressable>
+
           </View>
-        </Pressable>
+          <Pressable onPress={() => showMode('date')} >
+            <View style={styles.viewDate}>
+              <Text style={styles.dateTxt}>{selectedSpacificDate || "YYYY/MM/DD"}</Text>
+              <Entypo
+                name='calendar'
+                style={{ fontSize: 30, color: colors.puprble, paddingHorizontal: 20 }}
+              />
+            </View>
+          </Pressable>
+        </View>
         {show && (
           <DateTimePicker
             testID='dateTimePicker'
@@ -398,32 +380,67 @@ const ProviderWaitingPay = () => {
     )
   }
   const manageDatesbySearchSpicficDate = () => {
-    let requestBookingDate = ''
+    
+    var requestBookingDate = ''
+    var requestDay = ''
+    var requestMonth = ''
+    var requestYear = ''
+    var completeDate = ''
+
+    const selectedDateForSearch = moment(selectedSpacificDate, "YYYY-MM-DD")
+    const month = selectedDateForSearch.format('M')
+    const year = selectedDateForSearch.format('YYYY')
 
     const data = getBookingInfoByDate(selectedSpacificDate)
     return data.map(item => {
       if (item.requestInfo.reservationDetail.length > 1) {
         return item.requestInfo.reservationDetail.find(multiItem => {
-          requestBookingDate = multiItem.reservationDate
-          if (requestBookingDate == selectedSpacificDate) {
-            if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
-              arrayUsingSpicifcDate.push(requestBookingDate)
+
+          requestBookingDate = moment(multiItem.reservationDate, "YYYY-MM-DD")
+          requestDay = requestBookingDate.format('D')
+          requestMonth = requestBookingDate.format('M')
+          requestYear = requestBookingDate.format('YYYY')
+          completeDate = requestYear + '-' + requestMonth + '-' + requestDay
+
+          if (daily) {
+            if (completeDate == selectedSpacificDate) {
+              if (!(arrayUsingSpicifcDate.includes(completeDate))) {
+                arrayUsingSpicifcDate.push(completeDate)
+              }
+            }
+          } else {
+            if (month === requestMonth && year === requestYear) {
+              if (!(arrayUsingSpicifcDate.includes(completeDate))) {
+                arrayUsingSpicifcDate.push(completeDate)
+              }
             }
           }
         })
 
       } else {
-        requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
-        if (requestBookingDate == selectedSpacificDate) {
-          if (!(arrayUsingSpicifcDate.includes(requestBookingDate))) {
-            arrayUsingSpicifcDate.push(requestBookingDate)
+
+        requestBookingDate = moment(item.requestInfo.reservationDetail[0].reservationDate, "YYYY-MM-DD")
+        requestDay = requestBookingDate.format('D')
+        requestMonth = requestBookingDate.format('M')
+        requestYear = requestBookingDate.format('YYYY')
+        completeDate = requestYear + '-' + requestMonth + '-' + requestDay
+
+        if (daily) {
+          if (completeDate == selectedSpacificDate) {
+            if (!(arrayUsingSpicifcDate.includes(completeDate))) {
+              arrayUsingSpicifcDate.push(completeDate)
+            }
+          }
+        } else {
+          if (month === requestMonth && year === requestYear) {
+            if (!(arrayUsingSpicifcDate.includes(completeDate))) {
+              arrayUsingSpicifcDate.push(completeDate)
+            }
           }
         }
       }
-
       arrayUsingSpicifcDate.sort();
     })
-
   }
   const renderBookingCardAccorDate = () => {
     manageDatesbySearchSpicficDate()
@@ -446,20 +463,10 @@ const ProviderWaitingPay = () => {
   }
 
 
-/// searching by month
-  const inputMonth = () => {
-    return (
-      <View>
-        <MonthCom onMonthSelected={(num) => setselectMonthforSearch(num)} />
-      </View>
-    )
-  }
-
   const renderFilterTools = () => {
     return (
       <View style={{ width: '90%', alignSelf: 'center' }}>
         {clientName && inputClientName()}
-        {monthly && inputMonth()}
         {spacificDate && inputSpecificDate()}
       </View>
     )
@@ -471,7 +478,6 @@ const ProviderWaitingPay = () => {
       {renderFilter()}
       {renderFilterTools()}
       <ScrollView>
-        {useMonthToSearch && renderBookingDates()}
         {useDefultSearch && renderBookingDates()}
         {useSpacificDateToSearch && renderBookingCardAccorDate()}
         {useClientToSearch && renderRequestAccUserName()}
@@ -518,13 +524,13 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    //borderRadius: 35,
+    borderRadius: 35,
     marginVertical: 20
   },
   Dview: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: '30%',
+    width: '33%',
     height: 50,
     backgroundColor: colors.puprble,
     borderRadius: 35,
@@ -556,12 +562,38 @@ const styles = StyleSheet.create({
   },
   viewDate: {
     flexDirection: 'row',
-    height: 50,
-    width: '95%',
+    height: 40,
+    width: '80%',
     borderRadius: 10,
     alignItems: 'center',
     backgroundColor: 'lightgray',
     justifyContent: 'flex-end',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
+
+  viewSelectTypeDate: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+    width: '30%',
+    borderRadius: 10,
+    backgroundColor: colors.puprble
+  },
+  datePeriodView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+    width: '50%',
+    borderRadius: 10,
+    backgroundColor: colors.puprble
+  },
+  datePeriodViewPress: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+    width: '50%',
+    borderRadius: 10,
+    backgroundColor: colors.darkGold
+  }
 })
