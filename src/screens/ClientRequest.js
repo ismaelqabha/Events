@@ -45,6 +45,7 @@ const ClientRequest = (props) => {
     const [evTiltleId, setEvTiltleId] = useState()
     const [EVENTID, setEVENTID] = useState()
     const [updatedEventDate, setUpdatedEventDate] = useState()
+    
 
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
@@ -129,6 +130,7 @@ const ClientRequest = (props) => {
             Cost: totalPrice,
             ReqServId: data?.service_id,
             ReqUserId: userId,
+            ReqEventTypeId: evTiltleId,
             reservationDetail: resDetail,
         }
 
@@ -251,11 +253,11 @@ const ClientRequest = (props) => {
     }
 
     // Event Section
-    const getEventsType = () => {
-        getEventList({}).then(res => {
-            setEventTypeInfo(res)
-        })
-    }
+    // const getEventsType = () => {
+    //     getEventList({}).then(res => {
+    //         setEventTypeInfo(res)
+    //     })
+    // }
     const getEventTypeInfo = () => {
         const eventList = []
         eventTypeInfo.forEach(element => {
@@ -269,6 +271,8 @@ const ClientRequest = (props) => {
         const eventTypeId = eventTypeInfo[eventTypeIndex].Id
         setEventTypeId(eventTypeId)
     }
+   
+  
     const onModalCancelPress = () => {
         setShowModal(false)
     }

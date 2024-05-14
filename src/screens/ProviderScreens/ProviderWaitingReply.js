@@ -7,8 +7,8 @@ import SearchContext from '../../../store/SearchContext'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
-import MonthCom from '../../components/MonthCom'
 import UsersContext from '../../../store/UsersContext'
+import { showMessage } from '../../resources/Functions'
 
 
 const ProviderWaitingReply = () => {
@@ -30,7 +30,7 @@ const ProviderWaitingReply = () => {
   const [useClientToSearch, setUseClientToSearch] = useState(false)
 
   const [client, setClient] = useState(null)
-  const [selectedSpacificDate, setSelectedSpacificDate] = useState(null)
+  const [selectedSpacificDate, setSelectedSpacificDate] = useState("YYYY/MM/DD")
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
@@ -50,7 +50,12 @@ const ProviderWaitingReply = () => {
   const monthlyPress = () => {
     setMonthly(true)
     setDaily(false)
-    renderBookingCardAccorDate()
+    if (selectedSpacificDate === "YYYY/MM/DD") {
+      showMessage('قم بأختيار تاريخ')
+    } else {
+      renderBookingCardAccorDate()
+    }
+
   }
   const dailyPress = () => {
     setMonthly(false)
@@ -94,7 +99,6 @@ const ProviderWaitingReply = () => {
   }
 
   useEffect(() => {
-    setDaily(true)
     setspacificDate(false)
     setClientName(false)
     setAllRequests(true)
@@ -127,7 +131,9 @@ const ProviderWaitingReply = () => {
       return false
     }
   }
-  
+
+
+
   const getBookingInfo = () => {
     if (requestInfoByService.message !== "no Request") {
       const reqInfo = requestInfoByService.filter(item => {
@@ -152,7 +158,7 @@ const ProviderWaitingReply = () => {
       } else {
 
         //if reservation detail has one date
-            return checkDate(item.requestInfo.reservationDetail[0].reservationDate)
+        return checkDate(item.requestInfo.reservationDetail[0].reservationDate)
       }
     })
     return reqInfo
@@ -185,23 +191,23 @@ const ProviderWaitingReply = () => {
         return item.requestInfo.reservationDetail.map(multiItem => {
 
           if (!(allRequestingDates.includes(multiItem.reservationDate))) {
-              allRequestingDates.push(multiItem.reservationDate)
-            }
+            allRequestingDates.push(multiItem.reservationDate)
+          }
         })
       } else {
         //if reservation detail has one date
 
-         requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
+        requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
         if (!(allRequestingDates.includes(requestBookingDate))) {
-            allRequestingDates.push(requestBookingDate)
-          }
+          allRequestingDates.push(requestBookingDate)
+        }
       }
       allRequestingDates.sort();
     })
   }
   const renderBookingCard = (resDate) => {
     const data = getBookingInfoByDate(resDate)
-
+    console.log("data", data);
     return data.map(item => {
       return (
         <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} resDate={resDate} />
@@ -300,7 +306,7 @@ const ProviderWaitingReply = () => {
   }
   const inputClientName = () => {
     return (
-      <View style={{marginBottom: 30}}>
+      <View style={{ marginBottom: 30 }}>
         <TextInput
           style={styles.input}
           keyboardType='default'
@@ -335,7 +341,7 @@ const ProviderWaitingReply = () => {
   const inputSpecificDate = () => {
     return (
       <View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' , marginBottom: 30 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 30 }}>
 
           <View style={styles.viewSelectTypeDate}>
             <Pressable style={[styles.datePeriodView, monthly ? styles.datePeriodViewPress : styles.datePeriodView]} onPress={monthlyPress}>
@@ -371,6 +377,35 @@ const ProviderWaitingReply = () => {
       </View>
     )
   }
+  const getBookingInfoBymonth = (month, year) => {
+    const data = getRequestsAccDates()
+
+    var requestBookingDate = ''
+    var requestMonth = ''
+    var requestYear = ''
+
+    const reqInfo = data.filter(req => {
+      if (req.requestInfo.reservationDetail.length > 1) {
+        const multiReqInfo = req.requestInfo.reservationDetail.find(multiItem => {
+
+          requestBookingDate = moment(multiItem.reservationDate, "YYYY-MM-DD")
+          requestMonth = requestBookingDate.format('M')
+          requestYear = requestBookingDate.format('YYYY')
+
+          return requestMonth === month && requestYear === year
+        })
+        return multiReqInfo
+      } else {
+        requestBookingDate = moment(req.requestInfo.reservationDetail[0].reservationDate, "YYYY-MM-DD")
+        requestMonth = requestBookingDate.format('M')
+        requestYear = requestBookingDate.format('YYYY')
+
+        return requestMonth === month && requestYear === year
+      }
+    })
+    return reqInfo
+
+  }
   const manageDatesbySearchSpicficDate = () => {
 
     var requestBookingDate = ''
@@ -383,63 +418,88 @@ const ProviderWaitingReply = () => {
     const month = selectedDateForSearch.format('M')
     const year = selectedDateForSearch.format('YYYY')
 
+    /// searching request date according specfic date
+    if (daily) {
+      const data = getBookingInfoByDate(selectedSpacificDate)
+      return data.map(item => {
+        if (item.requestInfo.reservationDetail.length > 1) {
+          return item.requestInfo.reservationDetail.find(multiItem => {
 
-    const data = getBookingInfoByDate(selectedSpacificDate)
-    return data.map(item => {
-      if (item.requestInfo.reservationDetail.length > 1) {
+            requestBookingDate = moment(multiItem.reservationDate, "YYYY-MM-DD")
+            requestDay = requestBookingDate.format('D')
+            requestMonth = requestBookingDate.format('M')
+            requestYear = requestBookingDate.format('YYYY')
+            completeDate = requestYear + '-' + requestMonth + '-' + requestDay
 
-        return item.requestInfo.reservationDetail.find(multiItem => {
-
-          requestBookingDate = moment(multiItem.reservationDate, "YYYY-MM-DD")
-          requestDay = requestBookingDate.format('D')
-          requestMonth = requestBookingDate.format('M')
-          requestYear = requestBookingDate.format('YYYY')
-          completeDate = requestYear + '-' + requestMonth + '-' + requestDay
-
-          if (daily) {
             if (completeDate == selectedSpacificDate) {
               if (!(arrayUsingSpicifcDate.includes(completeDate))) {
                 arrayUsingSpicifcDate.push(completeDate)
               }
             }
-          } else {
-            if (month === requestMonth && year === requestYear) {
-              if (!(arrayUsingSpicifcDate.includes(completeDate))) {
-                arrayUsingSpicifcDate.push(completeDate)
-              }
-            }
-          }
-        })
+          })
 
-      } else {
+        } else {
 
-        requestBookingDate = moment(item.requestInfo.reservationDetail[0].reservationDate, "YYYY-MM-DD")
-        requestDay = requestBookingDate.format('D')
-        requestMonth = requestBookingDate.format('M')
-        requestYear = requestBookingDate.format('YYYY')
-        completeDate = requestYear + '-' + requestMonth + '-' + requestDay
+          requestBookingDate = moment(item.requestInfo.reservationDetail[0].reservationDate, "YYYY-MM-DD")
+          requestDay = requestBookingDate.format('D')
+          requestMonth = requestBookingDate.format('M')
+          requestYear = requestBookingDate.format('YYYY')
+          completeDate = requestYear + '-' + requestMonth + '-' + requestDay
 
-        if (daily) {
           if (completeDate == selectedSpacificDate) {
             if (!(arrayUsingSpicifcDate.includes(completeDate))) {
               arrayUsingSpicifcDate.push(completeDate)
             }
           }
+
+        }
+        arrayUsingSpicifcDate.sort();
+      })
+
+    } else {
+      /// search request dates according months
+      const data = getBookingInfoBymonth(month, year)
+      return data.map(item => {
+        if (item.requestInfo.reservationDetail.length > 1) {
+          return item.requestInfo.reservationDetail.find(multiItem => {
+
+            requestBookingDate = moment(multiItem.reservationDate, "YYYY-MM-DD")
+            requestDay = requestBookingDate.format('D')
+            requestMonth = requestBookingDate.format('M')
+            requestYear = requestBookingDate.format('YYYY')
+            completeDate = requestYear + '-' + requestMonth + '-' + requestDay
+
+            if (month === requestMonth && year === requestYear) {
+
+              if (!(arrayUsingSpicifcDate.includes(completeDate))) {
+                arrayUsingSpicifcDate.push(completeDate)
+              }
+            }
+          })
+
         } else {
+
+          requestBookingDate = moment(item.requestInfo.reservationDetail[0].reservationDate, "YYYY-MM-DD")
+          requestDay = requestBookingDate.format('D')
+          requestMonth = requestBookingDate.format('M')
+          requestYear = requestBookingDate.format('YYYY')
+          completeDate = requestYear + '-' + requestMonth + '-' + requestDay
+
           if (month === requestMonth && year === requestYear) {
             if (!(arrayUsingSpicifcDate.includes(completeDate))) {
               arrayUsingSpicifcDate.push(completeDate)
             }
           }
-        }
-      }
 
-      arrayUsingSpicifcDate.sort();
-    })
+        }
+        arrayUsingSpicifcDate.sort();
+      })
+    }
 
   }
   const renderBookingCardAccorDate = () => {
     manageDatesbySearchSpicficDate()
+
     return arrayUsingSpicifcDate.map(item => {
       return (
         <View>
@@ -447,7 +507,7 @@ const ProviderWaitingReply = () => {
             <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
             <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
           </View>
-          {renderBookingCard(selectedSpacificDate)}
+          {renderBookingCard(item)}
         </View>
       )
     })
@@ -476,7 +536,7 @@ const ProviderWaitingReply = () => {
         {useDefultSearch && renderBookingDates()}
         {useSpacificDateToSearch && renderBookingCardAccorDate()}
         {useClientToSearch && renderRequestAccUserName()}
-       
+
         <View style={{ height: 100 }}></View>
       </ScrollView>
     </View>

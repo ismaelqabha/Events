@@ -13,10 +13,9 @@ import { updateUserData } from '../resources/API';
 
 const ClientSpecialDates = (props) => {
   const { userInfo, setUserInfo, userId } = useContext(UsersContext);
-  const userData = userInfo.user
-  const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
-
-  const [spcialEvents, setSpcialEvents] = useState(userData[0].SpecialDates)
+  const userData = userInfo
+ 
+  const [spcialEvents, setSpcialEvents] = useState(userData.SpecialDates)
 
   const [showSpecialDMoodal, setShowSpecialDMoodal] = useState(false)
   const [mode, setMode] = useState('date');
@@ -69,7 +68,7 @@ const ClientSpecialDates = (props) => {
     addSpecialDateProcess(data)
   }
   const specialDatesItem = () => {
-    return userData[0].SpecialDates.map(item => {
+    return userData.SpecialDates.map(item => {
       return (
         <View style={styles.item}>
 

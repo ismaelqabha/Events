@@ -18,7 +18,7 @@ export default function Splash(props) {
 
     useEffect(() => {
         if (!signInFlag) {
-            console.log("looking for existing user ");
+            // console.log("looking for existing user ");
             asyncFunctions.getItem("userInfo")
                 .then(userInfo => {
                     userEmail = userInfo?.Email

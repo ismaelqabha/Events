@@ -12,14 +12,32 @@ import moment from "moment";
 const ProviderReservationCard = (props) => {
     const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen, resDate } = props
     const { } = useContext(UsersContext);
-    const {  } = useContext(SearchContext);
+    const { eventTypeInfo } = useContext(SearchContext);
     const navigation = useNavigation();
     const reqInfo = { ...props }
 
 
 
+
     var filteredRes = reqInfo.requestInfo.reservationDetail.filter((detail) => detail.reservationDate.slice(0, 10) == resDate)
 
+
+    const renderEventType = () => {
+        const eventTypeIndex = eventTypeInfo.findIndex(item => item.Id === props.requestInfo.ReqEventTypeId)
+        const eventTitle = eventTypeInfo[eventTypeIndex].eventTitle
+        const eventPhoto = eventTypeInfo[eventTypeIndex].eventImg
+
+        return (
+            <View style={styles.dateview}>
+                <View>
+                    <Text style={styles.dateTxt}>{eventTitle}</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Image style={{ width: 30, height: 30 }} source={{ uri: eventPhoto }} />
+                </View>
+            </View>
+        )
+    }
     const renderClientInfo = () => {
         const data = props.userInfo[0]
         return (
@@ -150,6 +168,7 @@ const ProviderReservationCard = (props) => {
             <View style={styles.card}>
                 <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                     {renderRequestDate()}
+                    {renderEventType()}
                     {renderSingleReq()}
                 </Pressable>
                 {renderClientInfo()}
@@ -163,7 +182,7 @@ const ProviderReservationCard = (props) => {
                     <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                         <Text style={styles.dateTxt}>حجز متعدد الايام</Text>
                         {renderRequestDate()}
-
+                        {renderEventType()}
                         <View style={styles.dateview}>
                             <View>
                                 <Text style={styles.dateTxt}>{item.datePrice}</Text>
@@ -186,6 +205,7 @@ const ProviderReservationCard = (props) => {
             <View style={styles.card}>
                 <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                     {renderRequestDate()}
+                    {/* {renderEventType()} */}
                     {renderPrice()}
                 </Pressable>
                 {renderClientInfo()}
@@ -199,7 +219,7 @@ const ProviderReservationCard = (props) => {
                     <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                         <Text style={styles.dateTxt}>حجز متعدد الايام</Text>
                         {renderRequestDate()}
-
+                        {/* {renderEventType()} */}
                         <View style={styles.dateview}>
                             <View>
                                 <Text style={styles.dateTxt}>{item.datePrice}</Text>
@@ -303,7 +323,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         elevation: 5,
         padding: 5,
-       
+
     },
     profilImg: {
         width: 70,
@@ -322,7 +342,7 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontSize: 15
     },
-    
+
     dateview: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
