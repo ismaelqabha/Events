@@ -253,11 +253,7 @@ const ClientRequest = (props) => {
     }
 
     // Event Section
-    // const getEventsType = () => {
-    //     getEventList({}).then(res => {
-    //         setEventTypeInfo(res)
-    //     })
-    // }
+   
     const getEventTypeInfo = () => {
         const eventList = []
         eventTypeInfo.forEach(element => {
@@ -270,9 +266,7 @@ const ClientRequest = (props) => {
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
         const eventTypeId = eventTypeInfo[eventTypeIndex].Id
         setEventTypeId(eventTypeId)
-    }
-   
-  
+    } 
     const onModalCancelPress = () => {
         setShowModal(false)
     }
