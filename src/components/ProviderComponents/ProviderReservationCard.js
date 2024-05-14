@@ -205,7 +205,7 @@ const ProviderReservationCard = (props) => {
             <View style={styles.card}>
                 <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                     {renderRequestDate()}
-                    {/* {renderEventType()} */}
+                    {renderEventType()}
                     {renderPrice()}
                 </Pressable>
                 {renderClientInfo()}
@@ -219,7 +219,7 @@ const ProviderReservationCard = (props) => {
                     <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
                         <Text style={styles.dateTxt}>حجز متعدد الايام</Text>
                         {renderRequestDate()}
-                        {/* {renderEventType()} */}
+                        {renderEventType()}
                         <View style={styles.dateview}>
                             <View>
                                 <Text style={styles.dateTxt}>{item.datePrice}</Text>
