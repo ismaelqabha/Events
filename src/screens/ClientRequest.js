@@ -21,10 +21,8 @@ const ClientRequest = (props) => {
     const {
         requestedDate,
         resDetail,
-        setResDetail,
-        requestInfo, setRequestInfo,
         eventInfo, setEventInfo,
-        eventTypeInfo, setEventTypeInfo, totalPrice, setTotalPrice } = useContext(SearchContext);
+        eventTypeInfo, totalPrice, setTotalPrice } = useContext(SearchContext);
 
 
     const [date, setDate] = useState(new Date());

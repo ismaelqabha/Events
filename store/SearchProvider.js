@@ -68,6 +68,9 @@ const SearchProvider = props => {
   const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
 
+  // query Dates
+  const [bookingDates, setBookingDates] = useState([])
+
 
   return (
     <SearchContext.Provider
@@ -152,6 +155,7 @@ const SearchProvider = props => {
         setCampiegnsAccordingServiceId,
         regionData, setRegionData,
         totalPrice, setTotalPrice,
+        bookingDates, setBookingDates
 
       }}>
       {props.children}

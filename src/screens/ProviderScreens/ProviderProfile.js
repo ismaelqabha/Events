@@ -13,14 +13,14 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
-import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId } from '../../resources/API';
+import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId, getbookingDates } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
   const { setIsfirst, isFirst, setserviceTitle,
     serviceCat, setServiceCat, campInfo, setCampInfo,
-   setRequestInfoByService } = useContext(SearchContext);
+   setRequestInfoByService,  setBookingDates } = useContext(SearchContext);
   const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
   const { userName } = useContext(UsersContext);
 
@@ -47,6 +47,13 @@ const ProviderProfile = props => {
     })
   }
 
+  const getBookingfromApi = () => {
+    getbookingDates({ serviceID: isFirst }).then(res => {
+        setBookingDates(res)
+        console.log("res", res);
+    })
+}
+
   const getCampignsfromApi = () => {
     getCampaignsByServiceId({ serviceId: isFirst }).then(res => {
       
@@ -69,6 +76,7 @@ const ProviderProfile = props => {
     getRegionsfromApi()
     getCampignsfromApi()
     getRequestInfo()
+    getBookingfromApi()
   }, [isFirst])
 
 

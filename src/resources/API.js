@@ -287,6 +287,14 @@ export const getbookingDates = async body => {
   const url = 'Dates/getDates';
   return await AppFetch(url, 'POST', body);
 };
+export const addNewbookingDate = async body => {
+  const url = 'Dates/createDates';
+  return await AppFetch(url, 'POST', body);
+};
+export const updatebookingDate = async body => {
+  const url = 'Dates/updateDates';
+  return await AppFetch(url, 'PATCH', body);
+};
 
 // Favorites Services Info
 export const getFavoritesforUser = async body => {

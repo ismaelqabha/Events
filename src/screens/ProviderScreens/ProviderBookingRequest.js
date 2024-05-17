@@ -1,17 +1,29 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Modal } from 'react-native'
 import React, { useContext, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Fontisto from "react-native-vector-icons/Fontisto";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard';
 import { colors } from '../../assets/AppColors';
 import moment from "moment";
 import SearchContext from '../../../store/SearchContext';
+import { showMessage } from '../../resources/Functions';
+import { addNewbookingDate, updatebookingDate } from '../../resources/API';
 
 const ProviderBookingRequest = (props) => {
-  const { fulDate, mutibleReservation, filterdRequestAccUser } = props.route?.params || {}
-  const { requestInfoByService } = useContext(SearchContext);
+  const { fulDate, mutibleReservation, filterdRequestAccUser, setBookingDates, bookingDates } = props.route?.params || {}
+  const { requestInfoByService, isFirst } = useContext(SearchContext);
 
+  const [showMoreModal, setShowMoreModal] = useState(false);
+  const [datesArray, setDatesArray] = useState();
   const [fromReservationScreen, setfromReservationScreen] = useState(true)
   const selectedDate = moment(fulDate).format('L')
+
+  const today = moment(new Date(), "YYYY-MM-DD")
+  const day = today.format('D')
+  const month = today.format('M')
+  const year = today.format('YYYY')
+  const todayDate = year + '-' + month + '-' + day
+
   const manageArrayDates = []
 
   const onPressHandler = () => {
@@ -24,12 +36,158 @@ const ProviderBookingRequest = (props) => {
         <Pressable onPress={onPressHandler}
         >
           <Ionicons
-            style={styles.icon}
+            style={styles.iconback}
             name={"arrow-back"}
             color={"black"}
             size={25} />
         </Pressable>
         <Text style={styles.txt}>الحجوزات</Text>
+        {fulDate > todayDate && <Pressable onPress={moreModalPress}
+        >
+          <Fontisto
+            style={styles.iconmore}
+            name={"more-v"}
+            color={"black"}
+            size={20} />
+        </Pressable>}
+      </View>
+    )
+  }
+
+  /// desplay more modal
+  const moreModal = () => {
+    return (
+      <Modal
+        transparent
+        visible={showMoreModal}
+        animationType='slide'
+        onRequestClose={() => setShowMoreModal(false)}>
+        <View style={styles.centeredMoreView}>
+          <View style={styles.moreModal}>
+
+            <Pressable style={styles.modalHeader} onPress={() => setShowMoreModal(false)}>
+              <Text style={styles.modalHeaderTxt}>...</Text>
+            </Pressable>
+
+            <View style={styles.modalbody}>
+              {moreOperation()}
+            </View>
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+  const moreModalPress = () => {
+    setShowMoreModal(true)
+  }
+
+  const filterBookingDates = () => {
+    return bookingDates[0].dates.filter(item => {
+      return item.time == fulDate
+    })
+  }
+  const changeDateStatus = (dateStatus) => {
+    const result = filterBookingDates()
+    console.log("result", result, result.length);
+    if (result.length >= 1) {
+      //// Update
+      updateRecordDate(dateStatus)
+    } else {
+      //// Add
+      addNewRecordDate(dateStatus)
+    }
+  }
+  const addNewRecordDate = (dateStatus) => {
+    const dateInfo = {
+      time: fulDate,
+      status: dateStatus
+    }
+    const RecordInfo = {
+      serviceID: isFirst,
+      datesToAdd: dateInfo
+    }
+    addNewbookingDate(RecordInfo).then((res) => {
+      if (res.message === 'Dates have been added') {
+        // setBookingDates(res)
+        showMessage("success")
+
+      } else {
+        showMessage("failed to create request")
+      }
+    }).catch((E) => {
+      console.error("error creating request E:", E);
+    })
+
+  }
+  const updateRecordDate = (dateStatus) => {
+    const dateInfo = {
+      time: fulDate,
+      status: dateStatus
+    }
+    const RecordInfo = {
+      serviceID: isFirst,
+      datesToUpdate: dateInfo
+    }
+    updatebookingDate(RecordInfo).then((res) => {
+      if (res.message === 'Dates updated successfully') {
+        // setBookingDates(res)
+        showMessage("updated")
+
+      } else {
+        showMessage("failed to create request")
+      }
+    }).catch((E) => {
+      console.error("error creating request E:", E);
+    })
+
+  }
+ 
+  const deleteRecordDate = () => {
+    const datesArray = bookingDates[0].dates.filter(item => item.time !== fulDate)
+    console.log("datesArray", datesArray);
+    const RecordInfo = {
+      serviceID: isFirst,
+      datesToUpdate: datesArray
+    }
+    updatebookingDate(RecordInfo).then((res) => {
+      if (res.message === 'Dates updated successfully') {
+        // setBookingDates(res)
+        showMessage("updated")
+
+      } else {
+        showMessage("failed to create request")
+      }
+    }).catch((E) => {
+      console.error("error creating request E:", E);
+    })
+
+  }
+  const vacationDayPress = () => {
+    changeDateStatus('holiday')
+    setShowMoreModal(false)
+  }
+  const closeDayPress = () => {
+    changeDateStatus('full')
+    setShowMoreModal(false)
+  }
+  const openDayPress = () => {
+    deleteRecordDate()
+    setShowMoreModal(false)
+  }
+  const moreOperation = () => {
+    return (
+      <View style={styles.moreChoice}>
+        <Pressable style={styles.moreItem} onPress={vacationDayPress}>
+          <Text style={styles.moreTxt}>تعيين كيوم عطلة</Text>
+        </Pressable>
+
+        <Pressable style={styles.moreItem} onPress={closeDayPress}>
+          <Text style={styles.moreTxt}>اغلاق باب الحجز</Text>
+        </Pressable>
+
+        <Pressable style={styles.moreItem} onPress={openDayPress}>
+          <Text style={styles.moreTxt}>فتح باب الحجز</Text>
+        </Pressable>
       </View>
     )
   }
@@ -42,7 +200,6 @@ const ProviderBookingRequest = (props) => {
     })
     return reqInfo
   }
-
   const renderBookingCard = () => {
     const data = getBookingInfo()
     return data.map(item => {
@@ -51,7 +208,6 @@ const ProviderBookingRequest = (props) => {
       )
     })
   }
-
   const renderSelectedDate = () => {
     return (
       <View>
@@ -64,9 +220,7 @@ const ProviderBookingRequest = (props) => {
     )
   }
 
-
- 
-//////// Searching by Client Name
+  //////// Searching by Client Name
 
   const manageDatesusingSearchbyName = () => {
     let requestBookingDate = ''
@@ -92,14 +246,13 @@ const ProviderBookingRequest = (props) => {
       manageArrayDates.sort();
     })
   }
-
   const filterReqAccUserId = (resDate) => {
     const data = filterdRequestAccUser
-   
+
     const reqInfo = data.filter(item => {
       if (item.requestInfo.reservationDetail.length > 1) {
         return item.requestInfo.reservationDetail.find(multiItem => {
-          return  multiItem.reservationDate === resDate
+          return multiItem.reservationDate === resDate
         })
       } else {
         return item.requestInfo.reservationDetail[0].reservationDate === resDate
@@ -108,8 +261,6 @@ const ProviderBookingRequest = (props) => {
     })
     return reqInfo
   }
-
-
   const renderBookingCardforSearch = (resDate) => {
     const data = filterReqAccUserId(resDate)
 
@@ -119,7 +270,6 @@ const ProviderBookingRequest = (props) => {
       )
     })
   }
-
   const renderRequestAccUserName = () => {
     manageDatesusingSearchbyName()
     return manageArrayDates.map(item => {
@@ -140,6 +290,7 @@ const ProviderBookingRequest = (props) => {
     <View style={styles.container}>
       {header()}
       {mutibleReservation ? renderRequestAccUserName() : renderSelectedDate()}
+      {moreModal()}
     </View>
   )
 }
@@ -157,9 +308,13 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'space-between',
   },
-  icon: {
-    alignSelf: 'flex-start',
+  iconback: {
+    //alignSelf: 'flex-start',
     marginLeft: 10,
+  },
+  iconmore: {
+    //alignSelf: 'flex-start',
+    marginRight: 10,
   },
   txt: {
     fontSize: 15,
@@ -173,5 +328,44 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     flexDirection: 'row',
     alignItems: 'center'
-  }
+  },
+  modalbody: {
+    paddingHorizontal: 5
+  },
+  moreModal: {
+    width: '95%',
+    height: 150,
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  centeredMoreView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: '#00000099',
+  },
+  modalHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: 40,
+  },
+  modalHeaderTxt: {
+    fontSize: 18
+  },
+  moreItem: {
+    alignSelf: 'center',
+    marginVertical: 5,
+    alignItems: 'center'
+  },
+  moreChoice: {
+    // flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    // borderWidth: 1
+  },
+  moreTxt: {
+    fontSize: 18
+  },
 })
