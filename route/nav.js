@@ -60,6 +60,7 @@ import ClientSpecialDates from "../src/screens/ClientSpecialDates";
 import ClientRelations from "../src/screens/ClientRelations";
 import ProviderShowRequest from "../src/screens/ProviderScreens/ProviderShowRequest";
 import ClientShowRequest from "../src/screens/ClientShowRequest";
+import ForgotPassword from "../src/screens/ForgotPassword";
 
 
 
@@ -104,6 +105,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name="TapProvider" component={ProviderTapNav} />
                 <Stack.Screen name={ScreenNames.Splash} component={Splash} />
                 <Stack.Screen name={ScreenNames.SignIn} component={SignIn} />
+                <Stack.Screen name={ScreenNames.ForgotPassword} component={ForgotPassword} />
 
 
                
