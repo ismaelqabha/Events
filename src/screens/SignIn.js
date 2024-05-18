@@ -8,6 +8,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { getUserData, signIn } from '../resources/API';
 import UsersContext from '../../store/UsersContext';
 import { asyncFunctions, showMessage } from '../resources/Functions';
+import { emailVerification, passwordRegex } from '../resources/Regex';
 
 
 const SignIn = (props) => {
@@ -67,8 +68,18 @@ const SignIn = (props) => {
     }
 
     const onEnterPress = () => {
-        logUser()
-    }
+        if (!emailVerification.test(userEmail)) {
+            showMessage("Enter a valid email");
+            return;
+        }
+    
+        if (!password || !password.trim() || !passwordRegex.test(password)) {
+            showMessage("Enter a valid password");
+            return;
+        }
+    
+        logUser();
+    };
     const onSignupPress = () => {
         props.navigation.navigate(ScreenNames.CreateUpersonalInfo);
     }
@@ -79,6 +90,10 @@ const SignIn = (props) => {
         });
         return UserArray;
     };
+
+    const onForgotPassword=()=>{
+        props.navigation.navigate(ScreenNames.ForgotPassword);
+    }
 
     return (
         <ImageBackground style={styles.container}
@@ -108,7 +123,7 @@ const SignIn = (props) => {
                 </Pressable>
             </View>
 
-            <Pressable>
+            <Pressable  onPress={() => onForgotPassword()}>
                 <Text>هل نسيت كلمة المرور؟</Text>
             </Pressable>
             <Text style={styles.or}>أو</Text>
