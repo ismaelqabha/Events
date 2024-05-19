@@ -347,6 +347,23 @@ const ClientProfile = (props) => {
             </View>
         )
     }
+     const renderDuePayment = () => {
+        return (<View>
+            <Pressable style={styles.item} onPress={() =>
+            props.navigation.navigate(ScreenNames.ClientDuePayments)}>
+                <View>
+                    <Text style={styles.basicInfo}>دفعات الحجوزات المستحقة</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <MaterialIcons
+                        style={styles.icon}
+                        name={"payments"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
+        </View>)
+    }
 
     return (
         <View style={styles.container}>
@@ -359,6 +376,7 @@ const ClientProfile = (props) => {
                 <View style={styles.viewSet}>
                     {/* {renderFavorite()} */}
                     {renderPayments()}
+                    {renderDuePayment()}
                     {renderFeedBack()}
                 </View>
 

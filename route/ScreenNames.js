@@ -26,6 +26,7 @@ export const ScreenNames = {
     ClientSpecialDates: 'ClientSpecialDates',
     ClientRelations: 'ClientRelations',
     ClientShowRequest:'ClientShowRequest',
+    ClientDuePayments: 'ClientDuePayments',
 
     // Create User
     CreateUpersonalInfo: 'CreateUpersonalInfo',
@@ -61,6 +62,7 @@ export const ScreenNames = {
     ProviderShowOffers: 'ProviderShowOffers',
     ProviderOfferDesc: 'ProviderOfferDesc',
     ProviderShowRequest: 'ProviderShowRequest',
+    ProviderDuePayments: 'ProviderDuePayments',
 
 
     Splash: 'Splash',

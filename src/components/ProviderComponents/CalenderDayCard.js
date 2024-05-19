@@ -73,7 +73,7 @@ var numBooking = 0
     const getBookingInfo = () => {
         if (requestInfoByService.message !== "no Request") {
             const reqInfo = requestInfoByService.filter(item => {
-                return item.requestInfo.ReqStatus === 'paid'
+                return item.requestInfo.ReqStatus === 'partally paid'
             })
             return reqInfo
         } else {

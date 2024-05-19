@@ -144,7 +144,7 @@ const ProviderBookingRequest = (props) => {
  
   const deleteRecordDate = () => {
     const datesArray = bookingDates[0].dates.filter(item => item.time !== fulDate)
-    console.log("datesArray", datesArray);
+    //console.log("datesArray", datesArray);
     const RecordInfo = {
       serviceID: isFirst,
       datesToUpdate: datesArray
@@ -196,7 +196,7 @@ const ProviderBookingRequest = (props) => {
 
   const getBookingInfo = () => {
     const reqInfo = requestInfoByService.filter(item => {
-      return item.requestInfo.ReqStatus === 'paid' && item.requestInfo.reservationDetail[0].reservationDate === fulDate
+      return item.requestInfo.ReqStatus === 'partally paid' && item.requestInfo.reservationDetail[0].reservationDate === fulDate
     })
     return reqInfo
   }

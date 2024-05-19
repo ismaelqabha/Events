@@ -207,7 +207,7 @@ const ProviderWaitingReply = () => {
   }
   const renderBookingCard = (resDate) => {
     const data = getBookingInfoByDate(resDate)
-    console.log("data", data);
+    //console.log("data", data);
     return data.map(item => {
       return (
         <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} resDate={resDate} />
