@@ -15,8 +15,15 @@ const ProviderDuePayments = (props) => {
     const { requestInfoByService } = useContext(SearchContext);
     const { } = useContext(UsersContext);
 
+    const [fromProviderPartallyPaid, setFromProviderPartallyPaid] = useState(true)
+
     const allRequestingDates = []
 
+    const today = moment(new Date(), "YYYY-MM-DD")
+    const day = today.format('D')
+    const month = today.format('M')
+    const year = today.format('YYYY')
+    const todayDate = year + '-' + month + '-' + day
 
     const onBackHandler = () => {
         props.navigation.goBack();
@@ -48,8 +55,28 @@ const ProviderDuePayments = (props) => {
             return []
         }
     }
-    const getBookingInfoByDate = (resDate) => {
+
+    const getRequestsAccDates = () => {
         const data = getBookingInfo()
+        const reqInfo = data.filter(item => {
+            if (item.requestInfo.reservationDetail.length > 1) {
+                //if reservation detail has more than one date
+                let result = item.requestInfo.reservationDetail.find(multiItem => {
+                    return multiItem.reservationDate < todayDate
+                })
+                return result
+
+            } else {
+
+                //if reservation detail has one date
+               // console.log(item.requestInfo.reservationDetail[0].reservationDate, todayDate, item.requestInfo.reservationDetail[0].reservationDate < todayDate);
+                return item.requestInfo.reservationDetail[0].reservationDate < todayDate
+            }
+        })
+        return reqInfo
+    }
+    const getBookingInfoByDate = (resDate) => {
+        const data = getRequestsAccDates()
 
         const reqInfo = data.filter(req => {
             if (req.requestInfo.reservationDetail.length > 1) {
@@ -65,7 +92,7 @@ const ProviderDuePayments = (props) => {
 
     }
     const collectAllRequestDates = () => {
-        const data = getBookingInfo()
+        const data = getRequestsAccDates()
 
         return data.map(item => {
             if (item.requestInfo.reservationDetail.length > 1) {
@@ -92,7 +119,7 @@ const ProviderDuePayments = (props) => {
         //console.log("data", data);
         return data.map(item => {
             return (
-                <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} resDate={resDate} />
+                <ProviderReservationCard fromProviderPartallyPaid={fromProviderPartallyPaid}  {...item} resDate={resDate} />
             )
         })
     }
@@ -117,7 +144,7 @@ const ProviderDuePayments = (props) => {
             {header()}
             <ScrollView>
                 {renderBookingDates()}
-    
+
                 <View style={{ height: 100 }}></View>
             </ScrollView>
         </View>
@@ -129,8 +156,8 @@ export default ProviderDuePayments
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-      },
-      header: {
+    },
+    header: {
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -140,5 +167,20 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
+    },
+    dateView: {
+        backgroundColor: colors.silver,
+        width: '100%',
+        height: 40,
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        flexDirection: 'row',
+        elevation: 5,
+        marginVertical: 20,
+
+    },
+    dateTxt: {
+        color: colors.puprble,
+        fontSize: 18
     },
 })

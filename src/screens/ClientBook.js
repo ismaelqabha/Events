@@ -10,6 +10,8 @@ const ClientBook = (props) => {
     const { requestInfoAccUser } = useContext(SearchContext);
     const { data } = props?.route.params;
 
+    console.log('data>>>>', data);
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }

@@ -10,6 +10,7 @@ import { ScreenNames } from '../../route/ScreenNames';
 
 const BookingCard = (props) => {
     const reqInfo = { ...props }
+    
     const { userPayment } = useContext(SearchContext);
     const navigation = useNavigation();
     const data = { ...props }
@@ -138,7 +139,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'paid') {
+            if (props.ReqStatus === 'partally paid') {
                 stutesType = 'محجوز'
                 return (
                     <View>
@@ -164,7 +165,7 @@ const BookingCard = (props) => {
             }
 
         } else {
-            if (props.ReqStatus === 'paid') {
+            if (props.ReqStatus === 'partally paid') {
                 stutesType = 'محجوز'
                 return (
                     <View >

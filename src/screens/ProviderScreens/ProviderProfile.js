@@ -49,8 +49,12 @@ const ProviderProfile = props => {
 
   const getBookingfromApi = () => {
     getbookingDates({ serviceID: isFirst }).then(res => {
-      setBookingDates(res)
-      console.log("res", res);
+      if (res.message === 'No Date') {
+        setBookingDates([]);
+      } else {
+        setBookingDates(res);
+      }
+     
     })
   }
 

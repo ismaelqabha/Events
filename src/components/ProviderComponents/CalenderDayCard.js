@@ -16,10 +16,10 @@ const CalenderDayCard = (props) => {
     const [currentYear, setcurrentYear] = useState(date.getFullYear())
 
     //const [numBooking, setNumBooking] = useState()
-   // console.log("requestInfoByService", requestInfoByService);
+    console.log("bookingDates", bookingDates);
 
     var isDayFull = false
-var numBooking = 0
+    var numBooking = 0
     const navigation = useNavigation();
     const daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
 
@@ -101,18 +101,22 @@ var numBooking = 0
 
     //// return which date is full and not 
     const filterBookingDate = (fDate) => {
-        const numBookingResult = getNumOfBooking(fDate)
-        numBooking = numBookingResult.length
-
-        const bookDate = bookingDates[0].dates.filter(element => {
-            return element.time == fDate
-        })
-
-        if (bookDate.length >= 1) {
-            isDayFull = true
-        } else {
-            isDayFull = false
+        if (bookingDates.length !== 0) {
+            
+            const numBookingResult = getNumOfBooking(fDate)
+            numBooking = numBookingResult.length
+    
+            const bookDate = bookingDates[0].dates.filter(element => {
+                return element.time == fDate
+            })
+    
+            if (bookDate.length >= 1) {
+                isDayFull = true
+            } else {
+                isDayFull = false
+            }
         }
+       
     }
 
 

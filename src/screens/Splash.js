@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import React, { useContext, useEffect } from 'react'
-import { getEventList, getEventsInfo, getFavoritesforUser, getHomePageData, getUserData, signIn } from '../resources/API';
+import { getEventList, getEventsInfo, getFavoritesforUser, getHomePageData, getRequestInfoWithservice, getUserData, signIn } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ImageBackground } from 'react-native';
@@ -9,7 +9,7 @@ import { ScreenNames } from '../../route/ScreenNames';
 import { asyncFunctions, showMessage } from '../resources/Functions';
 
 export default function Splash(props) {
-    const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo, setEventInfo } = useContext(SearchContext);
+    const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo, setEventInfo, setRequestInfoAccUser } = useContext(SearchContext);
     const { setUserInfo, userId, setuserId, setUserName } = useContext(UsersContext);
 
     let userEmail
@@ -95,6 +95,11 @@ export default function Splash(props) {
             }
         })
     }
+    const getRequestfromApi = () => {
+        getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
+            setRequestInfoAccUser(res)
+        })
+    }
 
 
 
@@ -102,6 +107,7 @@ export default function Splash(props) {
     useEffect(() => {
         getDataFromApi()
         getEventListfromApi()
+        getRequestfromApi()
     }, [servType])
 
 

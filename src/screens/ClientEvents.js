@@ -85,11 +85,11 @@ const ClientEvents = (props) => {
     //     })
     // }
 
-    const getRequestfromApi = () => {
-        getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
-            setRequestInfoAccUser(res)
-        })
-    }
+    // const getRequestfromApi = () => {
+    //     getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
+    //         setRequestInfoAccUser(res)
+    //     })
+    // }
 
     const getEventTypeInfo = () => {
         const eventList = []
@@ -132,7 +132,7 @@ const ClientEvents = (props) => {
     useEffect(() => {
         // getEventsfromApi()
         getEventTypeInfo()
-        getRequestfromApi()
+        // getRequestfromApi()
     }, [])
 
     const renderHeader = () => {
