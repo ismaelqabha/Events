@@ -63,7 +63,6 @@ const SignIn = (props) => {
             setUserInfo(res)
             setuserId(res.user[0].USER_ID)
             setUserName(res.user[0].User_name)
-            console.log("res.user[0].USER_ID",res.user[0].USER_ID);
         })
     }
 

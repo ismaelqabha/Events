@@ -23,6 +23,9 @@ const ProviderBookingRequest = (props) => {
   const month = today.format('M')
   const year = today.format('YYYY')
   const todayDate = year + '-' + month + '-' + day
+  const fullDateObj = new Date(fulDate); // Assuming fullDate is coming as a string in 'YYYY-MM-DD' format
+  const todayDateObj = new Date(todayDate);
+
 
   const manageArrayDates = []
 
@@ -43,7 +46,7 @@ const ProviderBookingRequest = (props) => {
         </Pressable>
         <Text style={styles.txt}>الحجوزات</Text>
          {/* this a place that check the data   */}
-        {fulDate > todayDate && <Pressable onPress={moreModalPress}
+        {fullDateObj > todayDateObj && <Pressable onPress={moreModalPress}
         >
           <Fontisto
             style={styles.iconmore}
