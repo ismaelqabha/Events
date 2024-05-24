@@ -5,13 +5,14 @@ import Feather from "react-native-vector-icons/Feather"
 import Entypo from "react-native-vector-icons/Entypo"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Fontisto from "react-native-vector-icons/Fontisto";
-import { ScreenNames } from '../../route/ScreenNames';
+
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
 import SearchContext from '../../../store/SearchContext';
 import UsersContext from '../../../store/UsersContext';
 import { colors } from '../../assets/AppColors';
 import { images } from '../../assets/photos/images';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 
 const ClientRelations = (props) => {
@@ -54,21 +55,25 @@ const ClientRelations = (props) => {
   }
 
   const renderRelation = () => {
-    return (<View style={{width: '90%', alignSelf: 'center'}}>
+    return (<View style={{ width: '90%', alignSelf: 'center' }}>
       <View style={styles.item}>
-        <Pressable>
+        <Pressable
+        //onPress={() => props.navigation.navigate(ScreenNames.UserProfile)}
+        >
           <Text style={styles.basicInfo}>فادي</Text>
           <Text style={styles.basicInfoTitle}>صديق</Text>
         </Pressable>
         <View style={styles.ImageView}>
+
         </View>
       </View>
       <View style={styles.item}>
-        <Pressable>
+        <Pressable >
           <Text style={styles.basicInfo}>أحمد</Text>
           <Text style={styles.basicInfoTitle}>أخ</Text>
         </Pressable>
         <View style={styles.ImageView}>
+
         </View>
       </View>
     </View>)
