@@ -245,6 +245,13 @@ const ProviderReservationCard = (props) => {
             </Pressable>
         )
     }
+    const renderRequestAmounts = () => {
+        return (
+            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                {renderPayRemain()}
+            </Pressable>
+        )
+    }
 
     const renderCard = () => {
         if (fromWaitingScreen) {
@@ -280,8 +287,8 @@ const ProviderReservationCard = (props) => {
         }
         if (fromProviderPartallyPaid) {
             return (
-                <View style={styles.card1}>
-                    {requestReservationCard()}
+                <View style={styles.dueCard1}>
+                    {renderRequestAmounts()}
                     {renderClientInfo()}
                 </View>
             )

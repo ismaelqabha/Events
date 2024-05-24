@@ -42,6 +42,7 @@ const ProviderBookingRequest = (props) => {
             size={25} />
         </Pressable>
         <Text style={styles.txt}>الحجوزات</Text>
+         {/* this a place that check the data   */}
         {fulDate > todayDate && <Pressable onPress={moreModalPress}
         >
           <Fontisto

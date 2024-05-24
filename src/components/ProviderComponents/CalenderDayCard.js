@@ -15,8 +15,6 @@ const CalenderDayCard = (props) => {
     const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
     const [currentYear, setcurrentYear] = useState(date.getFullYear())
 
-    //const [numBooking, setNumBooking] = useState()
-    console.log("bookingDates", bookingDates);
 
     var isDayFull = false
     var numBooking = 0

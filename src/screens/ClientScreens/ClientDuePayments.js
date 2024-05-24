@@ -13,6 +13,7 @@ import { showMessage } from '../../resources/Functions'
 const ClientDuePayments = (props) => {
     const { requestInfoAccUser } = useContext(SearchContext);
     const { } = useContext(UsersContext);
+    const [fromclientDuePayment, setFromClientDuePayment] = useState(true)
 
 
     const today = moment(new Date(), "YYYY-MM-DD")
@@ -58,7 +59,9 @@ const ClientDuePayments = (props) => {
             return <BookingCard {...item.requestInfo}
             services={item?.serviceData}
             images={item?.serviceImage}
-            relatedCamp={item?.serviceCamp} />
+            relatedCamp={item?.serviceCamp}
+            fromclientDuePayment={fromclientDuePayment}
+             />
         })
     }
 

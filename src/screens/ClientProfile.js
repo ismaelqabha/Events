@@ -10,6 +10,7 @@ import { ScreenNames } from '../../route/ScreenNames';
 import UsersContext from '../../store/UsersContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { updateUserData } from '../resources/API';
+import { images } from '../assets/photos/images';
 
 const ClientProfile = (props) => {
     const { userInfo, setUserInfo, userId } = useContext(UsersContext);
@@ -199,91 +200,14 @@ const ClientProfile = (props) => {
     }
 
     ///
-    const renderRelations = () => {
+    const renderOldEvents = () => {
         return (<View>
-            <View style={styles.item}>
-                <Pressable>
-                    <Text style={styles.basicInfo}>اضافة علاقة</Text>
-                </Pressable>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"add-to-list"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </View>
-            <View style={styles.item}>
-                <Pressable>
-                    <Text style={styles.basicInfo}>فادي</Text>
-                    <Text style={styles.basicInfoTitle}>صديق</Text>
-                </Pressable>
-                <View style={styles.IconView}>
-                    <AntDesign
-                        style={styles.icon}
-                        name={"adduser"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </View>
-            <View style={styles.item}>
-                <Pressable>
-                    <Text style={styles.basicInfo}>أحمد</Text>
-                    <Text style={styles.basicInfoTitle}>أخ</Text>
-                </Pressable>
-                <View style={styles.IconView}>
-                    <AntDesign
-                        style={styles.icon}
-                        name={"adduser"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </View>
-            <Pressable style={styles.more} onPress={() => props.navigation.navigate(ScreenNames.ClientRelations)}>
-                <Text style={styles.moreTxt}>المزيد...</Text>
-            </Pressable>
-        </View>)
-    }
-    const renderReservation = () => {
-        return (<View>
-            <Pressable style={styles.item}>
-                <View><Text style={styles.basicInfo}>عيد ميلاد أحمد</Text>
-                    <Text style={styles.basicInfoTitle}>عيد ميلاد</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"cake"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </Pressable>
-            <Pressable style={styles.item}>
-                <View><Text style={styles.basicInfo}>ذكرى زواجنا</Text>
-                    <Text style={styles.basicInfoTitle}>عيد زواج</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"cake"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </Pressable>
-            <Pressable style={styles.more}>
-                <Text style={styles.moreTxt}>المزيد...</Text>
-            </Pressable>
-        </View>)
-    }
-    const renderFavorite = () => {
-        return (<View>
-            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.FileFavorites)}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ClientOldEvents)}>
                 <View>
-                    <Text style={styles.basicInfo}> المفضلة</Text>
+                    <Text style={styles.basicInfo}>المناسبات السابقة</Text>
                 </View>
                 <View style={styles.IconView}>
                     <Fontisto
-                        style={styles.icon}
                         name={"favorite"}
                         color={colors.puprble}
                         size={25} />
@@ -299,7 +223,6 @@ const ClientProfile = (props) => {
                 </View>
                 <View style={styles.IconView}>
                     <MaterialIcons
-                        style={styles.icon}
                         name={"notes"}
                         color={colors.puprble}
                         size={25} />
@@ -307,18 +230,19 @@ const ClientProfile = (props) => {
             </Pressable>
         </View>)
     }
-    const renderPayments = () => {
+    const renderRelations = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ClientRelations)}>
                 <View>
-                    <Text style={styles.basicInfo}>دفعاتي</Text>
+                    <Text style={styles.basicInfo}>علاقاتي (3)</Text>
                 </View>
                 <View style={styles.IconView}>
-                    <MaterialIcons
+                    <Image style={styles.icon} source={images.realations} />
+                    {/* <MaterialIcons
                         style={styles.icon}
                         name={"payments"}
                         color={colors.puprble}
-                        size={25} />
+                        size={25} /> */}
                 </View>
             </Pressable>
         </View>)
@@ -356,7 +280,6 @@ const ClientProfile = (props) => {
                 </View>
                 <View style={styles.IconView}>
                     <MaterialIcons
-                        style={styles.icon}
                         name={"payments"}
                         color={colors.puprble}
                         size={25} />
@@ -374,9 +297,10 @@ const ClientProfile = (props) => {
 
                 <Text style={styles.txt}>العمليات</Text>
                 <View style={styles.viewSet}>
-                    {/* {renderFavorite()} */}
-                    {renderPayments()}
+
                     {renderDuePayment()}
+                    {renderRelations()}
+                    {renderOldEvents()}
                     {renderFeedBack()}
                 </View>
 
@@ -385,15 +309,6 @@ const ClientProfile = (props) => {
                     {renderSpecialEvents()}
                 </View>
 
-                <Text style={styles.txt}>العلاقات (2)</Text>
-                <View style={styles.viewSet}>
-                    {renderRelations()}
-                </View>
-
-                <Text style={styles.txt}>المناسبات السابقة</Text>
-                <View style={styles.viewSet}>
-                    {renderReservation()}
-                </View>
                 <View style={{ height: 110 }}></View>
             </ScrollView>
         </View>
@@ -562,4 +477,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 30,
         marginLeft: 20
       },
+      icon:{
+        width: 30,
+        height: 30
+      }
 })

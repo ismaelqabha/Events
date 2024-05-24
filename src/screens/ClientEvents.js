@@ -106,7 +106,7 @@ const ClientEvents = (props) => {
         return TypeId
     }
 
-    const eventEditing = (props) => {
+    const eventEditing = (eventID) => {
         const id = getEventTypeID(props.eventTitleId)
         setfileEventName(props.eventName)
         // setEventName()
@@ -252,7 +252,7 @@ const ClientEvents = (props) => {
         return eventInfo || [];
     }
     const renderCard = ({ item }) => {
-        return <EventsCard  {...item} service_id={data?.service_id} eventEditing={eventEditing} />;
+        return <EventsCard  {...item}  eventEditing={eventEditing} />;
     };
 
     return (

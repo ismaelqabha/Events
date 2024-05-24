@@ -19,9 +19,9 @@ import { colors } from '../assets/AppColors';
 
 
 const EventsCard = (props) => {
-    const { service_id } = props
+    
     const navigation = useNavigation();
-    const { eventName, eventDate, eventCost, eventTitleId, EventId } = props;
+    const { eventName, eventDate, eventCost, eventTitleId, EventId , eventEditing } = props;
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(false)
     const [deleteEvent, setDeleteEvent] = useState(false)
@@ -206,11 +206,14 @@ const EventsCard = (props) => {
             eventDate: dateOfEvent,
         }
         updateEvent(editEventItem).then(res => {
+            
             const ev = eventInfo || [];
             if (eventItemIndex > -1) {
                 ev[eventItemIndex] = editEventItem;
             }
-            setEventInfo([...ev])
+             setEventInfo([...ev])
+            console.log("Ok");
+            // eventEditing(ev)
         })
     }
 
