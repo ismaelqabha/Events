@@ -6,15 +6,22 @@ import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Fontisto from "react-native-vector-icons/Fontisto"
 import { ScreenNames } from '../../route/ScreenNames';
+import moment from "moment";
 
 
 const BookingCard = (props) => {
     const reqInfo = { ...props }
+    const { fromclientDuePayment } = props
     const { userPayment } = useContext(SearchContext);
     const navigation = useNavigation();
     const data = { ...props }
 
    
+    const today = moment(new Date(), "YYYY-MM-DD")
+    const day = today.format('D')
+    const month = today.format('M')
+    const year = today.format('YYYY')
+    const todayDate = year + '-' + month + '-' + day
 
     const renderLogo = () => {
         const index = props.images[0].logoArray?.findIndex((val) => val === true)
@@ -22,6 +29,14 @@ const BookingCard = (props) => {
         return <Image
             source={{ uri: img }}
             style={styles.img}
+        />
+    }
+    const renderDueScreenLogo = () => {
+        const index = props.images[0].logoArray?.findIndex((val) => val === true)
+        const img = props.images[0]?.serviceImages[index]
+        return <Image
+            source={{ uri: img }}
+            style={styles.DueImg}
         />
     }
 
@@ -32,10 +47,10 @@ const BookingCard = (props) => {
             ...serData[0]
         }
         delete obj.services
-        
+
         const cardsArray = serData?.map(card => {
             return <Pressable style={styles.cardHeader}
-                onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { data: obj , isFromClientRequest: true})}
+                onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { data: obj, isFromClientRequest: true })}
             >
                 <Text style={styles.titleText}>{card.title}</Text>
             </Pressable>;
@@ -97,6 +112,21 @@ const BookingCard = (props) => {
         )
     }
 
+    const renderDuePaySingleReq = () => {
+        return (
+            <View style={styles.dueCard}>
+
+                <Text style={styles.itemTxt}>1000</Text>
+                <View style={{alignItems:'center'}}>
+                    {renderServTitle()}
+                    <Text style={styles.itemTxt}>{props.reservationDetail[0].reservationDate}</Text>
+                </View>
+
+                {renderDueScreenLogo()}
+            </View>
+        )
+    }
+
     /// Multible Requests
     const renderMultiRequests = (stutesType) => {
         return props.reservationDetail.map(item => {
@@ -130,6 +160,28 @@ const BookingCard = (props) => {
     const renderReqInfo = () => {
         let stutesType = ''
         if (props.reservationDetail.length > 1) {
+
+            if (fromclientDuePayment) {
+                return props.reservationDetail.map(item => {
+                    if (props.ReqStatus === 'partally paid' && item.reservationDate < todayDate) {
+                        return (
+                            <View>
+                                {renderDuePaySingleReq()}
+                            </View>
+                        )
+                    }
+                })
+
+            } else {
+                if (props.ReqStatus === 'partally paid') {
+                    stutesType = 'محجوز'
+                    return (
+                        <View >
+                            {renderMultiRequests(stutesType)}
+                        </View>
+                    )
+                }
+            }
             if (props.ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
                 return (
@@ -138,14 +190,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'paid') {
-                stutesType = 'محجوز'
-                return (
-                    <View>
-                        {renderMultiRequests(stutesType)}
-                    </View>
-                )
-            }
+
             if (props.ReqStatus === 'waiting pay') {
                 stutesType = 'يمكنك الدفع'
                 return (
@@ -163,15 +208,27 @@ const BookingCard = (props) => {
                 )
             }
 
+
         } else {
-            if (props.ReqStatus === 'paid') {
-                stutesType = 'محجوز'
-                return (
-                    <View >
-                        {renderSingleRequest(stutesType)}
-                    </View>
-                )
+            if (fromclientDuePayment) {
+                if (props.ReqStatus === 'partally paid' && props.reservationDetail[0].reservationDate < todayDate) {
+                    return (
+                        <View>
+                            {renderDuePaySingleReq()}
+                        </View>
+                    )
+                }
+            } else {
+                if (props.ReqStatus === 'partally paid') {
+                    stutesType = 'محجوز'
+                    return (
+                        <View >
+                            {renderSingleRequest(stutesType)}
+                        </View>
+                    )
+                }
             }
+
             if (props.ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
                 return (
@@ -196,6 +253,8 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
+            console.log(fromclientDuePayment, props.ReqStatus, props.reservationDetail[0].reservationDate, todayDate);
+
         }
 
     }
@@ -210,13 +269,16 @@ const BookingCard = (props) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-
+    DueImg: {
+        width: 100,
+        height: 100,
+        borderRadius: 50
     },
     img: {
         width: '100%',
         height: 170,
     },
+
     card: {
         alignSelf: 'center',
         width: '80%',
@@ -286,7 +348,22 @@ const styles = StyleSheet.create({
         height: '80%',
         alignItems: 'center',
         justifyContent: 'center'
-    }
+    },
+    dueCard: {
+        width: '95%',
+        height: 100,
+        alignSelf: 'center',
+        backgroundColor: colors.silver,
+        elevation: 10,
+        shadowColor: colors.puprble,
+        borderRadius: 50,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingLeft: 5,
+        marginTop: 15,
+
+    },
 })
 
 export default BookingCard;

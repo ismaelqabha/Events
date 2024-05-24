@@ -1,5 +1,4 @@
 import ClientNotification from "../src/screens/ClientNotification";
-import ClientPayment from "../src/screens/ClientPayment";
 import LogOut from "../src/screens/LogOut";
 import Security from "../src/screens/Security";
 import Settings from "../src/screens/Settings";
@@ -9,6 +8,7 @@ import { ScreenNames } from "./ScreenNames";
 import TabNavigator from "./tabNavigator";
 import { Icons } from "../src/components/Icons"
 import PersonalInfo from "../src/screens/PersonalInfo";
+import ClientPayment from "../src/screens/ClientScreens/ClientPayment";
 
 
 export const SharedScreen = [

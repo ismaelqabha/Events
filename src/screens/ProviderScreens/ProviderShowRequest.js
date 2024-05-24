@@ -1,18 +1,20 @@
-import { StyleSheet, Text, View, Pressable, Modal, ScrollView,Alert,ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, Pressable, Modal, ScrollView, Alert, ToastAndroid, Image } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SearchContext from '../../../store/SearchContext';
 import { colors } from '../../assets/AppColors';
 import moment from "moment";
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { updateRequest } from '../../resources/API';
+import { images } from '../../assets/photos/images';
 
 
 const ProviderShowRequest = (props) => {
-    const { isFirst, campInfo,setRequestInfoByService } = useContext(SearchContext);
+    const { isFirst, campInfo, setRequestInfoByService } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const { reqInfo } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
@@ -32,7 +34,6 @@ const ProviderShowRequest = (props) => {
         });
     }
 
-
     const onPressHandler = () => {
         props.navigation.goBack();
     }
@@ -43,7 +44,6 @@ const ProviderShowRequest = (props) => {
                 return itemId.id === id
             })
         })
-
         return serData
     }
 
@@ -143,25 +143,37 @@ const ProviderShowRequest = (props) => {
     const moreOperation = () => {
         if (reqInfo.requestInfo.ReqStatus === 'waiting reply') {
             return (
-                <View>
-                    <Pressable style={styles.moreItem} onPress={onAcceptReqPress}>
-                        <Text style={styles.moreTxt}>قبول</Text>
+                <View style={styles.moreChoice}>
+                    <Pressable style={styles.moreItem} onPress={onRefuseReqPress}>
+                        <Image style={{ width: 40, height: 40 }} source={images.refuse} />
+                        <Text style={styles.moreTxt}>رفض</Text>
                     </Pressable>
 
-                    <Pressable style={styles.moreItem} onPress={onRefuseReqPress}>
-                        <Text style={styles.moreTxt}>رفض</Text>
+                    <Pressable style={styles.moreItem} onPress={onAcceptReqPress}>
+                        <Image style={{ width: 40, height: 40 }} source={images.accept} />
+                        <Text style={styles.moreTxt}>قبول</Text>
                     </Pressable>
                 </View>
             )
         }
         if (reqInfo.requestInfo.ReqStatus === 'waiting pay') {
             return (
-                <View>
+                <View style={styles.moreChoice}>
+
                     <Pressable style={styles.moreItem}>
-                        <Text style={styles.moreTxt}>اِجراء عملية دفع</Text>
-                    </Pressable>
-                    <Pressable style={styles.moreItem}>
+                        <AntDesign
+                            name={"delete"}
+                            color={colors.puprble}
+                            size={30} />
                         <Text style={styles.moreTxt}>اِلغاء الطلب</Text>
+                    </Pressable>
+
+                    <Pressable style={styles.moreItem}>
+                        <MaterialIcons
+                            name={"payment"}
+                            color={colors.puprble}
+                            size={30} />
+                        <Text style={styles.moreTxt}>اِجراء عملية دفع</Text>
                     </Pressable>
                 </View>
             )
@@ -170,6 +182,10 @@ const ProviderShowRequest = (props) => {
             return (
                 <View>
                     <Pressable style={styles.moreItem}>
+                        <MaterialIcons
+                            name={"payment"}
+                            color={colors.puprble}
+                            size={30} />
                         <Text style={styles.moreTxt}>اِجراء عملية دفع</Text>
                     </Pressable>
                 </View>
@@ -407,7 +423,7 @@ const ProviderShowRequest = (props) => {
         })
     }
     const isSelectedFromCampign = (item) => {
-        
+
         if (item.offerId.length > 0) {
             return (<View>
                 <Text style={styles.labelText}>العرض المختار</Text>
@@ -461,7 +477,7 @@ const ProviderShowRequest = (props) => {
         </View>)
     }
 
-   
+
     return (
         <View style={styles.container}>
             {header()}
@@ -605,7 +621,14 @@ const styles = StyleSheet.create({
     },
     moreItem: {
         alignSelf: 'center',
-        marginVertical: 5,
+        //  marginVertical: 5,
+        alignItems: 'center'
+    },
+    moreChoice: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        // borderWidth: 1
     },
     moreTxt: {
         fontSize: 18

@@ -13,14 +13,14 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
-import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId } from '../../resources/API';
+import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId, getbookingDates } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
   const { setIsfirst, isFirst, setserviceTitle,
     serviceCat, setServiceCat, campInfo, setCampInfo,
-   setRequestInfoByService } = useContext(SearchContext);
+    setRequestInfoByService, setBookingDates } = useContext(SearchContext);
   const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
   const { userName } = useContext(UsersContext);
 
@@ -47,18 +47,29 @@ const ProviderProfile = props => {
     })
   }
 
+  const getBookingfromApi = () => {
+    getbookingDates({ serviceID: isFirst }).then(res => {
+      if (res.message === 'No Date') {
+        setBookingDates([]);
+      } else {
+        setBookingDates(res);
+      }
+     
+    })
+  }
+
   const getCampignsfromApi = () => {
     getCampaignsByServiceId({ serviceId: isFirst }).then(res => {
-      
-      if(res.message === 'No Campaigns'){
+
+      if (res.message === 'No Campaigns') {
         setCampInfo([]);
-      }else{
+      } else {
         setCampInfo(res);
       }
-      
+
     });
-  }; 
-  
+  };
+
   const getRequestInfo = () => {
     getRequestByServiceId({ ReqServId: isFirst }).then(res => {
       setRequestInfoByService(res)
@@ -69,6 +80,7 @@ const ProviderProfile = props => {
     getRegionsfromApi()
     getCampignsfromApi()
     getRequestInfo()
+    getBookingfromApi()
   }, [isFirst])
 
 
@@ -129,21 +141,21 @@ const ProviderProfile = props => {
       </View>
     );
   };
-  const renderCalender = () => {
+  const renderDueRequestPayment = () => {
     return (
       <View>
         <Pressable
           style={styles.item}
           onPress={() =>
-            props.navigation.navigate(ScreenNames.ProviderCalender)
-          }>
+            props.navigation.navigate(ScreenNames.ProviderDuePayments)}
+        >
           <View>
-            <Text style={styles.basicInfo}>التقويم</Text>
+            <Text style={styles.basicInfo}>دفعات الزبائن المستحقة</Text>
           </View>
           <View style={styles.IconView}>
-            <AntDesign
+            <MaterialIcons
               style={styles.icon}
-              name={'calendar'}
+              name={'payments'}
               color={colors.puprble}
               size={25}
             />
@@ -294,6 +306,7 @@ const ProviderProfile = props => {
         {seprator()}
         <View style={styles.viewSet}>
           {renderPayments()}
+          {renderDueRequestPayment()}
           {renderClients()}
           {renderFeedBack()}
           {campInfo.message !== 'No Campaigns' && renderCampigns()}

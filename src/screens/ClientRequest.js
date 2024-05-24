@@ -21,10 +21,8 @@ const ClientRequest = (props) => {
     const {
         requestedDate,
         resDetail,
-        setResDetail,
-        requestInfo, setRequestInfo,
         eventInfo, setEventInfo,
-        eventTypeInfo, setEventTypeInfo, totalPrice, setTotalPrice } = useContext(SearchContext);
+        eventTypeInfo, totalPrice, setTotalPrice } = useContext(SearchContext);
 
 
     const [date, setDate] = useState(new Date());
@@ -45,6 +43,7 @@ const ClientRequest = (props) => {
     const [evTiltleId, setEvTiltleId] = useState()
     const [EVENTID, setEVENTID] = useState()
     const [updatedEventDate, setUpdatedEventDate] = useState()
+    
 
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
@@ -129,6 +128,7 @@ const ClientRequest = (props) => {
             Cost: totalPrice,
             ReqServId: data?.service_id,
             ReqUserId: userId,
+            ReqEventTypeId: evTiltleId,
             reservationDetail: resDetail,
         }
 
@@ -251,11 +251,7 @@ const ClientRequest = (props) => {
     }
 
     // Event Section
-    const getEventsType = () => {
-        getEventList({}).then(res => {
-            setEventTypeInfo(res)
-        })
-    }
+   
     const getEventTypeInfo = () => {
         const eventList = []
         eventTypeInfo.forEach(element => {
@@ -268,7 +264,7 @@ const ClientRequest = (props) => {
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
         const eventTypeId = eventTypeInfo[eventTypeIndex].Id
         setEventTypeId(eventTypeId)
-    }
+    } 
     const onModalCancelPress = () => {
         setShowModal(false)
     }

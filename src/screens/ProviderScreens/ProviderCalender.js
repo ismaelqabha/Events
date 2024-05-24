@@ -7,14 +7,15 @@ import SearchContext from '../../../store/SearchContext';
 import { colors } from '../../assets/AppColors';
 import UsersContext from '../../../store/UsersContext';
 import { ScreenNames } from '../../../route/ScreenNames';
+import { getbookingDates } from '../../resources/API';
 
 const ProviderCalender = (props) => {
-    const { serviceTitle, requestInfoByService } = useContext(SearchContext);
+    const {  requestInfoByService } = useContext(SearchContext);
     const { } = useContext(UsersContext);
     const [client, setClient] = useState(null)
+   
 
     const [mutibleReservation, setMutibleReservation] = useState(true)
-
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -22,7 +23,9 @@ const ProviderCalender = (props) => {
 
     useEffect(() => {
         setClient('بحث الزبائن')
+        
     }, [])
+
 
 
     const getBookingInfo = () => {
@@ -70,7 +73,7 @@ const ProviderCalender = (props) => {
             </View>
         )
     }
-  
+
     return (
         <View style={styles.container}>
             <View style={styles.title}>
@@ -82,7 +85,7 @@ const ProviderCalender = (props) => {
                         color={"black"}
                         size={25} />
                 </Pressable>
-                
+
                 <Text style={styles.txt}>تقويم الحجوزات</Text>
             </View>
 

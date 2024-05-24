@@ -10,16 +10,15 @@ import { ScreenNames } from '../../route/ScreenNames';
 import UsersContext from '../../store/UsersContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { updateUserData } from '../resources/API';
+import { images } from '../assets/photos/images';
 
 const ClientProfile = (props) => {
     const { userInfo, setUserInfo, userId } = useContext(UsersContext);
-    const userData = userInfo.user
+    const userData = userInfo
     
-
-    const [spcialEvents, setSpcialEvents] = useState(userData[0].SpecialDates)
+    const [spcialEvents, setSpcialEvents] = useState(userData.SpecialDates)
 
     const clientReview = true
-    const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
 
     const [showSpecialDMoodal, setShowSpecialDMoodal] = useState(false)
     const [mode, setMode] = useState('date');
@@ -64,7 +63,7 @@ const ClientProfile = (props) => {
         addSpecialDateProcess(data)
     }
     const specialDatesItem = () => {
-        return userData[0].SpecialDates.map(item => {
+        return userData.SpecialDates.map(item => {
             return (
                 <View style={styles.item}>
                     <View><Text style={styles.basicInfo}>{item.eventDate}</Text>
@@ -134,16 +133,19 @@ const ClientProfile = (props) => {
         });
     };
     const updateUserSDates = () =>{
-        const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
+        //const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
         const newData = {
             USER_ID: userId,
             SpecialDates: spcialEvents
         }
         updateUserData(newData).then(res => {
-            const data = userInfo || [];
-            if (selectedUserIndex > -1) {
-                data[selectedUserIndex] = { ...data[selectedUserIndex], ...newData };
-            }
+            var data = userInfo || [];
+            data = { ...data, ...newData };
+
+            // if (selectedUserIndex > -1) {
+            //     data[selectedUserIndex] = { ...data[selectedUserIndex], ...newData };
+            // }
+
             if (res.message === 'Updated Sucessfuly') {
                 setUserInfo([...data])
                 setShowSpecialDMoodal(false)
@@ -198,91 +200,14 @@ const ClientProfile = (props) => {
     }
 
     ///
-    const renderRelations = () => {
+    const renderOldEvents = () => {
         return (<View>
-            <View style={styles.item}>
-                <Pressable>
-                    <Text style={styles.basicInfo}>اضافة علاقة</Text>
-                </Pressable>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"add-to-list"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </View>
-            <View style={styles.item}>
-                <Pressable>
-                    <Text style={styles.basicInfo}>فادي</Text>
-                    <Text style={styles.basicInfoTitle}>صديق</Text>
-                </Pressable>
-                <View style={styles.IconView}>
-                    <AntDesign
-                        style={styles.icon}
-                        name={"adduser"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </View>
-            <View style={styles.item}>
-                <Pressable>
-                    <Text style={styles.basicInfo}>أحمد</Text>
-                    <Text style={styles.basicInfoTitle}>أخ</Text>
-                </Pressable>
-                <View style={styles.IconView}>
-                    <AntDesign
-                        style={styles.icon}
-                        name={"adduser"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </View>
-            <Pressable style={styles.more} onPress={() => props.navigation.navigate(ScreenNames.ClientRelations)}>
-                <Text style={styles.moreTxt}>المزيد...</Text>
-            </Pressable>
-        </View>)
-    }
-    const renderReservation = () => {
-        return (<View>
-            <Pressable style={styles.item}>
-                <View><Text style={styles.basicInfo}>عيد ميلاد أحمد</Text>
-                    <Text style={styles.basicInfoTitle}>عيد ميلاد</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"cake"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </Pressable>
-            <Pressable style={styles.item}>
-                <View><Text style={styles.basicInfo}>ذكرى زواجنا</Text>
-                    <Text style={styles.basicInfoTitle}>عيد زواج</Text>
-                </View>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={styles.icon}
-                        name={"cake"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </Pressable>
-            <Pressable style={styles.more}>
-                <Text style={styles.moreTxt}>المزيد...</Text>
-            </Pressable>
-        </View>)
-    }
-    const renderFavorite = () => {
-        return (<View>
-            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.FileFavorites)}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ClientOldEvents)}>
                 <View>
-                    <Text style={styles.basicInfo}> المفضلة</Text>
+                    <Text style={styles.basicInfo}>المناسبات السابقة</Text>
                 </View>
                 <View style={styles.IconView}>
                     <Fontisto
-                        style={styles.icon}
                         name={"favorite"}
                         color={colors.puprble}
                         size={25} />
@@ -298,7 +223,6 @@ const ClientProfile = (props) => {
                 </View>
                 <View style={styles.IconView}>
                     <MaterialIcons
-                        style={styles.icon}
                         name={"notes"}
                         color={colors.puprble}
                         size={25} />
@@ -306,18 +230,19 @@ const ClientProfile = (props) => {
             </Pressable>
         </View>)
     }
-    const renderPayments = () => {
+    const renderRelations = () => {
         return (<View>
-            <Pressable style={styles.item}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ClientRelations)}>
                 <View>
-                    <Text style={styles.basicInfo}>دفعاتي</Text>
+                    <Text style={styles.basicInfo}>علاقاتي (3)</Text>
                 </View>
                 <View style={styles.IconView}>
-                    <MaterialIcons
+                    <Image style={styles.icon} source={images.realations} />
+                    {/* <MaterialIcons
                         style={styles.icon}
                         name={"payments"}
                         color={colors.puprble}
-                        size={25} />
+                        size={25} /> */}
                 </View>
             </Pressable>
         </View>)
@@ -340,11 +265,27 @@ const ClientProfile = (props) => {
         return (
             <View style={styles.imgView}>
                 <Pressable onPress={() => props.navigation.navigate(ScreenNames.UserProfile)}>
-                    <Text style={styles.userName}>{userData[0].User_name}</Text>
+                    <Text style={styles.userName}>{userData.User_name}</Text>
                 </Pressable>
-                <Image style={styles.profilImg} source={userData[0].UserPhoto ? { uri: userData[0].UserPhoto } : require('../assets/photos/user.png')} />
+                <Image style={styles.profilImg} source={userData.UserPhoto ? { uri: userData.UserPhoto } : require('../assets/photos/user.png')} />
             </View>
         )
+    }
+     const renderDuePayment = () => {
+        return (<View>
+            <Pressable style={styles.item} onPress={() =>
+            props.navigation.navigate(ScreenNames.ClientDuePayments)}>
+                <View>
+                    <Text style={styles.basicInfo}>دفعات الحجوزات المستحقة</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <MaterialIcons
+                        name={"payments"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
+        </View>)
     }
 
     return (
@@ -356,8 +297,10 @@ const ClientProfile = (props) => {
 
                 <Text style={styles.txt}>العمليات</Text>
                 <View style={styles.viewSet}>
-                    {/* {renderFavorite()} */}
-                    {renderPayments()}
+
+                    {renderDuePayment()}
+                    {renderRelations()}
+                    {renderOldEvents()}
                     {renderFeedBack()}
                 </View>
 
@@ -366,15 +309,6 @@ const ClientProfile = (props) => {
                     {renderSpecialEvents()}
                 </View>
 
-                <Text style={styles.txt}>العلاقات (2)</Text>
-                <View style={styles.viewSet}>
-                    {renderRelations()}
-                </View>
-
-                <Text style={styles.txt}>المناسبات السابقة</Text>
-                <View style={styles.viewSet}>
-                    {renderReservation()}
-                </View>
                 <View style={{ height: 110 }}></View>
             </ScrollView>
         </View>
@@ -543,4 +477,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 30,
         marginLeft: 20
       },
+      icon:{
+        width: 30,
+        height: 30
+      }
 })
