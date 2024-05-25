@@ -65,6 +65,10 @@ import ClientDuePayments from "../src/screens/ClientScreens/ClientDuePayments";
 import ClientPayment from "../src/screens/ClientScreens/ClientPayment";
 import ClientOldEvents from "../src/screens/ClientScreens/ClientOldEvents";
 import ClientRelations from "../src/screens/ClientScreens/ClientRelations";
+import RequestDuePaymentsShow from "../src/screens/Payment Screens/RequestDuePaymentsShow";
+import PaymentDetail from "../src/screens/Payment Screens/PaymentDetail";
+import MakePayment from "../src/screens/Payment Screens/MakePayment";
+
 
 
 
@@ -131,6 +135,9 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ClientDuePayments} component={ClientDuePayments} />
                 <Stack.Screen name={ScreenNames.ClientPayment} component={ClientPayment} />
                 <Stack.Screen name={ScreenNames.ClientOldEvents} component={ClientOldEvents} />
+                <Stack.Screen name={ScreenNames.RequestDuePaymentsShow} component={RequestDuePaymentsShow} />
+                <Stack.Screen name={ScreenNames.PaymentDetail} component={PaymentDetail} />
+                <Stack.Screen name={ScreenNames.MakePayment} component={MakePayment} />
                 
                
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />
@@ -153,6 +160,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderShowOffers} component={ProviderShowOffers} />
                 <Stack.Screen name={ScreenNames.ProviderOfferDesc} component={ProviderOfferDesc} />
                 <Stack.Screen name={ScreenNames.ProviderDuePayments} component={ProviderDuePayments} />
+                <Stack.Screen name={ScreenNames.ProviderShowRequest} component={ProviderShowRequest} />
                 
                 
                 <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />

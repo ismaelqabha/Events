@@ -227,6 +227,8 @@ const ContactComp = () => {
             </Pressable>
         )
     }
+
+   
     return (
         <View>
             {renderPhoneField()}
@@ -236,6 +238,7 @@ const ContactComp = () => {
                 {renderAddButton()}
             </View>
             {renderSocialFeilds()}
+           
         </View>
     )
 }

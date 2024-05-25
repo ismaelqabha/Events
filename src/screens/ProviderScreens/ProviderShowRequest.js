@@ -11,6 +11,8 @@ import moment from "moment";
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { updateRequest } from '../../resources/API';
 import { images } from '../../assets/photos/images';
+import NumPaymentDetail from '../../components/numPaymentDetail';
+import PaymentDetailComp from '../../components/PaymentDetailComp';
 
 
 const ProviderShowRequest = (props) => {
@@ -19,6 +21,7 @@ const ProviderShowRequest = (props) => {
     const { reqInfo } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
@@ -207,7 +210,7 @@ const ProviderShowRequest = (props) => {
                 },
                 {
                     text: 'نعم',
-                    onPress: () => accept(),
+                    onPress: () => onAcceptPress(),
                     style: 'destructive', // Use 'destructive' for a red-colored button
                 },
             ],
@@ -232,6 +235,14 @@ const ProviderShowRequest = (props) => {
             { cancelable: false } // Prevent closing the alert by tapping outside
         );
     }
+    const refuse = () => {
+        const newData = {
+            RequestId: reqInfo.requestInfo.RequestId,
+            ReqStatus: 'refuse'
+        }
+        updateInfo(newData)
+        setShowMoreModal(false)
+    }
     const updateInfo = (infoData) => {
         updateRequest(infoData).then(res => {
             if (res.message === 'Updated Sucessfuly') {
@@ -245,22 +256,49 @@ const ProviderShowRequest = (props) => {
             }
         })
     }
+
+
     const accept = () => {
         const newData = {
             RequestId: reqInfo.requestInfo.RequestId,
-            ReqStatus: 'waiting pay'
+            ReqStatus: 'waiting pay',
+            paymentInfo: ''
         }
         updateInfo(newData)
         setShowMoreModal(false)
     }
-    const refuse = () => {
-        const newData = {
-            RequestId: reqInfo.requestInfo.RequestId,
-            ReqStatus: 'refuse'
-        }
-        updateInfo(newData)
+
+
+    //// set the payments Info
+    const renderPaymentDetail = () => {
+        return (
+            <View>
+                <PaymentDetailComp />
+            </View>
+
+        )
+    }
+    const renderModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={showPaymentModal}
+                animationType="slide"
+                onRequestClose={() => setShowPaymentModal(false)}>
+                <View style={styles.centeredPaymentView}>
+                    <View style={styles.detailPaymentModal}>
+
+                        {renderPaymentDetail()}
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+    const onAcceptPress = () => {
+        setShowPaymentModal(true)
         setShowMoreModal(false)
     }
+
 
 
 
@@ -488,6 +526,7 @@ const ProviderShowRequest = (props) => {
 
                 {renderfinalCost()}
                 {moreModal()}
+                {renderModal()}
             </ScrollView>
         </View>
     )
@@ -582,6 +621,19 @@ const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    detailPaymentModal: {
+        width: '100%',
+        height: '70%',
+        backgroundColor: '#ffffff',
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
+    },
+    centeredPaymentView: {
+        flex: 1,
+        justifyContent: 'flex-end',
         alignItems: 'center',
         backgroundColor: '#00000099',
     },

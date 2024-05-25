@@ -5,8 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Fontisto from "react-native-vector-icons/Fontisto"
-import { ScreenNames } from '../../route/ScreenNames';
+
 import moment from "moment";
+import { ScreenNames } from '../../route/ScreenNames';
 
 
 const BookingCard = (props) => {
@@ -16,7 +17,11 @@ const BookingCard = (props) => {
     const navigation = useNavigation();
     const data = { ...props }
 
-   
+    //console.log(reqInfo.services);
+    const requestCost = reqInfo.Cost
+    const paymentDetail = reqInfo.reqPayments
+    const serviceName = reqInfo.services
+
     const today = moment(new Date(), "YYYY-MM-DD")
     const day = today.format('D')
     const month = today.format('M')
@@ -111,22 +116,6 @@ const BookingCard = (props) => {
             </View >
         )
     }
-
-    const renderDuePaySingleReq = () => {
-        return (
-            <View style={styles.dueCard}>
-
-                <Text style={styles.itemTxt}>1000</Text>
-                <View style={{alignItems:'center'}}>
-                    {renderServTitle()}
-                    <Text style={styles.itemTxt}>{props.reservationDetail[0].reservationDate}</Text>
-                </View>
-
-                {renderDueScreenLogo()}
-            </View>
-        )
-    }
-
     /// Multible Requests
     const renderMultiRequests = (stutesType) => {
         return props.reservationDetail.map(item => {
@@ -157,16 +146,54 @@ const BookingCard = (props) => {
     }
 
 
+    const renderDuePaySingleReq = () => {
+        return (
+            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, {serviceName,requestCost,paymentDetail})}>
+                <Text style={styles.itemTxt}>1000</Text>
+                <View style={{ alignItems: 'center' }}>
+                    {renderServTitle()}
+                    <Text style={styles.itemTxt}>{props.reservationDetail[0].reservationDate}</Text>
+                </View>
+
+                {renderDueScreenLogo()}
+            </Pressable>
+        )
+    }
+    const renderDuePayMultiReq = () => {
+        const reservationLength = props.reservationDetail.length
+        var label = ''
+        if (reservationLength === 2) {
+            label = 'حجز ليومين'
+        }
+        if (reservationLength > 2) {
+            label = { 'أيام': reservationLength }
+        }
+        return (
+            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, {requestCost,paymentDetail})}>
+                <Text style={styles.itemTxt}>1000</Text>
+                <View style={{ alignItems: 'center' }}>
+                    {renderServTitle()}
+                    <Text style={styles.itemTxt}>{label}</Text>
+                </View>
+                {renderDueScreenLogo()}
+            </Pressable>
+        )
+    }
+
     const renderReqInfo = () => {
         let stutesType = ''
         if (props.reservationDetail.length > 1) {
 
             if (fromclientDuePayment) {
+                var resDaysCount = 0
                 return props.reservationDetail.map(item => {
                     if (props.ReqStatus === 'partally paid' && item.reservationDate < todayDate) {
+                        resDaysCount++
+                    }
+                    if (props.reservationDetail.length === resDaysCount) {
                         return (
                             <View>
-                                {renderDuePaySingleReq()}
+                                {renderDuePayMultiReq()}
                             </View>
                         )
                     }

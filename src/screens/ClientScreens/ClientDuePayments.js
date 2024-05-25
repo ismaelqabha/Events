@@ -59,7 +59,8 @@ const ClientDuePayments = (props) => {
             return <BookingCard {...item.requestInfo}
             services={item?.serviceData}
             images={item?.serviceImage}
-            relatedCamp={item?.serviceCamp}
+            reqPayments={item?.payments}
+            // relatedCamp={item?.serviceCamp}
             fromclientDuePayment={fromclientDuePayment}
              />
         })
