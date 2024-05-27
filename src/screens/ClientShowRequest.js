@@ -43,7 +43,7 @@ const ClientShowRequest = (props) => {
     const eventDatesArr = reqInfo.eventData.eventDate
 
 
-   
+
 
     const getSerDetail = (id) => {
         const serviceData = reqInfo.services[0].additionalServices.filter(element => {
@@ -105,10 +105,10 @@ const ClientShowRequest = (props) => {
                     // console.log(">>>current req>>>>", reqInfo.reservationDetail);
 
                     if (allreq.requestInfo.reservationDetail.length > 1) {
-                         return allreq.requestInfo.reservationDetail.find(morethanOne => {
+                        return allreq.requestInfo.reservationDetail.find(morethanOne => {
                             // console.log(morethanOne.reservationDate, item.reservationDate, morethanOne.reservationDate.includes(item.reservationDate));
                             return morethanOne.reservationDate.includes(item.reservationDate)
-                         })
+                        })
                     } else {
                         // console.log(allreq.requestInfo.reservationDetail[0].reservationDate, item.reservationDate, allreq.requestInfo.reservationDetail[0].reservationDate.includes(item.reservationDate));
                         return allreq.requestInfo.reservationDetail[0].reservationDate.includes(item.reservationDate)
@@ -152,7 +152,7 @@ const ClientShowRequest = (props) => {
     const updateEventData = () => {
 
         checkEventDateHasMoreThanOneReq()
-       
+
         const lastTotal = reqInfo.eventData.eventCost - reqInfo.Cost
 
         const editEventItem = {
@@ -532,6 +532,34 @@ const ClientShowRequest = (props) => {
             )
         })
     }
+    const isRequestWaitingPayForPaymentInfo = (item) => {
+        if (reqInfo.paymentInfo.length > 0) {
+            return (<View>
+                <Text style={styles.labelText}>تفاصيل الدفعات</Text>
+                <View style={styles.ContentView}>{renderPaymentInfo(item)}</View>
+            </View>)
+        }
+    }
+    const renderPaymentInfo = () => {
+        return reqInfo.paymentInfo.map(item => {
+            return (
+                <View >
+                    <View style={styles.dateview}>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',width: '80%'}}>
+                            <Text style={styles.dateTxt}>{item.PayDate}</Text>
+                            <Text style={styles.dateTxt}>{item.pers}</Text>
+                        </View>
+                        <View style={styles.IconView}>
+                            <AntDesign
+                                name={"checkcircle"}
+                                color={colors.puprble}
+                                size={20} />
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+    }
 
 
     const renderMultibleDatesRequest = () => {
@@ -579,6 +607,8 @@ const ClientShowRequest = (props) => {
                     setShowDetailRecipt={setShowDetailRecipt}
                     data={reqInfo.services}
                 />
+
+                {isRequestWaitingPayForPaymentInfo()}
                 {moreModal()}
             </ScrollView>
         </View>

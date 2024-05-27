@@ -32,6 +32,7 @@ const ClientBook = (props) => {
             services={item?.serviceData}
             images={item?.serviceImage}
             relatedCamp={item?.serviceCamp} 
+            realPayments={item?.payments}
             eventData={data} />
         })
     }

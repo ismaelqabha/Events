@@ -112,6 +112,15 @@ const BookingCard = (props) => {
                             {renderPrice(props.Cost)}
                         </View>
                     </Pressable>
+
+                    {stutesType !== 'بأنتظار الرد' &&
+                        <View>
+                            {stutesType !== 'غير متاح' &&
+                                <Pressable style={styles.paymentButton} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { reqInfo })}>
+                                    <Text style={styles.itemTxt}>تفاصيل الدفعات</Text>
+                                </Pressable>}
+                        </View>}
+
                 </View >
             </View >
         )
@@ -139,6 +148,13 @@ const BookingCard = (props) => {
                                 </View>
                             </Pressable>
                         </View>
+                        {stutesType !== 'بأنتظار الرد' &&
+                        <View>
+                            {stutesType !== 'غير متاح' &&
+                                <Pressable style={styles.paymentButton}>
+                                    <Text style={styles.itemTxt}>تفاصيل الدفعات</Text>
+                                </Pressable>}
+                        </View>}
                     </View>
                 </View>
             )
@@ -148,7 +164,7 @@ const BookingCard = (props) => {
 
     const renderDuePaySingleReq = () => {
         return (
-            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, {serviceName,requestCost,paymentDetail})}>
+            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { serviceName, requestCost, paymentDetail })}>
                 <Text style={styles.itemTxt}>1000</Text>
                 <View style={{ alignItems: 'center' }}>
                     {renderServTitle()}
@@ -169,7 +185,7 @@ const BookingCard = (props) => {
             label = { 'أيام': reservationLength }
         }
         return (
-            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, {requestCost,paymentDetail})}>
+            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { requestCost, paymentDetail })}>
                 <Text style={styles.itemTxt}>1000</Text>
                 <View style={{ alignItems: 'center' }}>
                     {renderServTitle()}
@@ -312,17 +328,16 @@ const styles = StyleSheet.create({
         height: 300,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        margin: 2,
-        marginTop: 20,
+        marginVertical: 25,
     },
     infoView: {
         width: '100%',
-        height: 130,
+        height: 160,
         backgroundColor: 'white',
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        position: 'absolute',
-        bottom: 0,
+        // position: 'absolute',
+        // bottom: 0,
         elevation: 5,
     },
     titleText: {
@@ -363,7 +378,7 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
     detailView: {
-        marginTop: 10,
+        marginTop: 4,
         flexDirection: 'row',
         alignItems: 'center',
         width: '95%',
@@ -391,6 +406,17 @@ const styles = StyleSheet.create({
         marginTop: 15,
 
     },
+    paymentButton: {
+        width: '40%',
+        height: 30,
+        borderWidth: 0.5,
+        marginLeft: 5,
+        alignSelf: 'flex-start',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor:colors.puprble,
+        borderRadius: 5
+    }
 })
 
 export default BookingCard;

@@ -1,18 +1,19 @@
-import { StyleSheet, Text, View, Pressable, TextInput, ScrollView,ToastAndroid } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, ToastAndroid } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react'
 import FontAwesome from "react-native-vector-icons/FontAwesome"
 import Entypo from "react-native-vector-icons/Entypo"
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { colors } from '../assets/AppColors';
 import { updateRequest } from '../resources/API';
+import SearchContext from '../../store/SearchContext';
 
 
-const PaymentDetailComp = () => {
-
+const PaymentDetailComp = (props) => {
+    const {setRequestInfoByService } = useContext(SearchContext);
     const [paymentDataArray, setPaymentDataArray] = useState([])
+    const { reqInfo, setShowPaymentModal } = props
 
-
-
+ 
 
     const updateData = () => {
         const newData = {
@@ -29,6 +30,7 @@ const PaymentDetailComp = () => {
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                 );
+                setShowPaymentModal(false)
             }
         })
     }
@@ -172,10 +174,10 @@ const PaymentDetailComp = () => {
     }
 
     const renderSaveButton = () => {
-        return(
-            <Pressable style={styles.footer} //onPress={updateData} 
+        return (
+            <Pressable style={styles.footer} onPress={updateData}
             >
-                <Text>حفظ</Text>
+                <Text style={styles.text}>حفظ</Text>
             </Pressable>
         )
     }
@@ -263,11 +265,11 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 18,
     },
-    footer:{
+    footer: {
         borderWidth: 1,
         borderColor: colors.puprble,
         width: '50%',
-        height:50,
+        height: 50,
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',

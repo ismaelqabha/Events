@@ -6,7 +6,7 @@ import moment from "moment";
 import { colors } from '../../assets/AppColors';
 
 const PaymentDetail = (props) => {
-    const { paymentDetail, serviceName } = props.route?.params || {}
+    const { payments, serviceTitle } = props.route?.params || {}
 
     const onBackHandler = () => {
         props.navigation.goBack();
@@ -32,7 +32,7 @@ const PaymentDetail = (props) => {
         return (
             <View style={styles.itemRow}>
                 <View style={styles.item}>
-                    <Text style={styles.text}>{serviceName[0].title}</Text>
+                    <Text style={styles.text}>{serviceTitle}</Text>
                 </View>
                 <View style={styles.largeLabelView}>
                     <Text style={{ fontSize: 18 }}>دُفع لأمر</Text>
@@ -46,7 +46,7 @@ const PaymentDetail = (props) => {
             <View>
                 <View style={styles.itemRow}>
                     <View style={styles.item}>
-                        <Text style={styles.text}>{paymentDetail[0].PaymentAmount}</Text>
+                        <Text style={styles.text}>{payments[0].PaymentAmount}</Text>
                     </View>
                     <View style={styles.smallLabelView}>
                         <Text style={{ fontSize: 18 }}>المبلغ</Text>
@@ -55,7 +55,7 @@ const PaymentDetail = (props) => {
                 </View>
                 <View style={styles.itemRow}>
                     <View style={styles.item}>
-                        <Text style={styles.text}>{paymentDetail[0].PaymentDate}</Text>
+                        <Text style={styles.text}>{payments[0].PaymentDate}</Text>
                     </View>
                     <View style={styles.smallLabelView}>
                         <Text style={{ fontSize: 18 }}>التاريخ</Text>
@@ -65,7 +65,7 @@ const PaymentDetail = (props) => {
 
                 <View style={styles.itemRow}>
                     <View style={styles.item}>
-                        <Text style={styles.text}>{paymentDetail[0].PaymentMethod}</Text>
+                        <Text style={styles.text}>{payments[0].PaymentMethod}</Text>
                     </View>
                     <View style={styles.largeLabelView}>
                         <Text style={{ fontSize: 18 }}>طريقه الدفع </Text>

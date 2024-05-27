@@ -11,9 +11,20 @@ import { ScreenNames } from "../../../route/ScreenNames.js"
 
 
 const RequestDuePaymentsShow = (props) => {
-    const { requestCost, paymentDetail, serviceName } = props.route?.params || {}
-    
-console.log(">>>", serviceName);
+    const { reqInfo } = props.route?.params || {}
+
+    const ReqPrice = reqInfo.Cost
+    const ReqPaymentInfo = reqInfo.paymentInfo
+    const serviceTitle = reqInfo.services[0].title
+    const payments = reqInfo.realPayments
+   
+
+    const today = moment(new Date(), "YYYY-MM-DD")
+    const day = today.format('D')
+    const month = today.format('M')
+    const year = today.format('YYYY')
+    const todayDate = year + '-' + month + '-' + day
+
     const onBackHandler = () => {
         props.navigation.goBack();
     }
@@ -29,25 +40,53 @@ console.log(">>>", serviceName);
                         size={20} />
 
                 </Pressable>
-                <Text style={styles.headerTxt}>المبلغ المستحق</Text>
+                <Text style={styles.headerTxt}>تفاصيل الدفعات</Text>
             </View>
         )
     }
 
-    const calculateRestPrice = () => {
-        var paymentSum = 0
-        paymentDetail.forEach(element => {
-            paymentSum = paymentSum + element.PaymentAmount
-        });
-        const totalPay = paymentSum
-        const restPrice = requestCost - totalPay
-        return restPrice
+    const filterPaymentInfo = () => {
+        return ReqPaymentInfo.filter(item => {
+            return item.PayDate < todayDate
+        })
     }
 
-    const renderPayments = () => {
-        return paymentDetail.map(item => {
+    const renderPaymentInfo = () => {
+        const data = filterPaymentInfo()
+        return data.map(item => {
             return (
-                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.PaymentDetail , { paymentDetail:paymentDetail , serviceName:serviceName})}>
+                <Pressable style={styles.paymentView} //onPress={() => props.navigation.navigate(ScreenNames.PaymentDetail, { paymentDetail: paymentDetail, serviceName: serviceName })}
+                >
+                    <Text style={styles.paymentTxt}>{moment(item.PayDate).format('L')}</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        <Text style={styles.paymentTxt}>{item.pers}</Text>
+                        <View style={styles.IconView}>
+                            <MaterialIcons
+                                name={"payments"}
+                                color={colors.puprble}
+                                size={25} />
+                        </View>
+                    </View>
+                </Pressable>
+            )
+        })
+    }
+
+    // const calculateRestPrice = () => {
+    //     var paymentSum = 0
+    //     paymentDetail.forEach(element => {
+    //         paymentSum = paymentSum + element.PaymentAmount
+    //     });
+    //     const totalPay = paymentSum
+    //     const restPrice = requestCost - totalPay
+    //     return restPrice
+    // }
+
+    const renderPayments = () => {
+        return payments.map(item => {
+            return (
+                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.PaymentDetail, { payments: payments, serviceTitle: serviceTitle })}
+                >
                     <Text style={styles.paymentTxt}>{moment(item.PaymentDate).format('L')}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
                         <Text style={styles.paymentTxt}>{item.PaymentAmount}</Text>
@@ -75,23 +114,28 @@ console.log(">>>", serviceName);
 
     }, [])
 
-    const renderRestPrice = () => {
-        const result = calculateRestPrice()
-        return (
-            <View style={styles.priceView}>
-                <Text style={styles.priceTxt}>{'₪' + result}</Text>
-            </View>
-        )
-    }
+    // const renderRestPrice = () => {
+    //     const result = calculateRestPrice()
+    //     return (
+    //         <View style={styles.priceView}>
+    //             <Text style={styles.priceTxt}>{'₪' + result}</Text>
+    //         </View>
+    //     )
+    // }
     return (
         <View style={styles.container}>
             {header()}
+            
             {/* <ScrollView> */}
-            {renderRestPrice()}
-            <View style={{ height: '60%' }}>
-                <Text style={styles.paymentTxt}>الدفعات السابقة</Text>
+            <View style={{ height: 300 }}>
+                <Text style={styles.paymentTxt}>الدفعات الغير مدفوعة</Text>
+                {renderPaymentInfo()}
+            </View>
+           
+            <View style={{ height: 200 }}>
+                <Text style={styles.paymentTxt}>الدفعات المدفوعة</Text>
                 {renderPayments()}
-                {renderPaymentButton()}
+                {/* {renderPaymentButton()} */}
             </View>
 
             {/* </ScrollView> */}

@@ -11,7 +11,7 @@ import moment from "moment";
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { updateRequest } from '../../resources/API';
 import { images } from '../../assets/photos/images';
-import NumPaymentDetail from '../../components/numPaymentDetail';
+
 import PaymentDetailComp from '../../components/PaymentDetailComp';
 
 
@@ -273,7 +273,7 @@ const ProviderShowRequest = (props) => {
     const renderPaymentDetail = () => {
         return (
             <View>
-                <PaymentDetailComp />
+                <PaymentDetailComp reqInfo={reqInfo} setShowPaymentModal={setShowPaymentModal}/>
             </View>
 
         )
