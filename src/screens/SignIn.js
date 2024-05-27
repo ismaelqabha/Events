@@ -9,19 +9,20 @@ import { getUserData, signIn } from '../resources/API';
 import UsersContext from '../../store/UsersContext';
 import { asyncFunctions, showMessage } from '../resources/Functions';
 import { emailVerification, passwordRegex } from '../resources/Regex';
+import GoogleSignInButton from '../components/Login/GoogleSignInButton';
 
 
 const SignIn = (props) => {
     //const { userId,setuserId, } = useContext(SearchContext);
-        const {
-            setuserId,userId,
-            userEmail,
-            password,
-            setPassword,
-            setUserEmail,
-            userInfo,
-            setUserInfo,
-            setUserName } = useContext(UsersContext);
+    const {
+        setuserId, userId,
+        userEmail,
+        password,
+        setPassword,
+        setUserEmail,
+        userInfo,
+        setUserInfo,
+        setUserName } = useContext(UsersContext);
 
 
     const logUser = () => {
@@ -41,7 +42,7 @@ const SignIn = (props) => {
 
                         // Fetch user info and navigate to next screen
                         getUserInfo();
-                        props.navigation.navigate(ScreenNames.Splash, {signIn:true});
+                        props.navigation.navigate(ScreenNames.Splash, { signIn: true });
                     })
                     .catch(error => {
                         showMessage('Failed to save user info: ' + error.message);
@@ -71,12 +72,12 @@ const SignIn = (props) => {
             showMessage("Enter a valid email");
             return;
         }
-    
+
         if (!password || !password.trim() || !passwordRegex.test(password)) {
             showMessage("Enter a valid password");
             return;
         }
-    
+
         logUser();
     };
     const onSignupPress = () => {
@@ -90,7 +91,7 @@ const SignIn = (props) => {
         return UserArray;
     };
 
-    const onForgotPassword=()=>{
+    const onForgotPassword = () => {
         props.navigation.navigate(ScreenNames.ForgotPassword);
     }
 
@@ -122,20 +123,14 @@ const SignIn = (props) => {
                 </Pressable>
             </View>
 
-            <Pressable  onPress={() => onForgotPassword()}>
+            <Pressable onPress={() => onForgotPassword()}>
                 <Text>هل نسيت كلمة المرور؟</Text>
             </Pressable>
             <Text style={styles.or}>أو</Text>
             <Text style={styles.txt}>سجل من خلال</Text>
 
             <View style={styles.logInView}>
-                <Pressable style={styles.facebookbtn} onPress={() => onEnterPress()}>
-                    <AntDesign
-                        name={"google"}
-                        color={"white"}
-                        size={15} />
-                    <Text style={styles.facetxtُ}>Google</Text>
-                </Pressable>
+                <GoogleSignInButton />
                 <Pressable style={styles.facebookbtn}>
                     <EvilIcons
                         name={"sc-facebook"}
