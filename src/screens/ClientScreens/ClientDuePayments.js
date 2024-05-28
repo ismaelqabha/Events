@@ -9,6 +9,7 @@ import moment from "moment";
 import BookingCard from '../../components/BookingCard'
 import UsersContext from '../../../store/UsersContext'
 import { showMessage } from '../../resources/Functions'
+import { ScreenNames } from '../../../route/ScreenNames'
 
 const ClientDuePayments = (props) => {
     const { requestInfoAccUser } = useContext(SearchContext);
@@ -69,18 +70,18 @@ const ClientDuePayments = (props) => {
     const filterRequestAccordingPayment = () => {
         const reqData = queryRequest()
         const filterdData = reqData.filter(item => {
-            console.log(item.requestInfo.paymentInfo.length);
+           // console.log(item.requestInfo.paymentInfo.length);
             if (item.requestInfo.paymentInfo.length > 1) {
                 return item.requestInfo.paymentInfo.filter(element => {
-                    console.log(element.PayDate, todayDate, element.PayDate < todayDate);
-                    return element.PayDate < todayDate
+                   // console.log(element.paymentStutes === 'not paid', element.PayDate, todayDate, element.PayDate <= todayDate);
+                    return element.paymentStutes === 'not paid' && element.PayDate <= todayDate
                 })
             } else {
-                return item.requestInfo.paymentInfo[0].PayDate < todayDate
+                return item.requestInfo.paymentInfo[0].paymentStutes === 'not paid' && item.requestInfo.paymentInfo[0].PayDate <= todayDate
             }
         })
 
-        console.log(filterdData);
+       // console.log("><><><" ,filterdData);
 
         return filterdData
     }
@@ -89,7 +90,10 @@ const ClientDuePayments = (props) => {
         const reqData = filterRequestAccordingPayment()
 
         return reqData.map(item => {
+
             return item.requestInfo.paymentInfo.map(elem => {
+                const amount = elem.pers
+                const reqID = item.requestInfo.RequestId
                 return (
                     <View style={styles.paymentItem}>
                         <View style={styles.titleView}>
@@ -124,7 +128,7 @@ const ClientDuePayments = (props) => {
                                 />
                             </View>
                         </View>
-                        <Pressable style={styles.payButton}>
+                        <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment,  {amount: amount, reqID: reqID})}>
                             <Text>دفع</Text>
                         </Pressable>
                     </View>

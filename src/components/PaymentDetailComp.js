@@ -9,11 +9,11 @@ import SearchContext from '../../store/SearchContext';
 
 
 const PaymentDetailComp = (props) => {
-    const {setRequestInfoByService } = useContext(SearchContext);
+    const { setRequestInfoByService } = useContext(SearchContext);
     const [paymentDataArray, setPaymentDataArray] = useState([])
     const { reqInfo, setShowPaymentModal } = props
 
- 
+
 
     const updateData = () => {
         const newData = {
@@ -22,7 +22,8 @@ const PaymentDetailComp = (props) => {
             paymentInfo: paymentDataArray
         }
         updateRequest(newData).then(res => {
-            if (res.message === 'Updated Sucessfuly') {
+            //console.log("res.message", res.message);
+            if (res.message == "Updated Sucessfuly") {
                 setRequestInfoByService([...newData])
 
                 ToastAndroid.showWithGravity(
@@ -100,6 +101,7 @@ const PaymentDetailComp = (props) => {
             const data = {
                 PayDate: fDate,
                 pers: persentage,
+                paymentStutes: 'not paid'
             }
             updateArray(data, index)
 
@@ -162,6 +164,7 @@ const PaymentDetailComp = (props) => {
                             const data = {
                                 PayDate: paymentDate,
                                 pers: persentage,
+                                paymentStutes: 'not paid'
                             }
                             updateArray(data, index)
                         }}
@@ -181,15 +184,23 @@ const PaymentDetailComp = (props) => {
             </Pressable>
         )
     }
+    const seperator = () => {
+        return (
+            <View style={{ borderBottomWidth: 1, borderColor: colors.silver, marginTop: 10 }}></View>
+        )
+    }
 
     return (
         <View style={styles.comp}>
-            <Text style={styles.text}>تحديد عدد الدفعات </Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between',alignItems: 'center' }}>
+                {renderSaveButton()}
+                <Text style={styles.text}>تحديد عدد الدفعات </Text>
+            </View>
+            {seperator()}
             {renderAddButton()}
 
             <ScrollView>
                 {renderPaymentFeilds()}
-                {renderSaveButton()}
             </ScrollView>
 
         </View>
@@ -207,7 +218,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-end',
-        marginTop: 10
+        marginTop: 20
     },
     IconView: {
         width: 40,
@@ -264,13 +275,13 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 18,
+        color: colors.puprble
     },
     footer: {
         borderWidth: 1,
         borderColor: colors.puprble,
-        width: '50%',
-        height: 50,
-        alignSelf: 'center',
+        width: 60,
+        height: 30,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 8

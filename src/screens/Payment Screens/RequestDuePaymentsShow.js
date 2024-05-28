@@ -47,7 +47,7 @@ const RequestDuePaymentsShow = (props) => {
 
     const filterPaymentInfo = () => {
         return ReqPaymentInfo.filter(item => {
-            return item.PayDate < todayDate
+            return item.paymentStutes === 'not paid'
         })
     }
 
@@ -55,7 +55,7 @@ const RequestDuePaymentsShow = (props) => {
         const data = filterPaymentInfo()
         return data.map(item => {
             return (
-                <Pressable style={styles.paymentView} //onPress={() => props.navigation.navigate(ScreenNames.PaymentDetail, { paymentDetail: paymentDetail, serviceName: serviceName })}
+                <Pressable style={styles.paymentView} //onPress={() => props.navigation.navigate(ScreenNames.MakePayment)}
                 >
                     <Text style={styles.paymentTxt}>{moment(item.PayDate).format('L')}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>

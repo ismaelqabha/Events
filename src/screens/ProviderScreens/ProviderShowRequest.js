@@ -258,16 +258,6 @@ const ProviderShowRequest = (props) => {
     }
 
 
-    const accept = () => {
-        const newData = {
-            RequestId: reqInfo.requestInfo.RequestId,
-            ReqStatus: 'waiting pay',
-            paymentInfo: ''
-        }
-        updateInfo(newData)
-        setShowMoreModal(false)
-    }
-
 
     //// set the payments Info
     const renderPaymentDetail = () => {
@@ -626,7 +616,7 @@ const styles = StyleSheet.create({
     },
     detailPaymentModal: {
         width: '100%',
-        height: '70%',
+        height: '80%',
         backgroundColor: '#ffffff',
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
