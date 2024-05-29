@@ -6,14 +6,17 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { colors } from '../assets/AppColors';
 import { updateRequest } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const PaymentDetailComp = (props) => {
+    
     const { setRequestInfoByService } = useContext(SearchContext);
     const [paymentDataArray, setPaymentDataArray] = useState([])
     const { reqInfo, setShowPaymentModal } = props
 
-
+    var payId = uuidv4();
 
     const updateData = () => {
         const newData = {
@@ -83,7 +86,7 @@ const PaymentDetailComp = (props) => {
         const [paymentDate, setPaymentDate] = useState(null)
         const [persentage, setPersentage] = useState(null)
 
-
+        
         const index = props.index
 
         const [date, setDate] = useState(new Date());
@@ -99,6 +102,7 @@ const PaymentDetailComp = (props) => {
             let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
 
             const data = {
+                id : payId,
                 PayDate: fDate,
                 pers: persentage,
                 paymentStutes: 'not paid'
@@ -162,6 +166,7 @@ const PaymentDetailComp = (props) => {
                         onChangeText={(val) => setPersentage(val)}
                         onEndEditing={() => {
                             const data = {
+                                id : payId,
                                 PayDate: paymentDate,
                                 pers: persentage,
                                 paymentStutes: 'not paid'

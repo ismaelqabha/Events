@@ -7,12 +7,14 @@ import { colors } from "../../assets/AppColors.js"
 import { ScreenNames } from "../../../route/ScreenNames.js"
 import { BorderRightOutlined } from '@ant-design/icons';
 import UsersContext from '../../../store/UsersContext.js';
-import { createNewPayment } from '../../resources/API.js';
+import { createNewPayment, updateRequest } from '../../resources/API.js';
+import SearchContext from '../../../store/SearchContext.js';
 
 
 const MakePayment = (props) => {
-  const { amount, reqID } = props.route?.params || {}
+  const { reqInfo, amount, fromclientDuePayment, fromReqDuePaymentShow, ID } = props.route?.params || {}
   const { userId } = useContext(UsersContext);
+  const { setRequestInfoByService } = useContext(SearchContext);
 
 
   const [cardHolderName, setCardHolderName] = useState()
@@ -22,6 +24,12 @@ const MakePayment = (props) => {
   const [paymentDate, setPaymentDate] = useState(new Date())
 
   const [paymentInfo, setPaymentInfo] = useState([])
+  const [reqPayments, setReqPayment] = useState([])
+
+
+  var reqID = ''
+  var reqPayment = ''
+  var realPayments = ''
 
   const today = moment(new Date(), "YYYY-MM-DD")
   const day = today.format('D')
@@ -47,6 +55,27 @@ const MakePayment = (props) => {
         <Text style={styles.headerTxt}> اِجراء دفعة</Text>
       </View>
     )
+  }
+
+  useEffect(() => {
+    checkSource()
+  }, [])
+
+
+  const checkSource = () => {
+
+    if (fromclientDuePayment) {
+      reqID = reqInfo[0].requestInfo.RequestId
+      reqPayment = reqInfo[0].requestInfo.paymentInfo
+      realPayments = reqInfo[0].payments
+      setReqPayment(reqInfo[0].requestInfo.paymentInfo)
+    }
+    if (fromReqDuePaymentShow) {
+      reqID = reqInfo.RequestId
+      reqPayment = reqInfo.paymentInfo
+      realPayments = reqInfo.realPayments
+      setReqPayment(reqInfo.paymentInfo)
+    }
   }
 
   const renderPayAmount = () => {
@@ -114,23 +143,55 @@ const MakePayment = (props) => {
       'تأكيد',
       'هل انت متأكد من اتمام عملية الدفع ؟ ',
       [
-          {
-              text: 'لا',
-              style: 'cancel',
-          },
-          {
-              text: 'نعم',
-              onPress: () => createPayment(),
-              style: 'destructive', // Use 'destructive' for a red-colored button
-          },
+        {
+          text: 'لا',
+          style: 'cancel',
+        },
+        {
+          text: 'نعم',
+          onPress: () => makePayment(),
+          style: 'destructive', // Use 'destructive' for a red-colored button
+        },
       ],
       { cancelable: false } // Prevent closing the alert by tapping outside
-  );
+    );
   }
 
-  const createPayment = () => {
+  const makePayment = () => {
+    console.log("realPayments.length", realPayments.length);
+    if (realPayments.length === 0) {
+      /// there is now any payments for this request
+      console.log("reqID", reqInfo.RequestId);
+      
+      const reqPayIndex = reqPayments.findIndex(elme => elme.id === ID)
+      const reqPay = reqPayments
+      if (reqPayIndex > -1) {
+        reqPay[reqPayIndex].paymentStutes = 'paid'
+      }
+      setReqPayment(reqPay[reqPayIndex]);
+      console.log("reqPayments", reqPayments,ID,  reqPayIndex);
+
+      const newRequestData = {
+        RequestId: reqID,
+        ReqStatus: 'partally paid',
+        paymentInfo: reqPayments
+      }
+      createPayment(newRequestData)
+    }
+    if (realPayments.length >= 1) {
+      /// if the client pay one time at the least for this request
+      const newRequestData = {
+        RequestId: reqID,
+        paymentInfo: reqPayments
+      }
+      createPayment(newRequestData)
+    }
+
+  }
+
+  const createPayment = (newRequestData) => {
     const addNewPayment = {
-      ReqId: reqID,
+      ReqId: reqInfo.RequestId,
       PaymentAmount: amount,
       PaymentDate: moment(paymentDate).format('YYYY-MM-DD, h:mm a'),
       userPay: userId,
@@ -157,10 +218,35 @@ const MakePayment = (props) => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         );
-       // props.navigation.navigate(ScreenNames.ProviderProfile);
+        updateRequestInfo(newRequestData)
+        // props.navigation.navigate(ScreenNames.ProviderProfile);
       } else {
         ToastAndroid.showWithGravity(
           'there has been an error' + res.message,
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+    })
+  }
+
+
+  const updateRequestInfo = (newwData) => {
+   
+
+    // const newRequestData = {
+    //   RequestId: reqID,
+    //   ReqStatus: 'partally paid',
+    //   paymentInfo: reqPayments
+    // }
+
+    updateRequest(newwData).then(res => {
+      console.log("res.message>>>", res.message);
+      if (res.message === 'Updated Sucessfuly') {
+        setRequestInfoByService([...newwData])
+
+        ToastAndroid.showWithGravity(
+          'تم التعديل بنجاح',
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         );

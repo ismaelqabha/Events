@@ -12,12 +12,14 @@ import { ScreenNames } from "../../../route/ScreenNames.js"
 
 const RequestDuePaymentsShow = (props) => {
     const { reqInfo } = props.route?.params || {}
-
+    const [fromReqDuePaymentShow, setFromReqDuePaymentShow] = useState(true)
+   
     const ReqPrice = reqInfo.Cost
     const ReqPaymentInfo = reqInfo.paymentInfo
     const serviceTitle = reqInfo.services[0].title
     const payments = reqInfo.realPayments
-   
+    const reqID = reqInfo.RequestId
+
 
     const today = moment(new Date(), "YYYY-MM-DD")
     const day = today.format('D')
@@ -54,12 +56,14 @@ const RequestDuePaymentsShow = (props) => {
     const renderPaymentInfo = () => {
         const data = filterPaymentInfo()
         return data.map(item => {
+            const amount = calculatePersentage(item.pers)
+            const ID = item.id
             return (
-                <Pressable style={styles.paymentView} //onPress={() => props.navigation.navigate(ScreenNames.MakePayment)}
+                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, {amount: amount, reqInfo: reqInfo, fromReqDuePaymentShow: fromReqDuePaymentShow, ID: ID })}
                 >
                     <Text style={styles.paymentTxt}>{moment(item.PayDate).format('L')}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
-                        <Text style={styles.paymentTxt}>{item.pers}</Text>
+                        <Text style={styles.paymentTxt}>{amount}</Text>
                         <View style={styles.IconView}>
                             <MaterialIcons
                                 name={"payments"}
@@ -70,6 +74,13 @@ const RequestDuePaymentsShow = (props) => {
                 </Pressable>
             )
         })
+    }
+
+    const calculatePersentage = (persentage) => {
+        const fact = ReqPrice * persentage
+        const realAmount = fact / 100
+
+        return realAmount
     }
 
     // const calculateRestPrice = () => {
@@ -87,7 +98,7 @@ const RequestDuePaymentsShow = (props) => {
             return (
                 <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.PaymentDetail, { payments: payments, serviceTitle: serviceTitle })}
                 >
-                    <Text style={styles.paymentTxt}>{moment(item.PaymentDate).format('L')}</Text>
+                    <Text style={styles.paymentTxt}>{item.PaymentDate}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
                         <Text style={styles.paymentTxt}>{item.PaymentAmount}</Text>
                         <View style={styles.IconView}>
@@ -125,13 +136,13 @@ const RequestDuePaymentsShow = (props) => {
     return (
         <View style={styles.container}>
             {header()}
-            
+
             {/* <ScrollView> */}
             <View style={{ height: 300 }}>
                 <Text style={styles.paymentTxt}>الدفعات الغير مدفوعة</Text>
                 {renderPaymentInfo()}
             </View>
-           
+
             <View style={{ height: 200 }}>
                 <Text style={styles.paymentTxt}>الدفعات المدفوعة</Text>
                 {renderPayments()}

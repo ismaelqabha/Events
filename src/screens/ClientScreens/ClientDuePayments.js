@@ -69,31 +69,40 @@ const ClientDuePayments = (props) => {
 
     const filterRequestAccordingPayment = () => {
         const reqData = queryRequest()
+        //
         const filterdData = reqData.filter(item => {
            // console.log(item.requestInfo.paymentInfo.length);
             if (item.requestInfo.paymentInfo.length > 1) {
-                return item.requestInfo.paymentInfo.filter(element => {
-                   // console.log(element.paymentStutes === 'not paid', element.PayDate, todayDate, element.PayDate <= todayDate);
+                return item.requestInfo.paymentInfo.find(element => {
+                    console.log(element.paymentStutes === 'not paid' , element.PayDate, todayDate, element.PayDate <= todayDate);
                     return element.paymentStutes === 'not paid' && element.PayDate <= todayDate
                 })
             } else {
+                //console.log(item.requestInfo.paymentInfo[0].paymentStutes , item.requestInfo.paymentInfo[0].PayDate , '<=', todayDate);
                 return item.requestInfo.paymentInfo[0].paymentStutes === 'not paid' && item.requestInfo.paymentInfo[0].PayDate <= todayDate
             }
         })
 
-       // console.log("><><><" ,filterdData);
+        //console.log("><><><" ,filterdData[0].requestInfo.paymentInfo);
 
         return filterdData
+    }
+    const calculatePersentage = (ReqPrice,persentage) => {
+        const fact = ReqPrice * persentage
+        const realAmount = fact / 100
+
+        return realAmount
     }
 
     const renderPayments = () => {
         const reqData = filterRequestAccordingPayment()
-
+       
         return reqData.map(item => {
 
             return item.requestInfo.paymentInfo.map(elem => {
-                const amount = elem.pers
-                const reqID = item.requestInfo.RequestId
+                const amount = calculatePersentage(item.requestInfo.Cost, elem.pers)
+                const ID = elem.id
+            
                 return (
                     <View style={styles.paymentItem}>
                         <View style={styles.titleView}>
@@ -102,7 +111,7 @@ const ClientDuePayments = (props) => {
 
                         <View style={styles.item}>
                             <View>
-                                <Text style={styles.txtValue}>{elem.pers}</Text>
+                                <Text style={styles.txtValue}>{amount}</Text>
                                 <Text>قيمة الدفعة</Text>
                             </View>
                             <View style={styles.IconView}>
@@ -128,7 +137,7 @@ const ClientDuePayments = (props) => {
                                 />
                             </View>
                         </View>
-                        <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment,  {amount: amount, reqID: reqID})}>
+                        <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment,  {reqInfo: reqData, fromclientDuePayment: fromclientDuePayment, ID: ID, amount: amount})}>
                             <Text>دفع</Text>
                         </Pressable>
                     </View>

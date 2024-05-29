@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import {   Payment } from '../src/resources/data';
 import SearchContext from '../store/SearchContext';
 
 
@@ -63,7 +62,7 @@ const SearchProvider = props => {
 
   //Booking
 
-  const [userPayment, setUserPayment] = useState(Payment || [])
+  const [userPayment, setUserPayment] = useState([])
   const [serviceImg, setserviceImg] = useState([])
   const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
