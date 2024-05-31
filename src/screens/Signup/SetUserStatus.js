@@ -1,6 +1,6 @@
 
 import { StyleSheet, Text, View, Pressable, TextInput, ScrollView } from 'react-native'
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { colors } from '../../assets/AppColors'
 import Entypo from "react-native-vector-icons/Entypo";
 import { AppStyles } from '../../assets/res/AppStyles';
@@ -98,21 +98,22 @@ const SetUserStatus = (props) => {
     return fields
   }
 
+  const removeEvent = (index) => {
+    console.log("index ", index);
+    const newArray = [...userSpecialDate];
+    newArray.splice(index, 1);
+    setUserSpecialDate(newArray);
+  };
 
-  const updateSpecialEventArray = (data) => {
-    var i = userSpecialDate.findIndex((val) => val.specialEventTitle === data.specialEventTitle || val.specialEventDate === data.specialEventDate)
-    if (i == -1) {
-      var temp = userSpecialDate.findIndex((val) => val.empty === "empty")
-      var newArr = userSpecialDate
-      newArr[temp] = data
-      setUserSpecialDate(newArr)
-    } else {
-      var current = userSpecialDate
-      current[i] = data
-      setUserSpecialDate(current)
-    }
-    console.log("updated -> ", userSpecialDate);
-  }
+
+  const updateSpecialEventArray = (data, index) => {
+    setUserSpecialDate(prevArray => {
+      const newArray = [...prevArray];
+      newArray[index] = data;
+      console.log("new Special events ", newArray);
+      return newArray;
+    });
+  };
 
   const renderUserSpecialDates = (props) => {
     return (<View>
@@ -132,12 +133,20 @@ const SetUserStatus = (props) => {
     </View>)
   }
 
-  const EventItemComponent = () => {
+  const EventItemComponent = (props) => {
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
     const [date, setDate] = useState(new Date());
     const [eventTitle, setEventTitle] = useState(null);
     const [eventDate, setEventDate] = useState('DD/MM/YYYY');
+
+
+    useEffect(() => {
+      if (props?.val && !props?.val?.empty) {
+        setEventDate(props?.val?.specialEventDate)
+        setEventTitle(props?.val?.specialEventTitle)
+      }
+    }, [])
 
 
     const onChange = (event, selectedDate) => {
@@ -154,31 +163,35 @@ const SetUserStatus = (props) => {
       setShow(true);
       setMode(currentMode);
     }
-    const onSetEventDate = (evTitle, evDate) => {
+    const onSetEventDate = (evTitle, evDate, index) => {
       showMode('date')
       const data = {
         specialEventTitle: evTitle,
         specialEventDate: evDate,
       }
-      updateSpecialEventArray(data)
+      updateSpecialEventArray(data, index)
     }
     return (
-      <View style={styles.eventItem}>
+      <View key={props?.index} style={styles.eventItem}>
+        <Pressable style={styles.trash} onPress={() => removeEvent(props?.index)}>
+          <Entypo name='trash' size={20} />
+        </Pressable>
         <TextInput
           style={styles.input}
           keyboardType='default'
           placeholder='أسم المناسبة '
           value={eventTitle}
           onChangeText={(val) => setEventTitle(val)}
-          onSubmitEditing={(val) => {
+          onEndEditing={(event) => {
+            const text = event.nativeEvent.text
             const data = {
-              specialEventTitle: eventTitle,
               specialEventDate: eventDate,
+              specialEventTitle: text,
             }
-            updateSpecialEventArray(data)
+            updateSpecialEventArray(data, props?.index)
           }}
         />
-        <Pressable onPress={() => onSetEventDate(eventTitle, eventDate)}>
+        <Pressable onPress={() => onSetEventDate(eventTitle, eventDate, props?.index)}>
           <View style={styles.Bdate}>
             <Text >{eventDate}</Text>
             <Entypo
@@ -213,7 +226,7 @@ const SetUserStatus = (props) => {
           {renderUserSpecialDates()}
 
           <View style={styles.eventScroll}>
-            <ScrollView>
+            <ScrollView nestedScrollEnabled={true}>
               {renderEventItems()}
             </ScrollView>
           </View>
@@ -228,6 +241,11 @@ export default SetUserStatus
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  trash: {
+    marginTop: 10,
+    alignSelf: 'flex-start',
+    marginLeft: 15,
   },
   head: {
     marginVertical: 20,
