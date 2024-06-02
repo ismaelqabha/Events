@@ -9,13 +9,22 @@ import { BorderRightOutlined } from '@ant-design/icons';
 import UsersContext from '../../../store/UsersContext.js';
 import { createNewPayment, updateRequest } from '../../resources/API.js';
 import SearchContext from '../../../store/SearchContext.js';
+import { color } from '@rneui/base';
 
 
 const MakePayment = (props) => {
-  const { reqInfo, amount, fromclientDuePayment, fromReqDuePaymentShow, ID } = props.route?.params || {}
+  const { reqInfo, amount, fromclientDuePayment, fromProviderDuePay, fromReqDuePaymentShow, ID } = props.route?.params || {}
   const { userId } = useContext(UsersContext);
-  const { setRequestInfoByService } = useContext(SearchContext);
+  const {setRequestInfoAccUser, requestInfoAccUser } = useContext(SearchContext);
 
+
+  // console.log("requestInfoAccUser", requestInfoAccUser);
+  // console.log("payments", requestInfoAccUser[0].payments);
+  // console.log("reqInfo", reqInfo.RequestId);
+
+
+
+  const [paymentMethod, setpaymentMethod] = useState('Credit Card')
 
   const [cardHolderName, setCardHolderName] = useState()
   const [cardHolderID, setCardHolderID] = useState()
@@ -24,18 +33,17 @@ const MakePayment = (props) => {
   const [paymentDate, setPaymentDate] = useState(new Date())
 
   const [paymentInfo, setPaymentInfo] = useState([])
-  const [reqPayments, setReqPayment] = useState([])
+  const [reqPayments, setReqPayments] = useState([])
+
+  const [reqID, setReqID] = useState()
+  const [reqPayment, setReqPayment] = useState()
+  const [realPayments, setRealPayments] = useState()
+
+  const [creditCard, setCreditCard] = useState(false)
+  const [cash, setCash] = useState(false)
+  const [checks, setChecks] = useState(false)
 
 
-  var reqID = ''
-  var reqPayment = ''
-  var realPayments = ''
-
-  const today = moment(new Date(), "YYYY-MM-DD")
-  const day = today.format('D')
-  const month = today.format('M')
-  const year = today.format('YYYY')
-  const todayDate = year + '-' + month + '-' + day
 
   const onBackHandler = () => {
     props.navigation.goBack();
@@ -61,20 +69,45 @@ const MakePayment = (props) => {
     checkSource()
   }, [])
 
+  const creditCardPress = () => {
+    setCreditCard(true)
+    setCash(false)
+    setChecks(false)
+    setpaymentMethod('Credit Card')
+    renderCreditCardInfo()
+  }
+  const cashPress = () => {
+    setCreditCard(false)
+    setCash(true)
+    setChecks(false)
+    setpaymentMethod('Cash')
+  }
+  const checksPress = () => {
+    setCreditCard(false)
+    setCash(false)
+    setChecks(true)
+    setpaymentMethod('Checks')
+  }
 
   const checkSource = () => {
 
-    if (fromclientDuePayment) {
-      reqID = reqInfo[0].requestInfo.RequestId
-      reqPayment = reqInfo[0].requestInfo.paymentInfo
-      realPayments = reqInfo[0].payments
+    if (fromclientDuePayment || fromProviderDuePay) {
+      setReqID(reqInfo[0].requestInfo.RequestId)
       setReqPayment(reqInfo[0].requestInfo.paymentInfo)
+      setRealPayments(reqInfo[0].payments)
+      setReqPayments(reqInfo[0].requestInfo.paymentInfo)
     }
     if (fromReqDuePaymentShow) {
-      reqID = reqInfo.RequestId
-      reqPayment = reqInfo.paymentInfo
-      realPayments = reqInfo.realPayments
+      setReqID(reqInfo.RequestId)
       setReqPayment(reqInfo.paymentInfo)
+      setRealPayments(reqInfo.realPayments)
+      setReqPayments(reqInfo.paymentInfo)
+    }
+    if (fromProviderDuePay) {
+      setReqID(reqInfo[0].requestInfo.RequestId)
+      setReqPayment(reqInfo[0].requestInfo.paymentInfo)
+      setRealPayments(reqInfo[0].userPayments)
+      setReqPayments(reqInfo[0].requestInfo.paymentInfo)
     }
   }
 
@@ -85,7 +118,6 @@ const MakePayment = (props) => {
       </View>
     )
   }
-
   const renderCreditCardInfo = () => {
     return (
       <View>
@@ -129,13 +161,97 @@ const MakePayment = (props) => {
       </View>
     )
   }
+  const renderChecksInfo = () => {
+    return (
+      <View>
+        <View style={styles.creditItem}>
+          <Text style={styles.labelText}>اسم صاحب البطاقة</Text>
+          <TextInput style={styles.input}
+            keyboardType={'default'}
+            value={cardHolderName}
+            onChangeText={setCardHolderName}
+          />
+        </View>
 
+        <View style={styles.creditItem}>
+          <Text style={styles.labelText}>رقم هوية صاحب البطاقة</Text>
+          <TextInput style={styles.input}
+            keyboardType={'default'}
+            value={cardHolderID}
+            onChangeText={setCardHolderID}
+          />
+        </View>
+
+        <View style={styles.creditItem}>
+          <Text style={styles.labelText}>رقم البطاقة</Text>
+          <TextInput style={styles.input}
+            keyboardType={'default'}
+            value={cardHolderNumber}
+            onChangeText={setCardHolderNumber}
+          />
+        </View>
+
+        <View style={styles.creditItem}>
+          <Text style={styles.labelText}>رمز التحقق CVV</Text>
+          <TextInput style={styles.input}
+            keyboardType={'default'}
+            value={cardHolderCVV}
+            onChangeText={setCardHolderCVV}
+          />
+        </View>
+
+
+      </View>
+    )
+  }
   const renderPayButton = () => {
     return (
       <Pressable style={styles.payView} onPress={onPaymentPress}>
         <Text style={styles.buttonText}>تحرير الدفعة</Text>
       </Pressable>
     )
+  }
+  const creatPaymentProviderSide = () => {
+    return (
+      <View>
+        <Text style={styles.titleMethodText}>طريقة الدفع</Text>
+        <View style={styles.payMethodView}>
+          <Pressable style={[styles.methodItem, cash ? styles.methodItemPress : styles.methodItem]} onPress={cashPress}>
+            <Text style={styles.methodText}>كاش</Text>
+          </Pressable>
+          <Pressable style={[styles.methodItem, checks ? styles.methodItemPress : styles.methodItem]} onPress={checksPress}>
+            <Text style={styles.methodText}>شيكات</Text>
+          </Pressable>
+          <Pressable style={[styles.methodItem, creditCard ? styles.methodItemPress : styles.methodItem]} onPress={creditCardPress}>
+            <Text style={styles.methodText}>بطاقة ائتمان</Text>
+          </Pressable>
+        </View>
+      </View>
+    )
+  }
+
+
+  //// functions for create payment
+  const selectPayment = () => {
+    if (paymentMethod === 'Cash') {
+      console.log(paymentMethod);
+      payCashInfo()
+    }
+    if (paymentMethod === 'Checks') {
+      payChecks()
+    }
+    if (paymentMethod === 'Credit Card') {
+      payCreditCard()
+    }
+  }
+  const payCashInfo = () => {
+    makePayment(paymentMethod)
+  }
+  const payCreditCard = () => {
+    makePayment(paymentMethod)
+  }
+  const payChecks = () => {
+    makePayment(paymentMethod)
   }
 
   const onPaymentPress = () => {
@@ -149,53 +265,57 @@ const MakePayment = (props) => {
         },
         {
           text: 'نعم',
-          onPress: () => makePayment(),
+          onPress: () => selectPayment(),
           style: 'destructive', // Use 'destructive' for a red-colored button
         },
       ],
       { cancelable: false } // Prevent closing the alert by tapping outside
     );
   }
+  const makePayment = (method) => {
 
-  const makePayment = () => {
-    console.log("realPayments.length", realPayments.length);
-    if (realPayments.length === 0) {
-      /// there is now any payments for this request
-      console.log("reqID", reqInfo.RequestId);
-      
-      const reqPayIndex = reqPayments.findIndex(elme => elme.id === ID)
-      const reqPay = reqPayments
-      if (reqPayIndex > -1) {
-        reqPay[reqPayIndex].paymentStutes = 'paid'
-      }
-      setReqPayment(reqPay[reqPayIndex]);
-      console.log("reqPayments", reqPayments,ID,  reqPayIndex);
+    const reqPayIndex = reqPayments.findIndex(elme => elme.id === ID)
+    const reqPay = reqPayments
+    if (reqPayIndex > -1) {
+      reqPay[reqPayIndex].paymentStutes = 'paid'
+    }
+    setReqPayments(reqPay[reqPayIndex]);
 
+
+    if (realPayments.length === 0) { /// there is now any payments for this request
       const newRequestData = {
         RequestId: reqID,
-        ReqStatus: 'partally paid',
+        ReqStatus: 'partially paid',
         paymentInfo: reqPayments
       }
-      createPayment(newRequestData)
-    }
-    if (realPayments.length >= 1) {
-      /// if the client pay one time at the least for this request
-      const newRequestData = {
-        RequestId: reqID,
-        paymentInfo: reqPayments
-      }
-      createPayment(newRequestData)
+      createPayment(newRequestData, method)
     }
 
+    if (realPayments.length >= 1) {  /// if the client pay one time at the least for this request
+
+      if (realPayments.length + 1 === reqPayment.length) {  /// if the client pay the last payment for this request
+        const newRequestData = {
+          RequestId: reqID,
+          ReqStatus: 'paid all',
+          paymentInfo: reqPayments
+        }
+        createPayment(newRequestData, method)
+      } else {
+        const newRequestData = {
+          RequestId: reqID,
+          paymentInfo: reqPayments
+        }
+        createPayment(newRequestData, method)
+      }
+    }
   }
-
-  const createPayment = (newRequestData) => {
+  const createPayment = (newRequestData, method) => {
     const addNewPayment = {
-      ReqId: reqInfo.RequestId,
+      ReqId: reqID,
       PaymentAmount: amount,
       PaymentDate: moment(paymentDate).format('YYYY-MM-DD, h:mm a'),
       userPay: userId,
-      PaymentMethod: 'Credit Card',
+      PaymentMethod: method,
       discountPercentage: 0,
       cardHolderName: cardHolderName,
       cardHolderId: cardHolderID,
@@ -209,7 +329,6 @@ const MakePayment = (props) => {
       let fund = paymentInfo || [];
       setPaymentInfo([...fund])
 
-      console.log("res.message", res.message);
       if (res.message === 'Payment Created') {
 
         fund.push(addNewPayment);
@@ -229,21 +348,25 @@ const MakePayment = (props) => {
       }
     })
   }
-
-
+  /// update request info 
   const updateRequestInfo = (newwData) => {
-   
+    const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqInfo.RequestId)
+    const lastPayments = requestInfoAccUser[requestInfoAccUserIndex].payments
 
-    // const newRequestData = {
-    //   RequestId: reqID,
-    //   ReqStatus: 'partally paid',
-    //   paymentInfo: reqPayments
-    // }
+    // console.log("lastPayments", lastPayments);
+    // console.log("paymentInfo", paymentInfo);
 
+    
     updateRequest(newwData).then(res => {
-      console.log("res.message>>>", res.message);
-      if (res.message === 'Updated Sucessfuly') {
-        setRequestInfoByService([...newwData])
+      if (res.message == 'Updated Sucessfuly') {
+
+        const data = requestInfoAccUser || [];
+        if (requestInfoAccUserIndex > -1) {
+          data[requestInfoAccUserIndex].payments = {...lastPayments, ...paymentInfo}
+
+          data[requestInfoAccUserIndex] = { ...data[requestInfoAccUserIndex], ...newwData };
+        }
+        setRequestInfoAccUser([...data])
 
         ToastAndroid.showWithGravity(
           'تم التعديل بنجاح',
@@ -252,15 +375,18 @@ const MakePayment = (props) => {
         );
       }
     })
+   
   }
 
-  /// update request info 
+
 
   return (
     <View style={styles.container}>
       {header()}
       {renderPayAmount()}
-      {renderCreditCardInfo()}
+
+      {fromProviderDuePay ? creatPaymentProviderSide() : renderCreditCardInfo()}
+
       {renderPayButton()}
     </View>
   )
@@ -271,7 +397,6 @@ export default MakePayment
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
   },
   header: {
     alignItems: 'center',
@@ -330,8 +455,50 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: colors.puprble,
     borderRadius: 5,
+    marginTop: 100
     // position: 'absolute',
     // bottom: 5
+  },
+  payMethodView: {
+    width: '90%',
+    height: 100,
+    //borderWidth: 1,
+    alignSelf: 'center',
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  methodItem: {
+    marginVertical: 5,
+    width: '31%',
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.gold,
+    borderRadius: 10,
+    elevation: 5
+  },
+  methodItemPress: {
+    marginVertical: 5,
+    width: '31%',
+    height: 100,
+    borderWidth: 3,
+    borderColor: colors.puprble,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.gold,
+    borderRadius: 10,
+    elevation: 5
+  },
+  titleMethodText: {
+    fontSize: 18,
+    color: colors.puprble,
+    margin: 20
+  },
+  methodText: {
+    fontSize: 18,
+    color: colors.puprble
   }
 
 })

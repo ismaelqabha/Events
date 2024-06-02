@@ -36,11 +36,11 @@ const ProviderWaitingReply = () => {
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
 
-  const today = moment(new Date(), "YYYY-MM-DD")
-  const day = today.format('D')
-  const month = today.format('M')
-  const year = today.format('YYYY')
-  const todayDate = year + '-' + month + '-' + day
+  // const today = moment(new Date(), "YYYY-MM-DD")
+  // const day = today.format('D')
+  // const month = today.format('M')
+  // const year = today.format('YYYY')
+  // const todayDate = year + '-' + month + '-' + day
 
 
   const allRequestingDates = []
@@ -108,29 +108,38 @@ const ProviderWaitingReply = () => {
     setUseSpacificDateToSearch(false)
   }, [])
 
-  const checkDate = (d) => {
-    const resDate = moment(d, "YYYY-MM-DD")
+  // const checkDate = (d) => {
+  //   const resDate = moment(d, "YYYY-MM-DD")
 
-    const Day = resDate.format('D')
-    const Month = resDate.format('M')
-    const Year = resDate.format('YYYY')
+  //   const Day = resDate.format('D')
+  //   const Month = resDate.format('M')
+  //   const Year = resDate.format('YYYY')
 
-    // console.log(Year, '>=', year, Year >= year, Month, '>=', month, Month >= month);
-    if (Year >= year && Month >= month) {
-      if (Year == year && Month == month) {
+  //   // console.log(Year, '>=', year, Year >= year, Month, '>=', month, Month >= month);
+  //   if (Year >= year && Month >= month) {
+  //     if (Year == year && Month == month) {
 
-        if (Day > day) {
-          return true
-        } else {
-          return false
-        }
-      } else {
-        return true
-      }
-    } else {
-      return false
-    }
-  }
+  //       if (Day > day) {
+  //         return true
+  //       } else {
+  //         return false
+  //       }
+  //     } else {
+  //       return true
+  //     }
+  //   } else {
+  //     return false
+  //   }
+  // }
+
+  var BookDate
+  var todayDate = new Date();
+
+  todayDate.setHours(0);
+  todayDate.setMinutes(0);
+  todayDate.setSeconds(0);
+  todayDate.setMilliseconds(0);
+
 
 
 
@@ -151,14 +160,16 @@ const ProviderWaitingReply = () => {
       if (item.requestInfo.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         let result = item.requestInfo.reservationDetail.find(multiItem => {
-          return checkDate(multiItem.reservationDate)
+          BookDate = new Date(multiItem.reservationDate)
+          return BookDate > todayDate
         })
         return result
 
       } else {
 
         //if reservation detail has one date
-        return checkDate(item.requestInfo.reservationDetail[0].reservationDate)
+        BookDate = new Date(item.requestInfo.reservationDetail[0].reservationDate)
+        return BookDate > todayDate
       }
     })
     return reqInfo

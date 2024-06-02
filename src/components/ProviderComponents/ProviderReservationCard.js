@@ -11,7 +11,6 @@ import moment from "moment";
 
 const ProviderReservationCard = (props) => {
     const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen,fromProviderPartallyPaid, resDate } = props
-    const { } = useContext(UsersContext);
     const { eventTypeInfo } = useContext(SearchContext);
     const navigation = useNavigation();
     const reqInfo = { ...props }
@@ -285,14 +284,14 @@ const ProviderReservationCard = (props) => {
                 </View>
             )
         }
-        if (fromProviderPartallyPaid) {
-            return (
-                <View style={styles.dueCard1}>
-                    {renderRequestAmounts()}
-                    {renderClientInfo()}
-                </View>
-            )
-        }
+        // if (fromProviderPartallyPaid) {
+        //     return (
+        //         <View style={styles.dueCard1}>
+        //             {renderRequestAmounts()}
+        //             {renderClientInfo()}
+        //         </View>
+        //     )
+        // }
     }
 
 

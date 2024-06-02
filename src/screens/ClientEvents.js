@@ -17,6 +17,7 @@ import { colors } from '../assets/AppColors';
 const ClientEvents = (props) => {
     const { isFromAddEventClick, data } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [fileEventName, setfileEventName] = useState();
     const { userId } = useContext(UsersContext);
     const { eventInfo, setEventInfo, eventTypeInfo, setRequestInfoAccUser } = useContext(SearchContext);
@@ -252,7 +253,7 @@ const ClientEvents = (props) => {
         return eventInfo || [];
     }
     const renderCard = ({ item }) => {
-        return <EventsCard  {...item}  eventEditing={eventEditing} />;
+        return <EventsCard  {...item}  eventEditing={eventEditing} setIsRefreshing={setIsRefreshing} />;
     };
 
     return (
@@ -263,6 +264,7 @@ const ClientEvents = (props) => {
                 data={query()}
                 renderItem={renderCard}
                 numColumns={1}
+                refreshing={isRefreshing}
             />
             {createEventModal()}
 

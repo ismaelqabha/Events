@@ -18,10 +18,33 @@ import PaymentDetailComp from '../../components/PaymentDetailComp';
 const ProviderShowRequest = (props) => {
     const { isFirst, campInfo, setRequestInfoByService } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
-    const { reqInfo } = props.route?.params || {}
+    const { reqInfo ,fromProviderDuePay} = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+    // const [requestingDate , setRequestingDate] = useState()
+    // const [requestingDetail , setRequestingDetail] = useState([])
+    // const [requestingCost , setRequestingCost] = useState()
+    
+    // const [singleRequestingDetail , setsingleRequestingDetail] = useState([])
+
+    // console.log(fromProviderDuePay);
+
+
+    // if(fromProviderDuePay){
+    //     setRequestingDate(reqInfo[0].requestInfo.ReqDate)
+    //     setRequestingDetail(reqInfo[0].requestInfo.reservationDetail)
+    //     setRequestingCost(reqInfo[0].requestInfo.Cost)
+       
+    //     // setsingleRequestingDetail(reqInfo[0].requestInfo.reservationDetail)
+    // }else{
+    //     setRequestingDate(reqInfo.requestInfo.ReqDate)
+    //     setRequestingDetail(reqInfo.requestInfo.reservationDetail)
+    //     setRequestingCost(reqInfo.requestInfo.Cost)
+        
+    //     // setsingleRequestingDetail(reqInfo.requestInfo.reservationDetail[0])
+    // }
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {

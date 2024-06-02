@@ -6,26 +6,16 @@ import moment from "moment";
 import { colors } from "../../assets/AppColors.js"
 import { ScreenNames } from "../../../route/ScreenNames.js"
 
-
-
-
-
 const RequestDuePaymentsShow = (props) => {
     const { reqInfo } = props.route?.params || {}
     const [fromReqDuePaymentShow, setFromReqDuePaymentShow] = useState(true)
-   
+
     const ReqPrice = reqInfo.Cost
     const ReqPaymentInfo = reqInfo.paymentInfo
     const serviceTitle = reqInfo.services[0].title
     const payments = reqInfo.realPayments
-    const reqID = reqInfo.RequestId
-
-
-    const today = moment(new Date(), "YYYY-MM-DD")
-    const day = today.format('D')
-    const month = today.format('M')
-    const year = today.format('YYYY')
-    const todayDate = year + '-' + month + '-' + day
+    console.log(ReqPaymentInfo);
+    console.log(payments);
 
     const onBackHandler = () => {
         props.navigation.goBack();
@@ -59,7 +49,7 @@ const RequestDuePaymentsShow = (props) => {
             const amount = calculatePersentage(item.pers)
             const ID = item.id
             return (
-                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, {amount: amount, reqInfo: reqInfo, fromReqDuePaymentShow: fromReqDuePaymentShow, ID: ID })}
+                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { amount: amount, reqInfo: reqInfo, fromReqDuePaymentShow: fromReqDuePaymentShow, ID: ID })}
                 >
                     <Text style={styles.paymentTxt}>{moment(item.PayDate).format('L')}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -125,31 +115,23 @@ const RequestDuePaymentsShow = (props) => {
 
     }, [])
 
-    // const renderRestPrice = () => {
-    //     const result = calculateRestPrice()
-    //     return (
-    //         <View style={styles.priceView}>
-    //             <Text style={styles.priceTxt}>{'₪' + result}</Text>
-    //         </View>
-    //     )
-    // }
     return (
         <View style={styles.container}>
             {header()}
 
-            {/* <ScrollView> */}
+            <ScrollView>
             <View style={{ height: 300 }}>
                 <Text style={styles.paymentTxt}>الدفعات الغير مدفوعة</Text>
                 {renderPaymentInfo()}
             </View>
 
-            <View style={{ height: 200 }}>
+            {payments.length > 0 && <View style={{ height: 200 }}>
                 <Text style={styles.paymentTxt}>الدفعات المدفوعة</Text>
                 {renderPayments()}
-                {/* {renderPaymentButton()} */}
-            </View>
+            </View>}
 
-            {/* </ScrollView> */}
+
+            </ScrollView>
         </View>
     )
 }
@@ -172,22 +154,7 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
-    priceView: {
-        alignSelf: 'center',
-        width: '70%',
-        height: 200,
-        backgroundColor: colors.silver,
-        borderRadius: 25,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginVertical: 20,
-        borderWidth: 1,
-        borderColor: colors.darkGold,
-    },
-    priceTxt: {
-        fontSize: 45,
-        color: colors.darkGold
-    },
+
     paymentView: {
         flexDirection: 'row',
         alignItems: 'center',

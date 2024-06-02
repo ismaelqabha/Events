@@ -4,25 +4,17 @@ import { colors } from '../../assets/AppColors'
 import AntDesign from "react-native-vector-icons/AntDesign"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import SearchContext from '../../../store/SearchContext'
-import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from "moment";
 import BookingCard from '../../components/BookingCard'
-import UsersContext from '../../../store/UsersContext'
 import { showMessage } from '../../resources/Functions'
 import { ScreenNames } from '../../../route/ScreenNames'
 
 const ClientDuePayments = (props) => {
     const { requestInfoAccUser } = useContext(SearchContext);
-    const { } = useContext(UsersContext);
     const [fromclientDuePayment, setFromClientDuePayment] = useState(true)
 
-
-    const today = moment(new Date(), "YYYY-MM-DD")
-    const day = today.format('D')
-    const month = today.format('M')
-    const year = today.format('YYYY')
-    const todayDate = year + '-' + month + '-' + day
-
+    var paymentDate
+    var todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
     const onBackHandler = () => {
         props.navigation.goBack();
     }
@@ -46,9 +38,10 @@ const ClientDuePayments = (props) => {
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
             const clientReq = requestInfoAccUser.filter(item => {
-                return item.requestInfo.ReqStatus === 'partally paid'// && item.requestInfo.reservationDetail[0].reservationDate < todayDate
+                return item.requestInfo.ReqStatus === 'partially paid'
             })
             return clientReq
+
         } else {
             return []
         }
@@ -67,27 +60,30 @@ const ClientDuePayments = (props) => {
         })
     }
 
+
     const filterRequestAccordingPayment = () => {
         const reqData = queryRequest()
-        //
-        const filterdData = reqData.filter(item => {
-           // console.log(item.requestInfo.paymentInfo.length);
-            if (item.requestInfo.paymentInfo.length > 1) {
-                return item.requestInfo.paymentInfo.find(element => {
-                    console.log(element.paymentStutes === 'not paid' , element.PayDate, todayDate, element.PayDate <= todayDate);
-                    return element.paymentStutes === 'not paid' && element.PayDate <= todayDate
-                })
-            } else {
-                //console.log(item.requestInfo.paymentInfo[0].paymentStutes , item.requestInfo.paymentInfo[0].PayDate , '<=', todayDate);
-                return item.requestInfo.paymentInfo[0].paymentStutes === 'not paid' && item.requestInfo.paymentInfo[0].PayDate <= todayDate
-            }
-        })
-
-        //console.log("><><><" ,filterdData[0].requestInfo.paymentInfo);
-
-        return filterdData
+        const filteredData = []
+        for (let index = 0; index < reqData.length; index++) {
+            const element = reqData[index];
+            const allowed = []
+            element.requestInfo.paymentInfo?.map((payment, index) => {
+                paymentDate = new Date(payment.PayDate)
+                paymentDate.setHours(0, 0, 0, 0)
+                if (payment.paymentStutes === 'not paid' && paymentDate <= todayDate) {
+                    allowed.push(payment)
+                }
+                if (index == element.requestInfo.paymentInfo?.length - 1) {
+                    element.requestInfo.paymentInfo = allowed
+                    filteredData.push(element)
+                }
+            })
+        }
+        return filteredData
     }
-    const calculatePersentage = (ReqPrice,persentage) => {
+
+
+    const calculatePersentage = (ReqPrice, persentage) => {
         const fact = ReqPrice * persentage
         const realAmount = fact / 100
 
@@ -96,17 +92,35 @@ const ClientDuePayments = (props) => {
 
     const renderPayments = () => {
         const reqData = filterRequestAccordingPayment()
-       
-        return reqData.map(item => {
+        return reqData?.map(item => {
 
             return item.requestInfo.paymentInfo.map(elem => {
                 const amount = calculatePersentage(item.requestInfo.Cost, elem.pers)
                 const ID = elem.id
-            
+
                 return (
                     <View style={styles.paymentItem}>
                         <View style={styles.titleView}>
                             <Text style={{ fontSize: 20, color: colors.puprble }}>{item.serviceData[0].title}</Text>
+                        </View>
+
+                        <View style={styles.item}>
+                            <View>
+                                {item.requestInfo.reservationDetail.map(resDate => {
+                                    return (
+                                        <Text style={styles.txtValue}>{resDate.reservationDate}</Text>
+                                    )
+                                })}
+                                {item.requestInfo.reservationDetail.length > 1 ? <Text>تواريخ الحجز</Text> : <Text>تاريخ الحجز</Text>}
+                            </View>
+                            <View style={styles.IconView}>
+                                <MaterialIcons
+                                    style={styles.icon}
+                                    name={'date-range'}
+                                    color={colors.puprble}
+                                    size={25}
+                                />
+                            </View>
                         </View>
 
                         <View style={styles.item}>
@@ -126,7 +140,7 @@ const ClientDuePayments = (props) => {
                         <View style={styles.item}>
                             <View>
                                 <Text style={styles.txtValue}>{elem.PayDate}</Text>
-                                <Text>التاريخ </Text>
+                                <Text>تاريخ الدفعة</Text>
                             </View>
                             <View style={styles.IconView}>
                                 <MaterialIcons
@@ -137,9 +151,14 @@ const ClientDuePayments = (props) => {
                                 />
                             </View>
                         </View>
-                        <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment,  {reqInfo: reqData, fromclientDuePayment: fromclientDuePayment, ID: ID, amount: amount})}>
-                            <Text>دفع</Text>
-                        </Pressable>
+                        <View style={{ position: 'absolute', bottom: 10, width: '100%' }}>
+                            {/* <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqData: { ...reqData[0].requestInfo, relatedCamp: { ...reqData[0].serviceCamp }, services: { ...reqData[0].serviceData } }, fromclientDuePayment: fromclientDuePayment })}>
+                                <Text style={styles.pressTxt}>تفاصيل الحجز</Text>
+                            </Pressable> */}
+                            <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { reqInfo: reqData, fromclientDuePayment: fromclientDuePayment, ID: ID, amount: amount })}>
+                                <Text style={styles.pressTxt}>دفع</Text>
+                            </Pressable>
+                        </View>
                     </View>
                 )
             })
@@ -207,7 +226,7 @@ const styles = StyleSheet.create({
         padding: 5,
         borderColor: colors.silver,
         width: '95%',
-        height: 300
+        height: 350
     },
     titleView: {
         alignSelf: 'center',
@@ -219,17 +238,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 5
     },
-    payButton:{
-        width: '50%',
+    payButton: {
         height: 50,
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
         alignSelf: 'center',
-        borderWidth: 1,
+        width: '50%',
+        borderWidth: 3,
         borderColor: colors.puprble,
-        borderRadius: 5,
-        position: 'absolute',
-        bottom: 5
+        borderRadius: 5
+    },
+    pressTxt: {
+        fontSize: 18,
+        color: colors.darkGold
     }
 
 })

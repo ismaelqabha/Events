@@ -225,6 +225,15 @@ const BookingCard = (props) => {
                     )
                 }
             }
+
+            if (props.ReqStatus === 'partially paid') {
+                stutesType = 'محجوز مدفوع جزئي'
+                return (
+                    <View >
+                        {renderMultiRequests(stutesType)}
+                    </View>
+                )
+            }
             if (props.ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
                 return (
@@ -244,6 +253,14 @@ const BookingCard = (props) => {
             }
             if (props.ReqStatus === 'refuse') {
                 stutesType = 'غير متاح'
+                return (
+                    <View>
+                        {renderMultiRequests(stutesType)}
+                    </View>
+                )
+            }
+            if (props.ReqStatus === 'paid all') {
+                stutesType = 'محجوز'
                 return (
                     <View>
                         {renderMultiRequests(stutesType)}
@@ -272,6 +289,14 @@ const BookingCard = (props) => {
                 }
             }
 
+            if (props.ReqStatus === 'partially paid') {
+                stutesType = 'محجوز مدفوع جزئي'
+                return (
+                    <View >
+                        {renderSingleRequest(stutesType)}
+                    </View>
+                )
+            }
             if (props.ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
                 return (
@@ -296,7 +321,15 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            console.log(fromclientDuePayment, props.ReqStatus, props.reservationDetail[0].reservationDate, todayDate);
+            if (props.ReqStatus === 'paid all') {
+                stutesType = 'محجوز'
+                return (
+                    <View>
+                        {renderSingleRequest(stutesType)}
+                    </View>
+                )
+            }
+            // console.log(fromclientDuePayment, props.ReqStatus, props.reservationDetail[0].reservationDate, todayDate);
 
         }
 

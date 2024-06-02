@@ -39,6 +39,7 @@ export const onPublishPress = async (allData) => {
  * @param {Function} setTotalPrice - Function to set the total price.
  */
 export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPrice) => {
+
   let total = 0;
 
 
