@@ -58,8 +58,6 @@ export default function Splash(props) {
                     props.navigation.replace(ScreenNames.SignIn)
                 });
         }
-
-
     }
 
     const getUserInfo = () => {

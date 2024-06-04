@@ -2,13 +2,17 @@ import React, { useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { showMessage } from '../../resources/Functions';
+import { asyncFunctions, showMessage } from '../../resources/Functions';
 import { colors } from '../../assets/AppColors';
+import { useNavigation } from '@react-navigation/native';
+import { ScreenNames } from '../../../route/ScreenNames';
 
-const GoogleSignInButton = ({ navigation }) => {
+const GoogleSignInButton = (props) => {
+
+
     useEffect(() => {
         GoogleSignin.configure({
-            webClientId: '789188949169-felcr8e51sn1rgr0auoc1b00b0k7b5fl.apps.googleusercontent.com',
+            webClientId: '789188949169-djr193kf3io9steeo3u90cle8ennp5po.apps.googleusercontent.com',
             offlineAccess: true,
             forceCodeForRefreshToken: true,
         });
@@ -19,8 +23,8 @@ const GoogleSignInButton = ({ navigation }) => {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
             showMessage('تم تسجيل الدخول بنجاح');
-            console.log('User Info:', userInfo);
-            navigation.replace('drawr');
+            await asyncFunctions.setItem('googleUserInfo', JSON.stringify(userInfo));
+            props.nav.navigate(ScreenNames.Splash, { signIn: true });
         } catch (error) {
             console.error('Error signing in with Google:', error);
             showMessage('حدث خطأ أثناء تسجيل الدخول');

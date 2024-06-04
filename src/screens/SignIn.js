@@ -35,7 +35,7 @@ const SignIn = (props) => {
                     Password: password
                 };
 
-                asyncFunctions.setItem("userInfo", userInfo)
+                asyncFunctions.setItem("userInfo", JSON.stringify(userInfo))
                     .then(() => {
                         // Clear password field for security
                         setPassword("");
@@ -130,7 +130,7 @@ const SignIn = (props) => {
             <Text style={styles.txt}>سجل من خلال</Text>
 
             <View style={styles.logInView}>
-                <GoogleSignInButton />
+                <GoogleSignInButton nav={props?.navigation} />
                 <Pressable style={styles.facebookbtn}>
                     <EvilIcons
                         name={"sc-facebook"}
