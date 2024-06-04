@@ -214,10 +214,6 @@ const SetUserAddress = (props) => {
             dropdownTextStyles={styles.dropstyle}
           />
         </View>
-        <Pressable style={styles.location} onPress={requestLocationPermission} disabled={disableLocation}>
-          <Text style={styles.locationTitle}>تحميل الموقع الحالي</Text>
-        </Pressable>
-        {showMyLocation && myLocation()}
       </View>
     );
   };
