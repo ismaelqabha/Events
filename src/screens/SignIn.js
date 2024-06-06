@@ -8,7 +8,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { getUserData, signIn } from '../resources/API';
 import UsersContext from '../../store/UsersContext';
 import { asyncFunctions, showMessage } from '../resources/Functions';
-import { emailVerification, passwordRegex } from '../resources/Regex';
+import { emailVerification, passwordRegex, phoneNumberRegex } from '../resources/Regex';
 import GoogleSignInButton from '../components/Login/GoogleSignInButton';
 
 
@@ -61,6 +61,7 @@ const SignIn = (props) => {
 
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
+            console.log("feteched user data ", res);
             setUserInfo(res)
             setuserId(res.user[0].USER_ID)
             setUserName(res.user[0].User_name)
@@ -68,15 +69,15 @@ const SignIn = (props) => {
     }
 
     const onEnterPress = () => {
-        if (!emailVerification.test(userEmail)) {
-            showMessage("Enter a valid email");
-            return;
-        }
+        // if (!emailVerification.test(userEmail) && !phoneNumberRegex.test(userEmail)) {
+        //     showMessage("Enter a valid email");
+        //     return;
+        // }
 
-        if (!password || !password.trim() || !passwordRegex.test(password)) {
-            showMessage("Enter a valid password");
-            return;
-        }
+        // if (!password || !password.trim() || !passwordRegex.test(password)) {
+        //     showMessage("Enter a valid password");
+        //     return;
+        // }
 
         logUser();
     };

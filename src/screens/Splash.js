@@ -21,6 +21,8 @@ export default function Splash(props) {
             // console.log("looking for existing user ");
             asyncFunctions.getItem("userInfo")
                 .then(userInfo => {
+                    userInfo = JSON.parse(userInfo)
+                    console.log("userInfo ", userInfo);
                     userEmail = userInfo?.Email
                     userPassword = userInfo?.Password
                     if (!userEmail || !userPassword) {
@@ -39,6 +41,7 @@ export default function Splash(props) {
             props.navigation.replace('Drawr')
             return
         }
+        console.log("userEmail", userEmail, "userPassword ", userPassword);
         if (userEmail && userPassword) {
             signIn({ Email: userEmail, Password: userPassword })
                 .then(res => {
@@ -67,7 +70,7 @@ export default function Splash(props) {
             setEventInfo(res[0].userEvents)
             setuserId(res[0].userInfo.USER_ID)
             setUserName(res[0].userInfo.User_name)
-    
+
         })
     }
 
