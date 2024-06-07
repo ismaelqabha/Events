@@ -43,7 +43,7 @@ const ClientRequest = (props) => {
     const [evTiltleId, setEvTiltleId] = useState()
     const [EVENTID, setEVENTID] = useState()
     const [updatedEventDate, setUpdatedEventDate] = useState()
-    
+
 
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
@@ -251,7 +251,7 @@ const ClientRequest = (props) => {
     }
 
     // Event Section
-   
+
     const getEventTypeInfo = () => {
         const eventList = []
         eventTypeInfo.forEach(element => {
@@ -264,7 +264,7 @@ const ClientRequest = (props) => {
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
         const eventTypeId = eventTypeInfo[eventTypeIndex].Id
         setEventTypeId(eventTypeId)
-    } 
+    }
     const onModalCancelPress = () => {
         setShowModal(false)
     }
@@ -326,6 +326,7 @@ const ClientRequest = (props) => {
         setShowModal(true);
         getEventTypeInfo()
     }
+    
     const renderEvents = () => {
         return (<View style={styles.eventView}>
             <Text style={styles.text}>اِختر او قم باٍنشاء مناسبة</Text>
@@ -346,21 +347,25 @@ const ClientRequest = (props) => {
         )
     }
     const filtereventInfo = () => {
-        const currentDate = moment(date, "YYYY-MM-DD")
-        let day = currentDate.format('D')
-        let month = currentDate.format('M')
-        let year = currentDate.format('YYYY')
-        let completeDate = year + '-' + month + '-' + day
+        var BookDate
+        var todayDate = new Date();
+
+        todayDate.setHours(0);
+        todayDate.setMinutes(0);
+        todayDate.setSeconds(0);
+        todayDate.setMilliseconds(0);
 
         return eventInfo.filter(item => {
-            const EDate = item.eventDate
-            const CDate = completeDate
-            const result = EDate >= CDate || EDate.length < 1
+           
+            return item.eventDate.find(dateElment => {
+                BookDate = new Date(dateElment)
+                const result = BookDate >= todayDate // || BookDate.length < 1
 
-            return result
+                return result
+            })
+           
         })
     }
-
     const UpdateEventInfo = () => {
 
         const newEventItem = {
@@ -414,13 +419,11 @@ const ClientRequest = (props) => {
         setUpdatedEventDate(newExitDate)
         setEVENTID(eventId)
     }
-
     const whenEventPress = (eventId, eventTitleId) => {
         setSelectedEvent(eventId || '');
         setEvTiltleId(eventTitleId)
         UpdateEventCostState(eventId)
     }
-
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {

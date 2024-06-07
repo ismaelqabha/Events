@@ -6,8 +6,9 @@ import moment from "moment";
 import { colors } from '../../assets/AppColors';
 
 const PaymentDetail = (props) => {
-    const { payments, serviceTitle } = props.route?.params || {}
+    const { payments, paymentOwner } = props.route?.params || {}
 
+    console.log("paymentOwner", paymentOwner);
     const onBackHandler = () => {
         props.navigation.goBack();
     }
@@ -29,17 +30,32 @@ const PaymentDetail = (props) => {
     }
 
     const renderServiceName = () => {
-        return (
-            <View style={styles.itemRow}>
-                <View style={styles.item}>
-                    <Text style={styles.text}>{serviceTitle}</Text>
+        if(Array.isArray(paymentOwner)){
+            return (
+                <View style={styles.itemRow}>
+                    <View style={styles.item}>
+                        <Text style={styles.text}>{paymentOwner[0].User_name}</Text>
+                    </View>
+                    <View style={styles.largeLabelView}>
+                        <Text style={{ fontSize: 18 }}>دفعة من</Text>
+                    </View>
+    
                 </View>
-                <View style={styles.largeLabelView}>
-                    <Text style={{ fontSize: 18 }}>دُفع لأمر</Text>
+            )
+        }else{
+            return (
+                <View style={styles.itemRow}>
+                    <View style={styles.item}>
+                        <Text style={styles.text}>{paymentOwner}</Text>
+                    </View>
+                    <View style={styles.largeLabelView}>
+                        <Text style={{ fontSize: 18 }}>دُفع لأمر</Text>
+                    </View>
+    
                 </View>
-
-            </View>
-        )
+            )
+        }
+       
     }
     const renderPaymentInfo = () => {
         return (

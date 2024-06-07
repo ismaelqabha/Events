@@ -16,6 +16,7 @@ const ClientBook = (props) => {
     }
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
+            console.log("requestInfoAccUser", requestInfoAccUser[1].requestInfo.paymentInfo);
             const clientReq = requestInfoAccUser.filter(item => {
                 return item.requestInfo.ReqEventId == data.EventId;
             })
@@ -27,6 +28,7 @@ const ClientBook = (props) => {
 
     const renderRequestData = () => {
         const reqData = queryRequest()
+        //console.log("******", reqData[1].requestInfo.paymentInfo);
         return reqData.map(item => {
             return <BookingCard {...item.requestInfo}
             services={item?.serviceData}

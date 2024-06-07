@@ -197,10 +197,11 @@ const ProviderBookingRequest = (props) => {
 
   const getBookingInfo = () => {
     const reqInfo = requestInfoByService.filter(item => {
-      return item.requestInfo.ReqStatus === 'partally paid' && item.requestInfo.reservationDetail[0].reservationDate === fulDate
+      return item.requestInfo.ReqStatus === 'partially paid' && item.requestInfo.reservationDetail[0].reservationDate === fulDate
     })
     return reqInfo
   }
+
   const renderBookingCard = () => {
     const data = getBookingInfo()
     return data.map(item => {

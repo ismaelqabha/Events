@@ -23,7 +23,7 @@ const ClientSearch = (props) => {
     const {
         cityselected, setcityselected,
         regionselect, setregionselect,
-        setselectMonthforSearch, selectMonthforSearch,
+        // setselectMonthforSearch, selectMonthforSearch,
         setselectDateforSearch, selectDateforSearch,
         Categorychozen, setCategorychozen,
         regionData, setRegionData
@@ -51,7 +51,7 @@ const ClientSearch = (props) => {
 
     const onPressHandler = () => {
         setselectDateforSearch(null)
-        setselectMonthforSearch(null)
+        // setselectMonthforSearch(null)
         props.navigation.goBack();
     }
     // Functions for determine the Place
@@ -99,7 +99,7 @@ const ClientSearch = (props) => {
         // setAnytime(false)
         setMonthly(false)
         setspacificDate(true)
-        setselectMonthforSearch(null)
+        // setselectMonthforSearch(null)
     }
     const handlePress = () => {
         if (isPressed == true && dateViewPressed == false && placeViewPressed == false) {
@@ -167,11 +167,11 @@ const ClientSearch = (props) => {
 
 
     const showDate = () => {
-        if (selectMonthforSearch != null) {
-            if (monthly) {
-                return 'شهر' + '  ' + selectMonthforSearch
-            }
-        }
+        // if (selectMonthforSearch != null) {
+        //     if (monthly) {
+        //         return 'شهر' + '  ' + selectMonthforSearch
+        //     }
+        // }
         if (spacificDate) {
             return selectDateforSearch
         }
@@ -246,10 +246,10 @@ const ClientSearch = (props) => {
 
                             </Pressable>
                         </View>
-                        {monthly &&
+                        {/* {monthly &&
                             <View style={{ alignSelf: 'center', marginTop: 80 }}>
                                 <MonthCom onMonthSelected={(num) => setselectMonthforSearch(num)} />
-                            </View>}
+                            </View>} */}
                         {spacificDate &&
                             <View style={{ alignSelf: 'center' }}>
                                 <ClientCalender />

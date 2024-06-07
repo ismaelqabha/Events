@@ -16,7 +16,7 @@ import PaymentDetailComp from '../../components/PaymentDetailComp';
 
 
 const ProviderShowRequest = (props) => {
-    const { isFirst, campInfo, setRequestInfoByService } = useContext(SearchContext);
+    const { isFirst, campInfo, setRequestInfoByService, requestInfoByService } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const { reqInfo ,fromProviderDuePay} = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
@@ -259,6 +259,7 @@ const ProviderShowRequest = (props) => {
         );
     }
     const refuse = () => {
+        
         const newData = {
             RequestId: reqInfo.requestInfo.RequestId,
             ReqStatus: 'refuse'
@@ -267,9 +268,15 @@ const ProviderShowRequest = (props) => {
         setShowMoreModal(false)
     }
     const updateInfo = (infoData) => {
+        const requestInfoAccServiceIndex = requestInfoByService?.findIndex(item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId)
+       
         updateRequest(infoData).then(res => {
             if (res.message === 'Updated Sucessfuly') {
-                setRequestInfoByService([...infoData])
+                const data = requestInfoByService || [];
+                if (requestInfoAccServiceIndex > -1) {
+                    data[requestInfoAccServiceIndex] = { ...data[requestInfoAccServiceIndex], ...infoData };
+                }
+                setRequestInfoByService([...data])
 
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',

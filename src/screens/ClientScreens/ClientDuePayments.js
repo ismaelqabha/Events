@@ -64,6 +64,8 @@ const ClientDuePayments = (props) => {
     const filterRequestAccordingPayment = () => {
         const reqData = queryRequest()
         const filteredData = []
+        
+
         for (let index = 0; index < reqData.length; index++) {
             const element = reqData[index];
             const allowed = []
@@ -90,10 +92,19 @@ const ClientDuePayments = (props) => {
         return realAmount
     }
 
+    const selectedRequestDataAccselectedPayment = (reqId) => {
+        const reqData = filterRequestAccordingPayment()
+        return reqData.filter(item => {
+            return item.requestInfo.RequestId === reqId
+        })
+    }
+
     const renderPayments = () => {
         const reqData = filterRequestAccordingPayment()
+    
         return reqData?.map(item => {
-
+           const selectedRequest =  selectedRequestDataAccselectedPayment(item.requestInfo.RequestId)
+           
             return item.requestInfo.paymentInfo.map(elem => {
                 const amount = calculatePersentage(item.requestInfo.Cost, elem.pers)
                 const ID = elem.id
@@ -122,7 +133,6 @@ const ClientDuePayments = (props) => {
                                 />
                             </View>
                         </View>
-
                         <View style={styles.item}>
                             <View>
                                 <Text style={styles.txtValue}>{amount}</Text>
@@ -151,11 +161,12 @@ const ClientDuePayments = (props) => {
                                 />
                             </View>
                         </View>
+
                         <View style={{ position: 'absolute', bottom: 10, width: '100%' }}>
-                            {/* <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqData: { ...reqData[0].requestInfo, relatedCamp: { ...reqData[0].serviceCamp }, services: { ...reqData[0].serviceData } }, fromclientDuePayment: fromclientDuePayment })}>
+                            {/* <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqData: { ...selectedRequest.requestInfo, relatedCamp: { ...selectedRequest.serviceCamp }, services: { ...selectedRequest.serviceData } }, fromclientDuePayment: fromclientDuePayment })}>
                                 <Text style={styles.pressTxt}>تفاصيل الحجز</Text>
                             </Pressable> */}
-                            <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { reqInfo: reqData, fromclientDuePayment: fromclientDuePayment, ID: ID, amount: amount })}>
+                            <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { reqInfo: selectedRequest, fromclientDuePayment: fromclientDuePayment, ID: ID, amount: amount })}>
                                 <Text style={styles.pressTxt}>دفع</Text>
                             </Pressable>
                         </View>

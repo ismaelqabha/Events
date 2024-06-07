@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert, Pressable, ToastAndroid, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Alert, Pressable, ToastAndroid, TextInput, ScrollView } from 'react-native'
 import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
@@ -9,20 +9,15 @@ import { BorderRightOutlined } from '@ant-design/icons';
 import UsersContext from '../../../store/UsersContext.js';
 import { createNewPayment, updateRequest } from '../../resources/API.js';
 import SearchContext from '../../../store/SearchContext.js';
-import { color } from '@rneui/base';
 
 
 const MakePayment = (props) => {
-  const { reqInfo, amount, fromclientDuePayment, fromProviderDuePay, fromReqDuePaymentShow, ID } = props.route?.params || {}
+  const { reqInfo, amount, fromclientDuePayment, fromProviderDuePay, fromReqDuePaymentShow, ID, providerSide } = props.route?.params || {}
   const { userId } = useContext(UsersContext);
-  const {setRequestInfoAccUser, requestInfoAccUser } = useContext(SearchContext);
+  const { setRequestInfoAccUser, requestInfoAccUser } = useContext(SearchContext);
 
-
-  // console.log("requestInfoAccUser", requestInfoAccUser);
-  // console.log("payments", requestInfoAccUser[0].payments);
-  // console.log("reqInfo", reqInfo.RequestId);
-
-
+  //console.log("reqInfo", reqInfo.requestInfo.paymentInfo);
+  
 
   const [paymentMethod, setpaymentMethod] = useState('Credit Card')
 
@@ -74,7 +69,7 @@ const MakePayment = (props) => {
     setCash(false)
     setChecks(false)
     setpaymentMethod('Credit Card')
-    renderCreditCardInfo()
+
   }
   const cashPress = () => {
     setCreditCard(false)
@@ -108,6 +103,12 @@ const MakePayment = (props) => {
       setReqPayment(reqInfo[0].requestInfo.paymentInfo)
       setRealPayments(reqInfo[0].userPayments)
       setReqPayments(reqInfo[0].requestInfo.paymentInfo)
+    }
+    if (providerSide) {
+      setReqID(reqInfo.requestInfo.RequestId)
+      setReqPayment(reqInfo.requestInfo.paymentInfo)
+      setRealPayments(reqInfo.userPayments)
+      setReqPayments(reqInfo.requestInfo.paymentInfo)
     }
   }
 
@@ -156,8 +157,6 @@ const MakePayment = (props) => {
             onChangeText={setCardHolderCVV}
           />
         </View>
-
-
       </View>
     )
   }
@@ -190,20 +189,10 @@ const MakePayment = (props) => {
             onChangeText={setCardHolderNumber}
           />
         </View>
-
-        <View style={styles.creditItem}>
-          <Text style={styles.labelText}>رمز التحقق CVV</Text>
-          <TextInput style={styles.input}
-            keyboardType={'default'}
-            value={cardHolderCVV}
-            onChangeText={setCardHolderCVV}
-          />
-        </View>
-
-
       </View>
     )
   }
+
   const renderPayButton = () => {
     return (
       <Pressable style={styles.payView} onPress={onPaymentPress}>
@@ -234,7 +223,6 @@ const MakePayment = (props) => {
   //// functions for create payment
   const selectPayment = () => {
     if (paymentMethod === 'Cash') {
-      console.log(paymentMethod);
       payCashInfo()
     }
     if (paymentMethod === 'Checks') {
@@ -275,6 +263,7 @@ const MakePayment = (props) => {
   const makePayment = (method) => {
 
     const reqPayIndex = reqPayments.findIndex(elme => elme.id === ID)
+    console.log("reqPayIndex", reqPayIndex);
     const reqPay = reqPayments
     if (reqPayIndex > -1) {
       reqPay[reqPayIndex].paymentStutes = 'paid'
@@ -350,19 +339,19 @@ const MakePayment = (props) => {
   }
   /// update request info 
   const updateRequestInfo = (newwData) => {
-    const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqInfo.RequestId)
+    const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqInfo[0].requestInfo.RequestId)
     const lastPayments = requestInfoAccUser[requestInfoAccUserIndex].payments
 
-    // console.log("lastPayments", lastPayments);
-    // console.log("paymentInfo", paymentInfo);
+    //console.log("lastPayments", lastPayments);
+    //console.log("paymentInfo", paymentInfo);
 
-    
+
     updateRequest(newwData).then(res => {
       if (res.message == 'Updated Sucessfuly') {
 
         const data = requestInfoAccUser || [];
         if (requestInfoAccUserIndex > -1) {
-          data[requestInfoAccUserIndex].payments = {...lastPayments, ...paymentInfo}
+          data[requestInfoAccUserIndex].payments = { ...lastPayments, ...paymentInfo }
 
           data[requestInfoAccUserIndex] = { ...data[requestInfoAccUserIndex], ...newwData };
         }
@@ -375,7 +364,56 @@ const MakePayment = (props) => {
         );
       }
     })
-   
+
+  }
+
+  const selectWhoisMakePayment = () => {
+    if (fromProviderDuePay) {
+      return (
+        <View>{creatPaymentProviderSide()}
+          {renderPaymentMethod()}
+        </View>
+      )
+    }
+    if (providerSide) {
+      return (
+        <View>
+          {creatPaymentProviderSide()}
+          {renderPaymentMethod()}
+        </View>
+      )
+    }
+    if (fromclientDuePayment) {
+      return (
+        <View>{renderCreditCardInfo()}
+          {renderPaymentMethod()}
+        </View>
+      )
+    }
+  }
+  const renderPaymentMethod = () => {
+    if (paymentMethod === "Credit Card") {
+      return (
+        <View>
+          {renderCreditCardInfo()}
+        </View>
+      )
+    }
+    if (paymentMethod === "Cash") {
+      return (
+        <View>
+          {/* {renderChecksInfo()} */}
+        </View>
+      )
+    }
+    if (paymentMethod === "Checks") {
+      return (
+        <View>
+          {renderChecksInfo()}
+        </View>
+      )
+    }
+
   }
 
 
@@ -383,11 +421,12 @@ const MakePayment = (props) => {
   return (
     <View style={styles.container}>
       {header()}
-      {renderPayAmount()}
+      <ScrollView>
+        {renderPayAmount()}
+        {selectWhoisMakePayment()}
 
-      {fromProviderDuePay ? creatPaymentProviderSide() : renderCreditCardInfo()}
-
-      {renderPayButton()}
+        {renderPayButton()}
+      </ScrollView>
     </View>
   )
 }

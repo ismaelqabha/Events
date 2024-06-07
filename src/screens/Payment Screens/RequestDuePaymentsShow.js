@@ -7,15 +7,36 @@ import { colors } from "../../assets/AppColors.js"
 import { ScreenNames } from "../../../route/ScreenNames.js"
 
 const RequestDuePaymentsShow = (props) => {
-    const { reqInfo } = props.route?.params || {}
+    const { reqInfo, providerSide, clientSide } = props.route?.params || {}
     const [fromReqDuePaymentShow, setFromReqDuePaymentShow] = useState(true)
 
-    const ReqPrice = reqInfo.Cost
-    const ReqPaymentInfo = reqInfo.paymentInfo
-    const serviceTitle = reqInfo.services[0].title
-    const payments = reqInfo.realPayments
-    console.log(ReqPaymentInfo);
-    console.log(payments);
+
+    const [ReqPrice, setReqPrice] = useState()
+    const [ReqPaymentInfo, setReqPaymentInfo] = useState([])
+    const [paymentOwner, setPaymentOwner] = useState([])
+    const [payments, setPayments] = useState([])
+
+    useEffect(() => {
+        checkSourse()
+      }, [])
+
+    const checkSourse = () => {
+        if (clientSide) {
+            setReqPrice (reqInfo.Cost)
+            setReqPaymentInfo(reqInfo.paymentInfo)
+            setPaymentOwner(reqInfo.services[0].title)
+            setPayments(reqInfo.realPayments)
+        }
+       
+        if(providerSide){
+            setReqPrice (reqInfo.requestInfo.Cost)
+            setReqPaymentInfo(reqInfo.requestInfo.paymentInfo)
+            setPaymentOwner(reqInfo.userInfo)
+            setPayments(reqInfo.userPayments)
+        }
+    }
+
+    // console.log(payments);
 
     const onBackHandler = () => {
         props.navigation.goBack();
@@ -38,7 +59,7 @@ const RequestDuePaymentsShow = (props) => {
     }
 
     const filterPaymentInfo = () => {
-        return ReqPaymentInfo.filter(item => {
+        return ReqPaymentInfo?.filter(item => {
             return item.paymentStutes === 'not paid'
         })
     }
@@ -49,7 +70,7 @@ const RequestDuePaymentsShow = (props) => {
             const amount = calculatePersentage(item.pers)
             const ID = item.id
             return (
-                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { amount: amount, reqInfo: reqInfo, fromReqDuePaymentShow: fromReqDuePaymentShow, ID: ID })}
+                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { amount: amount, reqInfo: reqInfo, fromReqDuePaymentShow: fromReqDuePaymentShow, ID: ID, providerSide: providerSide })}
                 >
                     <Text style={styles.paymentTxt}>{moment(item.PayDate).format('L')}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -86,7 +107,7 @@ const RequestDuePaymentsShow = (props) => {
     const renderPayments = () => {
         return payments.map(item => {
             return (
-                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.PaymentDetail, { payments: payments, serviceTitle: serviceTitle })}
+                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.PaymentDetail, { payments: payments, paymentOwner: paymentOwner })}
                 >
                     <Text style={styles.paymentTxt}>{item.PaymentDate}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -120,15 +141,15 @@ const RequestDuePaymentsShow = (props) => {
             {header()}
 
             <ScrollView>
-            <View style={{ height: 300 }}>
-                <Text style={styles.paymentTxt}>الدفعات الغير مدفوعة</Text>
-                {renderPaymentInfo()}
-            </View>
+                <View style={{ height: 300 }}>
+                    <Text style={styles.paymentTxt}>الدفعات الغير مدفوعة</Text>
+                    {renderPaymentInfo()}
+                </View>
 
-            {payments.length > 0 && <View style={{ height: 200 }}>
-                <Text style={styles.paymentTxt}>الدفعات المدفوعة</Text>
-                {renderPayments()}
-            </View>}
+                {payments.length > 0 && <View style={{ height: 200 }}>
+                    <Text style={styles.paymentTxt}>الدفعات المدفوعة</Text>
+                    {renderPayments()}
+                </View>}
 
 
             </ScrollView>

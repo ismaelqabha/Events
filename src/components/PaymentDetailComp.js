@@ -11,32 +11,53 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 const PaymentDetailComp = (props) => {
-    
-    const { setRequestInfoByService } = useContext(SearchContext);
+
+    const { setRequestInfoByService, requestInfoByService } = useContext(SearchContext);
     const [paymentDataArray, setPaymentDataArray] = useState([])
     const { reqInfo, setShowPaymentModal } = props
 
     var payId = uuidv4();
 
+    // console.log("requestInfoByService", requestInfoByService);
+    // console.log("reqInfo", reqInfo.requestInfo.RequestId);
+
+
+
     const updateData = () => {
+        const requestInfoAccServiceIndex = requestInfoByService?.findIndex(item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId)
+
         const newData = {
             RequestId: reqInfo.requestInfo.RequestId,
             ReqStatus: 'waiting pay',
             paymentInfo: paymentDataArray
         }
-        updateRequest(newData).then(res => {
-            //console.log("res.message", res.message);
-            if (res.message == "Updated Sucessfuly") {
-                setRequestInfoByService([...newData])
+        const result = checkSumPersentage()
+        if (result < 100) {
+            updateRequest(newData).then(res => {
 
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-                setShowPaymentModal(false)
-            }
-        })
+                if (res.message == "Updated Sucessfuly") {
+                    const data = requestInfoByService || [];
+                    if (requestInfoAccServiceIndex > -1) {
+                        data[requestInfoAccServiceIndex] = { ...data[requestInfoAccServiceIndex], ...newData };
+                    }
+                    setRequestInfoByService([...data])
+    
+                    ToastAndroid.showWithGravity(
+                        'تم التعديل بنجاح',
+                        ToastAndroid.SHORT,
+                        ToastAndroid.BOTTOM,
+                    );
+                    setShowPaymentModal(false)
+                }
+            })
+        } else {
+            ToastAndroid.showWithGravity(
+                'مجموع نسب الدفعات اكثر من 100',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+            );
+        }
+        
     }
 
 
@@ -58,6 +79,15 @@ const PaymentDetailComp = (props) => {
                 </View>
             </Pressable>
         )
+    }
+
+
+    const checkSumPersentage = () => {
+        var sumPers = 0
+        paymentDataArray.forEach(element => {
+            sumPers += element.persentage
+        });
+       return sumPers
     }
 
     const renderPaymentFeilds = () => {
@@ -86,7 +116,7 @@ const PaymentDetailComp = (props) => {
         const [paymentDate, setPaymentDate] = useState(null)
         const [persentage, setPersentage] = useState(null)
 
-        
+
         const index = props.index
 
         const [date, setDate] = useState(new Date());
@@ -102,7 +132,7 @@ const PaymentDetailComp = (props) => {
             let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
 
             const data = {
-                id : payId,
+                id: payId,
                 PayDate: fDate,
                 pers: persentage,
                 paymentStutes: 'not paid'
@@ -163,10 +193,11 @@ const PaymentDetailComp = (props) => {
                         keyboardType={'default'}
                         placeholder={'النسبة'}
                         value={persentage}
+
                         onChangeText={(val) => setPersentage(val)}
                         onEndEditing={() => {
                             const data = {
-                                id : payId,
+                                id: payId,
                                 PayDate: paymentDate,
                                 pers: persentage,
                                 paymentStutes: 'not paid'
@@ -197,7 +228,7 @@ const PaymentDetailComp = (props) => {
 
     return (
         <View style={styles.comp}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between',alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 {renderSaveButton()}
                 <Text style={styles.text}>تحديد عدد الدفعات </Text>
             </View>

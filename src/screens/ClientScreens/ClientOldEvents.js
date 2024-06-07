@@ -7,21 +7,23 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import { ScreenNames } from '../../route/ScreenNames';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from "moment";
 import SearchContext from '../../../store/SearchContext';
 import UsersContext from '../../../store/UsersContext';
 import { colors } from '../../assets/AppColors';
 import EventsCard from '../../components/EventsCard';
 
-const today = moment(new Date(), "YYYY-MM-DD")
-const day = today.format('D')
-const month = today.format('M')
-const year = today.format('YYYY')
-const todayDate = year + '-' + month + '-' + day
 
 const ClientOldEvents = (props) => {
     const { userId } = useContext(UsersContext);
     const { eventInfo, requestInfoAccUser } = useContext(SearchContext);
+
+    var eventDate
+    var todayDate = new Date();
+
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
+    todayDate.setMilliseconds(0);
 
 
     const onBackHandler = () => {
@@ -44,14 +46,28 @@ const ClientOldEvents = (props) => {
         )
     }
 
+    const getBookingInfo = () => {
+        if (requestInfoAccUser.message !== "no Request") {
+            const reqInfo = requestInfoAccUser.filter(item => {
+                return item.requestInfo.ReqStatus === 'completed'
+            })
+            return reqInfo
+        } else {
+            return []
+        }
+    }
 
     const getEvents = () => {
         return eventInfo.filter(eventItem => {
             if (eventItem.eventDate.length > 1) {
-                return eventItem.eventDate.find(dateItem => {
-                    return dateItem < todayDate
+                return eventItem.eventDate.filter(dateItem => {
+                    evDate = new Date(dateItem)
+                   // console.log(evDate , todayDate, evDate < todayDate);
+                    return evDate < todayDate
                 })
             } else {
+                evDate = new Date(eventItem.eventDate)
+                //console.log(">>>",evDate , todayDate, evDate < todayDate);
                 return eventItem.eventDate < todayDate
             }
 

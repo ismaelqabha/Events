@@ -17,7 +17,9 @@ const BookingCard = (props) => {
     const navigation = useNavigation();
     const data = { ...props }
 
-    //console.log(reqInfo.services);
+    const [clientSide, setClientSide] = useState(true)
+
+    //console.log("><<>><",reqInfo);
     const requestCost = reqInfo.Cost
     const paymentDetail = reqInfo.reqPayments
     const serviceName = reqInfo.services
@@ -116,7 +118,7 @@ const BookingCard = (props) => {
                     {stutesType !== 'بأنتظار الرد' &&
                         <View>
                             {stutesType !== 'غير متاح' &&
-                                <Pressable style={styles.paymentButton} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { reqInfo })}>
+                                <Pressable style={styles.paymentButton} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { reqInfo, clientSide })}>
                                     <Text style={styles.itemTxt}>تفاصيل الدفعات</Text>
                                 </Pressable>}
                         </View>}
@@ -203,7 +205,7 @@ const BookingCard = (props) => {
             if (fromclientDuePayment) {
                 var resDaysCount = 0
                 return props.reservationDetail.map(item => {
-                    if (props.ReqStatus === 'partally paid' && item.reservationDate < todayDate) {
+                    if (props.ReqStatus === 'partially paid' && item.reservationDate < todayDate) {
                         resDaysCount++
                     }
                     if (props.reservationDetail.length === resDaysCount) {
@@ -216,7 +218,7 @@ const BookingCard = (props) => {
                 })
 
             } else {
-                if (props.ReqStatus === 'partally paid') {
+                if (props.ReqStatus === 'partially paid') {
                     stutesType = 'محجوز'
                     return (
                         <View >

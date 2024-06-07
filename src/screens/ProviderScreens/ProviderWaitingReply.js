@@ -7,14 +7,12 @@ import SearchContext from '../../../store/SearchContext'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
-import UsersContext from '../../../store/UsersContext'
 import { showMessage } from '../../resources/Functions'
 
 
 const ProviderWaitingReply = () => {
-  const { requestInfoByService, userInfoBySpiceficId, setUserInfoBySpiceficId,
-    selectMonthforSearch, yearforSearch } = useContext(SearchContext);
-  const { } = useContext(UsersContext);
+  const { requestInfoByService } = useContext(SearchContext);
+
 
   const [fromWaitingScreen, setFromWaitingScreen] = useState(true)
 
