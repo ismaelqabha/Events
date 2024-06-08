@@ -64,23 +64,38 @@ const ClientDuePayments = (props) => {
     const filterRequestAccordingPayment = () => {
         const reqData = queryRequest()
         const filteredData = []
-        
-
+       
         for (let index = 0; index < reqData.length; index++) {
             const element = reqData[index];
             const allowed = []
-            element.requestInfo.paymentInfo?.map((payment, index) => {
+            var newpaymentInfo = [...element.requestInfo.paymentInfo]
+
+            newpaymentInfo?.forEach((payment, index) => {
                 paymentDate = new Date(payment.PayDate)
                 paymentDate.setHours(0, 0, 0, 0)
+
                 if (payment.paymentStutes === 'not paid' && paymentDate <= todayDate) {
                     allowed.push(payment)
                 }
+                
                 if (index == element.requestInfo.paymentInfo?.length - 1) {
-                    element.requestInfo.paymentInfo = allowed
-                    filteredData.push(element)
+                    const fakeElement = {
+                        payments: [...element.payments],
+                        serviceData: [...element.serviceData],
+                        serviceCamp: [...element.serviceCamp],
+                        requestInfo: {
+                            RequestId: element.requestInfo.RequestId,
+                            Cost: element.requestInfo.Cost,
+                            ReqDate: element.requestInfo.ReqDate,
+                            paymentInfo: allowed,
+                            reservationDetail: [...element.requestInfo.reservationDetail]
+                        }
+                    }
+                    filteredData.push(fakeElement)
                 }
             })
         }
+
         return filteredData
     }
 
@@ -101,10 +116,9 @@ const ClientDuePayments = (props) => {
 
     const renderPayments = () => {
         const reqData = filterRequestAccordingPayment()
-    
         return reqData?.map(item => {
-           const selectedRequest =  selectedRequestDataAccselectedPayment(item.requestInfo.RequestId)
-           
+            const selectedRequest = selectedRequestDataAccselectedPayment(item.requestInfo.RequestId)
+
             return item.requestInfo.paymentInfo.map(elem => {
                 const amount = calculatePersentage(item.requestInfo.Cost, elem.pers)
                 const ID = elem.id

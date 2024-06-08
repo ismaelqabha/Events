@@ -16,7 +16,7 @@ const MakePayment = (props) => {
   const { userId } = useContext(UsersContext);
   const { setRequestInfoAccUser, requestInfoAccUser } = useContext(SearchContext);
 
-  //console.log("reqInfo", reqInfo.requestInfo.paymentInfo);
+  console.log("reqInfo", reqInfo);
   
 
   const [paymentMethod, setpaymentMethod] = useState('Credit Card')
@@ -268,6 +268,7 @@ const MakePayment = (props) => {
     if (reqPayIndex > -1) {
       reqPay[reqPayIndex].paymentStutes = 'paid'
     }
+    console.log("reqPay[reqPayIndex]", reqPay[reqPayIndex]);
     setReqPayments(reqPay[reqPayIndex]);
 
 
@@ -342,8 +343,8 @@ const MakePayment = (props) => {
     const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqInfo[0].requestInfo.RequestId)
     const lastPayments = requestInfoAccUser[requestInfoAccUserIndex].payments
 
-    //console.log("lastPayments", lastPayments);
-    //console.log("paymentInfo", paymentInfo);
+    console.log("lastPayments", lastPayments);
+    console.log("paymentInfo", paymentInfo);
 
 
     updateRequest(newwData).then(res => {
@@ -351,7 +352,7 @@ const MakePayment = (props) => {
 
         const data = requestInfoAccUser || [];
         if (requestInfoAccUserIndex > -1) {
-          data[requestInfoAccUserIndex].payments = { ...lastPayments, ...paymentInfo }
+          data[requestInfoAccUserIndex].payments = { ...lastPayments, ...paymentInfo}
 
           data[requestInfoAccUserIndex] = { ...data[requestInfoAccUserIndex], ...newwData };
         }
@@ -386,7 +387,6 @@ const MakePayment = (props) => {
     if (fromclientDuePayment) {
       return (
         <View>{renderCreditCardInfo()}
-          {renderPaymentMethod()}
         </View>
       )
     }
