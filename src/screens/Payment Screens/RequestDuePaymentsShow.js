@@ -70,7 +70,7 @@ const RequestDuePaymentsShow = (props) => {
             const amount = calculatePersentage(item.pers)
             const ID = item.id
             return (
-                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { amount: amount, reqInfo: reqInfo, fromReqDuePaymentShow: fromReqDuePaymentShow, ID: ID, providerSide: providerSide })}
+                <Pressable style={styles.paymentView} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { amount: amount, reqInfo: reqInfo, clientSide: clientSide, ID: ID, providerSide: providerSide })}
                 >
                     <Text style={styles.paymentTxt}>{moment(item.PayDate).format('L')}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>

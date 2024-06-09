@@ -19,7 +19,7 @@ const PaymentDetailComp = (props) => {
     var payId = uuidv4();
 
     // console.log("requestInfoByService", requestInfoByService);
-    // console.log("reqInfo", reqInfo.requestInfo.RequestId);
+    // console.log("reqInfo", reqInfo);
 
 
 
@@ -41,7 +41,7 @@ const PaymentDetailComp = (props) => {
                         data[requestInfoAccServiceIndex] = { ...data[requestInfoAccServiceIndex], ...newData };
                     }
                     setRequestInfoByService([...data])
-    
+
                     ToastAndroid.showWithGravity(
                         'تم التعديل بنجاح',
                         ToastAndroid.SHORT,
@@ -57,7 +57,7 @@ const PaymentDetailComp = (props) => {
                 ToastAndroid.BOTTOM,
             );
         }
-        
+
     }
 
 
@@ -87,7 +87,7 @@ const PaymentDetailComp = (props) => {
         paymentDataArray.forEach(element => {
             sumPers += element.persentage
         });
-       return sumPers
+        return sumPers
     }
 
     const renderPaymentFeilds = () => {
@@ -115,6 +115,7 @@ const PaymentDetailComp = (props) => {
     const PaymentComponent = (props) => {
         const [paymentDate, setPaymentDate] = useState(null)
         const [persentage, setPersentage] = useState(null)
+        const [amount, setAmount] = useState(null)
 
 
         const index = props.index
@@ -123,6 +124,40 @@ const PaymentDetailComp = (props) => {
         const [mode, setMode] = useState('date');
         const [show, setShow] = useState(false);
 
+        var payDate
+        var todayDate = new Date();
+
+        todayDate.setHours(0);
+        todayDate.setMinutes(0);
+        todayDate.setSeconds(0);
+        todayDate.setMilliseconds(0);
+
+
+        const calculateAmountFromPersentage = (pers) => {
+            const ReqPrice = reqInfo.requestInfo.Cost
+            if (pers < 100) {
+                const fact = ReqPrice * pers
+                const realAmount = fact / 100
+                setAmount(realAmount)
+                setPersentage(pers)
+            } else {
+                console.log("persentage is more than 100%");
+            }
+        }
+
+        const calculatePersentageFromAmount = (amou) => {
+            const ReqPrice = reqInfo.requestInfo.Cost
+            if (amou < ReqPrice) {
+                const value = amou / ReqPrice
+                const pers = value * 100
+                setAmount(amou)
+                setPersentage(pers)
+            } else {
+                console.log("amount is more than Total Cost");
+            }
+
+        }
+
         const onChange = (event, selectedDate) => {
             setShow(false)
             const currentDate = selectedDate || date;
@@ -130,16 +165,25 @@ const PaymentDetailComp = (props) => {
 
             let tempDate = new Date(currentDate);
             let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
+            let cuurentDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            payDate = new Date(fDate)
 
-            const data = {
-                id: payId,
-                PayDate: fDate,
-                pers: persentage,
-                paymentStutes: 'not paid'
+            if (payDate > todayDate) {
+                const data = {
+                    id: payId,
+                    PayDate: fDate,
+                    pers: persentage,
+                    paymentStutes: 'not paid'
+                }
+                updateArray(data, index)
+    
+                setPaymentDate(fDate);
+            } else {
+                console.log("date not coorect");
+                setPaymentDate(cuurentDate);
             }
-            updateArray(data, index)
 
-            setPaymentDate(fDate);
+            
         }
         const showMode = (currentMode) => {
             setShow(true);
@@ -191,31 +235,49 @@ const PaymentDetailComp = (props) => {
 
                     <TextInput style={styles.input}
                         keyboardType={'default'}
-                        placeholder={'النسبة'}
-                        value={persentage}
+                        placeholder={'الدفعة'}
+                        value={amount}
+                        onChangeText={(val) => calculatePersentageFromAmount(val)}
 
-                        onChangeText={(val) => setPersentage(val)}
-                        onEndEditing={() => {
-                            const data = {
-                                id: payId,
-                                PayDate: paymentDate,
-                                pers: persentage,
-                                paymentStutes: 'not paid'
-                            }
-                            updateArray(data, index)
-                        }}
+                    // onEndEditing={() => {
+                    //     const data = {
+                    //         id: payId,
+                    //         PayDate: paymentDate,
+                    //         pers: persentage,
+                    //         paymentStutes: 'not paid'
+                    //     }
+                    //     updateArray(data, index)
+                    // }}
                     />
-                    <Text style={styles.text}>%</Text>
-                </View>
+                    <View style={styles.inputPersentageView}>
 
+                        <TextInput style={{ fontSize: 18 }}
+                            keyboardType={'default'}
+                            placeholder={'النسبة'}
+                            value={persentage}
+
+                            onChangeText={(val) => setPersentage(val)}
+                            onEndEditing={(val) => {
+                                const data = {
+                                    id: payId,
+                                    PayDate: paymentDate,
+                                    pers: persentage,
+                                    paymentStutes: 'not paid'
+                                }
+                                updateArray(data, index)
+                                calculateAmountFromPersentage(val)
+                            }}
+                        />
+                        <Text style={styles.text}>%</Text>
+                    </View>
+                </View>
             </View>
         )
     }
 
     const renderSaveButton = () => {
         return (
-            <Pressable style={styles.footer} onPress={updateData}
-            >
+            <Pressable style={styles.footer} onPress={updateData}>
                 <Text style={styles.text}>حفظ</Text>
             </Pressable>
         )
@@ -226,6 +288,15 @@ const PaymentDetailComp = (props) => {
         )
     }
 
+    const renderRequestDetail = () => {
+        return (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.text}>{"حتى تاريخ  " + reqInfo.requestInfo.reservationDetail[0].reservationDate}</Text>
+                <Text style={styles.text}>{"المبلغ  " + reqInfo.requestInfo.Cost}</Text>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.comp}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -233,6 +304,7 @@ const PaymentDetailComp = (props) => {
                 <Text style={styles.text}>تحديد عدد الدفعات </Text>
             </View>
             {seperator()}
+            {renderRequestDetail()}
             {renderAddButton()}
 
             <ScrollView>
@@ -282,19 +354,37 @@ const styles = StyleSheet.create({
         borderColor: colors.silver,
         marginVertical: 10
     },
-    input: {
-        fontSize: 18
-    },
+
     inputView: {
         flexDirection: 'row',
         height: 50,
-        width: '95%',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        alignSelf: 'center',
+    },
+    input: {
+        height: 50,
+        width: '45%',
         borderRadius: 10,
         alignItems: 'center',
         backgroundColor: colors.silver,
         justifyContent: 'center',
         alignSelf: 'center',
+        fontSize: 18,
+        textAlign: 'center'
     },
+
+    inputPersentageView: {
+        flexDirection: 'row',
+        height: 50,
+        width: '45%',
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: colors.silver,
+        justifyContent: 'center',
+    },
+
     viewDate: {
         flexDirection: 'row',
         height: 50,

@@ -30,7 +30,8 @@ const ClientShowRequest = (props) => {
 
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo?.eventData?.EventId)
 
-    console.log("reqInfo", reqInfo);
+   /// console.log("reqInfo???", reqInfo);
+
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
             const clientReq = requestInfoAccUser.filter(item => {
@@ -603,9 +604,9 @@ const ClientShowRequest = (props) => {
 
 
 
-    useEffect(() => {
-        calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
-    }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
+    // useEffect(() => {
+    //  calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
+    // }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
 
     return (
         <View style={styles.container}>

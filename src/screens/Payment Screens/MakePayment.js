@@ -12,12 +12,12 @@ import SearchContext from '../../../store/SearchContext.js';
 
 
 const MakePayment = (props) => {
-  const { reqInfo, amount, fromclientDuePayment, fromProviderDuePay, fromReqDuePaymentShow, ID, providerSide } = props.route?.params || {}
+  const { reqInfo, amount, fromclientDuePayment, fromProviderDuePay, ID, providerSide, clientSide } = props.route?.params || {}
   const { userId } = useContext(UsersContext);
   const { setRequestInfoAccUser, requestInfoAccUser } = useContext(SearchContext);
 
-  console.log("reqInfo", reqInfo);
-  
+  //console.log("reqInfo", reqInfo[0].payments);
+
 
   const [paymentMethod, setpaymentMethod] = useState('Credit Card')
 
@@ -37,6 +37,8 @@ const MakePayment = (props) => {
   const [creditCard, setCreditCard] = useState(false)
   const [cash, setCash] = useState(false)
   const [checks, setChecks] = useState(false)
+
+  var requestInfoAccUserIndex = ''
 
 
 
@@ -85,30 +87,36 @@ const MakePayment = (props) => {
   }
 
   const checkSource = () => {
+    // console.log("fromclientDuePayment", fromclientDuePayment);
 
-    if (fromclientDuePayment || fromProviderDuePay) {
+    if (fromclientDuePayment) {
       setReqID(reqInfo[0].requestInfo.RequestId)
       setReqPayment(reqInfo[0].requestInfo.paymentInfo)
       setRealPayments(reqInfo[0].payments)
       setReqPayments(reqInfo[0].requestInfo.paymentInfo)
+      
+
     }
-    if (fromReqDuePaymentShow) {
+    if (clientSide) {
       setReqID(reqInfo.RequestId)
       setReqPayment(reqInfo.paymentInfo)
       setRealPayments(reqInfo.realPayments)
       setReqPayments(reqInfo.paymentInfo)
+     
     }
     if (fromProviderDuePay) {
       setReqID(reqInfo[0].requestInfo.RequestId)
       setReqPayment(reqInfo[0].requestInfo.paymentInfo)
       setRealPayments(reqInfo[0].userPayments)
       setReqPayments(reqInfo[0].requestInfo.paymentInfo)
+     
     }
     if (providerSide) {
       setReqID(reqInfo.requestInfo.RequestId)
       setReqPayment(reqInfo.requestInfo.paymentInfo)
       setRealPayments(reqInfo.userPayments)
       setReqPayments(reqInfo.requestInfo.paymentInfo)
+      
     }
   }
 
@@ -270,8 +278,7 @@ const MakePayment = (props) => {
     }
     console.log("reqPay[reqPayIndex]", reqPay[reqPayIndex]);
     setReqPayments(reqPay[reqPayIndex]);
-
-
+   
     if (realPayments.length === 0) { /// there is now any payments for this request
       const newRequestData = {
         RequestId: reqID,
@@ -340,7 +347,7 @@ const MakePayment = (props) => {
   }
   /// update request info 
   const updateRequestInfo = (newwData) => {
-    const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqInfo[0].requestInfo.RequestId)
+    const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqID)
     const lastPayments = requestInfoAccUser[requestInfoAccUserIndex].payments
 
     console.log("lastPayments", lastPayments);
@@ -352,7 +359,7 @@ const MakePayment = (props) => {
 
         const data = requestInfoAccUser || [];
         if (requestInfoAccUserIndex > -1) {
-          data[requestInfoAccUserIndex].payments = { ...lastPayments, ...paymentInfo}
+          data[requestInfoAccUserIndex].payments = { ...lastPayments, ...paymentInfo }
 
           data[requestInfoAccUserIndex] = { ...data[requestInfoAccUserIndex], ...newwData };
         }
@@ -384,7 +391,7 @@ const MakePayment = (props) => {
         </View>
       )
     }
-    if (fromclientDuePayment) {
+    if (fromclientDuePayment || clientSide) {
       return (
         <View>{renderCreditCardInfo()}
         </View>

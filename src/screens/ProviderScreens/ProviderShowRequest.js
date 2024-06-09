@@ -18,10 +18,13 @@ import PaymentDetailComp from '../../components/PaymentDetailComp';
 const ProviderShowRequest = (props) => {
     const { isFirst, campInfo, setRequestInfoByService, requestInfoByService } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+
     const { reqInfo ,fromProviderDuePay} = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+    console.log("reqInfo",reqInfo);
 
     // const [requestingDate , setRequestingDate] = useState()
     // const [requestingDetail , setRequestingDetail] = useState([])
@@ -361,8 +364,6 @@ const ProviderShowRequest = (props) => {
             </View>
         )
     }
-
-
     const renderReqDate = (item) => {
         return (
             <View>
@@ -512,6 +513,46 @@ const ProviderShowRequest = (props) => {
         })
     }
 
+    ///// for showing Request Information detail
+    const isRequestWaitingPayForPaymentInfo = () => {
+        if (reqInfo.requestInfo.paymentInfo.length > 0) {
+            return (<View>
+                <Text style={styles.labelText}>تفاصيل الدفعات</Text>
+                <View style={styles.ContentView}>{renderPaymentInfo()}</View>
+            </View>)
+        }
+    }
+    const renderPaymentInfo = () => {
+       
+        return reqInfo.requestInfo.paymentInfo.map(item => {
+            const amount = calculatePersentage(item.pers)
+            return (
+                <View >
+                    <View style={styles.dateview}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '80%' }}>
+                            <Text style={styles.dateTxt}>{item.PayDate}</Text>
+                            <Text style={styles.dateTxt}>{amount}</Text>
+                        </View>
+                        <View style={styles.IconView}>
+                            <AntDesign
+                                name={"checkcircle"}
+                                color={colors.puprble}
+                                size={20} />
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+    }
+    const calculatePersentage = (persentage) => {
+
+        const ReqPrice = reqInfo.Cost
+        const fact = ReqPrice * persentage
+        const realAmount = fact / 100
+
+        return realAmount
+    }
+
 
     const renderMultibleDatesRequest = () => {
         return reqInfo.requestInfo.reservationDetail.map(item => {
@@ -545,8 +586,10 @@ const ProviderShowRequest = (props) => {
                 {reqInfo.requestInfo.reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
                 {renderfinalCost()}
+                {isRequestWaitingPayForPaymentInfo()}
                 {moreModal()}
                 {renderModal()}
+
             </ScrollView>
         </View>
     )

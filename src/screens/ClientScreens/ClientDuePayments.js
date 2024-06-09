@@ -77,7 +77,7 @@ const ClientDuePayments = (props) => {
                 if (payment.paymentStutes === 'not paid' && paymentDate <= todayDate) {
                     allowed.push(payment)
                 }
-                
+
                 if (index == element.requestInfo.paymentInfo?.length - 1) {
                     const fakeElement = {
                         payments: [...element.payments],
@@ -108,7 +108,7 @@ const ClientDuePayments = (props) => {
     }
 
     const selectedRequestDataAccselectedPayment = (reqId) => {
-        const reqData = filterRequestAccordingPayment()
+        const reqData = queryRequest()
         return reqData.filter(item => {
             return item.requestInfo.RequestId === reqId
         })
@@ -177,7 +177,7 @@ const ClientDuePayments = (props) => {
                         </View>
 
                         <View style={{ position: 'absolute', bottom: 10, width: '100%' }}>
-                            {/* <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqData: { ...selectedRequest.requestInfo, relatedCamp: { ...selectedRequest.serviceCamp }, services: { ...selectedRequest.serviceData } }, fromclientDuePayment: fromclientDuePayment })}>
+                            {/* <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo: { ...selectedRequest.requestInfo, relatedCamp: { ...selectedRequest.serviceCamp }, services: { ...selectedRequest.serviceData } }, fromclientDuePayment: fromclientDuePayment })}>
                                 <Text style={styles.pressTxt}>تفاصيل الحجز</Text>
                             </Pressable> */}
                             <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { reqInfo: selectedRequest, fromclientDuePayment: fromclientDuePayment, ID: ID, amount: amount })}>
