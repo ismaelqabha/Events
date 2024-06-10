@@ -16,6 +16,14 @@ const RequestDuePaymentsShow = (props) => {
     const [paymentOwner, setPaymentOwner] = useState([])
     const [payments, setPayments] = useState([])
 
+    const filterPaymentInfo = () => {
+        return ReqPaymentInfo?.filter(item => {
+            return item.paymentStutes === 'not paid'
+        })
+    }
+
+    const paymentNotPaid = filterPaymentInfo()
+
     useEffect(() => {
         checkSourse()
       }, [])
@@ -58,15 +66,10 @@ const RequestDuePaymentsShow = (props) => {
         )
     }
 
-    const filterPaymentInfo = () => {
-        return ReqPaymentInfo?.filter(item => {
-            return item.paymentStutes === 'not paid'
-        })
-    }
+   
 
     const renderPaymentInfo = () => {
-        const data = filterPaymentInfo()
-        return data.map(item => {
+        return paymentNotPaid.map(item => {
             const amount = calculatePersentage(item.pers)
             const ID = item.id
             return (
@@ -94,16 +97,6 @@ const RequestDuePaymentsShow = (props) => {
         return realAmount
     }
 
-    // const calculateRestPrice = () => {
-    //     var paymentSum = 0
-    //     paymentDetail.forEach(element => {
-    //         paymentSum = paymentSum + element.PaymentAmount
-    //     });
-    //     const totalPay = paymentSum
-    //     const restPrice = requestCost - totalPay
-    //     return restPrice
-    // }
-
     const renderPayments = () => {
         return payments.map(item => {
             return (
@@ -124,13 +117,6 @@ const RequestDuePaymentsShow = (props) => {
         })
     }
 
-    const renderPaymentButton = () => {
-        return (
-            <Pressable style={styles.buttonView}>
-                <Text style={styles.paymentTxt}>دفع</Text>
-            </Pressable>
-        )
-    }
 
     useEffect(() => {
 
@@ -141,10 +127,10 @@ const RequestDuePaymentsShow = (props) => {
             {header()}
 
             <ScrollView>
-                <View style={{ height: 300 }}>
+                {paymentNotPaid.length > 0 &&<View style={{ height: 300 }}>
                     <Text style={styles.paymentTxt}>الدفعات الغير مدفوعة</Text>
                     {renderPaymentInfo()}
-                </View>
+                </View>}
 
                 {payments.length > 0 && <View style={{ height: 200 }}>
                     <Text style={styles.paymentTxt}>الدفعات المدفوعة</Text>

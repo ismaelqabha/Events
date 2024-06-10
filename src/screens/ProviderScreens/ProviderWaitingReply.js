@@ -12,8 +12,6 @@ import { showMessage } from '../../resources/Functions'
 
 const ProviderWaitingReply = () => {
   const { requestInfoByService } = useContext(SearchContext);
-
-
   const [fromWaitingScreen, setFromWaitingScreen] = useState(true)
 
   const [monthly, setMonthly] = useState(false)
@@ -33,13 +31,6 @@ const ProviderWaitingReply = () => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-
-  // const today = moment(new Date(), "YYYY-MM-DD")
-  // const day = today.format('D')
-  // const month = today.format('M')
-  // const year = today.format('YYYY')
-  // const todayDate = year + '-' + month + '-' + day
-
 
   const allRequestingDates = []
   const manageArrayDates = []
@@ -106,30 +97,6 @@ const ProviderWaitingReply = () => {
     setUseSpacificDateToSearch(false)
   }, [])
 
-  // const checkDate = (d) => {
-  //   const resDate = moment(d, "YYYY-MM-DD")
-
-  //   const Day = resDate.format('D')
-  //   const Month = resDate.format('M')
-  //   const Year = resDate.format('YYYY')
-
-  //   // console.log(Year, '>=', year, Year >= year, Month, '>=', month, Month >= month);
-  //   if (Year >= year && Month >= month) {
-  //     if (Year == year && Month == month) {
-
-  //       if (Day > day) {
-  //         return true
-  //       } else {
-  //         return false
-  //       }
-  //     } else {
-  //       return true
-  //     }
-  //   } else {
-  //     return false
-  //   }
-  // }
-
   var BookDate
   var todayDate = new Date();
 
@@ -137,9 +104,6 @@ const ProviderWaitingReply = () => {
   todayDate.setMinutes(0);
   todayDate.setSeconds(0);
   todayDate.setMilliseconds(0);
-
-
-
 
   const getBookingInfo = () => {
     if (requestInfoByService.message !== "no Request") {

@@ -271,12 +271,12 @@ const MakePayment = (props) => {
   const makePayment = (method) => {
 
     const reqPayIndex = reqPayments.findIndex(elme => elme.id === ID)
-    console.log("reqPayIndex", reqPayIndex);
+    //console.log("reqPayIndex", reqPayIndex);
     const reqPay = reqPayments
     if (reqPayIndex > -1) {
       reqPay[reqPayIndex].paymentStutes = 'paid'
     }
-    console.log("reqPay[reqPayIndex]", reqPay[reqPayIndex]);
+    //console.log("reqPay[reqPayIndex]", reqPay[reqPayIndex]);
     setReqPayments(reqPay[reqPayIndex]);
    
     if (realPayments.length === 0) { /// there is now any payments for this request
@@ -306,7 +306,9 @@ const MakePayment = (props) => {
       }
     }
   }
+
   const createPayment = (newRequestData, method) => {
+
     const addNewPayment = {
       ReqId: reqID,
       PaymentAmount: amount,
@@ -327,7 +329,6 @@ const MakePayment = (props) => {
       setPaymentInfo([...fund])
 
       if (res.message === 'Payment Created') {
-
         fund.push(addNewPayment);
         ToastAndroid.showWithGravity(
           'تم الدفع بنجاح',
@@ -345,13 +346,14 @@ const MakePayment = (props) => {
       }
     })
   }
+  
   /// update request info 
   const updateRequestInfo = (newwData) => {
     const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqID)
     const lastPayments = requestInfoAccUser[requestInfoAccUserIndex].payments
 
-    console.log("lastPayments", lastPayments);
-    console.log("paymentInfo", paymentInfo);
+    // console.log("lastPayments", lastPayments);
+    // console.log("paymentInfo", paymentInfo);
 
 
     updateRequest(newwData).then(res => {

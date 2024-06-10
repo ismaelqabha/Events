@@ -24,30 +24,7 @@ const ProviderShowRequest = (props) => {
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-    console.log("reqInfo",reqInfo);
-
-    // const [requestingDate , setRequestingDate] = useState()
-    // const [requestingDetail , setRequestingDetail] = useState([])
-    // const [requestingCost , setRequestingCost] = useState()
-    
-    // const [singleRequestingDetail , setsingleRequestingDetail] = useState([])
-
-    // console.log(fromProviderDuePay);
-
-
-    // if(fromProviderDuePay){
-    //     setRequestingDate(reqInfo[0].requestInfo.ReqDate)
-    //     setRequestingDetail(reqInfo[0].requestInfo.reservationDetail)
-    //     setRequestingCost(reqInfo[0].requestInfo.Cost)
-       
-    //     // setsingleRequestingDetail(reqInfo[0].requestInfo.reservationDetail)
-    // }else{
-    //     setRequestingDate(reqInfo.requestInfo.ReqDate)
-    //     setRequestingDetail(reqInfo.requestInfo.reservationDetail)
-    //     setRequestingCost(reqInfo.requestInfo.Cost)
-        
-    //     // setsingleRequestingDetail(reqInfo.requestInfo.reservationDetail[0])
-    // }
+    console.log("reqInfo", reqInfo.ReqDate);
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
@@ -336,14 +313,13 @@ const ProviderShowRequest = (props) => {
                         color={"black"}
                         size={25} />
                 </Pressable>
-                <Pressable onPress={moreModalPress}
-                >
+                {fromProviderDuePay && <Pressable onPress={moreModalPress}>
                     <Fontisto
                         style={styles.icon}
                         name={"more-v"}
                         color={"black"}
                         size={20} />
-                </Pressable>
+                </Pressable>}
             </View>)
     }
     const renderSendingReqDate = () => {
@@ -587,7 +563,7 @@ const ProviderShowRequest = (props) => {
 
                 {renderfinalCost()}
                 {isRequestWaitingPayForPaymentInfo()}
-                {moreModal()}
+                {!fromProviderDuePay && moreModal()}
                 {renderModal()}
 
             </ScrollView>
