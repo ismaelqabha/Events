@@ -11,14 +11,6 @@ import { LoginGoogleUser } from '../../resources/API';
 const GoogleSignInButton = (props) => {
 
 
-    useEffect(() => {
-        GoogleSignin.configure({
-            webClientId: '789188949169-djr193kf3io9steeo3u90cle8ennp5po.apps.googleusercontent.com',
-            offlineAccess: true,
-            forceCodeForRefreshToken: true,
-        });
-    }, []);
-
     const handleSignIn = async () => {
         try {
             await GoogleSignin.hasPlayServices();
@@ -41,7 +33,7 @@ const GoogleSignInButton = (props) => {
     };
 
     const NavigateToSplash = async (userInfo) => {
-        await asyncFunctions.setItem('googleUserInfo', JSON.stringify(userInfo));
+        await asyncFunctions.setItem('userInfo', JSON.stringify(userInfo));
         props.nav.navigate(ScreenNames.Splash, { signIn: true });
     }
 

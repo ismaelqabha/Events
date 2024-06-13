@@ -3,10 +3,12 @@ import React from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { asyncFunctions } from '../resources/Functions';
 import { ScreenNames } from '../../route/ScreenNames';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 const LogOut = () => {
   const navigation = useNavigation(); // corrected from navigaton to navigation
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await GoogleSignin.signOut()
     asyncFunctions.removeItem('userInfo')
       .then(() => {
         navigation.replace(ScreenNames.SignIn);
