@@ -6,6 +6,7 @@ import { asyncFunctions, showMessage } from '../../resources/Functions';
 import { colors } from '../../assets/AppColors';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames';
+import { LoginGoogleUser } from '../../resources/API';
 
 const GoogleSignInButton = (props) => {
 
@@ -22,14 +23,27 @@ const GoogleSignInButton = (props) => {
         try {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
-            showMessage('تم تسجيل الدخول بنجاح');
-            await asyncFunctions.setItem('googleUserInfo', JSON.stringify(userInfo));
-            props.nav.navigate(ScreenNames.Splash, { signIn: true });
+            await LoginGoogleUser({ idToken: userInfo.idToken }).then((res) => {
+                if (res.message === "User created") {
+                    showMessage('تم انشاء الحساب بنجاح');
+                    NavigateToSplash(userInfo)
+                } else if (res.message === "User already exists") {
+                    showMessage('تم تسجيل الدخول بنجاح');
+                    NavigateToSplash(userInfo)
+                } else {
+                    showMessage('حدث خطأ أثناء تسجيل الدخول');
+                }
+            })
         } catch (error) {
             console.error('Error signing in with Google:', error);
             showMessage('حدث خطأ أثناء تسجيل الدخول');
         }
     };
+
+    const NavigateToSplash = async (userInfo) => {
+        await asyncFunctions.setItem('googleUserInfo', JSON.stringify(userInfo));
+        props.nav.navigate(ScreenNames.Splash, { signIn: true });
+    }
 
     return (
         <Pressable style={styles.googleBtn} onPress={handleSignIn}>
