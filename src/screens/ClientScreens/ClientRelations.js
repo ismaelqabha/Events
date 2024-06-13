@@ -5,13 +5,9 @@ import Feather from "react-native-vector-icons/Feather"
 import Entypo from "react-native-vector-icons/Entypo"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Fontisto from "react-native-vector-icons/Fontisto";
-
-import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from "moment";
 import SearchContext from '../../../store/SearchContext';
 import UsersContext from '../../../store/UsersContext';
 import { colors } from '../../assets/AppColors';
-import { images } from '../../assets/photos/images';
 import { ScreenNames } from '../../../route/ScreenNames';
 
 
@@ -46,10 +42,14 @@ const ClientRelations = (props) => {
         <TextInput
           style={styles.searchinput}
           keyboardType="default"
-          placeholder='بحث الخدمات'
+          placeholder='بحث العلاقات'
           onChangeText={(value) => setSearched(value)}
         />
-        <Image style={styles.img} source={images.search} />
+        <AntDesign
+            style={styles.icon}
+            name={"search1"}
+            color={"black"}
+            size={25} />
       </View>
     )
   }
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: '90%',
     borderRadius: 8,
+    paddingRight: 10
   },
   searchinput: {
     alignContent: 'center',
@@ -127,12 +128,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center'
   },
-  img: {
-    width: 30,
-    height: 30,
-    marginLeft: 7,
-    alignSelf: 'center'
-  },
+
   basicInfo: {
     fontSize: 18,
     color: colors.puprble,

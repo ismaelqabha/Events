@@ -12,13 +12,19 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { updateRequest } from '../../resources/API';
 import { images } from '../../assets/photos/images';
 
+import PaymentDetailComp from '../../components/PaymentDetailComp';
+
 
 const ProviderShowRequest = (props) => {
-    const { isFirst, campInfo, setRequestInfoByService } = useContext(SearchContext);
+    const { isFirst, campInfo, setRequestInfoByService, requestInfoByService } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
-    const { reqInfo } = props.route?.params || {}
+
+    const { reqInfo ,fromProviderDuePay} = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+    console.log("reqInfo", reqInfo.ReqDate);
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
@@ -207,7 +213,7 @@ const ProviderShowRequest = (props) => {
                 },
                 {
                     text: 'نعم',
-                    onPress: () => accept(),
+                    onPress: () => onAcceptPress(),
                     style: 'destructive', // Use 'destructive' for a red-colored button
                 },
             ],
@@ -232,10 +238,25 @@ const ProviderShowRequest = (props) => {
             { cancelable: false } // Prevent closing the alert by tapping outside
         );
     }
+    const refuse = () => {
+        
+        const newData = {
+            RequestId: reqInfo.requestInfo.RequestId,
+            ReqStatus: 'refuse'
+        }
+        updateInfo(newData)
+        setShowMoreModal(false)
+    }
     const updateInfo = (infoData) => {
+        const requestInfoAccServiceIndex = requestInfoByService?.findIndex(item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId)
+       
         updateRequest(infoData).then(res => {
             if (res.message === 'Updated Sucessfuly') {
-                setRequestInfoByService([...infoData])
+                const data = requestInfoByService || [];
+                if (requestInfoAccServiceIndex > -1) {
+                    data[requestInfoAccServiceIndex] = { ...data[requestInfoAccServiceIndex], ...infoData };
+                }
+                setRequestInfoByService([...data])
 
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
@@ -245,22 +266,39 @@ const ProviderShowRequest = (props) => {
             }
         })
     }
-    const accept = () => {
-        const newData = {
-            RequestId: reqInfo.requestInfo.RequestId,
-            ReqStatus: 'waiting pay'
-        }
-        updateInfo(newData)
+
+
+
+    //// set the payments Info
+    const renderPaymentDetail = () => {
+        return (
+            <View>
+                <PaymentDetailComp reqInfo={reqInfo} setShowPaymentModal={setShowPaymentModal}/>
+            </View>
+
+        )
+    }
+    const renderModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={showPaymentModal}
+                animationType="slide"
+                onRequestClose={() => setShowPaymentModal(false)}>
+                <View style={styles.centeredPaymentView}>
+                    <View style={styles.detailPaymentModal}>
+
+                        {renderPaymentDetail()}
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+    const onAcceptPress = () => {
+        setShowPaymentModal(true)
         setShowMoreModal(false)
     }
-    const refuse = () => {
-        const newData = {
-            RequestId: reqInfo.requestInfo.RequestId,
-            ReqStatus: 'refuse'
-        }
-        updateInfo(newData)
-        setShowMoreModal(false)
-    }
+
 
 
 
@@ -275,14 +313,13 @@ const ProviderShowRequest = (props) => {
                         color={"black"}
                         size={25} />
                 </Pressable>
-                <Pressable onPress={moreModalPress}
-                >
+                {fromProviderDuePay && <Pressable onPress={moreModalPress}>
                     <Fontisto
                         style={styles.icon}
                         name={"more-v"}
                         color={"black"}
                         size={20} />
-                </Pressable>
+                </Pressable>}
             </View>)
     }
     const renderSendingReqDate = () => {
@@ -303,8 +340,6 @@ const ProviderShowRequest = (props) => {
             </View>
         )
     }
-
-
     const renderReqDate = (item) => {
         return (
             <View>
@@ -454,6 +489,46 @@ const ProviderShowRequest = (props) => {
         })
     }
 
+    ///// for showing Request Information detail
+    const isRequestWaitingPayForPaymentInfo = () => {
+        if (reqInfo.requestInfo.paymentInfo.length > 0) {
+            return (<View>
+                <Text style={styles.labelText}>تفاصيل الدفعات</Text>
+                <View style={styles.ContentView}>{renderPaymentInfo()}</View>
+            </View>)
+        }
+    }
+    const renderPaymentInfo = () => {
+       
+        return reqInfo.requestInfo.paymentInfo.map(item => {
+            const amount = calculatePersentage(item.pers)
+            return (
+                <View >
+                    <View style={styles.dateview}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '80%' }}>
+                            <Text style={styles.dateTxt}>{item.PayDate}</Text>
+                            <Text style={styles.dateTxt}>{amount}</Text>
+                        </View>
+                        <View style={styles.IconView}>
+                            <AntDesign
+                                name={"checkcircle"}
+                                color={colors.puprble}
+                                size={20} />
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+    }
+    const calculatePersentage = (persentage) => {
+
+        const ReqPrice = reqInfo.Cost
+        const fact = ReqPrice * persentage
+        const realAmount = fact / 100
+
+        return realAmount
+    }
+
 
     const renderMultibleDatesRequest = () => {
         return reqInfo.requestInfo.reservationDetail.map(item => {
@@ -487,7 +562,10 @@ const ProviderShowRequest = (props) => {
                 {reqInfo.requestInfo.reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
                 {renderfinalCost()}
-                {moreModal()}
+                {isRequestWaitingPayForPaymentInfo()}
+                {!fromProviderDuePay && moreModal()}
+                {renderModal()}
+
             </ScrollView>
         </View>
     )
@@ -582,6 +660,19 @@ const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    detailPaymentModal: {
+        width: '100%',
+        height: '80%',
+        backgroundColor: '#ffffff',
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
+    },
+    centeredPaymentView: {
+        flex: 1,
+        justifyContent: 'flex-end',
         alignItems: 'center',
         backgroundColor: '#00000099',
     },

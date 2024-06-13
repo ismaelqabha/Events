@@ -4,6 +4,5 @@ export const images = {
     profileFemalePicture: require('../photos/femaleUser.png'),
     accept: require('../photos/accept.png'),
     refuse: require('../photos/refuse.png'),
-    realations: require('../photos/relation.png'),
-    search: require('../photos/search1.png')
+    realations: require('../photos/relation.png')
 }

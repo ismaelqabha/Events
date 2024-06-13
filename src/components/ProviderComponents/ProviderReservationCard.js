@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, Image, Pressable, Alert, ToastAndroid } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import { colors } from '../../assets/AppColors'
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import Fontisto from "react-native-vector-icons/Fontisto"
-import UsersContext from '../../../store/UsersContext'
 import SearchContext from '../../../store/SearchContext'
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames'
@@ -10,17 +10,13 @@ import moment from "moment";
 
 
 const ProviderReservationCard = (props) => {
-    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen,fromProviderPartallyPaid, resDate } = props
-    const { } = useContext(UsersContext);
+    const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen, fromProviderPartallyPaid, resDate } = props
     const { eventTypeInfo } = useContext(SearchContext);
     const navigation = useNavigation();
     const reqInfo = { ...props }
 
-
-
-
     var filteredRes = reqInfo.requestInfo.reservationDetail.filter((detail) => detail.reservationDate.slice(0, 10) == resDate)
-
+    const [providerSide, setProviderSide] = useState(true)
 
     const renderEventType = () => {
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.Id === props.requestInfo.ReqEventTypeId)
@@ -91,77 +87,59 @@ const ProviderReservationCard = (props) => {
         </View>
         )
     }
+    const filterPAyments = () => {
+        return props.requestInfo.paymentInfo.filter(item => {
+            return item.paymentStutes === 'paid'
+        })
+    }
+    const calculatePersentage = () => {
+        const filteredPayment = filterPAyments()
+        var persentageSum = 0
+        filteredPayment.forEach(element => {
+            persentageSum += element.pers
+        });
+
+        const allAmount = props.requestInfo.Cost
+        const fact = allAmount * persentageSum
+        const realAmount = fact / 100
+
+        return realAmount
+    }
     const renderPayRemain = () => {
+        const paidAmount = calculatePersentage()
         return (
             <View style={styles.dateview}>
-                <Text style={styles.Txt}>{'الباقي  ' + '5000'}</Text>
-                <Text style={styles.Txt}>{'المدفوع  ' + '5000'}</Text>
+                <View>
+                    <Text style={styles.dateTxt}>{paidAmount}</Text>
+                    <Text style={styles.labelDateTxt}>المدفوع</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <MaterialIcons
+                        name={"payments"}
+                        color={colors.puprble}
+                        size={15} />
+                </View>
             </View>
         )
     }
-    // const updateInfo = (infoData) => {
-    //     updateRequest(infoData).then(res => {
-    //         if (res.message === 'Updated Sucessfuly') {
-    //             setRequestInfoByService([...data])
+    const renderReservationPaidStatus = () => {
+        return (
+            <View style={styles.dateview}>
+                {props.requestInfo.ReqStatus === 'partially paid' ?
+                    <Text style={styles.Txt}>مدفوع جزئي</Text> :
+                    <Text style={styles.Txt}>مدفوع كامل</Text>}
+            </View>
+        )
+    }
+    const renderPaymentDetButton = () => {
+        return (
+            <Pressable style={{ width: '50%', alignItems: 'center', justifyContent: 'center', position: 'absolute', bottom: 5 }}
+                onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { reqInfo, providerSide })}>
+                <Text style={styles.payDetTxt}>تفاصيل الدفعات</Text>
+            </Pressable>
+        )
+    }
 
-    //             ToastAndroid.showWithGravity(
-    //                 'تم التعديل بنجاح',
-    //                 ToastAndroid.SHORT,
-    //                 ToastAndroid.BOTTOM,
-    //             );
-    //         }
-    //     })
-    // }
-    // const accept = () => {
-    //     const newData = {
-    //         RequestId: props.requestInfo.RequestId,
-    //         ReqStatus: 'waiting pay'
-    //     }
-    //     updateInfo(newData)
-    // }
-    // const refuse = () => {
-    //     const newData = {
-    //         RequestId: props.requestInfo.RequestId,
-    //         ReqStatus: 'refuse'
-    //     }
-    //     updateInfo(newData)
-    // }
-    // const onAcceptReqPress = () => {
-    //     Alert.alert(
-    //         'تأكيد',
-    //         'هل انت متأكد من قبول طلب الحجز ؟ ',
-    //         [
-    //             {
-    //                 text: 'لا',
-    //                 style: 'cancel',
-    //             },
-    //             {
-    //                 text: 'نعم',
-    //                 onPress: () => accept(),
-    //                 style: 'destructive', // Use 'destructive' for a red-colored button
-    //             },
-    //         ],
-    //         { cancelable: false } // Prevent closing the alert by tapping outside
-    //     );
-    // }
-    // const onRefuseReqPress = () => {
-    //     Alert.alert(
-    //         'تأكيد',
-    //         'هل انت متأكد من رفض طلب الحجز ؟ ',
-    //         [
-    //             {
-    //                 text: 'لا',
-    //                 style: 'cancel',
-    //             },
-    //             {
-    //                 text: 'نعم',
-    //                 onPress: () => refuse(),
-    //                 style: 'destructive', // Use 'destructive' for a red-colored button
-    //             },
-    //         ],
-    //         { cancelable: false } // Prevent closing the alert by tapping outside
-    //     );
-    // }
 
     const requestWaitingReplyCard = () => {
         return (
@@ -237,19 +215,56 @@ const ProviderReservationCard = (props) => {
             )
         })
     }
-    const requestReservationCard = () => {
+
+    const renderPaidReservatins = () => {
+        const paymentData = props.requestInfo.paymentInfo
+        const actualPayments = props.userPayments
+
+        if (actualPayments.length >= 1 && paymentData.length >= 1) {  /// if the client pay one time at the least for this request
+
+            if (actualPayments.length === paymentData.length) {  /// if the client pay all payments
+                return (
+                    <View>
+                        {reservationPaidAllCard()}
+                    </View>
+                )
+            } else {
+                return (
+                    <View>
+                        {reservationPartiallyPaidCard()}
+                    </View>
+                )
+
+            }
+        }
+    }
+    const reservationPartiallyPaidCard = () => {
         return (
-            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
-                {renderPrice()}
-                {renderPayRemain()}
-            </Pressable>
+            <View style={styles.card1}>
+                <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                    {renderPrice()}
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        {renderReservationPaidStatus()}
+                        {renderPayRemain()}
+                    </View>
+                    {renderPaymentDetButton()}
+                </Pressable>
+                {renderClientInfo()}
+            </View>
         )
     }
-    const renderRequestAmounts = () => {
+    const reservationPaidAllCard = () => {
         return (
-            <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
-                {renderPayRemain()}
-            </Pressable>
+            <View style={styles.card1}>
+                <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                    {renderPrice()}
+                    <View style={{ alignItems: 'center', }}>
+                        {renderReservationPaidStatus()}
+                    </View>
+                    {renderPaymentDetButton()}
+                </Pressable>
+                {renderClientInfo()}
+            </View>
         )
     }
 
@@ -279,20 +294,20 @@ const ProviderReservationCard = (props) => {
         }
         if (fromReservationScreen) {
             return (
-                <View style={styles.card1}>
-                    {requestReservationCard()}
-                    {renderClientInfo()}
+                <View >
+                    {renderPaidReservatins()}
+
                 </View>
             )
         }
-        if (fromProviderPartallyPaid) {
-            return (
-                <View style={styles.dueCard1}>
-                    {renderRequestAmounts()}
-                    {renderClientInfo()}
-                </View>
-            )
-        }
+        // if (fromProviderPartallyPaid) {
+        //     return (
+        //         <View style={styles.dueCard1}>
+        //             {renderRequestAmounts()}
+        //             {renderClientInfo()}
+        //         </View>
+        //     )
+        // }
     }
 
 
@@ -310,7 +325,7 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
         width: '90%',
-        height: 170,
+        height: 190,
         alignSelf: 'center',
         margin: 10,
         // borderWidth: 1
@@ -318,7 +333,7 @@ const styles = StyleSheet.create({
     card1: {
         flexDirection: 'row',
         width: '90%',
-        height: 100,
+        height: 150,
         alignSelf: 'center',
         margin: 10,
         // borderWidth: 1
@@ -375,8 +390,12 @@ const styles = StyleSheet.create({
     },
     Txt: {
         fontSize: 15,
-        marginLeft: 20,
-        color: colors.puprble
+        color: colors.puprble,
+        width: 50
+    },
+    payDetTxt: {
+        fontSize: 15,
+        color: colors.puprble,
     },
     labelDateTxt: {
         fontSize: 15

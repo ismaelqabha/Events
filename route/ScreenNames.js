@@ -72,5 +72,8 @@ export const ScreenNames = {
     Splash: 'Splash',
     Results: 'Results',
     SearchServcies: 'SearchServcies',
+    RequestDuePaymentsShow: 'RequestDuePaymentsShow',
+    PaymentDetail: 'PaymentDetail',
+    MakePayment: 'MakePayment'
 
 };

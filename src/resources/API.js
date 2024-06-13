@@ -67,6 +67,12 @@ export const updateService = async body => {
   return await AppFetch(url, 'PATCH', body);
 };
 
+/// Payment
+export const createNewPayment = async body => {
+  const url = 'Payments/makePayment';
+  return await AppFetch(url, 'POST', body);
+};
+
 
 //Service Detail
 // export const getServiceDetail = async body => {

@@ -5,8 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Fontisto from "react-native-vector-icons/Fontisto"
-import { ScreenNames } from '../../route/ScreenNames';
+
 import moment from "moment";
+import { ScreenNames } from '../../route/ScreenNames';
 
 
 const BookingCard = (props) => {
@@ -16,7 +17,13 @@ const BookingCard = (props) => {
     const navigation = useNavigation();
     const data = { ...props }
 
-   
+    const [clientSide, setClientSide] = useState(true)
+
+    //console.log("><<>><",reqInfo);
+    const requestCost = reqInfo.Cost
+    const paymentDetail = reqInfo.reqPayments
+    const serviceName = reqInfo.services
+
     const today = moment(new Date(), "YYYY-MM-DD")
     const day = today.format('D')
     const month = today.format('M')
@@ -107,26 +114,19 @@ const BookingCard = (props) => {
                             {renderPrice(props.Cost)}
                         </View>
                     </Pressable>
+
+                    {stutesType !== 'بأنتظار الرد' &&
+                        <View>
+                            {stutesType !== 'غير متاح' &&
+                                <Pressable style={styles.paymentButton} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { reqInfo, clientSide })}>
+                                    <Text style={styles.itemTxt}>تفاصيل الدفعات</Text>
+                                </Pressable>}
+                        </View>}
+
                 </View >
             </View >
         )
     }
-
-    const renderDuePaySingleReq = () => {
-        return (
-            <View style={styles.dueCard}>
-
-                <Text style={styles.itemTxt}>1000</Text>
-                <View style={{alignItems:'center'}}>
-                    {renderServTitle()}
-                    <Text style={styles.itemTxt}>{props.reservationDetail[0].reservationDate}</Text>
-                </View>
-
-                {renderDueScreenLogo()}
-            </View>
-        )
-    }
-
     /// Multible Requests
     const renderMultiRequests = (stutesType) => {
         return props.reservationDetail.map(item => {
@@ -150,6 +150,13 @@ const BookingCard = (props) => {
                                 </View>
                             </Pressable>
                         </View>
+                        {stutesType !== 'بأنتظار الرد' &&
+                        <View>
+                            {stutesType !== 'غير متاح' &&
+                                <Pressable style={styles.paymentButton}>
+                                    <Text style={styles.itemTxt}>تفاصيل الدفعات</Text>
+                                </Pressable>}
+                        </View>}
                     </View>
                 </View>
             )
@@ -157,23 +164,61 @@ const BookingCard = (props) => {
     }
 
 
+    const renderDuePaySingleReq = () => {
+        return (
+            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { serviceName, requestCost, paymentDetail })}>
+                <Text style={styles.itemTxt}>1000</Text>
+                <View style={{ alignItems: 'center' }}>
+                    {renderServTitle()}
+                    <Text style={styles.itemTxt}>{props.reservationDetail[0].reservationDate}</Text>
+                </View>
+
+                {renderDueScreenLogo()}
+            </Pressable>
+        )
+    }
+    const renderDuePayMultiReq = () => {
+        const reservationLength = props.reservationDetail.length
+        var label = ''
+        if (reservationLength === 2) {
+            label = 'حجز ليومين'
+        }
+        if (reservationLength > 2) {
+            label = { 'أيام': reservationLength }
+        }
+        return (
+            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { requestCost, paymentDetail })}>
+                <Text style={styles.itemTxt}>1000</Text>
+                <View style={{ alignItems: 'center' }}>
+                    {renderServTitle()}
+                    <Text style={styles.itemTxt}>{label}</Text>
+                </View>
+                {renderDueScreenLogo()}
+            </Pressable>
+        )
+    }
+
     const renderReqInfo = () => {
         let stutesType = ''
         if (props.reservationDetail.length > 1) {
 
             if (fromclientDuePayment) {
+                var resDaysCount = 0
                 return props.reservationDetail.map(item => {
-                    if (props.ReqStatus === 'partally paid' && item.reservationDate < todayDate) {
+                    if (props.ReqStatus === 'partially paid' && item.reservationDate < todayDate) {
+                        resDaysCount++
+                    }
+                    if (props.reservationDetail.length === resDaysCount) {
                         return (
                             <View>
-                                {renderDuePaySingleReq()}
+                                {renderDuePayMultiReq()}
                             </View>
                         )
                     }
                 })
 
             } else {
-                if (props.ReqStatus === 'partally paid') {
+                if (props.ReqStatus === 'partially paid') {
                     stutesType = 'محجوز'
                     return (
                         <View >
@@ -181,6 +226,15 @@ const BookingCard = (props) => {
                         </View>
                     )
                 }
+            }
+
+            if (props.ReqStatus === 'partially paid') {
+                stutesType = 'محجوز مدفوع جزئي'
+                return (
+                    <View >
+                        {renderMultiRequests(stutesType)}
+                    </View>
+                )
             }
             if (props.ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
@@ -201,6 +255,14 @@ const BookingCard = (props) => {
             }
             if (props.ReqStatus === 'refuse') {
                 stutesType = 'غير متاح'
+                return (
+                    <View>
+                        {renderMultiRequests(stutesType)}
+                    </View>
+                )
+            }
+            if (props.ReqStatus === 'paid all') {
+                stutesType = 'محجوز'
                 return (
                     <View>
                         {renderMultiRequests(stutesType)}
@@ -229,6 +291,14 @@ const BookingCard = (props) => {
                 }
             }
 
+            if (props.ReqStatus === 'partially paid') {
+                stutesType = 'محجوز مدفوع جزئي'
+                return (
+                    <View >
+                        {renderSingleRequest(stutesType)}
+                    </View>
+                )
+            }
             if (props.ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
                 return (
@@ -253,7 +323,15 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            console.log(fromclientDuePayment, props.ReqStatus, props.reservationDetail[0].reservationDate, todayDate);
+            if (props.ReqStatus === 'paid all') {
+                stutesType = 'محجوز'
+                return (
+                    <View>
+                        {renderSingleRequest(stutesType)}
+                    </View>
+                )
+            }
+            // console.log(fromclientDuePayment, props.ReqStatus, props.reservationDetail[0].reservationDate, todayDate);
 
         }
 
@@ -285,17 +363,16 @@ const styles = StyleSheet.create({
         height: 300,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        margin: 2,
-        marginTop: 20,
+        marginVertical: 25,
     },
     infoView: {
         width: '100%',
-        height: 130,
+        height: 160,
         backgroundColor: 'white',
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        position: 'absolute',
-        bottom: 0,
+        // position: 'absolute',
+        // bottom: 0,
         elevation: 5,
     },
     titleText: {
@@ -336,7 +413,7 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
     detailView: {
-        marginTop: 10,
+        marginTop: 4,
         flexDirection: 'row',
         alignItems: 'center',
         width: '95%',
@@ -364,6 +441,17 @@ const styles = StyleSheet.create({
         marginTop: 15,
 
     },
+    paymentButton: {
+        width: '40%',
+        height: 30,
+        borderWidth: 0.5,
+        marginLeft: 5,
+        alignSelf: 'flex-start',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderColor:colors.puprble,
+        borderRadius: 5
+    }
 })
 
 export default BookingCard;

@@ -482,7 +482,7 @@ const ProviderCreateOffer = (props) => {
             let OfferArr = campInfo || [];
             setCampInfo([...OfferArr])
             if (campInfo[0].campTitle !== OfferTitle) {
-                console.log("res.message", res.message);
+                //console.log("res.message", res.message);
                 if (res.message === 'newCampaign Created') {
                     OfferArr.push(addNewOffer);
                     ToastAndroid.showWithGravity(

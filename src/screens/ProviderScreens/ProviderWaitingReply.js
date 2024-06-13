@@ -7,15 +7,11 @@ import SearchContext from '../../../store/SearchContext'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
-import UsersContext from '../../../store/UsersContext'
 import { showMessage } from '../../resources/Functions'
 
 
 const ProviderWaitingReply = () => {
-  const { requestInfoByService, userInfoBySpiceficId, setUserInfoBySpiceficId,
-    selectMonthforSearch, yearforSearch } = useContext(SearchContext);
-  const { } = useContext(UsersContext);
-
+  const { requestInfoByService } = useContext(SearchContext);
   const [fromWaitingScreen, setFromWaitingScreen] = useState(true)
 
   const [monthly, setMonthly] = useState(false)
@@ -35,13 +31,6 @@ const ProviderWaitingReply = () => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-
-  const today = moment(new Date(), "YYYY-MM-DD")
-  const day = today.format('D')
-  const month = today.format('M')
-  const year = today.format('YYYY')
-  const todayDate = year + '-' + month + '-' + day
-
 
   const allRequestingDates = []
   const manageArrayDates = []
@@ -108,31 +97,13 @@ const ProviderWaitingReply = () => {
     setUseSpacificDateToSearch(false)
   }, [])
 
-  const checkDate = (d) => {
-    const resDate = moment(d, "YYYY-MM-DD")
+  var BookDate
+  var todayDate = new Date();
 
-    const Day = resDate.format('D')
-    const Month = resDate.format('M')
-    const Year = resDate.format('YYYY')
-
-    // console.log(Year, '>=', year, Year >= year, Month, '>=', month, Month >= month);
-    if (Year >= year && Month >= month) {
-      if (Year == year && Month == month) {
-
-        if (Day > day) {
-          return true
-        } else {
-          return false
-        }
-      } else {
-        return true
-      }
-    } else {
-      return false
-    }
-  }
-
-
+  todayDate.setHours(0);
+  todayDate.setMinutes(0);
+  todayDate.setSeconds(0);
+  todayDate.setMilliseconds(0);
 
   const getBookingInfo = () => {
     if (requestInfoByService.message !== "no Request") {
@@ -151,14 +122,16 @@ const ProviderWaitingReply = () => {
       if (item.requestInfo.reservationDetail.length > 1) {
         //if reservation detail has more than one date
         let result = item.requestInfo.reservationDetail.find(multiItem => {
-          return checkDate(multiItem.reservationDate)
+          BookDate = new Date(multiItem.reservationDate)
+          return BookDate > todayDate
         })
         return result
 
       } else {
 
         //if reservation detail has one date
-        return checkDate(item.requestInfo.reservationDetail[0].reservationDate)
+        BookDate = new Date(item.requestInfo.reservationDetail[0].reservationDate)
+        return BookDate > todayDate
       }
     })
     return reqInfo

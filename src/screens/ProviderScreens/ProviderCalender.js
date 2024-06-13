@@ -10,10 +10,10 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import { getbookingDates } from '../../resources/API';
 
 const ProviderCalender = (props) => {
-    const {  requestInfoByService } = useContext(SearchContext);
+    const { requestInfoByService } = useContext(SearchContext);
     const { } = useContext(UsersContext);
     const [client, setClient] = useState(null)
-   
+
 
     const [mutibleReservation, setMutibleReservation] = useState(true)
 
@@ -23,7 +23,7 @@ const ProviderCalender = (props) => {
 
     useEffect(() => {
         setClient('بحث الزبائن')
-        
+
     }, [])
 
 
@@ -31,7 +31,9 @@ const ProviderCalender = (props) => {
     const getBookingInfo = () => {
         if (requestInfoByService.message !== "no Request") {
             const reqInfo = requestInfoByService.filter(item => {
-                return item.requestInfo.ReqStatus === 'paid'
+                const requstStatus = item.requestInfo.ReqStatus === 'partially paid' || item.requestInfo.ReqStatus === 'paid all' ||
+                    item.requestInfo.ReqStatus === 'completed'
+                return requstStatus
             })
             return reqInfo
         } else {

@@ -45,8 +45,8 @@ const ProviderBookingRequest = (props) => {
             size={25} />
         </Pressable>
         <Text style={styles.txt}>الحجوزات</Text>
-         {/* this a place that check the data   */}
-        {fullDateObj > todayDateObj && <Pressable onPress={moreModalPress}
+        {/* this a place that check the data   */}
+        {fulDate > todayDate && <Pressable onPress={moreModalPress}
         >
           <Fontisto
             style={styles.iconmore}
@@ -145,7 +145,7 @@ const ProviderBookingRequest = (props) => {
     })
 
   }
- 
+
   const deleteRecordDate = () => {
     const datesArray = bookingDates[0].dates.filter(item => item.time !== fulDate)
     //console.log("datesArray", datesArray);
@@ -200,10 +200,13 @@ const ProviderBookingRequest = (props) => {
 
   const getBookingInfo = () => {
     const reqInfo = requestInfoByService.filter(item => {
-      return item.requestInfo.ReqStatus === 'partally paid' && item.requestInfo.reservationDetail[0].reservationDate === fulDate
+      const requstStatus = item.requestInfo.ReqStatus === 'partially paid' || item.requestInfo.ReqStatus === 'paid all' ||
+        item.requestInfo.ReqStatus === 'completed'
+      return requstStatus && item.requestInfo.reservationDetail[0].reservationDate === fulDate
     })
     return reqInfo
   }
+
   const renderBookingCard = () => {
     const data = getBookingInfo()
     return data.map(item => {

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import {   Payment } from '../src/resources/data';
 import SearchContext from '../store/SearchContext';
 
 
 const SearchProvider = props => {
 
   //user
-  const [userInfoBySpiceficId, setUserInfoBySpiceficId] = useState();
+  
 
   const [cat, setCat] = useState('');
   const [isFirst, setIsfirst] = useState()
@@ -53,8 +52,8 @@ const SearchProvider = props => {
   const [cityselected, setcityselected] = useState("");
   const [regionselect, setregionselect] = useState("");
   const [selectDateforSearch, setselectDateforSearch] = useState();
-  const [selectMonthforSearch, setselectMonthforSearch] = useState();
-  const [yearforSearch, setYearforSearch] = useState();
+  // const [selectMonthforSearch, setselectMonthforSearch] = useState();
+  // const [yearforSearch, setYearforSearch] = useState();
   const [Categorychozen, setCategorychozen] = useState(false)
   const [userRegion, setUserRegion] = useState('المثلث الشمالي');
   const [requestedDate, setrequestedDate] = useState([])
@@ -63,7 +62,7 @@ const SearchProvider = props => {
 
   //Booking
 
-  const [userPayment, setUserPayment] = useState(Payment || [])
+  const [userPayment, setUserPayment] = useState([])
   const [serviceImg, setserviceImg] = useState([])
   const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
@@ -75,8 +74,7 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
-        userInfoBySpiceficId,
-        setUserInfoBySpiceficId,
+        
         cat,
         setCat,
         isFirst,
@@ -129,10 +127,10 @@ const SearchProvider = props => {
         setregionselect,
         selectDateforSearch,
         setselectDateforSearch,
-        selectMonthforSearch,
-        setselectMonthforSearch,
-        yearforSearch,
-        setYearforSearch,
+        // selectMonthforSearch,
+        // setselectMonthforSearch,
+        // yearforSearch,
+        // setYearforSearch,
         datesforBooking,
         setDatesforBooking,
         periodDatesforSearch,

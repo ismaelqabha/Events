@@ -21,7 +21,7 @@ import { colors } from '../assets/AppColors';
 const EventsCard = (props) => {
     
     const navigation = useNavigation();
-    const { eventName, eventDate, eventCost, eventTitleId, EventId , eventEditing } = props;
+    const { eventName, eventDate, eventCost, eventTitleId, EventId , eventEditing , setIsRefreshing } = props;
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(false)
     const [deleteEvent, setDeleteEvent] = useState(false)
@@ -212,6 +212,7 @@ const EventsCard = (props) => {
                 ev[eventItemIndex] = editEventItem;
             }
              setEventInfo([...ev])
+             setIsRefreshing(true)
             console.log("Ok");
             // eventEditing(ev)
         })

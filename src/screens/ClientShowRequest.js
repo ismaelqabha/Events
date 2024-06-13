@@ -21,13 +21,16 @@ import { ScreenNames } from '../../route/ScreenNames';
 
 const ClientShowRequest = (props) => {
     const { totalPrice, setTotalPrice, setRequestInfoAccUser, eventInfo, setEventInfo, requestInfoAccUser } = useContext(SearchContext);
-    const { reqInfo } = props.route?.params || {}
+    const { reqInfo, fromclientDuePayment } = props.route?.params || {}
 
+   
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
 
-    const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo.eventData.EventId)
+    const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo?.eventData?.EventId)
+
+    console.log("reqInfo???", reqInfo);
 
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
@@ -40,10 +43,8 @@ const ClientShowRequest = (props) => {
         }
     }
 
-    const eventDatesArr = reqInfo.eventData.eventDate
+    const eventDatesArr = reqInfo?.eventData?.eventDate
 
-
-   
 
     const getSerDetail = (id) => {
         const serviceData = reqInfo.services[0].additionalServices.filter(element => {
@@ -105,10 +106,10 @@ const ClientShowRequest = (props) => {
                     // console.log(">>>current req>>>>", reqInfo.reservationDetail);
 
                     if (allreq.requestInfo.reservationDetail.length > 1) {
-                         return allreq.requestInfo.reservationDetail.find(morethanOne => {
+                        return allreq.requestInfo.reservationDetail.find(morethanOne => {
                             // console.log(morethanOne.reservationDate, item.reservationDate, morethanOne.reservationDate.includes(item.reservationDate));
                             return morethanOne.reservationDate.includes(item.reservationDate)
-                         })
+                        })
                     } else {
                         // console.log(allreq.requestInfo.reservationDetail[0].reservationDate, item.reservationDate, allreq.requestInfo.reservationDetail[0].reservationDate.includes(item.reservationDate));
                         return allreq.requestInfo.reservationDetail[0].reservationDate.includes(item.reservationDate)
@@ -152,7 +153,7 @@ const ClientShowRequest = (props) => {
     const updateEventData = () => {
 
         checkEventDateHasMoreThanOneReq()
-       
+
         const lastTotal = reqInfo.eventData.eventCost - reqInfo.Cost
 
         const editEventItem = {
@@ -179,7 +180,6 @@ const ClientShowRequest = (props) => {
         });
     }
 
-
     const onPressHandler = () => {
         props.navigation.goBack();
     }
@@ -189,7 +189,14 @@ const ClientShowRequest = (props) => {
     }
 
     useEffect(() => {
-        calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
+        var dates
+        if (Array.isArray(reqInfo.reservationDetail)) {
+            dates = reqInfo.reservationDetail?.map(val => val.reservationDate)
+        } else {
+            dates = reqInfo.reservationDetail.reservationDate
+        }
+       
+        calculateTotalPrice(reqInfo.reservationDetail, dates, reqInfo.services[0], setTotalPrice);
     }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
 
 
@@ -347,14 +354,14 @@ const ClientShowRequest = (props) => {
                         size={25} />
                 </Pressable>
                 {/* <Text style={styles.headerText}>تفاصيل الحجز</Text> */}
-                <Pressable onPress={moreModalPress}
+                {!fromclientDuePayment && <Pressable onPress={moreModalPress}
                 >
                     <Fontisto
                         style={styles.icon}
                         name={"more-v"}
                         color={"black"}
                         size={20} />
-                </Pressable>
+                </Pressable>}
             </View>)
     }
     const renderSendingReqDate = () => {
@@ -532,6 +539,45 @@ const ClientShowRequest = (props) => {
             )
         })
     }
+    const isRequestWaitingPayForPaymentInfo = () => {
+        if (reqInfo.paymentInfo.length > 0) {
+            return (<View>
+                <Text style={styles.labelText}>تفاصيل الدفعات</Text>
+                <View style={styles.ContentView}>{renderPaymentInfo()}</View>
+            </View>)
+        }
+    }
+    const renderPaymentInfo = () => {
+       
+        return reqInfo.paymentInfo.map(item => {
+            const amount = calculatePersentage(item.pers)
+            return (
+                <View >
+                    <View style={styles.dateview}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '80%' }}>
+                            <Text style={styles.dateTxt}>{item.PayDate}</Text>
+                            <Text style={styles.dateTxt}>{amount}</Text>
+                        </View>
+                        <View style={styles.IconView}>
+                            <AntDesign
+                                name={"checkcircle"}
+                                color={colors.puprble}
+                                size={20} />
+                        </View>
+                    </View>
+                </View>
+            )
+        })
+    }
+
+    const calculatePersentage = (persentage) => {
+
+        const ReqPrice = reqInfo.Cost
+        const fact = ReqPrice * persentage
+        const realAmount = fact / 100
+
+        return realAmount
+    }
 
 
     const renderMultibleDatesRequest = () => {
@@ -558,9 +604,9 @@ const ClientShowRequest = (props) => {
 
 
 
-    useEffect(() => {
-        calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
-    }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
+    // useEffect(() => {
+    //  calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
+    // }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
 
     return (
         <View style={styles.container}>
@@ -579,7 +625,9 @@ const ClientShowRequest = (props) => {
                     setShowDetailRecipt={setShowDetailRecipt}
                     data={reqInfo.services}
                 />
-                {moreModal()}
+
+                {isRequestWaitingPayForPaymentInfo()}
+                {!fromclientDuePayment && moreModal()}
             </ScrollView>
         </View>
     )
