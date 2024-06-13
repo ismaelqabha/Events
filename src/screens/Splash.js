@@ -22,7 +22,6 @@ export default function Splash(props) {
             asyncFunctions.getItem("userInfo")
                 .then(userInfo => {
                     userInfo = JSON.parse(userInfo)
-                    console.log("userInfo ", userInfo);
                     userEmail = userInfo?.Email
                     userPassword = userInfo?.Password
                     if (!userEmail || !userPassword) {
