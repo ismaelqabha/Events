@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { colors } from '../../assets/AppColors'
 import Entypo from "react-native-vector-icons/Entypo";
 import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { SelectList } from 'react-native-dropdown-select-list';
 // import { regionData } from '../../resources/data';
-import { getCities } from '../../resources/API';
+import { getCities, updateUserData } from '../../resources/API';
 import { ScrollView } from 'react-native-gesture-handler';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
@@ -14,6 +14,8 @@ import { PERMISSIONS, RESULTS, request } from 'react-native-permissions';
 import { showMessage } from '../../resources/Functions';
 import Geolocation from '@react-native-community/geolocation';
 import { getRegions } from '../../resources/API';
+import { Animated } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const SetUserAddress = (props) => {
   const { userCity,
@@ -22,13 +24,16 @@ const SetUserAddress = (props) => {
     setCreateUserRegion,
     town, setTown,
     setLatitude,
-    setLongitude,longitude } = useContext(UsersContext);
+    setLongitude, longitude, userId, setUserInfo } = useContext(UsersContext);
   const [addressError, setAddressError] = useState(false);
-
+  const isFromGoogle = props?.route?.params?.isFromGoogleUser
   const [disableLocation, setDisbaleLocation] = useState(false);
   const [showMyLocation, setshowMyLocation] = useState(false);
   const [regionData, setRegionData] = useState([])
   const [regions, setRegions] = useState(null)
+  const translateY = useRef(new Animated.Value(0)).current;
+  const navigation = useNavigation()
+
 
   const onPressBack = () => {
     props.navigation.goBack();
@@ -145,7 +150,7 @@ const SetUserAddress = (props) => {
       })
     }
   }
-  
+
   const requestLocationPermission = async () => {
     setDisbaleLocation(true)
     if (Platform.OS === 'android') {
@@ -218,19 +223,82 @@ const SetUserAddress = (props) => {
     );
   };
 
+  const RenderInformation = () => {
+    if (!isFromGoogle) {
+      return (
+        <ScrollWrapper onNextPress={onNextPress} onPressBack={onPressBack} dotPlace={1} amountDots={4}
+        >
+          <View style={styles.body}>
+            <Text style={styles.titleText}>العنوان</Text>
+            {RenderLocationDetails()}
+          </View>
+        </ScrollWrapper>
+      )
+    } else {
+      return (
+        <View style={styles.body}>
+          <Text style={styles.titleText}>العنوان</Text>
+          {RenderLocationDetails()}
+        </View>
+      )
+    }
+  }
+
+  const RenderFooter = () => {
+    return (
+      <Animated.View style={[styles.footer, { transform: [{ translateY: translateY }] }]}>
+        <View style={styles.footer}>{RenderNextButton()}</View>
+      </Animated.View>
+    )
+  };
+  const RenderNextButton = () => {
+    return (
+      <Pressable
+        style={[AppStyles.next, AppStyles.shadow]}
+        onPress={() => onNextPressGoogle()}>
+        <Text style={AppStyles.nextText}>{"حفظ"}</Text>
+      </Pressable>
+    );
+  };
+  const onNextPressGoogle = () => {
+    true
+      ? saveData()
+      : missingData();
+  };
+
+  const saveData = async () => {
+    const body = {
+      USER_ID: userId,
+      UserRegion: createUserRegion,
+      UserCity: userCity,
+      isSetUpFinished: true,
+    }
+    await updateUserData(body)
+      .then((response) => {
+        if (response?.message === "Updated Successfully") {
+          if (response && response.user) {
+            console.log("Navigating to Splash screen..."); // Add debug statement
+            setUserInfo(response.user);
+            navigation.replace("Drawr");
+          } else {
+            console.log("User data not found in response"); // Add debug statement
+          }
+        } else {
+          console.log("Response message is not 'Updated Sucessfuly'"); // Add debug statement
+        }
+      })
+      .catch((e) => console.error("error updating ", e));
+
+  }
+
+
   return (
     <View style={styles.container}>
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <ScrollWrapper onNextPress={onNextPress} onPressBack={onPressBack} dotPlace={1} amountDots={4}
-      >
-        <View style={styles.body}>
-          <Text style={styles.titleText}>العنوان</Text>
-          {RenderLocationDetails()}
-        </View>
-      </ScrollWrapper>
-
+      {RenderInformation()}
+      {isFromGoogle && RenderFooter()}
     </View>
   )
 }
@@ -322,12 +390,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 15,
-    flexDirection:'row'
+    flexDirection: 'row'
   },
 
   cityView: {
     marginVertical: 30,
     //alignItems: 'flex-end'
+  },
+  footer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: '100%',
+    height: 50,
+    paddingHorizontal: '10%',
+    position: 'absolute',
+    bottom: 0
+
   }
 
 })

@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, Text, Pressable, Image, ImageBackground, FlatList, Animated } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import CampaignCard from '../components/CampaignCard';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
 import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -15,14 +15,17 @@ import HomeServiceCard from '../components/HomeServiceCard';
 import Interactable from 'react-native-interactable';
 import UsersContext from '../../store/UsersContext';
 import { getEventsInfo } from '../resources/API';
+import { asyncFunctions } from '../resources/Functions';
 
 const ClientHomeAds = (props) => {
     const { cat, setCat,
         ServiceDataInfo,
         campInfo,
         userRegion } = useContext(SearchContext);
-    const { userId } = useContext(UsersContext);
+    const { userId, userInfo } = useContext(UsersContext);
 
+    const isFinishedSetup = props.route.params?.isFinishedSetup
+    const route = useRoute()
 
     const [selectServiceType, setSelectServiceType] = useState('');
     const navigation = useNavigation();
@@ -32,11 +35,35 @@ const ClientHomeAds = (props) => {
 
 
     useEffect(() => {
-       
+
         setCat('قاعات')
     }, [])
 
-   
+    useEffect(() => {
+        checkSetUp()
+    }, [userInfo])
+
+    const checkSetUp = () => {
+        // if its not a google account then its already setup
+        if (!userInfo?.isGoogle) {
+            return;
+        }
+        // if setup has been already finised
+        if (userInfo?.isSetUpFinished) {
+            return;
+        } else if (isFinishedSetup) {
+            return
+        } {
+            startSetup()
+        }
+
+    }
+
+    const startSetup = () => {
+        navigation.replace(ScreenNames.SetUserAddress, { isFromGoogleUser: true })
+    }
+
+
 
     const getHallServices = () => {
         return ServiceDataInfo?.filter(item => {

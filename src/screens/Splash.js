@@ -28,7 +28,6 @@ export default function Splash(props) {
 
     useEffect(() => {
         if (!signInFlag) {
-            checkIfGoogle()
             // console.log("looking for existing user ");
             asyncFunctions.getItem("userInfo")
                 .then(userInfo => {
@@ -61,6 +60,7 @@ export default function Splash(props) {
         } else {
             userEmail = currentUser?.user?.email
             isGoogle = true
+            getUserInfo();
         }
     }
 
