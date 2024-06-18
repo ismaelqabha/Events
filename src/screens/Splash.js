@@ -32,7 +32,7 @@ export default function Splash(props) {
             asyncFunctions.getItem("userInfo")
                 .then(userInfo => {
                     userInfo = JSON.parse(userInfo)
-                    const { idToken } = userInfo
+                    const idToken = userInfo?.idToken
                     if (idToken) {
                         checkIfGoogle()
                     } else {
