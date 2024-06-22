@@ -91,14 +91,14 @@ const ClientSearch = (props) => {
     // Functions for determine the date
 
     const monthlyPress = () => {
-        setMonthly(true)
-        setspacificDate(false)
-        setselectDateforSearch(null)
+        // setMonthly(true)
+        // setspacificDate(false)
+        // setselectDateforSearch(null)
     }
     const spacificDatePress = () => {
         // setAnytime(false)
-        setMonthly(false)
-        setspacificDate(true)
+        // setMonthly(false)
+        // setspacificDate(true)
         // setselectMonthforSearch(null)
     }
     const handlePress = () => {
@@ -237,7 +237,7 @@ const ClientSearch = (props) => {
                 </TouchableOpacity>
                 {dateViewPressed &&
                     <View style={{ flex: 1 }}>
-                        <View style={styles.choicesView}>
+                        {/* <View style={styles.choicesView}>
                             <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
                                 <Text style={styles.te}>حسب الشهر</Text>
                             </Pressable>
@@ -245,16 +245,16 @@ const ClientSearch = (props) => {
                                 <Text style={styles.te}>تاريخ محدد</Text>
 
                             </Pressable>
-                        </View>
+                        </View> */}
                         {/* {monthly &&
                             <View style={{ alignSelf: 'center', marginTop: 80 }}>
                                 <MonthCom onMonthSelected={(num) => setselectMonthforSearch(num)} />
                             </View>} */}
-                        {spacificDate &&
+                        {/* {spacificDate && */}
                             <View style={{ alignSelf: 'center' }}>
                                 <ClientCalender />
                             </View>
-                        }
+                        {/* } */}
                         <TouchableOpacity onPress={handlePress} style={styles.nextView}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.gold }}>التالي</Text>
                         </TouchableOpacity>
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     },
     pressHeader: {
         width: '90%',
-        height: 60,
+        height: 50,
         backgroundColor: 'white',
         alignSelf: 'center',
         elevation: 5,
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
     },
     dateView: {
         width: '90%',
-        height: 540,
+        height: 550,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     },
     pressDateView: {
         width: '90%',
-        height: 60,
+        height: 50,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
     },
     placeView: {
         width: '90%',
-        height: 450,
+        height: 200,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     },
     pressplaceView: {
         width: '90%',
-        height: 60,
+        height: 50,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,

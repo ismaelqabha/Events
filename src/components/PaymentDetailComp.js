@@ -238,25 +238,15 @@ const PaymentDetailComp = (props) => {
                         placeholder={'الدفعة'}
                         value={amount}
                         onChangeText={(val) => calculatePersentageFromAmount(val)}
-
-                    // onEndEditing={() => {
-                    //     const data = {
-                    //         id: payId,
-                    //         PayDate: paymentDate,
-                    //         pers: persentage,
-                    //         paymentStutes: 'not paid'
-                    //     }
-                    //     updateArray(data, index)
-                    // }}
                     />
-                    <View style={styles.inputPersentageView}>
 
+                    <View style={styles.inputPersentageView}>
                         <TextInput style={{ fontSize: 18 }}
                             keyboardType={'default'}
                             placeholder={'النسبة'}
                             value={persentage}
 
-                            onChangeText={(val) => setPersentage(val)}
+                            onChangeText={(val) => calculateAmountFromPersentage(val)}
                             onEndEditing={(val) => {
                                 const data = {
                                     id: payId,
@@ -265,11 +255,12 @@ const PaymentDetailComp = (props) => {
                                     paymentStutes: 'not paid'
                                 }
                                 updateArray(data, index)
-                                calculateAmountFromPersentage(val)
+                                // calculateAmountFromPersentage(val)
                             }}
                         />
                         <Text style={styles.text}>%</Text>
                     </View>
+
                 </View>
             </View>
         )

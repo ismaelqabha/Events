@@ -7,8 +7,9 @@ import { colors } from "../../assets/AppColors.js"
 import { ScreenNames } from "../../../route/ScreenNames.js"
 import { BorderRightOutlined } from '@ant-design/icons';
 import UsersContext from '../../../store/UsersContext.js';
-import { createNewPayment, updateRequest } from '../../resources/API.js';
+import { createNewPayment, updateRequest, updatebookingDate } from '../../resources/API.js';
 import SearchContext from '../../../store/SearchContext.js';
+import { showMessage } from '../../resources/Functions.js';
 
 
 const MakePayment = (props) => {
@@ -16,8 +17,8 @@ const MakePayment = (props) => {
   const { userId } = useContext(UsersContext);
   const { setRequestInfoAccUser, requestInfoAccUser } = useContext(SearchContext);
 
-  //console.log("reqInfo", reqInfo[0].payments);
-
+  //console.log("reqInfo", reqInfo[0].serviceRequests);
+  var countAllDates = 0
 
   const [paymentMethod, setpaymentMethod] = useState('Credit Card')
 
@@ -30,9 +31,15 @@ const MakePayment = (props) => {
   const [paymentInfo, setPaymentInfo] = useState([])
   const [reqPayments, setReqPayments] = useState([])
 
+
   const [reqID, setReqID] = useState()
+  const [ServiceID, setServiceID] = useState()
+  const [reqDetail, setReqDetail] = useState()
+  const [maxAllowedRequest, setMaxAllowedRequest] = useState()
   const [reqPayment, setReqPayment] = useState()
   const [realPayments, setRealPayments] = useState()
+  const [bookingDates, setBookingDates] = useState()
+  const [serviceAllRequests, setServiceAllRequests] = useState()
 
   const [creditCard, setCreditCard] = useState(false)
   const [cash, setCash] = useState(false)
@@ -64,6 +71,7 @@ const MakePayment = (props) => {
 
   useEffect(() => {
     checkSource()
+
   }, [])
 
   const creditCardPress = () => {
@@ -94,29 +102,36 @@ const MakePayment = (props) => {
       setReqPayment(reqInfo[0].requestInfo.paymentInfo)
       setRealPayments(reqInfo[0].payments)
       setReqPayments(reqInfo[0].requestInfo.paymentInfo)
-      
-
+      setBookingDates(reqInfo[0].BookDates[0].dates)
+      setMaxAllowedRequest(reqInfo[0].serviceData[0].maxNumberOFRequest)
+      setReqDetail(reqInfo[0].requestInfo.reservationDetail)
+      setServiceAllRequests(reqInfo[0].serviceRequests)
+      setServiceID(reqInfo[0].serviceData[0].service_id)
     }
     if (clientSide) {
       setReqID(reqInfo.RequestId)
       setReqPayment(reqInfo.paymentInfo)
       setRealPayments(reqInfo.realPayments)
       setReqPayments(reqInfo.paymentInfo)
-     
+      setBookingDates(reqInfo.BookDates[0].dates)
+      setMaxAllowedRequest(reqInfo.services[0].maxNumberOFRequest)
+      setReqDetail(reqInfo.reservationDetail)
+      setServiceAllRequests(reqInfo.serviceRequests)
+      setServiceID(reqInfo.services[0].service_id)
     }
     if (fromProviderDuePay) {
       setReqID(reqInfo[0].requestInfo.RequestId)
       setReqPayment(reqInfo[0].requestInfo.paymentInfo)
       setRealPayments(reqInfo[0].userPayments)
       setReqPayments(reqInfo[0].requestInfo.paymentInfo)
-     
+
     }
     if (providerSide) {
       setReqID(reqInfo.requestInfo.RequestId)
       setReqPayment(reqInfo.requestInfo.paymentInfo)
       setRealPayments(reqInfo.userPayments)
       setReqPayments(reqInfo.requestInfo.paymentInfo)
-      
+
     }
   }
 
@@ -271,14 +286,12 @@ const MakePayment = (props) => {
   const makePayment = (method) => {
 
     const reqPayIndex = reqPayments.findIndex(elme => elme.id === ID)
-    //console.log("reqPayIndex", reqPayIndex);
     const reqPay = reqPayments
     if (reqPayIndex > -1) {
       reqPay[reqPayIndex].paymentStutes = 'paid'
     }
-    //console.log("reqPay[reqPayIndex]", reqPay[reqPayIndex]);
     setReqPayments(reqPay[reqPayIndex]);
-   
+
     if (realPayments.length === 0) { /// there is now any payments for this request
       const newRequestData = {
         RequestId: reqID,
@@ -286,6 +299,7 @@ const MakePayment = (props) => {
         paymentInfo: reqPayments
       }
       createPayment(newRequestData, method)
+      checkIfReachedMaxNumOfReq()
     }
 
     if (realPayments.length >= 1) {  /// if the client pay one time at the least for this request
@@ -336,6 +350,7 @@ const MakePayment = (props) => {
           ToastAndroid.BOTTOM,
         );
         updateRequestInfo(newRequestData)
+
         // props.navigation.navigate(ScreenNames.ProviderProfile);
       } else {
         ToastAndroid.showWithGravity(
@@ -346,15 +361,11 @@ const MakePayment = (props) => {
       }
     })
   }
-  
+
   /// update request info 
   const updateRequestInfo = (newwData) => {
     const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqID)
     const lastPayments = requestInfoAccUser[requestInfoAccUserIndex].payments
-
-    // console.log("lastPayments", lastPayments);
-    // console.log("paymentInfo", paymentInfo);
-
 
     updateRequest(newwData).then(res => {
       if (res.message == 'Updated Sucessfuly') {
@@ -376,6 +387,66 @@ const MakePayment = (props) => {
     })
 
   }
+
+  ////// for updating booking recived dates
+  const countAllRequestDates = () => {
+    return serviceAllRequests.map(item => {
+      return item.reservationDetail.forEach(element => {
+        if (element.reservationDate == reqDetail[0].reservationDate) {
+          countAllDates += 1
+        }
+      });
+    })
+  }
+
+  const checkIfReachedMaxNumOfReq = () => {
+    const numOfReq = countAllRequestDates()
+    const reqReserDate = reqDetail[0].reservationDate
+
+    if (countAllDates < maxAllowedRequest) {
+      const addNewDate = {
+        status: 'open',
+        time: reqReserDate
+      }
+      editingBookingDates(addNewDate)
+    }
+
+    if (countAllDates + 1 === maxAllowedRequest) {
+      const addNewDate = {
+        status: 'full',
+        time: reqReserDate
+      }
+      editingBookingDates(addNewDate)
+    }
+  }
+
+
+
+  const editingBookingDates = (addNewDate) => {
+
+    const newRecord = bookingDates || [];
+
+    newRecord.push(addNewDate)
+   
+    const newBookDates = {
+      serviceID: ServiceID,
+      datesToUpdate: [...newRecord]
+    }
+
+    updatebookingDate(newBookDates).then((res) => {
+      if (res.message === 'Dates updated successfully') {
+
+        showMessage("updated")
+
+      } else {
+        showMessage("failed to create request")
+      }
+    }).catch((E) => {
+      console.error("error creating request E:", E);
+    })
+
+  }
+
 
   const selectWhoisMakePayment = () => {
     if (fromProviderDuePay) {
@@ -435,6 +506,8 @@ const MakePayment = (props) => {
         {selectWhoisMakePayment()}
 
         {renderPayButton()}
+        {/* <Pressable onPress={result2}><Text>CHECK</Text></Pressable> */}
+
       </ScrollView>
     </View>
   )

@@ -63,7 +63,6 @@ const ClientDuePayments = (props) => {
 
     const filterRequestAccordingPayment = () => {
         const reqData = queryRequest()
-        console.log("reqData", reqData);
         const filteredData = []
 
         for (let index = 0; index < reqData.length; index++) {
@@ -119,7 +118,7 @@ const ClientDuePayments = (props) => {
         const reqData = filterRequestAccordingPayment()
         return reqData?.map(item => {
             const selectedRequest = selectedRequestDataAccselectedPayment(item.requestInfo.RequestId)
-            console.log("selectedRequest", selectedRequest);
+            //console.log("selectedRequest", selectedRequest);
             return item.requestInfo.paymentInfo.map(elem => {
                 const amount = calculatePersentage(item.requestInfo.Cost, elem.pers)
                 const ID = elem.id

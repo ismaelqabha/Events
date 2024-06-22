@@ -30,7 +30,7 @@ const ClientShowRequest = (props) => {
 
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo?.eventData?.EventId)
 
-    console.log("reqInfo???", reqInfo);
+   // console.log("reqInfo???", reqInfo);
 
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {

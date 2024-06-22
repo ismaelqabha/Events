@@ -12,59 +12,99 @@ const ClientCalender = (props) => {
     const [selected, setSelected] = useState('')
     const [date, setDate] = useState(new Date())
 
+    const [zeroDay, setZeroDay] = useState(true)
     const [oneDay, setOneDay] = useState(false)
     const [threeDay, setThreeDay] = useState(false)
     const [sevenDay, setSevenDay] = useState(false)
+    const [forteenDay, setForteenDay] = useState(false)
 
     useEffect(() => {
         setselectDateforSearch(null)
     }, [])
 
-    const onOnedayPress = () =>{
+    const onZerodayPress = () => {
+        setZeroDay(true)
+        setOneDay(false)
+        setThreeDay(false)
+        setSevenDay(false)
+        setForteenDay(false)
+        setperiodDatesforSearch(0)
+    }
+    const onOnedayPress = () => {
         setOneDay(true)
         setThreeDay(false)
         setSevenDay(false)
+        setForteenDay(false)
+        setZeroDay(false)
         setperiodDatesforSearch(1)
     }
-    const onThreedayPress = () =>{
+    const onThreedayPress = () => {
         setOneDay(false)
         setThreeDay(true)
         setSevenDay(false)
+        setForteenDay(false)
+        setZeroDay(false)
         setperiodDatesforSearch(3)
     }
-    const onSevendayPress = () =>{
+    const onSevendayPress = () => {
         setOneDay(false)
         setThreeDay(false)
         setSevenDay(true)
+        setForteenDay(false)
+        setZeroDay(false)
         setperiodDatesforSearch(7)
+    }
+    const onForteendayPress = () => {
+        setForteenDay(true)
+        setOneDay(false)
+        setThreeDay(false)
+        setSevenDay(false)
+        setZeroDay(false)
+        setperiodDatesforSearch(14)
     }
     const renderPeriod = () => {
         return (
             <View style={styles.dayView}>
-                <Pressable style={[styles.dayRange, oneDay ? styles.dayRangeSelected : styles.dayRange]} 
-                onPress={() => onOnedayPress() }>
-                    <View style={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
-                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, color: colors.puprble }}>1 ايام</Text>
-                </Pressable>
-                <Pressable style={[styles.dayRange, threeDay ? styles.dayRangeSelected : styles.dayRange]} 
-                onPress={() => onThreedayPress()}>
-                    <View style={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
-                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, color: colors.puprble }}>3 ايام</Text>
-                </Pressable>
-                <Pressable style={[styles.dayRange, sevenDay ? styles.dayRangeSelected : styles.dayRange]} 
-                onPress={() => onSevendayPress()}>
-                    <View style={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
-                        <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
-                    </View>
-                    <Text style={{ fontSize: 16, color: colors.puprble }}>7 ايام</Text>
-                </Pressable>
+                <View style={styles.rowView}>
+                    <Pressable style={[styles.dayRange, zeroDay ? styles.dayRangeSelected : styles.dayRange]}
+                        onPress={() => onZerodayPress()}>
+                        <Text style={{ fontSize: 16, color: colors.puprble }}>بدون</Text>
+                    </Pressable>
+                    <Pressable style={[styles.dayRange, oneDay ? styles.dayRangeSelected : styles.dayRange]}
+                        onPress={() => onOnedayPress()}>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                            <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
+                        </View>
+                        <Text style={{ fontSize: 16, color: colors.puprble }}>1 ايام</Text>
+                    </Pressable>
+                    <Pressable style={[styles.dayRange, threeDay ? styles.dayRangeSelected : styles.dayRange]}
+                        onPress={() => onThreedayPress()}>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                            <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
+                        </View>
+                        <Text style={{ fontSize: 16, color: colors.puprble }}>3 ايام</Text>
+                    </Pressable>
+                </View>
+                <View style={styles.rowView}>
+                    <Pressable style={[styles.dayRange, sevenDay ? styles.dayRangeSelected : styles.dayRange]}
+                        onPress={() => onSevendayPress()}>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                            <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
+                        </View>
+                        <Text style={{ fontSize: 16, color: colors.puprble }}>7 ايام</Text>
+                    </Pressable>
+                    <Pressable style={[styles.dayRange, forteenDay ? styles.dayRangeSelected : styles.dayRange]}
+                        onPress={() => onForteendayPress()}>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                            <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
+                        </View>
+                        <Text style={{ fontSize: 16, color: colors.puprble }}>14 يوم</Text>
+                    </Pressable>
+                </View>
             </View>
         )
     }
@@ -72,7 +112,7 @@ const ClientCalender = (props) => {
     const selectDate = (day) => {
         setselectDateforSearch(day.dateString);
         setSelected(day.dateString)
-        console.log('selected da **', day.dateString);
+       // console.log('selected da **', day.dateString);
     }
 
     return (
@@ -81,7 +121,7 @@ const ClientCalender = (props) => {
             <Calendar
                 style={{
                     borderColor: 'gray',
-                    height: 240,
+                    height: 300,
                     width: 300,
                     borderRadius: 20,
                     //padding: 10,
@@ -91,13 +131,13 @@ const ClientCalender = (props) => {
                 }}
                 theme={{
                     backgroundColor: '#ffffff',
-                    calendarBackground: '#ffffff',
+                    calendarBackground: colors.silver,
                     textSectionTitleColor: '#b6c1cd',
                     selectedDayBackgroundColor: colors.puprble,
-                    selectedDayTextColor: 'white',
+                    selectedDayTextColor: colors.silver,
                     todayTextColor: 'black',
-                    dayTextColor: colors.gold,
-                    textDisabledColor: '#d9e1e8',
+                    dayTextColor: colors.puprble,
+                    textDisabledColor: 'gray',
                     dotColor: 'red',
                     selectedDotColor: 'red',
                     arrowColor: colors.puprble,
@@ -108,7 +148,7 @@ const ClientCalender = (props) => {
                     textDayFontSize: 20,
                     textMonthFontSize: 20,
                     textDayHeaderFontSize: 14,
-                    width: 200
+                    width: 100,
                 }}
 
                 minDate={date}
@@ -161,9 +201,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'lightgray',
         alignItems: 'center',
-        width: 80, height: 40,
+        width: 90, height: 40,
         borderRadius: 15,
-        marginHorizontal: 10
+        marginHorizontal: 5
     },
     dayRangeSelected: {
         flexDirection: 'row',
@@ -171,15 +211,18 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: colors.puprble,
         alignItems: 'center',
-        width: 80, height: 40,
+        width: 90, height: 40,
         borderRadius: 15,
         marginHorizontal: 10
     },
     dayView: {
+        width: '100%',
+    },
+    rowView: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        marginTop: 10,
+         marginTop: 3
     }
 })
 
