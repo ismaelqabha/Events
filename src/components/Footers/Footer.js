@@ -15,7 +15,9 @@ const Footer = ({
     onNextPress,
     onPressBack,
     dotPlace,
-    amountDots
+    amountDots,
+    isBackButton = true,
+    isNextButton = true
 }) => {
 
     const animatedFooterStyle = useAnimatedStyle(() => {
@@ -30,9 +32,9 @@ const Footer = ({
             style={[style, animatedFooterStyle]}
         >
             {renderDots()}
-            <View style={{ flexDirection: 'row' , justifyContent: 'space-between'}}>
-                {RenderBackButton()}
-                {RenderNextButton()}
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                {isBackButton && RenderBackButton()}
+                {isNextButton && RenderNextButton()}
             </View>
         </Animated.View>;
     };

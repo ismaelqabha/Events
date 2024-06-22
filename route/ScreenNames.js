@@ -1,6 +1,9 @@
+import ForgotPassword from "../src/screens/ForgotPassword";
+
 export const ScreenNames = {
     SignIn: 'SignIn',
     SignUp: 'SignUp',
+    ForgotPassword: 'ForgotPassword',
     //Client Screens
     ClientBook: 'ClientBook',
     ClientHomeAds: 'ClientHomeAds',

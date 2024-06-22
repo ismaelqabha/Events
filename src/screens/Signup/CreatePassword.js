@@ -5,6 +5,8 @@ import {
   Pressable,
   TextInput,
   ToastAndroid,
+  TouchableOpacity,
+  I18nManager,
 } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
 import { colors } from '../../assets/AppColors';
@@ -17,6 +19,7 @@ import ScrollWrapper from '../../components/ProviderComponents/ScrollView/Scroll
 import UsersContext from '../../../store/UsersContext';
 import { getProfileImageSource, showMessage } from '../../resources/Functions';
 import { passwordRegex } from '../../resources/Regex';
+import Icon from 'react-native-vector-icons/Feather';
 
 const CreatePassword = props => {
   const { userId } = useContext(SearchContext);
@@ -42,6 +45,11 @@ const CreatePassword = props => {
 
   const [firstPasswordError, setFirstPasswordError] = useState();
   const [secondPasswordError, setSecondPasswordError] = useState();
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConPasswordVisible, setIsConPasswordVisible] = useState(false);
+
+  const isRTL = I18nManager.isRTL;
 
   const onPressBack = () => {
     props.navigation.goBack();
@@ -186,25 +194,39 @@ const CreatePassword = props => {
   }, [password, confirmPassword]);
 
   const renderPassword = () => {
+
     return (
       <View>
         <View style={styles.inputView}>
           {firstPasswordError && <Text style={styles.textRequired}>*</Text>}
           <TextInput
             style={styles.input}
-            keyboardType="visible-password"
             placeholder="كلمة المرور"
             onChangeText={setPassword}
+            value={password}
+            secureTextEntry={!isPasswordVisible}
           />
+          <TouchableOpacity
+            style={[styles.icon, isRTL ? { left: 30, right: "auto" } : { right: 30, left: "auto" }, firstPasswordError ? { top: "45%" } : { top: "28%" }]}
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+          >
+            <Icon name={isPasswordVisible ? 'eye' : 'eye-off'} size={24} color="gray" />
+          </TouchableOpacity>
         </View>
         <View style={styles.inputView}>
           {secondPasswordError && <Text style={styles.textRequired}>*</Text>}
           <TextInput
             style={styles.input}
-            keyboardType="visible-password"
             placeholder="تأكيد كلمة المرور"
             onChangeText={setconfirmPassword}
+            secureTextEntry={!isConPasswordVisible}
           />
+          <TouchableOpacity
+            style={[styles.icon, isRTL ? { left: 30, right: "auto" } : { right: 30, left: "auto" }, secondPasswordError ? { top: "45%" } : { top: "28%" }]}
+            onPress={() => setIsConPasswordVisible(!isConPasswordVisible)}
+          >
+            <Icon name={isConPasswordVisible ? 'eye' : 'eye-off'} size={24} color="gray" />
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -283,4 +305,7 @@ const styles = StyleSheet.create({
     marginRight: 40,
     color: 'red',
   },
+  icon: {
+    position: "absolute",
+  }
 });

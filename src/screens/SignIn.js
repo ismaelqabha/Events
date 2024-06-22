@@ -8,19 +8,21 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { getUserData, signIn } from '../resources/API';
 import UsersContext from '../../store/UsersContext';
 import { asyncFunctions, showMessage } from '../resources/Functions';
+import { emailVerification, passwordRegex, phoneNumberRegex } from '../resources/Regex';
+import GoogleSignInButton from '../components/Login/GoogleSignInButton';
 
 
 const SignIn = (props) => {
     //const { userId,setuserId, } = useContext(SearchContext);
-        const {
-            setuserId,userId,
-            userEmail,
-            password,
-            setPassword,
-            setUserEmail,
-            userInfo,
-            setUserInfo,
-            setUserName } = useContext(UsersContext);
+    const {
+        setuserId, userId,
+        userEmail,
+        password,
+        setPassword,
+        setUserEmail,
+        userInfo,
+        setUserInfo,
+        setUserName } = useContext(UsersContext);
 
 
     const logUser = () => {
@@ -33,14 +35,14 @@ const SignIn = (props) => {
                     Password: password
                 };
 
-                asyncFunctions.setItem("userInfo", userInfo)
+                asyncFunctions.setItem("userInfo", JSON.stringify(userInfo))
                     .then(() => {
                         // Clear password field for security
                         setPassword("");
 
                         // Fetch user info and navigate to next screen
                         getUserInfo();
-                        props.navigation.navigate(ScreenNames.Splash, {signIn:true});
+                        props.navigation.navigate(ScreenNames.Splash, { signIn: true });
                     })
                     .catch(error => {
                         showMessage('Failed to save user info: ' + error.message);
@@ -59,16 +61,26 @@ const SignIn = (props) => {
 
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
+            console.log("feteched user data ", res);
             setUserInfo(res)
             setuserId(res.user[0].USER_ID)
             setUserName(res.user[0].User_name)
-            console.log("res.user[0].USER_ID",res.user[0].USER_ID);
         })
     }
 
     const onEnterPress = () => {
-        logUser()
-    }
+        // if (!emailVerification.test(userEmail) && !phoneNumberRegex.test(userEmail)) {
+        //     showMessage("Enter a valid email");
+        //     return;
+        // }
+
+        // if (!password || !password.trim() || !passwordRegex.test(password)) {
+        //     showMessage("Enter a valid password");
+        //     return;
+        // }
+
+        logUser();
+    };
     const onSignupPress = () => {
         props.navigation.navigate(ScreenNames.CreateUpersonalInfo);
     }
@@ -79,6 +91,10 @@ const SignIn = (props) => {
         });
         return UserArray;
     };
+
+    const onForgotPassword = () => {
+        props.navigation.navigate(ScreenNames.ForgotPassword);
+    }
 
     return (
         <ImageBackground style={styles.container}
@@ -108,20 +124,14 @@ const SignIn = (props) => {
                 </Pressable>
             </View>
 
-            <Pressable>
+            <Pressable onPress={() => onForgotPassword()}>
                 <Text>هل نسيت كلمة المرور؟</Text>
             </Pressable>
             <Text style={styles.or}>أو</Text>
             <Text style={styles.txt}>سجل من خلال</Text>
 
             <View style={styles.logInView}>
-                <Pressable style={styles.facebookbtn} onPress={() => onEnterPress()}>
-                    <AntDesign
-                        name={"google"}
-                        color={"white"}
-                        size={15} />
-                    <Text style={styles.facetxtُ}>Google</Text>
-                </Pressable>
+                <GoogleSignInButton nav={props?.navigation} />
                 <Pressable style={styles.facebookbtn}>
                     <EvilIcons
                         name={"sc-facebook"}

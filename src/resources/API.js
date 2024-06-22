@@ -1,5 +1,5 @@
-const baseUrl = 'https://ev-server.onrender.com/';
-// const baseUrl = "http://localhost:7000/"
+// const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -30,6 +30,10 @@ export const addUser = async (AddNewUser, UserPhoto) => {
   } catch (error) {
 
   }
+}
+export const LoginGoogleUser = async (body) => {
+  const url = 'Users/loginGoogle'
+  return await AppFetch(url, 'POST', body)
 }
 export const signIn = async (body) => {
   const url = 'Users/login'

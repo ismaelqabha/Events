@@ -8,7 +8,7 @@ import SearchProvider from '../Events/store/SearchProvider';
 import ServiceProviderProvider from './store/ServiceProviderProvider';
 import UsersContext from './store/UsersContext';
 import UsersProvider from './store/UsersProvider';
-import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 const App = () => {
   LogBox.ignoreLogs([

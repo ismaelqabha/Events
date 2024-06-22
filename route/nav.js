@@ -60,6 +60,7 @@ import ClientSpecialDates from "../src/screens/ClientSpecialDates";
 
 import ProviderShowRequest from "../src/screens/ProviderScreens/ProviderShowRequest";
 import ClientShowRequest from "../src/screens/ClientShowRequest";
+import ForgotPassword from "../src/screens/ForgotPassword";
 import ProviderDuePayments from "../src/screens/ProviderScreens/ProviderDuePayments";
 import ClientDuePayments from "../src/screens/ClientScreens/ClientDuePayments";
 import ClientPayment from "../src/screens/ClientScreens/ClientPayment";
@@ -113,6 +114,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name="TapProvider" component={ProviderTapNav} />
                 <Stack.Screen name={ScreenNames.Splash} component={Splash} />
                 <Stack.Screen name={ScreenNames.SignIn} component={SignIn} />
+                <Stack.Screen name={ScreenNames.ForgotPassword} component={ForgotPassword} />
 
 
                

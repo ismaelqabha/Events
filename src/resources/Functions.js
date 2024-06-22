@@ -156,4 +156,3 @@ export const getProfileImageSource = (profilePhoto, userGender) => {
 export {
   asyncFunctions
 }
-

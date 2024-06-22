@@ -7,6 +7,7 @@ import { ImageBackground } from 'react-native';
 import UsersContext from '../../store/UsersContext';
 import { ScreenNames } from '../../route/ScreenNames';
 import { asyncFunctions, showMessage } from '../resources/Functions';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function Splash(props) {
     const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo, setEventInfo, setRequestInfoAccUser } = useContext(SearchContext);
@@ -14,17 +15,33 @@ export default function Splash(props) {
 
     let userEmail
     let userPassword
+    let isGoogle = false
     const signInFlag = props?.route?.params?.signIn || false
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            webClientId: '789188949169-djr193kf3io9steeo3u90cle8ennp5po.apps.googleusercontent.com',
+            offlineAccess: true,
+            forceCodeForRefreshToken: true,
+        });
+    }, []);
 
     useEffect(() => {
         if (!signInFlag) {
             // console.log("looking for existing user ");
             asyncFunctions.getItem("userInfo")
                 .then(userInfo => {
-                    userEmail = userInfo?.Email
-                    userPassword = userInfo?.Password
-                    if (!userEmail || !userPassword) {
-                        props.navigation.replace(ScreenNames.SignIn)
+                    userInfo = JSON.parse(userInfo)
+                    const idToken = userInfo?.idToken
+                    if (idToken) {
+                        checkIfGoogle()
+                    } else {
+                        isGoogle = false
+                        userEmail = userInfo?.Email
+                        userPassword = userInfo?.Password
+                        if (!userEmail || !userPassword) {
+                            props.navigation.replace(ScreenNames.SignIn)
+                        }
                     }
                 })
                 .catch(error => {
@@ -34,8 +51,21 @@ export default function Splash(props) {
         }
     }, []);
 
+    const checkIfGoogle = async () => {
+        const currentUser = await GoogleSignin.getCurrentUser();
+        const isSignedIn = await GoogleSignin.isSignedIn()
+        if (!isSignedIn) {
+            isGoogle = false
+            props.navigation.replace(ScreenNames.SignIn)
+        } else {
+            userEmail = currentUser?.user?.email
+            isGoogle = true
+            getUserInfo();
+        }
+    }
+
     const LoginUser = () => {
-        if (signInFlag) {
+        if (signInFlag || isGoogle) {
             props.navigation.replace('Drawr')
             return
         }
@@ -58,8 +88,6 @@ export default function Splash(props) {
                     props.navigation.replace(ScreenNames.SignIn)
                 });
         }
-
-
     }
 
     const getUserInfo = () => {
@@ -69,7 +97,7 @@ export default function Splash(props) {
             setEventInfo(res[0].userEvents)
             setuserId(res[0].userInfo.USER_ID)
             setUserName(res[0].userInfo.User_name)
-    
+
         })
     }
 

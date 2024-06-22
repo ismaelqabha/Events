@@ -23,6 +23,9 @@ const ProviderBookingRequest = (props) => {
   const month = today.format('M')
   const year = today.format('YYYY')
   const todayDate = year + '-' + month + '-' + day
+  const fullDateObj = new Date(fulDate); // Assuming fullDate is coming as a string in 'YYYY-MM-DD' format
+  const todayDateObj = new Date(todayDate);
+
 
   const manageArrayDates = []
 
