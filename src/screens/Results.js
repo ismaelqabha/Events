@@ -282,14 +282,14 @@ const Results = (props) => {
 
             const avaiablespecificDate = checkDateIsAvilable(item.serviceDates, item.serviceRequests, item.serviceData.maxNumberOFRequest);
             // const AvilableDaysInMonth = checkMonthAvailableDate(item.serviceDates);
-            const result = comparingDates(avaiablespecificDate, AvilableDaysInMonth, item.serviceDates)
+            const result = comparingDates(avaiablespecificDate, item.serviceDates)
 
             const isCitySelect = objectResult.cityselected === '' ? true : item.serviceData.address == objectResult.cityselected
             const isRiogenSelect = objectResult.regionselect === '' ? true : item.serviceData.region == objectResult.regionselect
 
             const availableService = isCitySelect && isRiogenSelect && result
             console.log("readyDates", readyDates);
-            readyDates = result
+            item.readyDates = result
             return availableService;
         })
         console.log("filtered", filtered);
@@ -305,7 +305,7 @@ const Results = (props) => {
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
                 relatedCamp={card?.serviceCamp}
-                availableDates={readyDates}
+                availableDates={card?.readyDates}
             />;
         });
         return cardsArray;
