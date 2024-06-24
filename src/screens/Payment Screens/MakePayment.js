@@ -320,7 +320,6 @@ const MakePayment = (props) => {
       }
     }
   }
-
   const createPayment = (newRequestData, method) => {
 
     const addNewPayment = {
@@ -423,11 +422,9 @@ const MakePayment = (props) => {
 
 
   const editingBookingDates = (addNewDate) => {
-
     const newRecord = bookingDates || [];
 
     newRecord.push(addNewDate)
-   
     const newBookDates = {
       serviceID: ServiceID,
       datesToUpdate: [...newRecord]
@@ -435,9 +432,7 @@ const MakePayment = (props) => {
 
     updatebookingDate(newBookDates).then((res) => {
       if (res.message === 'Dates updated successfully') {
-
         showMessage("updated")
-
       } else {
         showMessage("failed to create request")
       }
@@ -451,7 +446,8 @@ const MakePayment = (props) => {
   const selectWhoisMakePayment = () => {
     if (fromProviderDuePay) {
       return (
-        <View>{creatPaymentProviderSide()}
+        <View>
+          {creatPaymentProviderSide()}
           {renderPaymentMethod()}
         </View>
       )
@@ -466,11 +462,13 @@ const MakePayment = (props) => {
     }
     if (fromclientDuePayment || clientSide) {
       return (
-        <View>{renderCreditCardInfo()}
+        <View>
+          {renderCreditCardInfo()}
         </View>
       )
     }
   }
+  
   const renderPaymentMethod = () => {
     if (paymentMethod === "Credit Card") {
       return (

@@ -1,10 +1,9 @@
 import React from "react";
 import { ScreenNames } from "../route/ScreenNames";
 import SignIn from "../src/screens/SignIn";
-import SignUp from "../src/screens/SignUp";
 
 import ClientHomeAds from "../src/screens/ClientHomeAds";
-import ClientBook from "../src/screens/ClientBook";
+
 import ServiceDescr from "../src/screens/ServiceDescr";
 
 import ClientRequest from "../src/screens/ClientRequest";
@@ -20,7 +19,7 @@ import ProviderAddServiceDetail from "../src/screens/ProviderScreens/ProviderAdd
 import ProviderSetPrice from "../src/screens/ProviderScreens/ProviderSetPrice";
 
 import FileFavorites from "../src/screens/FileFavorites";
-import ClientEvents from "../src/screens/ClientEvents";
+
 
 import { NavigationContainer, StackActions } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -34,7 +33,6 @@ import Results from "../src/screens/Results";
 import SearchServcies from "../src/screens/SearchServcies";
 
 import SubDetailPrices from "../src/screens/SubDetailPrices";
-import ServiceDetail from "../src/screens/ServiceDetail";
 import Campaigns from "../src/screens/Campaigns";
 import ProviderCalender from "../src/screens/ProviderScreens/ProviderCalender";
 import ProviderBookingRequest from "../src/screens/ProviderScreens/ProviderBookingRequest";
@@ -53,10 +51,9 @@ import ProviderSetEventType from "../src/screens/ProviderScreens/ProviderSetEven
 import UserProfile from "../src/screens/UserProfile";
 import ProviderNotification from "../src/screens/ProviderScreens/ProviderNotification";
 import ProviderClientScreen from "../src/screens/ProviderScreens/ProviderClientScreen";
-import ReviewsScreen from "../src/screens/ReviewsScreen";
+
 import ProviderShowOffers from "../src/screens/ProviderScreens/ProviderShowOffers";
 import ProviderOfferDesc from "../src/screens/ProviderScreens/ProviderOfferDesc";
-import ClientSpecialDates from "../src/screens/ClientSpecialDates";
 
 import ProviderShowRequest from "../src/screens/ProviderScreens/ProviderShowRequest";
 import ClientShowRequest from "../src/screens/ClientShowRequest";
@@ -69,6 +66,9 @@ import ClientRelations from "../src/screens/ClientScreens/ClientRelations";
 import RequestDuePaymentsShow from "../src/screens/Payment Screens/RequestDuePaymentsShow";
 import PaymentDetail from "../src/screens/Payment Screens/PaymentDetail";
 import MakePayment from "../src/screens/Payment Screens/MakePayment";
+import ClientBook from "../src/screens/ClientScreens/ClientBook";
+import ClientSpecialDates from "../src/screens/ClientScreens/ClientSpecialDates";
+import ReviewsScreen from "../src/screens/ClientScreens/ReviewsScreen";
 
 
 
@@ -117,8 +117,6 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ForgotPassword} component={ForgotPassword} />
 
 
-               
-
                 <Stack.Screen name={ScreenNames.ClientBook} component={ClientBook} />
                 <Stack.Screen name={ScreenNames.ServiceDescr} component={ServiceDescr} />
                 <Stack.Screen name={ScreenNames.Favorites} component={Favorites} />
@@ -126,7 +124,6 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ClientRequest} component={ClientRequest} />
                 <Stack.Screen name={ScreenNames.Results} component={Results} />
                 <Stack.Screen name={ScreenNames.SearchServcies} component={SearchServcies} />
-                <Stack.Screen name={ScreenNames.ServiceDetail} component={ServiceDetail} />
                 <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
                 <Stack.Screen name={ScreenNames.Campaigns} component={Campaigns} />
                 <Stack.Screen name={ScreenNames.UserProfile} component={UserProfile} />

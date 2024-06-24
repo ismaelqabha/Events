@@ -81,7 +81,7 @@ const ClientProfile = (props) => {
     }
     const renderSpecialEvents = () => {
         return (<View>
-            <Pressable style={styles.item} onPress={() => setShowSpecialDMoodal(true)}>
+            {/* <Pressable style={styles.item} onPress={() => setShowSpecialDMoodal(true)}>
                 <Text style={styles.basicInfo}>اضافة</Text>
                 <View style={styles.IconView}>
                     <Entypo
@@ -89,12 +89,12 @@ const ClientProfile = (props) => {
                         color={colors.puprble}
                         size={25} />
                 </View>
-            </Pressable>
+            </Pressable> */}
             {specialDatesItem()}
             <Pressable style={styles.more} onPress={() => props.navigation.navigate(ScreenNames.ClientSpecialDates)}>
                 <Text style={styles.moreTxt}>المزيد...</Text>
             </Pressable>
-            {renderSpecialDModal()}
+            {/* {renderSpecialDModal()} */}
         </View>)
     }
     const renderSpecialDModal = () => {

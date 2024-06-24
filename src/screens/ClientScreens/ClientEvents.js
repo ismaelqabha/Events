@@ -1,17 +1,18 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Pressable, Modal, Image, Text, TextInput, ToastAndroid, Alert } from 'react-native';
-import EventsCard from '../components/EventsCard';
+
 import { FlatList } from 'react-native-gesture-handler';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { createNewEvent, getEventsInfo, getRequestInfoWithservice, updateEvent } from '../resources/API';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { SelectList } from 'react-native-dropdown-select-list';
-import UsersContext from '../../store/UsersContext';
-import { colors } from '../assets/AppColors';
+import EventsCard from '../../components/EventsCard';
+import SearchContext from '../../../store/SearchContext';
+import UsersContext from '../../../store/UsersContext';
+import { createNewEvent } from '../../resources/API';
+import { colors } from '../../assets/AppColors';
 
 
 const ClientEvents = (props) => {

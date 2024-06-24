@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, ScrollView, Image } from 'react-native';
-import BookingCard from '../../src/components/BookingCard';
 import AntDesign from "react-native-vector-icons/AntDesign";
-import SearchContext from '../../store/SearchContext';
+import SearchContext from '../../../store/SearchContext';
+import BookingCard from '../../components/BookingCard';
 
 
 const ClientBook = (props) => {
@@ -16,7 +16,7 @@ const ClientBook = (props) => {
     }
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
-            console.log("requestInfoAccUser", requestInfoAccUser[1].requestInfo.paymentInfo);
+           // console.log("requestInfoAccUser", requestInfoAccUser[1].requestInfo.paymentInfo);
             const clientReq = requestInfoAccUser.filter(item => {
                 return item.requestInfo.ReqEventId == data.EventId;
             })

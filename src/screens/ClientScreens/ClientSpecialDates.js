@@ -5,11 +5,11 @@ import Feather from "react-native-vector-icons/Feather"
 import Entypo from "react-native-vector-icons/Entypo"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Fontisto from "react-native-vector-icons/Fontisto";
-import { colors } from "../assets/AppColors"
-import { ScreenNames } from '../../route/ScreenNames';
-import UsersContext from '../../store/UsersContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { updateUserData } from '../resources/API';
+import UsersContext from '../../../store/UsersContext';
+import { updateUserData } from '../../resources/API';
+import { colors } from '../../assets/AppColors';
+
 
 const ClientSpecialDates = (props) => {
   const { userInfo, setUserInfo, userId } = useContext(UsersContext);

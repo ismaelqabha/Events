@@ -47,20 +47,6 @@ const ClientDuePayments = (props) => {
         }
     }
 
-    const renderRequestData = () => {
-        const reqData = queryRequest()
-        return reqData.map(item => {
-            return <BookingCard {...item.requestInfo}
-                services={item?.serviceData}
-                images={item?.serviceImage}
-                reqPayments={item?.payments}
-                // relatedCamp={item?.serviceCamp}
-                fromclientDuePayment={fromclientDuePayment}
-            />
-        })
-    }
-
-
     const filterRequestAccordingPayment = () => {
         const reqData = queryRequest()
         const filteredData = []
@@ -118,7 +104,7 @@ const ClientDuePayments = (props) => {
         const reqData = filterRequestAccordingPayment()
         return reqData?.map(item => {
             const selectedRequest = selectedRequestDataAccselectedPayment(item.requestInfo.RequestId)
-            //console.log("selectedRequest", selectedRequest);
+           // console.log("selectedRequest", selectedRequest);
             return item.requestInfo.paymentInfo.map(elem => {
                 const amount = calculatePersentage(item.requestInfo.Cost, elem.pers)
                 const ID = elem.id
@@ -176,8 +162,9 @@ const ClientDuePayments = (props) => {
                             </View>
                         </View>
 
-                        <View style={{ position: 'absolute', bottom: 10, width: '100%' }}>
-                            <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo: { ...selectedRequest.requestInfo, relatedCamp: { ...selectedRequest.serviceCamp }, services: { ...selectedRequest.serviceData } }, fromclientDuePayment: fromclientDuePayment })}>
+                        <View style={{flexDirection:'row',justifyContent: 'space-around', position: 'absolute', bottom: 10, width: '100%' }}>
+                            <Pressable style={styles.payButton} //onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo: { requestInfo: {...selectedRequest.requestInfo}, relatedCamp: { ...selectedRequest.serviceCamp }, services: { ...selectedRequest.serviceData } }, fromclientDuePayment: fromclientDuePayment })}
+                            >
                                 <Text style={styles.pressTxt}>تفاصيل الحجز</Text>
                             </Pressable>
                             <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.MakePayment, { reqInfo: selectedRequest, fromclientDuePayment: fromclientDuePayment, ID: ID, amount: amount })}>
@@ -268,8 +255,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center',
-        width: '50%',
-        borderWidth: 3,
+        width: '40%',
+        borderWidth: 0.5,
         borderColor: colors.puprble,
         borderRadius: 5
     },

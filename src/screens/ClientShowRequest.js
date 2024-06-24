@@ -30,7 +30,7 @@ const ClientShowRequest = (props) => {
 
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo?.eventData?.EventId)
 
-   // console.log("reqInfo???", reqInfo);
+    console.log("reqInfo???", reqInfo);
 
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
@@ -188,16 +188,16 @@ const ClientShowRequest = (props) => {
         setShowModal(true)
     }
 
-    useEffect(() => {
-        var dates
-        if (Array.isArray(reqInfo.reservationDetail)) {
-            dates = reqInfo.reservationDetail?.map(val => val.reservationDate)
-        } else {
-            dates = reqInfo.reservationDetail.reservationDate
-        }
+    // useEffect(() => {
+    //     var dates
+    //     if (Array.isArray(reqInfo.reservationDetail)) {
+    //         dates = reqInfo.reservationDetail?.map(val => val.reservationDate)
+    //     } else {
+    //         dates = reqInfo.reservationDetail.reservationDate
+    //     }
        
-        calculateTotalPrice(reqInfo.reservationDetail, dates, reqInfo.services[0], setTotalPrice);
-    }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
+    //     calculateTotalPrice(reqInfo.reservationDetail, dates, reqInfo.services[0], setTotalPrice);
+    // }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
 
 
     const showOfferDetail = (contentFromSubDet, campContents) => {
