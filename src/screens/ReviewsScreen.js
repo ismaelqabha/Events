@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
 import React from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { colors } from '../../assets/AppColors';
+import { colors } from '../assets/AppColors';
 
 
 const ReviewsScreen = (props) => {
@@ -32,7 +32,7 @@ const ReviewsScreen = (props) => {
                         <Text style={styles.servicenameTxt}>قاعة الامير</Text>
                         <Text>منذ 3 شهور</Text>
                     </View>
-                    <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../../assets/photos/ameer.png')} /></View>
+                    <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/ameer.png')} /></View>
                 </View>
                 <Text style={styles.ReviewTxt}>زبون محترم وخلوق جدا كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير</Text>
             </View>
@@ -48,7 +48,7 @@ const ReviewsScreen = (props) => {
                         <Text style={styles.servicenameTxt}>عبد الله الزيود</Text>
                         <Text>منذ 3 شهور</Text>
                     </View>
-                    <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../../assets/photos/raaed.png')} /></View>
+                    <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/raaed.png')} /></View>
                 </View>
                 <Text style={styles.ReviewTxt}>معاملة جميلة وخدمات ممتازة كل الاحترام والتقدير</Text>
             </View>

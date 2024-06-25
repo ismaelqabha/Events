@@ -22,7 +22,7 @@ const Campaigns = (props) => {
     const getServiceDataFromApi = () => {
         getServiceBySerId({ service_id: data.serviceId }).then(res => {
             setServiceInfoById(res)
-            // console.log("res", res);
+            //console.log("res", res);
         })
     }
     useEffect(() => {
@@ -67,7 +67,37 @@ const Campaigns = (props) => {
         )
     }
     const onCheckAvailablePress = () => {
-        props.navigation.navigate(ScreenNames.ServiceDescr, { data: { ...ServiceInfoById } })
+        relatedCamp = {
+            CampId: data.CampId,
+            campCatType: data.campCatType,
+            campTitle: data.campTitle,
+            campContents: data.campContents,
+            contentFromSubDet: data.contentFromSubDet,
+            campImag: data.campImag,
+            campCost: data.campCost,
+            campRigon: data.campRigon,
+            campExpirDate: data.campExpirDate,
+            priceInclude: data.priceInclude,
+            userId: data.userId,
+            serviceId: data.serviceId
+        }
+        const serviceInfoObj = {
+            additionalServices: data.serviceData.additionalServices,
+            socialMedia: data.serviceData.socialMedia,
+            title: data.serviceData.title,
+            desc: data.serviceData.desc,
+            address: data.serviceData.address,
+            servicePhone: data.serviceData.servicePhone,
+            serviceLocation: data.serviceData.serviceLocation,
+            maxCapasity: data.serviceData.maxCapasity,
+            images: data.serviceImages,
+            BookDates: [data.serviceDates],
+            serviceRequests: [data.serviceRequests],
+            relatedCamp: [relatedCamp]
+        }
+
+
+         props.navigation.navigate(ScreenNames.ServiceDescr, { data: serviceInfoObj, isFromCampaign: true })
     }
 
     const renderImg = () => {
@@ -85,14 +115,14 @@ const Campaigns = (props) => {
     const renderPrice = () => {
         if (data.isPerPerson) {
             return (<View style={styles.priceView}>
+                <Text style={styles.titletxt}>{'₪' + data.campCost}</Text>
                 <Text style={styles.titletxt}>السعر يشمل للشخص</Text>
-                <Text style={styles.titletxt}>{data.campCost}</Text>
             </View>
             )
         } else {
             return (<View style={styles.priceView}>
+                <Text style={styles.titletxt}>{'₪' + data.campCost}</Text>
                 <Text style={styles.titletxt}>السعر شامل</Text>
-                <Text style={styles.titletxt}>{data.campCost}</Text>
             </View>
             )
         }
@@ -144,7 +174,7 @@ const Campaigns = (props) => {
         return (
             <View style={styles.foter}>
                 <Pressable style={styles.btnview}
-                    onPress={() => onCheckAvailablePress()}
+                    onPress={onCheckAvailablePress}
                 >
                     <Text style={styles.btntext}>فحص الامكانية </Text>
                 </Pressable>
@@ -155,13 +185,15 @@ const Campaigns = (props) => {
     return (
         <View style={styles.container}>
             {renderHeader()}
-            {/* <ScrollView> */}
-                <View>
-                    {renderImg()}
+            <ScrollView>
+
+                {renderImg()}
+                <View style={{ borderWidth: 3, borderColor: colors.puprble }}>
                     {renderBody()}
                     {renderFooter()}
                 </View>
-            {/* </ScrollView> */}
+
+            </ScrollView>
 
         </View>
     )
@@ -186,7 +218,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 250,
         borderRadius: 8,
-        marginBottom: 8,
+        // marginBottom: 8,
         // borderWidth:1
     },
     titletxt: {
@@ -200,13 +232,14 @@ const styles = StyleSheet.create({
     },
     body: {
         backgroundColor: colors.BGScereen,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        alignSelf: 'center',
+        // borderTopLeftRadius: 20,
+        // borderTopRightRadius: 20,
         padding: 10,
-        position: 'absolute',
-        width: '100%',
-        height: 420,
-        top: 280
+        // position: 'absolute',
+        width: '99%',
+        // height: 420,
+        // top: 280
     },
     Offertitle: {
         padding: 10
@@ -231,8 +264,8 @@ const styles = StyleSheet.create({
         height: 80,
         justifyContent: 'center',
         alignItems: 'flex-end',
-        position: 'absolute',
-        bottom: 0,
+        // position: 'absolute',
+        // bottom: 0,
         width: '100%'
     },
     btntext: {
@@ -260,10 +293,11 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
     priceView: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        //flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: 20
+        marginVertical: 20,
+        width: 120,
     },
     seperaView: {
         borderWidth: 0.5,

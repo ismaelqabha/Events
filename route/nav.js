@@ -68,7 +68,8 @@ import PaymentDetail from "../src/screens/Payment Screens/PaymentDetail";
 import MakePayment from "../src/screens/Payment Screens/MakePayment";
 import ClientBook from "../src/screens/ClientScreens/ClientBook";
 import ClientSpecialDates from "../src/screens/ClientScreens/ClientSpecialDates";
-import ReviewsScreen from "../src/screens/ClientScreens/ReviewsScreen";
+import ReviewsScreen from "../src/screens/ReviewsScreen";
+
 
 
 

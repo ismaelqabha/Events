@@ -18,7 +18,8 @@ import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
 
 
 const ServiceDescr = (props) => {
-    const { data, isFromClientRequest } = props?.route.params
+    const { data, isFromClientRequest, isFromCampaign } = props?.route.params
+    //console.log("isFromCampaign", isFromCampaign);
     const [showModal, setShowModal] = useState(false);
     const [subDetArray, setSubDetArray] = useState([]);
 
@@ -28,7 +29,7 @@ const ServiceDescr = (props) => {
 
     const { requestedDate, setrequestedDate, setResDetail } = useContext(SearchContext);
 
-    
+
 
     const getRequestfromApi = () => {
         getRequestbyUserId({ ReqUserId: userId }).then(res => {
@@ -115,7 +116,7 @@ const ServiceDescr = (props) => {
     }
 
     const renderImg = () => {
-        const imageArray = data.images[0].serviceImages.map(photos => {
+        const imageArray = data.images[0].serviceImages?.map(photos => {
             return photos;
         });
         return imageArray;
@@ -234,6 +235,15 @@ const ServiceDescr = (props) => {
                 </View>
             </View>
         )
+    }
+    const displayDates = () => {
+        if (!isFromClientRequest && !isFromCampaign) {
+            return (
+                <View>
+                    {renderDatesAvailable()}
+                </View>
+            )
+        } 
     }
 
     // Sub Detail Info Modal
@@ -546,7 +556,10 @@ const ServiceDescr = (props) => {
                 {renderTitle()}
                 {seperator()}
 
-                {!isFromClientRequest && renderDatesAvailable()}
+                {displayDates()}
+
+                {/* {!isFromClientRequest && renderDatesAvailable()}
+                {!isFromCampaign && renderDatesAvailable()} */}
                 {seperator()}
                 <View>
                     <Text style={styles.text}>وصف الخدمات المقدمة</Text>
