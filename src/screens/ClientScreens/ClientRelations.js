@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable, ScrollView, Image, Modal, TextInput, ToastAndroid } from 'react-native'
-import React, { useContext, useState } from 'react'
+import { StyleSheet, Text, View, Pressable, ScrollView, Image, Modal, TextInput, ToastAndroid, Animated } from 'react-native'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather"
 import Entypo from "react-native-vector-icons/Entypo"
@@ -9,27 +9,72 @@ import SearchContext from '../../../store/SearchContext';
 import UsersContext from '../../../store/UsersContext';
 import { colors } from '../../assets/AppColors';
 import { ScreenNames } from '../../../route/ScreenNames';
+import { getRelations, searchUsersAPI } from '../../resources/API';
+import { showMessage } from '../../resources/Functions';
+import { ActivityIndicator } from 'react-native-paper';
+import { randomUUID } from 'crypto';
 
 
 const ClientRelations = (props) => {
   const { userId } = useContext(UsersContext);
   const { } = useContext(SearchContext);
+  const [relations, setRelations] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [searched, setSearched] = useState('')
+  const [searchResults, setSearchResults] = useState([]);
+  const slideInAnimation = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {
+    setLoading(true)
+    getRelations({ userId }).then((relations) => {
+      if (relations && relations.error) {
+        showMessage("there has been an error")
+      } else {
+        setLoading(false)
+        setRelations(relations)
+      }
+    })
+  }, [])
+
+  const searchUsers = async (query) => {
+    try {
+      const friendIds = relations.map((relation) => relation.userInfo._id);
+      friendIds.push(userId)
+      const response = await searchUsersAPI({ query, excludeIds: friendIds });
+      if (response) {
+        if (response && response.message) {
+          setSearchResults([])
+        } else {
+          setSearchResults(response)
+        }
+      } else {
+        setSearchResults([])
+      }
+    } catch (error) {
+      console.error('Error searching users:', error);
+    }
+  };
+
+  const handleSearch = (value) => {
+    setSearched(value);
+    if (value.trim()) {
+      searchUsers(value.trim());
+    } else {
+      setSearchResults([]);
+    }
+    // Reset animation state
+    slideInAnimation.setValue(0);
+  };
 
   const onBackHandler = () => {
     props.navigation.goBack();
   }
+
   const header = () => {
     return (
       <View style={styles.header}>
-        <Pressable onPress={onBackHandler}
-        >
-          <AntDesign
-            style={styles.icon}
-            name={"left"}
-            color={"black"}
-            size={20} />
-
+        <Pressable onPress={onBackHandler}>
+          <AntDesign style={styles.icon} name={"left"} color={"black"} size={20} />
         </Pressable>
         <Text style={styles.headerTxt}>قائمة العلاقات</Text>
       </View>
@@ -43,41 +88,107 @@ const ClientRelations = (props) => {
           style={styles.searchinput}
           keyboardType="default"
           placeholder='بحث العلاقات'
-          onChangeText={(value) => setSearched(value)}
+          value={searched}
+          onChangeText={handleSearch}
         />
-        <AntDesign
-            style={styles.icon}
-            name={"search1"}
-            color={"black"}
-            size={25} />
+        <AntDesign style={styles.icon} name={"search1"} color={"black"} size={25} />
       </View>
     )
   }
 
-  const renderRelation = () => {
-    return (<View style={{ width: '90%', alignSelf: 'center' }}>
-      <View style={styles.item}>
-        <Pressable
-        //onPress={() => props.navigation.navigate(ScreenNames.UserProfile)}
-        >
-          <Text style={styles.basicInfo}>فادي</Text>
-          <Text style={styles.basicInfoTitle}>صديق</Text>
-        </Pressable>
-        <View style={styles.ImageView}>
+  const RelationComp = ({ user, index = 0 }) => {
+    const translateX = slideInAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [100, 0],
+    });
 
-        </View>
-      </View>
-      <View style={styles.item}>
-        <Pressable >
-          <Text style={styles.basicInfo}>أحمد</Text>
-          <Text style={styles.basicInfoTitle}>أخ</Text>
+    useEffect(() => {
+      Animated.timing(slideInAnimation, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, []);
+    return (
+      <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
+        <Pressable onPress={() => goToProfile(user?.userInfo)}>
+          <Text style={styles.basicInfo}>{user?.userInfo?.User_name}</Text>
+          <Text style={styles.basicInfoTitle}>{user?.userInfo?.relationStatus}</Text>
         </Pressable>
-        <View style={styles.ImageView}>
-
-        </View>
-      </View>
-    </View>)
+        <Image source={{ uri: user.userInfo?.UserPhoto }} style={styles.ImageView} />
+      </Animated.View>
+    )
   }
+
+  const goToProfile = (user) => {
+    props.navigation.navigate(ScreenNames.UserProfile, { data: user })
+  }
+
+  const allRelations = () => {
+    if (searched.trim().length > 0) {
+      const filteredFriends = relations.filter(user => user.userInfo.User_name.toLowerCase().includes(searched.toLowerCase()));
+      const searchResultsCount = searchResults.length;
+      const filteredFriendsCount = filteredFriends.length;
+
+      if (filteredFriendsCount === 0 && searchResultsCount === 0) {
+        return (
+          <View style={{ alignSelf: "center" }}>
+            <Text>No users found</Text>
+          </View>
+        );
+      }
+
+      return (
+        <View>
+          {filteredFriendsCount > 0 && (
+            <>
+              <Text>Already a friend</Text>
+              {friends(filteredFriends, true)}
+            </>
+          )}
+          {searchResultsCount > 0 && (
+            <>
+              <Text>Add a friend</Text>
+              {friends(searchResults)}
+            </>
+          )}
+        </View>
+      );
+    } else {
+      return relations && relations.length > 0 ? friends(relations, false) : noFriends();
+    }
+  };
+
+  const friends = (relations, isSearch = false) => {
+    if (relations && Array.isArray(relations)) {
+      if (relations.length > 0) {
+        const relationJSX = relations.map((user, index) => {
+          return <RelationComp user={user} index={index} />;
+        });
+        return relationJSX;
+      }
+    }
+  };
+
+  const noFriends = () => {
+    return (
+      <View style={{ alignSelf: "center" }}>
+        <Text>There are no relations</Text>
+        <Text>Search for people</Text>
+      </View>
+    );
+  };
+
+
+  const renderRelation = () => {
+    return (
+      <View style={{ width: '90%', alignSelf: 'center' }}>
+        {loading && <ActivityIndicator style={{ alignSelf: 'center', marginTop: '50%' }} size={50} />}
+        {!loading && allRelations()}
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       {header()}
@@ -142,7 +253,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-end',
-    marginTop: 10
+    marginTop: 10,
+    marginRight: 20,
   },
   ImageView: {
     width: 70,
