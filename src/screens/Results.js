@@ -56,7 +56,7 @@ const Results = (props) => {
 
     const [sliding, setSliding] = useState('Inactive');
 
-    // console.log("ServiceDataInfo", ServiceDataInfo);
+    //  console.log("ServiceDataInfo", ServiceDataInfo);
 
     const [chozenfilter, setchozenfilter] = useState({ ...objectFilter })
     var readyDates = ''
@@ -300,6 +300,7 @@ const Results = (props) => {
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
                 relatedCamp={card?.serviceCamp}
+                serviceRequests={card?.serviceRequests}
                 availableDates={card?.readyDates}
             />;
         });

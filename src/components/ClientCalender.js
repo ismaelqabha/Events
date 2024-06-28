@@ -19,14 +19,18 @@ const ClientCalender = (props) => {
     const [forteenDay, setForteenDay] = useState(false)
 
     useEffect(() => {
+        onScreenLoad()
+    }, [])
+
+    const onScreenLoad = () => {
         setZeroDay(true)
         setOneDay(false)
         setThreeDay(false)
         setSevenDay(false)
         setForteenDay(false)
-        setperiodDatesforSearch(0)
-        setselectDateforSearch(null)
-    }, [])
+        // setperiodDatesforSearch(0)
+        // setselectDateforSearch(null)
+    }
 
     const onZerodayPress = () => {
         setZeroDay(true)

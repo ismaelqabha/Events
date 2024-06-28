@@ -5,7 +5,6 @@ import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
-import { getCampaignsByServiceId, getRequestbyUserId } from '../resources/API';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
 import CampaignCard from '../components/CampaignCard';
@@ -19,31 +18,30 @@ import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
 
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
-    //console.log("isFromCampaign", isFromCampaign);
+    console.log("data", data.relatedCamp.length);
     const [showModal, setShowModal] = useState(false);
     const [subDetArray, setSubDetArray] = useState([]);
 
-    const [requestData, setRequestData] = useState([]);
+    const [requestData, setRequestData] = useState(data.serviceRequests);
 
     const { userId } = useContext(UsersContext);
-
     const { requestedDate, setrequestedDate, setResDetail } = useContext(SearchContext);
 
 
 
-    const getRequestfromApi = () => {
-        getRequestbyUserId({ ReqUserId: userId }).then(res => {
-            if (res.message == 'no Request') {
-                setRequestData([])
-            } else {
-                setRequestData(res)
-            }
-        })
-    }
+    // const getRequestfromApi = () => {
+    //     getRequestbyUserId({ ReqUserId: userId }).then(res => {
+    //         if (res.message == 'no Request') {
+    //             setRequestData([])
+    //         } else {
+    //             setRequestData(res)
+    //         }
+    //     })
+    // }
 
 
     useEffect(() => {
-        getRequestfromApi();
+        // getRequestfromApi();
 
         // Cleanup function to reset resDetail when component unmounts or re-renders
         return () => {
@@ -60,18 +58,11 @@ const ServiceDescr = (props) => {
         setShowModal(false);
     };
 
-    const filterRequestAccServiceId = () => {
-        return requestData.filter(item => {
-            return item.ReqServId === data.service_id
-        })
-    }
 
     const checkRequestBeforSending = () => {
-        const filterdRequest = filterRequestAccServiceId()
 
-        const result = filterdRequest.find(item => {
+        const result = requestData.find(item => {
             if (item.reservationDetail.length > 1) {
-                console.log(item.reservationDetail.length);
 
                 const x = item.reservationDetail.find(resDate => {
                     if (Array.isArray(requestedDate)) {
@@ -85,7 +76,6 @@ const ServiceDescr = (props) => {
                 })
                 return x
             } else {
-                //console.log(item.reservationDetail[0].reservationDate , requestedDate, item.reservationDetail[0].reservationDate == requestedDate);
                 return item.reservationDetail[0].reservationDate == requestedDate
             }
         })
@@ -151,7 +141,7 @@ const ServiceDescr = (props) => {
             style={styles.img}
         />
     }
-    const renderDescription = () => {
+    const getDescItem = () => {
         const serviceDescription = data?.desc?.map(item => {
             return (
                 <View style={styles.description}>
@@ -167,6 +157,19 @@ const ServiceDescr = (props) => {
             )
         })
         return serviceDescription || null
+    }
+
+    const renderDescription = () => {
+        return (
+            <View style={styles.descView}>
+                <Text style={styles.text}>الوصف</Text>
+                {getDescItem()}
+                <Pressable style={{ alignSelf: 'flex-start' }}>
+                    <Text >المزيد...</Text>
+                </Pressable>
+
+            </View>
+        )
     }
 
     // render Service Dates Info from result screen
@@ -243,7 +246,7 @@ const ServiceDescr = (props) => {
                     {renderDatesAvailable()}
                 </View>
             )
-        } 
+        }
     }
 
     // Sub Detail Info Modal
@@ -311,6 +314,7 @@ const ServiceDescr = (props) => {
             return (
                 <View>
                     <View style={{ marginVertical: 20 }}>{renderInitialPrice()}</View>
+                    <Text style={styles.text}>تفاصيل الخدمات المقدمة</Text>
                     <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
                     {renderMandatoryDetail()}
                     <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
@@ -558,20 +562,21 @@ const ServiceDescr = (props) => {
 
                 {displayDates()}
 
-                {/* {!isFromClientRequest && renderDatesAvailable()}
-                {!isFromCampaign && renderDatesAvailable()} */}
                 {seperator()}
-                <View>
-                    <Text style={styles.text}>وصف الخدمات المقدمة</Text>
-                    {renderDescription()}
-                </View>
+
+                {renderDescription()}
+
                 {seperator()}
+
                 <View style={styles.ditailView}>
-                    <Text style={styles.text}>التفاصيل لتحديد تكلفة الحجز</Text>
                     {renderServiceDetail()}
-                    <Text style={styles.text}>أو يمكنك اختيار احد العروض التالية</Text>
-                    {renderCampeigns()}
+                    {data.relatedCamp.length > 0 &&
+                        <View>
+                            <Text style={styles.text}>العروض </Text>
+                            {renderCampeigns()}
+                        </View>}
                 </View >
+
                 {seperator()}
                 {renderserviceLocation()}
                 {seperator()}
@@ -592,9 +597,10 @@ const ServiceDescr = (props) => {
             <ScrollView >
                 {renderSlider()}
                 {renderBody()}
+                {!isFromClientRequest && renderFoter()}
             </ScrollView>
             {renderSubDetailModal()}
-            {!isFromClientRequest && renderFoter()}
+
         </View>
 
     );
@@ -617,14 +623,8 @@ const styles = StyleSheet.create({
 
     },
     body: {
-        // borderTopLeftRadius: 60,
-        // borderTopRightRadius: 60,
         paddingHorizontal: 10,
         backgroundColor: colors.BGScereen,
-        //position: 'absolute',
-        //top: 200,
-        //width: '100%',
-        //height: 420,
     },
     home: {
         flexDirection: 'row',
@@ -667,18 +667,26 @@ const styles = StyleSheet.create({
     titleInfo: {
         marginTop: 30
     },
+    descView: {
+        borderWidth: 1,
+        height: 300
+    },
     description: {
         marginVertical: 5,
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingHorizontal: 10,
+
     },
     DatesZone: {
         marginVertical: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingHorizontal: 10
     },
     ditailView: {
         marginVertical: 10,
+        paddingHorizontal: 10
     },
     ReviewView: {
         marginVertical: 10,
@@ -773,16 +781,19 @@ const styles = StyleSheet.create({
     btntext: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: colors.darkGold,
+        color: colors.puprble,
     },
     btnview: {
-        backgroundColor: colors.puprble,
+        borderWidth: 1,
+        borderColor: colors.puprble,
+        // backgroundColor: colors.puprble,
         width: 150,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 8,
-        elevation: 5
+        // elevation: 5,
+        marginRight: 20
     },
     dateView: {
         justifyContent: 'center',
