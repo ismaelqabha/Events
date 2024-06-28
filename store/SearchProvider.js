@@ -53,7 +53,7 @@ const SearchProvider = props => {
   const [regionselect, setregionselect] = useState("");
   const [selectDateforSearch, setselectDateforSearch] = useState();
   // const [selectMonthforSearch, setselectMonthforSearch] = useState();
-  // const [yearforSearch, setYearforSearch] = useState();
+  const [dateFromCalender, setDateFromCalender] = useState();
   const [Categorychozen, setCategorychozen] = useState(false)
   const [userRegion, setUserRegion] = useState('المثلث الشمالي');
   const [requestedDate, setrequestedDate] = useState([])
@@ -129,8 +129,8 @@ const SearchProvider = props => {
         setselectDateforSearch,
         // selectMonthforSearch,
         // setselectMonthforSearch,
-        // yearforSearch,
-        // setYearforSearch,
+        dateFromCalender, 
+        setDateFromCalender,
         datesforBooking,
         setDatesforBooking,
         periodDatesforSearch,

@@ -8,24 +8,28 @@ import { SliderBox } from 'react-native-image-slider-box';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
 import CampaignCard from '../components/CampaignCard';
+import Fontisto from "react-native-vector-icons/Fontisto";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from "../assets/AppColors"
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
+import ClientCalender from '../components/ClientCalender';
 
 
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
-    console.log("data", data.relatedCamp.length);
+    // console.log("data", data.relatedCamp.length);
     const [showModal, setShowModal] = useState(false);
+    const [changeDateshowModal, setChangeDateshowModal] = useState(false);
+    const [changeDateIsLocal, setchangeDateIsLocal] = useState(false);
+
     const [subDetArray, setSubDetArray] = useState([]);
 
     const [requestData, setRequestData] = useState(data.serviceRequests);
 
-    const { userId } = useContext(UsersContext);
-    const { requestedDate, setrequestedDate, setResDetail } = useContext(SearchContext);
+    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
 
 
 
@@ -158,7 +162,6 @@ const ServiceDescr = (props) => {
         })
         return serviceDescription || null
     }
-
     const renderDescription = () => {
         return (
             <View style={styles.descView}>
@@ -184,10 +187,11 @@ const ServiceDescr = (props) => {
             setrequestedDate(newDates);
         }
     };
-    const renderDates = () => {
+    const renderDates = (dateSource) => {
         moment.locale('ar-dz');
-        if (Array.isArray(data.availableDates)) {
-            const DatesAvailable = data.availableDates
+        if (Array.isArray(dateSource)) {
+            const DatesAvailable = dateSource
+
             const dateArray = DatesAvailable?.map(dat => {
                 const [pressed, setIsPressed] = useState(false)
                 useEffect(() => {
@@ -211,7 +215,7 @@ const ServiceDescr = (props) => {
             });
             return dateArray;
         } else {
-            const firstAvilableDate = data.availableDates
+            const firstAvilableDate = dateSource
             setrequestedDate(firstAvilableDate)
             return <View style={styles.dateformat}>
                 <View>
@@ -229,25 +233,84 @@ const ServiceDescr = (props) => {
 
         }
     };
-    const renderDatesAvailable = () => {
+    const renderDatesAvailable = (dateSource) => {
         return (
             <View>
-                <Text style={styles.text}>{Array.isArray(data.availableDates) ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
+                <Text style={styles.text}>{Array.isArray(dateSource) ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
                 <View style={styles.DatesZone}>
-                    <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>{renderDates()}</ScrollView>
+                    <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>{renderDates(dateSource)}</ScrollView>
                 </View>
             </View>
         )
     }
-    const displayDates = () => {
+    const displayDates = (dateSource) => {
         if (!isFromClientRequest && !isFromCampaign) {
             return (
                 <View>
-                    {renderDatesAvailable()}
+                    {renderDatesAvailable(dateSource)}
                 </View>
             )
         }
     }
+    const getDatesInfoSource = () => {
+        if (changeDateIsLocal) {
+            console.log(dateFromCalender);
+            return (
+                <View>
+                    {displayDates(dateFromCalender)}
+                </View>
+            )
+        } else {
+            return (
+                <View>
+                    {displayDates(data.availableDates)}
+                </View>
+            )
+
+        }
+    }
+
+    /// to change the selected date part
+
+    const onChangDatePress = () => {
+        setChangeDateshowModal(true)
+        setchangeDateIsLocal(true)
+    }
+    const renderChangeDateModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={changeDateshowModal}
+                animationType="slide"
+                onRequestClose={() => setChangeDateshowModal(false)}>
+                <View style={styles.changeDatecenteredView}>
+                    <View style={styles.changeDatedetailModal}>
+                        <View style={{ marginTop: 20 }}>
+                            <ClientCalender  {...data} />
+
+                            <Pressable onPress={() => setChangeDateshowModal(false)} style={{ width: '100%', alignItems: 'center', justifyContent: 'center', height: 60 }}>
+                                <Text>بحث</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+    const changeDateComponent = () => {
+        return (
+            <Pressable onPress={onChangDatePress}>
+                <View style={styles.changeDateView}>
+                    <Fontisto
+                        style={{ alignSelf: 'center' }}
+                        name={"date"}
+                        color={colors.puprble}
+                        size={50} />
+                </View>
+            </Pressable>
+        )
+    }
+
 
     // Sub Detail Info Modal
     const RenderCancelButton = () => {
@@ -559,8 +622,8 @@ const ServiceDescr = (props) => {
                 <View style={styles.logo}>{renderLogo()}</View>
                 {renderTitle()}
                 {seperator()}
-
-                {displayDates()}
+                {changeDateComponent()}
+                {getDatesInfoSource()}
 
                 {seperator()}
 
@@ -600,7 +663,7 @@ const ServiceDescr = (props) => {
                 {!isFromClientRequest && renderFoter()}
             </ScrollView>
             {renderSubDetailModal()}
-
+            {renderChangeDateModal()}
         </View>
 
     );
@@ -682,7 +745,7 @@ const styles = StyleSheet.create({
     DatesZone: {
         marginVertical: 10,
         alignItems: 'center',
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
     },
     ditailView: {
         marginVertical: 10,
@@ -808,7 +871,7 @@ const styles = StyleSheet.create({
     viewselectdate: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: 110,
+        width: 100,
         height: 70,
         margin: 4,
         backgroundColor: 'white',
@@ -819,7 +882,7 @@ const styles = StyleSheet.create({
     viewselectdatepress: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: 110,
+        width: 100,
         height: 70,
         margin: 4,
         backgroundColor: colors.gold,
@@ -857,6 +920,18 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    changeDatedetailModal: {
+        //  width: '80%',
+        height: '80%',
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+    },
+    changeDatecenteredView: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -914,6 +989,17 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 30,
+    },
+    changeDateView: {
+        width: '70%',
+        height: 80,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        elevation: 5,
+        marginVertical: 10,
+        borderRadius: 30
     }
 })
 

@@ -72,7 +72,7 @@ const Results = (props) => {
         cityselected,
         regionselect,
         selectDateforSearch,
-        selectMonthforSearch
+        // selectMonthforSearch
     }
 
     var requestDate

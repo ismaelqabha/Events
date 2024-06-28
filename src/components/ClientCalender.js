@@ -6,9 +6,16 @@ import { useState } from 'react';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import { Pressable } from 'react-native';
+import moment from "moment";
 
 const ClientCalender = (props) => {
-    const { setselectDateforSearch, setperiodDatesforSearch } = useContext(SearchContext);
+
+    const { setselectDateforSearch,
+        selectDateforSearch,
+        periodDatesforSearch,
+        setperiodDatesforSearch,
+        dateFromCalender, setDateFromCalender } = useContext(SearchContext);
+
     const [selected, setSelected] = useState('')
     const [date, setDate] = useState(new Date())
 
@@ -18,8 +25,18 @@ const ClientCalender = (props) => {
     const [sevenDay, setSevenDay] = useState(false)
     const [forteenDay, setForteenDay] = useState(false)
 
+    var requestDate
+    var todayDate = new Date();
+
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
+    todayDate.setMilliseconds(0);
+
     useEffect(() => {
         onScreenLoad()
+        const availableDates = checkDateIsAvilable()
+        setDateFromCalender(availableDates)
     }, [])
 
     const onScreenLoad = () => {
@@ -31,7 +48,6 @@ const ClientCalender = (props) => {
         // setperiodDatesforSearch(0)
         // setselectDateforSearch(null)
     }
-
     const onZerodayPress = () => {
         setZeroDay(true)
         setOneDay(false)
@@ -119,10 +135,114 @@ const ClientCalender = (props) => {
         )
     }
 
+
+
     const selectDate = (day) => {
         setselectDateforSearch(day.dateString);
         setSelected(day.dateString)
-       // console.log('selected da **', day.dateString);
+        const availableDates = checkDateIsAvilable(day.dateString)
+        setDateFromCalender(availableDates)
+        // console.log('selected da **', day.dateString);
+    }
+
+    //// when use the componet to change the date not set date
+    const checkDateIsAvilable = (selectedDate) => {
+
+        const allRequests = props.serviceRequests || []
+        const serviceDates = props.dates || []
+        const maxNumOfReq = props.maxNumberOFRequest || 0
+        const requestedDate = moment(selectedDate, "YYYY-MM-DD")
+
+        let startingDay = requestedDate.format('D')
+        let month = requestedDate.format('M')
+        let year = requestedDate.format('YYYY')
+        let daysInMonth = 0
+
+        let completeDate = year + '-' + month + '-' + startingDay
+        let startingDate = ''
+        const dateswithinPeriod = []
+        let day = startingDay
+        let period = (periodDatesforSearch * 2) + 1
+
+        console.log("periodDatesforSearch", periodDatesforSearch);
+
+        if (periodDatesforSearch < 1) {
+            if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                return completeDate
+            }
+        } else {
+            for (var index = 0; index < periodDatesforSearch; index++) {
+                if (day == 0) {
+                    month--
+                    if (month < 1) {
+                        year--
+                        month = 12
+                    }
+                    daysInMonth = moment(year + '-' + month).daysInMonth()
+                    day = daysInMonth
+                }
+                startingDate = year + '-' + month + '-' + day
+                day--
+            }
+
+            let Day = day
+            let Month = month
+            let Year = year
+            for (var index = 0; index < period; index++) {
+                daysInMonth = moment(Year + '-' + Month).daysInMonth()
+                if (Day > daysInMonth) {
+                    Month++
+                    if (Month >= 12) {
+                        Year++
+                        Month = 1
+                    }
+                    daysInMonth = moment(Year + '-' + Month).daysInMonth()
+                    Day = 1
+                }
+                completeDate = Year + '-' + Month + '-' + Day
+                requestDate = new Date(completeDate)
+                if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                    if (requestDate > todayDate) {
+                        dateswithinPeriod.push(completeDate)
+                    }
+                }
+                Day++
+            }
+
+            return dateswithinPeriod
+        }
+    }
+
+    const countAllRequestDates = (allRequests, dataforReservation) => {
+        var countAllDates = 0
+        allRequests.forEach(item => {
+            item.reservationDetail.forEach(element => {
+                if (element.reservationDate == dataforReservation) {
+                    countAllDates += 1
+                }
+            });
+        })
+        return countAllDates
+    }
+    const checkDate = (dataforReservation, source, allRequests, maxNumOfReq) => {
+        //console.log("allRequests", allRequests);
+        const countAllDates = countAllRequestDates(allRequests, dataforReservation)
+        const servicedate = source
+        if (countAllDates < maxNumOfReq) {
+
+            const DateFiltered = servicedate[0].dates?.find(dat => {
+                if (servicedate[0].dates.length > 1) {
+                    return dat.time === dataforReservation && (dat.status === 'full' || dat.status === 'holiday')
+                } else {
+                    return dataforReservation
+                }
+            });
+
+            return !!DateFiltered
+
+        } else {
+            return true
+        }
     }
 
     return (
@@ -232,7 +352,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-         marginTop: 3
+        marginTop: 3
     }
 })
 

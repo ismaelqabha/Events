@@ -13,10 +13,13 @@ import { getRelations, searchUsersAPI } from '../../resources/API';
 import { showMessage } from '../../resources/Functions';
 import { ActivityIndicator } from 'react-native-paper';
 import { randomUUID } from 'crypto';
+import { log } from 'util';
 
 
 const ClientRelations = (props) => {
-  const { userId } = useContext(UsersContext);
+  const { userInfo, setUserInfo, userId } = useContext(UsersContext);
+  const userData = userInfo
+  
   const { } = useContext(SearchContext);
   const [relations, setRelations] = useState([])
   const [loading, setLoading] = useState(true)
@@ -27,6 +30,7 @@ const ClientRelations = (props) => {
   useEffect(() => {
     setLoading(true)
     getRelations({ userId }).then((relations) => {
+    
       if (relations && relations.error) {
         showMessage("there has been an error")
       } else {
@@ -109,6 +113,7 @@ const ClientRelations = (props) => {
         useNativeDriver: true,
       }).start();
     }, []);
+
     return (
       <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
         <Pressable onPress={() => goToProfile(user?.userInfo)}>
@@ -133,7 +138,7 @@ const ClientRelations = (props) => {
       if (filteredFriendsCount === 0 && searchResultsCount === 0) {
         return (
           <View style={{ alignSelf: "center" }}>
-            <Text>No users found</Text>
+            <Text>لا يوجد نتائج </Text>
           </View>
         );
       }
