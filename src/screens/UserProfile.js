@@ -1,22 +1,24 @@
 import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-native'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
+import { addFriend } from '../resources/API';
+import UsersContext from '../../store/UsersContext';
+import { showMessage } from '../resources/Functions';
 
 const UserProfile = (props) => {
-    const {  } = useContext(SearchContext);
-
+    const { userId } = useContext(UsersContext);
     const { data } = props.route?.params || {}
-    
+    const [status, setStatus] = useState(data?.relationStatus || 'طلب انشاء علاقة ')
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-    
-   
+
+
     useEffect(() => {
-        
     }, [])
 
     const header = () => {
@@ -36,7 +38,7 @@ const UserProfile = (props) => {
         return (
             <View style={styles.mainView}>
                 <View style={styles.nameView}>
-                    <View style={styles.profilImg}><Image style={styles.userImg} source={{uri : data?.UserPhoto}} /></View>
+                    <View style={styles.profilImg}><Image style={styles.userImg} source={{ uri: data?.UserPhoto }} /></View>
                     <Text style={styles.nameTxt}>{data?.User_name}</Text>
                 </View>
                 <View style={styles.reviewView}>
@@ -49,30 +51,30 @@ const UserProfile = (props) => {
     }
     const renderReviews = () => {
         return (
-                <View style={styles.reView}>
-                    <View style={styles.messageView}>
-                        <Text style={styles.ReviewTxt}>زبون محترم وخلوق جدا كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير</Text>
-                        <View style={styles.reviewClientInfo}>
-                            <View>
-                                <Text style={styles.servicenameTxt}>قاعة الامير</Text>
-                                <Text>منذ 3 شهور</Text>
-                            </View>
-                            <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/ameer.png')} /></View>
+            <View style={styles.reView}>
+                <View style={styles.messageView}>
+                    <Text style={styles.ReviewTxt}>زبون محترم وخلوق جدا كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير</Text>
+                    <View style={styles.reviewClientInfo}>
+                        <View>
+                            <Text style={styles.servicenameTxt}>قاعة الامير</Text>
+                            <Text>منذ 3 شهور</Text>
                         </View>
-                    </View>
-
-                    <View style={styles.messageView}>
-                        <Text style={styles.ReviewTxt}>زبون محترم وخلوق جدا كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير</Text>
-                        <View style={styles.reviewClientInfo}>
-                            <View>
-                                <Text style={styles.servicenameTxt}>قاعة الماسة</Text>
-                                <Text>منذ 4 سنوات </Text>
-                            </View>
-                            <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/almasa.png')} /></View>
-                        </View>
+                        <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/ameer.png')} /></View>
                     </View>
                 </View>
-           
+
+                <View style={styles.messageView}>
+                    <Text style={styles.ReviewTxt}>زبون محترم وخلوق جدا كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير</Text>
+                    <View style={styles.reviewClientInfo}>
+                        <View>
+                            <Text style={styles.servicenameTxt}>قاعة الماسة</Text>
+                            <Text>منذ 4 سنوات </Text>
+                        </View>
+                        <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/almasa.png')} /></View>
+                    </View>
+                </View>
+            </View>
+
         )
     }
     const renderUserContacts = () => {
@@ -130,13 +132,25 @@ const UserProfile = (props) => {
     }
 
     const createRelation = () => {
-        return(
+        return (
             <View>
-                <Pressable style={styles.createrelation}>
-                    <Text style={styles.relationTxt}>طلب انشاء علاقة </Text>
+                <Pressable onPress={onAddPress} style={styles.createrelation}>
+                    <Text style={styles.relationTxt}>{status}</Text>
                 </Pressable>
             </View>
         )
+    }
+    const onAddPress = () => {
+        addFriend({ userId1: userId, userId2: data?.USER_ID }).then((res) => {
+            if (res) {
+                if (res?.error) {
+                    showMessage(res?.error)
+                } else {
+                    showMessage("request successfully sent.")
+                    setStatus((res?.status))
+                }
+            }
+        })
     }
 
     return (
@@ -146,12 +160,12 @@ const UserProfile = (props) => {
                 {renderUserName()}
                 {createRelation()}
                 {renderUserContacts()}
-                <Text style={styles.titleRevTxt}>{' ماذا قالوا عن  ' +  data?.User_name }</Text>
+                <Text style={styles.titleRevTxt}>{' ماذا قالوا عن  ' + data?.User_name}</Text>
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
                 >{renderReviews()}</ScrollView>
-                
+
             </ScrollView>
         </View>
     )
@@ -317,18 +331,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    createrelation:{
-       height: 50,
-       width : "90%",
-       backgroundColor: colors.puprble,
-       elevation: 5,
-       borderRadius: 10,
-       marginVertical: 10,
-       alignItems: 'center',
-       justifyContent: 'center',
-       alignSelf: 'center'
+    createrelation: {
+        height: 50,
+        width: "90%",
+        backgroundColor: colors.puprble,
+        elevation: 5,
+        borderRadius: 10,
+        marginVertical: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center'
     },
-    relationTxt:{
+    relationTxt: {
         fontSize: 20,
         color: colors.BGScereen
     }

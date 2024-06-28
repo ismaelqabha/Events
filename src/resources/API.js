@@ -44,6 +44,19 @@ export const updateUserData = async body => {
   return await AppFetch(url, 'PATCH', body);
 };
 
+export const getRelations = async (body) => {
+  const url = 'Users/getRelations';
+  return await AppFetch(url, 'POST', body);
+}
+export const searchUsersAPI = async (body) => {
+  const url = 'Users/searchUsers';
+  return await AppFetch(url, 'POST', body);
+}
+export const addFriend = async (body) => {
+  const url = 'Users/addFriend';
+  return await AppFetch(url, 'POST', body);
+}
+
 
 // Service Data
 export const getHomePageData = async body => {
@@ -332,7 +345,6 @@ export const RemoveFavorite = async body => {
 const AppFetch = async (url, method, body, headers) => {
   const fullUrl = baseUrl + url;
   const bodyStr = JSON.stringify(body) || '';
-
   return fetch(fullUrl, {
     method: method,
     body: headers ? body : bodyStr,
@@ -341,7 +353,7 @@ const AppFetch = async (url, method, body, headers) => {
     },
   })
     .then(res => {
-      console.log('req: ', fullUrl, 'res code: ', res?.status);
+      console.log('req: ', fullUrl, 'res code: ', res?.status, "req method:", method);
       return res?.json?.();
     })
     .then(resJson => {
