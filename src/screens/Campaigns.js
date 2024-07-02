@@ -9,7 +9,7 @@ import { getServiceBySerId } from '../resources/API';
 
 
 const Campaigns = (props) => {
-    const { data } = props?.route.params
+    const { data ,isFromServiceDesc} = props?.route.params
     const { ServiceInfoById, setServiceInfoById, ServiceDataInfo } = useContext(SearchContext);
 
     const onPressHandler = () => {
@@ -91,9 +91,9 @@ const Campaigns = (props) => {
             serviceLocation: data.serviceData.serviceLocation,
             maxCapasity: data.serviceData.maxCapasity,
             images: data.serviceImages,
-            BookDates: [data.serviceDates],
-            serviceRequests: [data.serviceRequests],
-            relatedCamp: [relatedCamp]
+            BookDates: data.serviceDates,
+            serviceRequests: data.serviceRequests,
+            relatedCamp: relatedCamp
         }
 
 
@@ -190,7 +190,7 @@ const Campaigns = (props) => {
                 {renderImg()}
                 <View style={{ borderWidth: 3, borderColor: colors.puprble }}>
                     {renderBody()}
-                    {renderFooter()}
+                    {!isFromServiceDesc && renderFooter()}
                 </View>
 
             </ScrollView>

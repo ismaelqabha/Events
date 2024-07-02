@@ -16,6 +16,8 @@ const ClientCalender = (props) => {
         setperiodDatesforSearch,
         dateFromCalender, setDateFromCalender } = useContext(SearchContext);
 
+        // console.log("props", props);
+
     const [selected, setSelected] = useState('')
     const [date, setDate] = useState(new Date())
 
@@ -35,8 +37,6 @@ const ClientCalender = (props) => {
 
     useEffect(() => {
         onScreenLoad()
-        const availableDates = checkDateIsAvilable()
-        setDateFromCalender(availableDates)
     }, [])
 
     const onScreenLoad = () => {
@@ -140,10 +140,12 @@ const ClientCalender = (props) => {
     const selectDate = (day) => {
         setselectDateforSearch(day.dateString);
         setSelected(day.dateString)
+        //console.log('selected da **', day.dateString);
         const availableDates = checkDateIsAvilable(day.dateString)
+        //console.log("availableDates", availableDates);
         setDateFromCalender(availableDates)
-        // console.log('selected da **', day.dateString);
     }
+
 
     //// when use the componet to change the date not set date
     const checkDateIsAvilable = (selectedDate) => {
@@ -151,24 +153,29 @@ const ClientCalender = (props) => {
         const allRequests = props.serviceRequests || []
         const serviceDates = props.dates || []
         const maxNumOfReq = props.maxNumberOFRequest || 0
-        const requestedDate = moment(selectedDate, "YYYY-MM-DD")
 
+        const requestedDate = moment(selectedDate, "YYYY-MM-DD")
         let startingDay = requestedDate.format('D')
         let month = requestedDate.format('M')
         let year = requestedDate.format('YYYY')
-        let daysInMonth = 0
 
+
+        let daysInMonth = 0
         let completeDate = year + '-' + month + '-' + startingDay
         let startingDate = ''
         const dateswithinPeriod = []
         let day = startingDay
         let period = (periodDatesforSearch * 2) + 1
 
-        console.log("periodDatesforSearch", periodDatesforSearch);
-
         if (periodDatesforSearch < 1) {
             if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
                 return completeDate
+            }else{
+                return(
+                    <View>
+                        <Text>هذا التاريخ غير متاح</Text>
+                    </View>
+                )
             }
         } else {
             for (var index = 0; index < periodDatesforSearch; index++) {
@@ -209,13 +216,23 @@ const ClientCalender = (props) => {
                 Day++
             }
 
-            return dateswithinPeriod
+            //console.log("dateswithinPeriod", dateswithinPeriod.length);
+            if (dateswithinPeriod.length < 0) {
+                return(
+                    <View>
+                        <Text>هذا التاريخ غير متاح</Text>
+                    </View>
+                )
+            } else {
+                return dateswithinPeriod
+            }
+           
         }
     }
-
     const countAllRequestDates = (allRequests, dataforReservation) => {
         var countAllDates = 0
-        allRequests.forEach(item => {
+        const requests = allRequests || []
+        requests.forEach(item => {
             item.reservationDetail.forEach(element => {
                 if (element.reservationDate == dataforReservation) {
                     countAllDates += 1
@@ -245,75 +262,82 @@ const ClientCalender = (props) => {
         }
     }
 
+
     return (
         <View style={styles.container}>
             {renderPeriod()}
-            <Calendar
-                style={{
-                    borderColor: 'gray',
-                    height: 300,
-                    width: 300,
-                    borderRadius: 20,
-                    //padding: 10,
-                    backgroundColor: 'white',
-                    // elevation: 5,
 
-                }}
-                theme={{
-                    backgroundColor: '#ffffff',
-                    calendarBackground: colors.silver,
-                    textSectionTitleColor: '#b6c1cd',
-                    selectedDayBackgroundColor: colors.puprble,
-                    selectedDayTextColor: colors.silver,
-                    todayTextColor: 'black',
-                    dayTextColor: colors.puprble,
-                    textDisabledColor: 'gray',
-                    dotColor: 'red',
-                    selectedDotColor: 'red',
-                    arrowColor: colors.puprble,
-                    monthTextColor: colors.puprble,
-                    textDayFontFamily: 'monospace',
-                    textMonthFontFamily: 'monospace',
-                    textDayHeaderFontFamily: 'monospace',
-                    textDayFontSize: 20,
-                    textMonthFontSize: 20,
-                    textDayHeaderFontSize: 14,
-                    width: 100,
-                }}
+            <View>
+                <Calendar
+                    style={{
+                        borderColor: 'gray',
+                        height: 300,
+                        width: 300,
+                        borderRadius: 20,
+                        //padding: 10,
+                        backgroundColor: 'white',
+                        // elevation: 5,
 
-                minDate={date}
-                //maxDate='2023-12-31'
-                onDayPress={day => {
-                    selectDate(day)
-                }}
-                markedDates={{
-                    [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' }
-                }}
+                    }}
+                    theme={{
+                        backgroundColor: '#ffffff',
+                        calendarBackground: colors.silver,
+                        textSectionTitleColor: '#b6c1cd',
+                        selectedDayBackgroundColor: colors.puprble,
+                        selectedDayTextColor: colors.silver,
+                        todayTextColor: 'black',
+                        dayTextColor: colors.puprble,
+                        textDisabledColor: 'gray',
+                        dotColor: 'red',
+                        selectedDotColor: 'red',
+                        arrowColor: colors.puprble,
+                        monthTextColor: colors.puprble,
+                        textDayFontFamily: 'monospace',
+                        textMonthFontFamily: 'monospace',
+                        textDayHeaderFontFamily: 'monospace',
+                        textDayFontSize: 20,
+                        textMonthFontSize: 20,
+                        textDayHeaderFontSize: 14,
+                        width: 100,
+                    }}
+
+                    minDate={date}
+                    //maxDate='2023-12-31'
+                    onDayPress={day => {
+                        selectDate(day)
+                    }}
+                    markedDates={{
+                        [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' }
+                    }}
 
 
-                // Handler which gets executed on day long press. Default = undefined
-                onDayLongPress={day => {
-                    // console.log('selected day', day);
-                }}
-                // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
-                monthFormat={'MM yyyy'}
-                // Handler which gets executed when visible month changes in calendar. Default = undefined
-                onMonthChange={month => {
-                    // console.log('month changed', month);
-                }}
-                // Do not show days of other months in month page. Default = false
-                hideExtraDays={false}
-                // day from another month that is visible in calendar page. Default = false
-                disableMonthChange={true}
-                // Handler which gets executed when press arrow icon left. It receive a callback can go back month
-                onPressArrowLeft={subtractMonth => subtractMonth()}
-                // Handler which gets executed when press arrow icon right. It receive a callback can go next month
-                onPressArrowRight={addMonth => addMonth()}
-                // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
-                disableAllTouchEventsForDisabledDays={true}
-                // Enable the option to swipe between months. Default = false
-                enableSwipeMonths={false}
-            />
+                    // Handler which gets executed on day long press. Default = undefined
+                    onDayLongPress={day => {
+                        // console.log('selected day', day);
+                    }}
+                    // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
+                    monthFormat={'MM yyyy'}
+                    // Handler which gets executed when visible month changes in calendar. Default = undefined
+                    onMonthChange={month => {
+                        // console.log('month changed', month);
+                    }}
+                    // Do not show days of other months in month page. Default = false
+                    hideExtraDays={false}
+                    // day from another month that is visible in calendar page. Default = false
+                    disableMonthChange={true}
+                    // Handler which gets executed when press arrow icon left. It receive a callback can go back month
+                    onPressArrowLeft={subtractMonth => subtractMonth()}
+                    // Handler which gets executed when press arrow icon right. It receive a callback can go next month
+                    onPressArrowRight={addMonth => addMonth()}
+                    // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
+                    disableAllTouchEventsForDisabledDays={true}
+                    // Enable the option to swipe between months. Default = false
+                    enableSwipeMonths={false}
+                />
+
+
+            </View>
+
         </View>
     );
 }
@@ -321,7 +345,6 @@ const ClientCalender = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //justifyContent: 'center',
         alignItems: 'center',
 
     },

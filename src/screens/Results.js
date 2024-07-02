@@ -50,10 +50,6 @@ const Results = (props) => {
     const [selectHallType, setSelectHallType] = useState('')
 
 
-
-
-
-
     const [sliding, setSliding] = useState('Inactive');
 
     //  console.log("ServiceDataInfo", ServiceDataInfo);
@@ -182,13 +178,15 @@ const Results = (props) => {
         }
     }
     const findFirstDateAvailable = (serviceDates, allRequests, maxNumOfReq) => {
+
         var daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
-        let completeDate = ''
+         let completeDate = ''
+
         if (currentDate > daysInMonth) {
             if ((currentMonth + 1) > 12) {
                 daysInMonth = moment((currentYear + 1) + '-' + (currentMonth - 11)).daysInMonth()
                 for (var day = 1; day <= daysInMonth; day++) {
-                    completeDate = day + '-' + (currentMonth + 1) + '-' + currentYear
+                    completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
                     if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
                         break
                     }
@@ -197,7 +195,7 @@ const Results = (props) => {
 
                 daysInMonth = moment(currentYear + '-' + (currentMonth + 1)).daysInMonth()
                 for (var day = 1; day <= daysInMonth; day++) {
-                    completeDate = day + '-' + (currentMonth + 1) + '-' + currentYear
+                    completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
                     if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
                         break
                     }
@@ -211,6 +209,7 @@ const Results = (props) => {
                 }
             }
         }
+        
         return completeDate
     };
     const checkDateIsAvilable = (serviceDates, allRequests, maxNumOfReq) => {

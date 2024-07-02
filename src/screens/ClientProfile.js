@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, ScrollView, Image, Modal,TextInput,ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, Pressable, ScrollView, Image, Modal, TextInput, ToastAndroid } from 'react-native'
 import React, { useContext, useState } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather"
@@ -15,9 +15,9 @@ import { images } from '../assets/photos/images';
 const ClientProfile = (props) => {
     const { userInfo, setUserInfo, userId } = useContext(UsersContext);
     const userData = userInfo
-    
-    const [spcialEvents, setSpcialEvents] = useState(userData.SpecialDates)
 
+    const [spcialEvents, setSpcialEvents] = useState(userData.SpecialDates)
+    const [displayCount, setDisplayCount] = useState(5);
     const clientReview = true
 
     const [showSpecialDMoodal, setShowSpecialDMoodal] = useState(false)
@@ -39,22 +39,9 @@ const ClientProfile = (props) => {
     const closeModalPress = () => {
         setShowSpecialDMoodal(false)
     }
-// add new specail dates
-    const onChange = (event, selectedDate) => {
-        setShow(false)
-        const currentDate = selectedDate || date;
-        setDate(currentDate);
 
-        let tempDate = new Date(currentDate);
-        let fDate = tempDate.getFullYear() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getDate() ;
 
-        setEventDate(fDate);
-        onSetEventDate(eventTitle, fDate)
-    }
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    }
+    // add new specail dates
     const onSetEventDate = (evTitle, evDate) => {
         const data = {
             eventName: evTitle,
@@ -62,40 +49,20 @@ const ClientProfile = (props) => {
         }
         addSpecialDateProcess(data)
     }
-    const specialDatesItem = () => {
-        return userData.SpecialDates.map(item => {
-            return (
-                <View style={styles.item}>
-                    <View><Text style={styles.basicInfo}>{item.eventDate}</Text>
-                        <Text style={styles.basicInfoTitle}>{item.eventName}</Text>
-                    </View>
-                    <View style={styles.IconView}>
-                        <MaterialIcons
-                            name={"event-note"}
-                            color={colors.puprble}
-                            size={25} />
-                    </View>
-                </View>
-            )
-        })
+    const onChange = (event, selectedDate) => {
+        setShow(false)
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+
+        let tempDate = new Date(currentDate);
+        let fDate = tempDate.getFullYear() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getDate();
+
+        setEventDate(fDate);
+        onSetEventDate(eventTitle, fDate)
     }
-    const renderSpecialEvents = () => {
-        return (<View>
-            {/* <Pressable style={styles.item} onPress={() => setShowSpecialDMoodal(true)}>
-                <Text style={styles.basicInfo}>اضافة</Text>
-                <View style={styles.IconView}>
-                    <Entypo
-                        name={"add-to-list"}
-                        color={colors.puprble}
-                        size={25} />
-                </View>
-            </Pressable> */}
-            {specialDatesItem()}
-            <Pressable style={styles.more} onPress={() => props.navigation.navigate(ScreenNames.ClientSpecialDates)}>
-                <Text style={styles.moreTxt}>المزيد...</Text>
-            </Pressable>
-            {/* {renderSpecialDModal()} */}
-        </View>)
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
     }
     const renderSpecialDModal = () => {
         return (
@@ -132,7 +99,7 @@ const ClientProfile = (props) => {
             return newArray;
         });
     };
-    const updateUserSDates = () =>{
+    const updateUserSDates = () => {
         //const selectedUserIndex = userData?.findIndex(item => item.USER_ID === userId)
         const newData = {
             USER_ID: userId,
@@ -160,7 +127,7 @@ const ClientProfile = (props) => {
     }
     const addNewSpecialDate = () => {
         return (
-            <View style={{ width: '90%', alignSelf: 'center',marginTop: 50 }}>
+            <View style={{ width: '90%', alignSelf: 'center', marginTop: 50 }}>
                 <TextInput
                     style={styles.input}
                     keyboardType='default'
@@ -172,7 +139,7 @@ const ClientProfile = (props) => {
                             eventName: eventTitle,
                             eventDate: eventdate,
                         }
-                         addSpecialDateProcess(data)
+                        addSpecialDateProcess(data)
                     }}
                 />
                 <Pressable onPress={() => showMode('date')}>
@@ -198,6 +165,7 @@ const ClientProfile = (props) => {
             </View>
         )
     }
+
 
     ///
     const renderOldEvents = () => {
@@ -271,10 +239,10 @@ const ClientProfile = (props) => {
             </View>
         )
     }
-     const renderDuePayment = () => {
+    const renderDuePayment = () => {
         return (<View>
             <Pressable style={styles.item} onPress={() =>
-            props.navigation.navigate(ScreenNames.ClientDuePayments)}>
+                props.navigation.navigate(ScreenNames.ClientDuePayments)}>
                 <View>
                     <Text style={styles.basicInfo}>دفعات الحجوزات المستحقة</Text>
                 </View>
@@ -287,6 +255,33 @@ const ClientProfile = (props) => {
             </Pressable>
         </View>)
     }
+    const specialDatesItem = () => {
+        const specailEv = userData.SpecialDates
+        return specailEv.slice(0, displayCount).map(item => {
+            return (
+                <View style={styles.item}>
+                    <View><Text style={styles.basicInfo}>{item.eventDate}</Text>
+                        <Text style={styles.basicInfoTitle}>{item.eventName}</Text>
+                    </View>
+                    <View style={styles.IconView}>
+                        <MaterialIcons
+                            name={"event-note"}
+                            color={colors.puprble}
+                            size={25} />
+                    </View>
+                </View>
+            )
+        })
+    }
+    const renderSpecialEvents = () => {
+        return (<View>
+            {specialDatesItem()}
+            <Pressable style={styles.more} onPress={() => props.navigation.navigate(ScreenNames.ClientSpecialDates)}>
+                <Text style={styles.moreTxt}>المزيد...</Text>
+            </Pressable>
+        </View>)
+    }
+
 
     return (
         <View style={styles.container}>
@@ -415,70 +410,70 @@ const styles = StyleSheet.create({
     moreTxt: {
         fontSize: 15
     },
-    detailModal: {
-        width: '90%',
-        height: '35%',
-        backgroundColor: '#ffffff',
-        borderRadius: 20
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00000099',
-    },
-    modalHeader: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: 50,
-        position: 'absolute',
-        top: 0
-    },
-    modalFooter: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: 50,
-        position: 'absolute',
-        bottom: 0,
+    // detailModal: {
+    //     width: '90%',
+    //     height: '35%',
+    //     backgroundColor: '#ffffff',
+    //     borderRadius: 20
+    // },
+    // centeredView: {
+    //     flex: 1,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     backgroundColor: '#00000099',
+    // },
+    // modalHeader: {
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     width: '100%',
+    //     height: 50,
+    //     position: 'absolute',
+    //     top: 0
+    // },
+    // modalFooter: {
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     width: '100%',
+    //     height: 50,
+    //     position: 'absolute',
+    //     bottom: 0,
 
-    },
-    input: {
-        alignSelf: 'center',
-        textAlign: 'center',
-        height: 50,
-        width: '100%',
-        borderRadius: 8,
-        borderColor: 'black',
-        fontSize: 15,
-        fontWeight: 'bold',
-        marginVertical: 20,
-        color: 'black',
-        backgroundColor: 'lightgray',
-      },
-      Bdate: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        alignSelf: 'center',
-        textAlign: 'center',
-        height: 50,
-        width: '100%',
-        borderRadius: 8,
-        borderColor: 'black',
-        fontSize: 15,
-        fontWeight: 'bold',
-        marginVertical: 10,
-        color: 'black',
-        backgroundColor: 'lightgray',
-      },
-      logoDate: {
-        marginHorizontal: 30,
-        marginLeft: 20
-      },
-      icon:{
+    // },
+    // input: {
+    //     alignSelf: 'center',
+    //     textAlign: 'center',
+    //     height: 50,
+    //     width: '100%',
+    //     borderRadius: 8,
+    //     borderColor: 'black',
+    //     fontSize: 15,
+    //     fontWeight: 'bold',
+    //     marginVertical: 20,
+    //     color: 'black',
+    //     backgroundColor: 'lightgray',
+    // },
+    // Bdate: {
+    //     flexDirection: 'row',
+    //     justifyContent: 'flex-end',
+    //     alignItems: 'center',
+    //     alignSelf: 'center',
+    //     textAlign: 'center',
+    //     height: 50,
+    //     width: '100%',
+    //     borderRadius: 8,
+    //     borderColor: 'black',
+    //     fontSize: 15,
+    //     fontWeight: 'bold',
+    //     marginVertical: 10,
+    //     color: 'black',
+    //     backgroundColor: 'lightgray',
+    // },
+    // logoDate: {
+    //     marginHorizontal: 30,
+    //     marginLeft: 20
+    // },
+    icon: {
         width: 30,
         height: 30
-      }
+    }
 })

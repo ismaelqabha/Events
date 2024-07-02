@@ -16,6 +16,7 @@ import { colors } from "../assets/AppColors"
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
 import ClientCalender from '../components/ClientCalender';
+import { Button } from 'react-native-elements';
 
 
 const ServiceDescr = (props) => {
@@ -24,6 +25,15 @@ const ServiceDescr = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [changeDateshowModal, setChangeDateshowModal] = useState(false);
     const [changeDateIsLocal, setchangeDateIsLocal] = useState(false);
+
+    const [showAllDesc, setShowAllDesc] = useState(false);
+    const [displayCount, setDisplayCount] = useState(5);
+
+    const [showAllManDetail, setShowAllManDetail] = useState(false);
+    const [showAllOpDetail, setShowAllOpDetail] = useState(false);
+
+    const [isFromServiceDesc, setIsFromServiceDesc] = useState(true);
+
 
     const [subDetArray, setSubDetArray] = useState([]);
 
@@ -146,7 +156,7 @@ const ServiceDescr = (props) => {
         />
     }
     const getDescItem = () => {
-        const serviceDescription = data?.desc?.map(item => {
+        const serviceDescription = data?.desc?.slice(0, displayCount).map(item => {
             return (
                 <View style={styles.description}>
                     <Text style={styles.descText}>{item.descItem}</Text>
@@ -161,18 +171,33 @@ const ServiceDescr = (props) => {
             )
         })
         return serviceDescription || null
+
     }
     const renderDescription = () => {
         return (
             <View style={styles.descView}>
                 <Text style={styles.text}>الوصف</Text>
                 {getDescItem()}
-                <Pressable style={{ alignSelf: 'flex-start' }}>
-                    <Text >المزيد...</Text>
-                </Pressable>
-
+                {data?.desc.length > displayCount &&
+                    <View>
+                        {!showAllDesc ?
+                            <Pressable onPress={onPressMore} style={{ alignSelf: 'flex-start' }}>
+                                <Text >المزيد...</Text>
+                            </Pressable> :
+                            <Pressable onPress={onPressLess} style={{ alignSelf: 'flex-start' }}>
+                                <Text >اغلاق...</Text>
+                            </Pressable>}
+                    </View>}
             </View>
         )
+    }
+    const onPressMore = () => {
+        setDisplayCount(displayCount + 11)
+        setShowAllDesc(!showAllDesc)
+    }
+    const onPressLess = () => {
+        setDisplayCount(5)
+        setShowAllDesc(!showAllDesc)
     }
 
     // render Service Dates Info from result screen
@@ -191,29 +216,38 @@ const ServiceDescr = (props) => {
         moment.locale('ar-dz');
         if (Array.isArray(dateSource)) {
             const DatesAvailable = dateSource
+           // console.log("DatesAvailable", DatesAvailable);
+            try {
+                const dateArray = DatesAvailable?.map(dat => {
+                    const [pressed, setIsPressed] = useState(false)
 
-            const dateArray = DatesAvailable?.map(dat => {
-                const [pressed, setIsPressed] = useState(false)
-                useEffect(() => {
-                    const found = requestedDate.find((date) => date === dat)
-                    if (found) {
-                        setIsPressed(true)
-                    } else {
-                        setIsPressed(false)
-                    }
-                }, [])
-                return <View style={styles.dateView}>
-                    <Pressable style={[styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
-                        onPress={() => SelectDatePressed(dat, setIsPressed, pressed)}
-                    >
-                        <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
-                        <Text style={styles.datetext}>
-                            {moment(dat).format('L')}
-                        </Text>
-                    </Pressable>
-                </View>;
-            });
-            return dateArray;
+                    useEffect(() => {
+                        const found = requestedDate.find((date) => date === dat)
+                        if (found) {
+                            setIsPressed(true)
+                        } else {
+                            setIsPressed(false)
+                        }
+                    }, [])
+
+                    return <View style={styles.dateView}>
+                        <Pressable style={[styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
+                            onPress={() => SelectDatePressed(dat, setIsPressed, pressed)}
+                        >
+                            <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
+                            <Text style={styles.datetext}>
+                                {moment(dat).format('L')}
+                            </Text>
+                        </Pressable>
+                    </View>;
+                });
+                return dateArray;
+            } catch (e) {
+                console.log(JSON.stringify(e));
+                return <View>
+                    <Text>{JSON.stringify(e)}</Text>
+                </View>
+            }
         } else {
             const firstAvilableDate = dateSource
             setrequestedDate(firstAvilableDate)
@@ -244,7 +278,7 @@ const ServiceDescr = (props) => {
         )
     }
     const displayDates = (dateSource) => {
-        if (!isFromClientRequest && !isFromCampaign) {
+        if (!isFromClientRequest ) {
             return (
                 <View>
                     {renderDatesAvailable(dateSource)}
@@ -254,7 +288,7 @@ const ServiceDescr = (props) => {
     }
     const getDatesInfoSource = () => {
         if (changeDateIsLocal) {
-            console.log(dateFromCalender);
+           // console.log(dateFromCalender);
             return (
                 <View>
                     {displayDates(dateFromCalender)}
@@ -372,15 +406,55 @@ const ServiceDescr = (props) => {
     }
 
     // render Pricing and Detail Info 
+    const onShowManDetPress = () => {
+        setShowAllManDetail(!showAllManDetail)
+    }
+    const onShowOpDetPress = () => {
+        setShowAllOpDetail(!showAllOpDetail)
+    }
     const renderServiceDetail = () => {
         if (!!data.servicePrice && data.additionalServices.length > 0) {
             return (
                 <View>
                     <View style={{ marginVertical: 20 }}>{renderInitialPrice()}</View>
-                    <Text style={styles.text}>تفاصيل الخدمات المقدمة</Text>
-                    <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
+                    <Text style={styles.text}> الخدمات المتوفرة</Text>
+
+                    <View style={styles.detailPressedView}>
+                        <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
+                        <Pressable style={styles.IconView} onPress={onShowManDetPress}>
+                            {showAllManDetail ?
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"minus"}
+                                    color={colors.puprble}
+                                    size={20} /> :
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"plus"}
+                                    color={colors.puprble}
+                                    size={20} />}
+                        </Pressable>
+                    </View>
                     {renderMandatoryDetail()}
-                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+
+
+                    <View style={styles.detailPressedView}>
+                        <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+
+                        <Pressable style={styles.IconView} onPress={onShowOpDetPress}>
+                            {showAllOpDetail ?
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"minus"}
+                                    color={colors.puprble}
+                                    size={20} /> :
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"plus"}
+                                    color={colors.puprble}
+                                    size={20} />}
+                        </Pressable>
+                    </View>
                     {renderOptionalDetail()}
                 </View>
             )
@@ -395,9 +469,40 @@ const ServiceDescr = (props) => {
         if (!!data.servicePrice || data.additionalServices.length > 0) {
             return (
                 <View>
-                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+                    <View style={styles.detailPressedView}>
+                        <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
+                        <Pressable style={styles.IconView} onPress={onShowManDetPress}>
+                            {showAllManDetail ?
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"minus"}
+                                    color={colors.puprble}
+                                    size={20} /> :
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"plus"}
+                                    color={colors.puprble}
+                                    size={20} />}
+                        </Pressable>
+                    </View>
                     {renderMandatoryDetail()}
-                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+                    <View style={styles.detailPressedView}>
+                        <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+
+                        <Pressable style={styles.IconView} onPress={onShowOpDetPress}>
+                            {showAllOpDetail ?
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"minus"}
+                                    color={colors.puprble}
+                                    size={20} /> :
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"plus"}
+                                    color={colors.puprble}
+                                    size={20} />}
+                        </Pressable>
+                    </View>
                     {renderOptionalDetail()}
                 </View>
             )
@@ -443,7 +548,14 @@ const ServiceDescr = (props) => {
         })
     }
     const renderMandatoryDetail = () => {
-        const data = selectMandatoryDetail()
+        var data = []
+        if (showAllManDetail) {
+            data = selectMandatoryDetail()
+        } else {
+            data = []
+        }
+
+        // const data = selectMandatoryDetail()
         const serviceDetailInfo = data.map((item) => {
             return (
                 <View style={styles.detailItem}>
@@ -466,7 +578,12 @@ const ServiceDescr = (props) => {
         })
     }
     const renderOptionalDetail = () => {
-        const data = selectOptionalDetail()
+        var data = []
+        if (showAllOpDetail) {
+            data = selectOptionalDetail()
+        } else {
+            data = []
+        }
         const serviceDetailInfo = data.map((item) => {
             return (
                 <View style={styles.detailItem}>
@@ -504,7 +621,7 @@ const ServiceDescr = (props) => {
     const renderCampeigns = () => {
         const campArray = data.relatedCamp?.map(offer => {
             return <View style={styles.HallView}>
-                < CampaignCard  {...offer} />
+                < CampaignCard  {...offer} isFromServiceDesc={isFromServiceDesc}/>
             </View>
         });
         //console.log("campArray", campArray);
@@ -635,7 +752,7 @@ const ServiceDescr = (props) => {
                     {renderServiceDetail()}
                     {data.relatedCamp.length > 0 &&
                         <View>
-                            <Text style={styles.text}>العروض </Text>
+                            <Text style={styles.text}>العروض المتوفرة</Text>
                             {renderCampeigns()}
                         </View>}
                 </View >
@@ -675,12 +792,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     header: {
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
         flexDirection: 'row',
         width: '100%',
         height: 50,
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        //backgroundColor: 'rgba(0,0,0,0.2)',
+        // elevation: 5,
+        // position: 'absolute',
+        // top: 0,
     },
     sliderView: {
 
@@ -731,8 +852,8 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     descView: {
-        borderWidth: 1,
-        height: 300
+        // borderWidth: 1,
+        // height: 300
     },
     description: {
         marginVertical: 5,
@@ -758,7 +879,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     detailItem: {
-        //marginVertical: 10,
+        marginBottom: 10,
     },
     detailTypeView: {
         flexDirection: 'row',
@@ -1000,6 +1121,12 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginVertical: 10,
         borderRadius: 30
+    },
+    detailPressedView: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'flex-end', 
+        marginVertical: 10 
     }
 })
 

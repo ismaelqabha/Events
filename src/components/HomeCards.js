@@ -14,7 +14,6 @@ const HomeCards = (props) => {
     const { subTitle, address, availableDates } = props;
     const { setSType } = useContext(SearchContext);
 
-
     const onCaardPress = () => {
         setSType((props.servType))
         navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props, availableDates } })
