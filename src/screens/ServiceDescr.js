@@ -5,44 +5,57 @@ import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
-import { getCampaignsByServiceId, getRequestbyUserId } from '../resources/API';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
 import CampaignCard from '../components/CampaignCard';
+import Fontisto from "react-native-vector-icons/Fontisto";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from "../assets/AppColors"
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
+import ClientCalender from '../components/ClientCalender';
+import { Button } from 'react-native-elements';
 
 
 const ServiceDescr = (props) => {
-    const { data, isFromClientRequest } = props?.route.params
+    const { data, isFromClientRequest, isFromCampaign } = props?.route.params
+    // console.log("data", data.relatedCamp.length);
     const [showModal, setShowModal] = useState(false);
+    const [changeDateshowModal, setChangeDateshowModal] = useState(false);
+    const [changeDateIsLocal, setchangeDateIsLocal] = useState(false);
+
+    const [showAllDesc, setShowAllDesc] = useState(false);
+    const [displayCount, setDisplayCount] = useState(5);
+
+    const [showAllManDetail, setShowAllManDetail] = useState(false);
+    const [showAllOpDetail, setShowAllOpDetail] = useState(false);
+
+    const [isFromServiceDesc, setIsFromServiceDesc] = useState(true);
+
+
     const [subDetArray, setSubDetArray] = useState([]);
 
-    const [requestData, setRequestData] = useState([]);
+    const [requestData, setRequestData] = useState(data.serviceRequests);
 
-    const { userId } = useContext(UsersContext);
+    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
 
-    const { requestedDate, setrequestedDate, setResDetail } = useContext(SearchContext);
 
-    
 
-    const getRequestfromApi = () => {
-        getRequestbyUserId({ ReqUserId: userId }).then(res => {
-            if (res.message == 'no Request') {
-                setRequestData([])
-            } else {
-                setRequestData(res)
-            }
-        })
-    }
+    // const getRequestfromApi = () => {
+    //     getRequestbyUserId({ ReqUserId: userId }).then(res => {
+    //         if (res.message == 'no Request') {
+    //             setRequestData([])
+    //         } else {
+    //             setRequestData(res)
+    //         }
+    //     })
+    // }
 
 
     useEffect(() => {
-        getRequestfromApi();
+        // getRequestfromApi();
 
         // Cleanup function to reset resDetail when component unmounts or re-renders
         return () => {
@@ -59,18 +72,11 @@ const ServiceDescr = (props) => {
         setShowModal(false);
     };
 
-    const filterRequestAccServiceId = () => {
-        return requestData.filter(item => {
-            return item.ReqServId === data.service_id
-        })
-    }
 
     const checkRequestBeforSending = () => {
-        const filterdRequest = filterRequestAccServiceId()
 
-        const result = filterdRequest.find(item => {
+        const result = requestData.find(item => {
             if (item.reservationDetail.length > 1) {
-                console.log(item.reservationDetail.length);
 
                 const x = item.reservationDetail.find(resDate => {
                     if (Array.isArray(requestedDate)) {
@@ -84,7 +90,6 @@ const ServiceDescr = (props) => {
                 })
                 return x
             } else {
-                //console.log(item.reservationDetail[0].reservationDate , requestedDate, item.reservationDetail[0].reservationDate == requestedDate);
                 return item.reservationDetail[0].reservationDate == requestedDate
             }
         })
@@ -115,7 +120,7 @@ const ServiceDescr = (props) => {
     }
 
     const renderImg = () => {
-        const imageArray = data.images[0].serviceImages.map(photos => {
+        const imageArray = data.images[0].serviceImages?.map(photos => {
             return photos;
         });
         return imageArray;
@@ -150,8 +155,8 @@ const ServiceDescr = (props) => {
             style={styles.img}
         />
     }
-    const renderDescription = () => {
-        const serviceDescription = data?.desc?.map(item => {
+    const getDescItem = () => {
+        const serviceDescription = data?.desc?.slice(0, displayCount).map(item => {
             return (
                 <View style={styles.description}>
                     <Text style={styles.descText}>{item.descItem}</Text>
@@ -166,6 +171,33 @@ const ServiceDescr = (props) => {
             )
         })
         return serviceDescription || null
+
+    }
+    const renderDescription = () => {
+        return (
+            <View style={styles.descView}>
+                <Text style={styles.text}>الوصف</Text>
+                {getDescItem()}
+                {data?.desc.length > displayCount &&
+                    <View>
+                        {!showAllDesc ?
+                            <Pressable onPress={onPressMore} style={{ alignSelf: 'flex-start' }}>
+                                <Text >المزيد...</Text>
+                            </Pressable> :
+                            <Pressable onPress={onPressLess} style={{ alignSelf: 'flex-start' }}>
+                                <Text >اغلاق...</Text>
+                            </Pressable>}
+                    </View>}
+            </View>
+        )
+    }
+    const onPressMore = () => {
+        setDisplayCount(displayCount + 11)
+        setShowAllDesc(!showAllDesc)
+    }
+    const onPressLess = () => {
+        setDisplayCount(5)
+        setShowAllDesc(!showAllDesc)
     }
 
     // render Service Dates Info from result screen
@@ -180,34 +212,44 @@ const ServiceDescr = (props) => {
             setrequestedDate(newDates);
         }
     };
-    const renderDates = () => {
+    const renderDates = (dateSource) => {
         moment.locale('ar-dz');
-        if (Array.isArray(data.availableDates)) {
-            const DatesAvailable = data.availableDates
-            const dateArray = DatesAvailable?.map(dat => {
-                const [pressed, setIsPressed] = useState(false)
-                useEffect(() => {
-                    const found = requestedDate.find((date) => date === dat)
-                    if (found) {
-                        setIsPressed(true)
-                    } else {
-                        setIsPressed(false)
-                    }
-                }, [])
-                return <View style={styles.dateView}>
-                    <Pressable style={[styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
-                        onPress={() => SelectDatePressed(dat, setIsPressed, pressed)}
-                    >
-                        <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
-                        <Text style={styles.datetext}>
-                            {moment(dat).format('L')}
-                        </Text>
-                    </Pressable>
-                </View>;
-            });
-            return dateArray;
+        if (Array.isArray(dateSource)) {
+            const DatesAvailable = dateSource
+           // console.log("DatesAvailable", DatesAvailable);
+            try {
+                const dateArray = DatesAvailable?.map(dat => {
+                    const [pressed, setIsPressed] = useState(false)
+
+                    useEffect(() => {
+                        const found = requestedDate.find((date) => date === dat)
+                        if (found) {
+                            setIsPressed(true)
+                        } else {
+                            setIsPressed(false)
+                        }
+                    }, [])
+
+                    return <View style={styles.dateView}>
+                        <Pressable style={[styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
+                            onPress={() => SelectDatePressed(dat, setIsPressed, pressed)}
+                        >
+                            <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
+                            <Text style={styles.datetext}>
+                                {moment(dat).format('L')}
+                            </Text>
+                        </Pressable>
+                    </View>;
+                });
+                return dateArray;
+            } catch (e) {
+                console.log(JSON.stringify(e));
+                return <View>
+                    <Text>{JSON.stringify(e)}</Text>
+                </View>
+            }
         } else {
-            const firstAvilableDate = data.availableDates
+            const firstAvilableDate = dateSource
             setrequestedDate(firstAvilableDate)
             return <View style={styles.dateformat}>
                 <View>
@@ -225,16 +267,84 @@ const ServiceDescr = (props) => {
 
         }
     };
-    const renderDatesAvailable = () => {
+    const renderDatesAvailable = (dateSource) => {
         return (
             <View>
-                <Text style={styles.text}>{Array.isArray(data.availableDates) ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
+                <Text style={styles.text}>{Array.isArray(dateSource) ? 'التواريخ المتاحة' : 'التاريخ المتاح'}</Text>
                 <View style={styles.DatesZone}>
-                    <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>{renderDates()}</ScrollView>
+                    <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>{renderDates(dateSource)}</ScrollView>
                 </View>
             </View>
         )
     }
+    const displayDates = (dateSource) => {
+        if (!isFromClientRequest ) {
+            return (
+                <View>
+                    {renderDatesAvailable(dateSource)}
+                </View>
+            )
+        }
+    }
+    const getDatesInfoSource = () => {
+        if (changeDateIsLocal) {
+           // console.log(dateFromCalender);
+            return (
+                <View>
+                    {displayDates(dateFromCalender)}
+                </View>
+            )
+        } else {
+            return (
+                <View>
+                    {displayDates(data.availableDates)}
+                </View>
+            )
+
+        }
+    }
+
+    /// to change the selected date part
+
+    const onChangDatePress = () => {
+        setChangeDateshowModal(true)
+        setchangeDateIsLocal(true)
+    }
+    const renderChangeDateModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={changeDateshowModal}
+                animationType="slide"
+                onRequestClose={() => setChangeDateshowModal(false)}>
+                <View style={styles.changeDatecenteredView}>
+                    <View style={styles.changeDatedetailModal}>
+                        <View style={{ marginTop: 20 }}>
+                            <ClientCalender  {...data} />
+
+                            <Pressable onPress={() => setChangeDateshowModal(false)} style={{ width: '100%', alignItems: 'center', justifyContent: 'center', height: 60 }}>
+                                <Text>بحث</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+    const changeDateComponent = () => {
+        return (
+            <Pressable onPress={onChangDatePress}>
+                <View style={styles.changeDateView}>
+                    <Fontisto
+                        style={{ alignSelf: 'center' }}
+                        name={"date"}
+                        color={colors.puprble}
+                        size={50} />
+                </View>
+            </Pressable>
+        )
+    }
+
 
     // Sub Detail Info Modal
     const RenderCancelButton = () => {
@@ -296,14 +406,55 @@ const ServiceDescr = (props) => {
     }
 
     // render Pricing and Detail Info 
+    const onShowManDetPress = () => {
+        setShowAllManDetail(!showAllManDetail)
+    }
+    const onShowOpDetPress = () => {
+        setShowAllOpDetail(!showAllOpDetail)
+    }
     const renderServiceDetail = () => {
         if (!!data.servicePrice && data.additionalServices.length > 0) {
             return (
                 <View>
                     <View style={{ marginVertical: 20 }}>{renderInitialPrice()}</View>
-                    <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
+                    <Text style={styles.text}> الخدمات المتوفرة</Text>
+
+                    <View style={styles.detailPressedView}>
+                        <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
+                        <Pressable style={styles.IconView} onPress={onShowManDetPress}>
+                            {showAllManDetail ?
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"minus"}
+                                    color={colors.puprble}
+                                    size={20} /> :
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"plus"}
+                                    color={colors.puprble}
+                                    size={20} />}
+                        </Pressable>
+                    </View>
                     {renderMandatoryDetail()}
-                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+
+
+                    <View style={styles.detailPressedView}>
+                        <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+
+                        <Pressable style={styles.IconView} onPress={onShowOpDetPress}>
+                            {showAllOpDetail ?
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"minus"}
+                                    color={colors.puprble}
+                                    size={20} /> :
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"plus"}
+                                    color={colors.puprble}
+                                    size={20} />}
+                        </Pressable>
+                    </View>
                     {renderOptionalDetail()}
                 </View>
             )
@@ -318,9 +469,40 @@ const ServiceDescr = (props) => {
         if (!!data.servicePrice || data.additionalServices.length > 0) {
             return (
                 <View>
-                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+                    <View style={styles.detailPressedView}>
+                        <Text style={styles.detailTxt}>الخدمات الاجبارية</Text>
+                        <Pressable style={styles.IconView} onPress={onShowManDetPress}>
+                            {showAllManDetail ?
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"minus"}
+                                    color={colors.puprble}
+                                    size={20} /> :
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"plus"}
+                                    color={colors.puprble}
+                                    size={20} />}
+                        </Pressable>
+                    </View>
                     {renderMandatoryDetail()}
-                    <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+                    <View style={styles.detailPressedView}>
+                        <Text style={styles.detailTxt}>الخدمات الاختيارية</Text>
+
+                        <Pressable style={styles.IconView} onPress={onShowOpDetPress}>
+                            {showAllOpDetail ?
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"minus"}
+                                    color={colors.puprble}
+                                    size={20} /> :
+                                <AntDesign
+                                    style={{ alignSelf: 'center' }}
+                                    name={"plus"}
+                                    color={colors.puprble}
+                                    size={20} />}
+                        </Pressable>
+                    </View>
                     {renderOptionalDetail()}
                 </View>
             )
@@ -366,7 +548,14 @@ const ServiceDescr = (props) => {
         })
     }
     const renderMandatoryDetail = () => {
-        const data = selectMandatoryDetail()
+        var data = []
+        if (showAllManDetail) {
+            data = selectMandatoryDetail()
+        } else {
+            data = []
+        }
+
+        // const data = selectMandatoryDetail()
         const serviceDetailInfo = data.map((item) => {
             return (
                 <View style={styles.detailItem}>
@@ -389,7 +578,12 @@ const ServiceDescr = (props) => {
         })
     }
     const renderOptionalDetail = () => {
-        const data = selectOptionalDetail()
+        var data = []
+        if (showAllOpDetail) {
+            data = selectOptionalDetail()
+        } else {
+            data = []
+        }
         const serviceDetailInfo = data.map((item) => {
             return (
                 <View style={styles.detailItem}>
@@ -427,7 +621,7 @@ const ServiceDescr = (props) => {
     const renderCampeigns = () => {
         const campArray = data.relatedCamp?.map(offer => {
             return <View style={styles.HallView}>
-                < CampaignCard  {...offer} />
+                < CampaignCard  {...offer} isFromServiceDesc={isFromServiceDesc}/>
             </View>
         });
         //console.log("campArray", campArray);
@@ -545,20 +739,24 @@ const ServiceDescr = (props) => {
                 <View style={styles.logo}>{renderLogo()}</View>
                 {renderTitle()}
                 {seperator()}
+                {changeDateComponent()}
+                {getDatesInfoSource()}
 
-                {!isFromClientRequest && renderDatesAvailable()}
                 {seperator()}
-                <View>
-                    <Text style={styles.text}>وصف الخدمات المقدمة</Text>
-                    {renderDescription()}
-                </View>
+
+                {renderDescription()}
+
                 {seperator()}
+
                 <View style={styles.ditailView}>
-                    <Text style={styles.text}>التفاصيل لتحديد تكلفة الحجز</Text>
                     {renderServiceDetail()}
-                    <Text style={styles.text}>أو يمكنك اختيار احد العروض التالية</Text>
-                    {renderCampeigns()}
+                    {data.relatedCamp.length > 0 &&
+                        <View>
+                            <Text style={styles.text}>العروض المتوفرة</Text>
+                            {renderCampeigns()}
+                        </View>}
                 </View >
+
                 {seperator()}
                 {renderserviceLocation()}
                 {seperator()}
@@ -579,9 +777,10 @@ const ServiceDescr = (props) => {
             <ScrollView >
                 {renderSlider()}
                 {renderBody()}
+                {!isFromClientRequest && renderFoter()}
             </ScrollView>
             {renderSubDetailModal()}
-            {!isFromClientRequest && renderFoter()}
+            {renderChangeDateModal()}
         </View>
 
     );
@@ -593,25 +792,23 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     header: {
-        backgroundColor: 'white',
+        // backgroundColor: 'white',
         flexDirection: 'row',
         width: '100%',
         height: 50,
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        //backgroundColor: 'rgba(0,0,0,0.2)',
+        // elevation: 5,
+        // position: 'absolute',
+        // top: 0,
     },
     sliderView: {
 
     },
     body: {
-        // borderTopLeftRadius: 60,
-        // borderTopRightRadius: 60,
         paddingHorizontal: 10,
         backgroundColor: colors.BGScereen,
-        //position: 'absolute',
-        //top: 200,
-        //width: '100%',
-        //height: 420,
     },
     home: {
         flexDirection: 'row',
@@ -654,18 +851,26 @@ const styles = StyleSheet.create({
     titleInfo: {
         marginTop: 30
     },
+    descView: {
+        // borderWidth: 1,
+        // height: 300
+    },
     description: {
         marginVertical: 5,
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingHorizontal: 10,
+
     },
     DatesZone: {
         marginVertical: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingHorizontal: 10,
     },
     ditailView: {
         marginVertical: 10,
+        paddingHorizontal: 10
     },
     ReviewView: {
         marginVertical: 10,
@@ -674,7 +879,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     detailItem: {
-        //marginVertical: 10,
+        marginBottom: 10,
     },
     detailTypeView: {
         flexDirection: 'row',
@@ -760,16 +965,19 @@ const styles = StyleSheet.create({
     btntext: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: colors.darkGold,
+        color: colors.puprble,
     },
     btnview: {
-        backgroundColor: colors.puprble,
+        borderWidth: 1,
+        borderColor: colors.puprble,
+        // backgroundColor: colors.puprble,
         width: 150,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 8,
-        elevation: 5
+        // elevation: 5,
+        marginRight: 20
     },
     dateView: {
         justifyContent: 'center',
@@ -784,7 +992,7 @@ const styles = StyleSheet.create({
     viewselectdate: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: 110,
+        width: 100,
         height: 70,
         margin: 4,
         backgroundColor: 'white',
@@ -795,7 +1003,7 @@ const styles = StyleSheet.create({
     viewselectdatepress: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: 110,
+        width: 100,
         height: 70,
         margin: 4,
         backgroundColor: colors.gold,
@@ -833,6 +1041,18 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    changeDatedetailModal: {
+        //  width: '80%',
+        height: '80%',
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+    },
+    changeDatecenteredView: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -890,6 +1110,23 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 30,
+    },
+    changeDateView: {
+        width: '70%',
+        height: 80,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        elevation: 5,
+        marginVertical: 10,
+        borderRadius: 30
+    },
+    detailPressedView: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'flex-end', 
+        marginVertical: 10 
     }
 })
 

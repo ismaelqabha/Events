@@ -213,7 +213,7 @@ const EventsCard = (props) => {
             }
              setEventInfo([...ev])
              setIsRefreshing(true)
-            console.log("Ok");
+           // console.log("Ok");
             // eventEditing(ev)
         })
     }

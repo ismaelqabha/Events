@@ -87,23 +87,11 @@ const ClientSearch = (props) => {
         })
         return region.sort()
     }
-   
+
     // Functions for determine the date
 
-    const monthlyPress = () => {
-        setMonthly(true)
-        setspacificDate(false)
-        setselectDateforSearch(null)
-    }
-    const spacificDatePress = () => {
-        // setAnytime(false)
-        setMonthly(false)
-        setspacificDate(true)
-        // setselectMonthforSearch(null)
-    }
     const handlePress = () => {
         if (isPressed == true && dateViewPressed == false && placeViewPressed == false) {
-
             setIsPressed(!isPressed)
             setdateViewIsPressed(!dateViewPressed)
             setplaceViewIsPressed(false)
@@ -152,7 +140,7 @@ const ClientSearch = (props) => {
             />
         )
     };
-   
+
     useEffect(() => {
         getRegionsfromApi()
         setcityselected("")
@@ -167,11 +155,6 @@ const ClientSearch = (props) => {
 
 
     const showDate = () => {
-        // if (selectMonthforSearch != null) {
-        //     if (monthly) {
-        //         return 'شهر' + '  ' + selectMonthforSearch
-        //     }
-        // }
         if (spacificDate) {
             return selectDateforSearch
         }
@@ -217,7 +200,7 @@ const ClientSearch = (props) => {
                         />
 
                         <TouchableOpacity onPress={handlePress} style={styles.nextView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.gold }}>التالي</Text>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.puprble }}>التالي</Text>
                         </TouchableOpacity>
                     </View>
                 }
@@ -237,26 +220,11 @@ const ClientSearch = (props) => {
                 </TouchableOpacity>
                 {dateViewPressed &&
                     <View style={{ flex: 1 }}>
-                        <View style={styles.choicesView}>
-                            <Pressable style={[styles.Dview, monthly ? styles.DviewPress : styles.Dview]} onPress={monthlyPress}>
-                                <Text style={styles.te}>حسب الشهر</Text>
-                            </Pressable>
-                            <Pressable style={[styles.Dview, spacificDate ? styles.DviewPress : styles.Dview]} onPress={spacificDatePress}>
-                                <Text style={styles.te}>تاريخ محدد</Text>
-
-                            </Pressable>
+                        <View style={{ alignSelf: 'center' }}>
+                            <ClientCalender />
                         </View>
-                        {/* {monthly &&
-                            <View style={{ alignSelf: 'center', marginTop: 80 }}>
-                                <MonthCom onMonthSelected={(num) => setselectMonthforSearch(num)} />
-                            </View>} */}
-                        {spacificDate &&
-                            <View style={{ alignSelf: 'center' }}>
-                                <ClientCalender />
-                            </View>
-                        }
                         <TouchableOpacity onPress={handlePress} style={styles.nextView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.gold }}>التالي</Text>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.puprble }}>التالي</Text>
                         </TouchableOpacity>
                     </View>
                 }
@@ -316,7 +284,7 @@ const ClientSearch = (props) => {
 
     const onBtnSearchPress = () => {
         if (Categorychozen) {
-            props.navigation.navigate(ScreenNames.Results, { data: { ...props }});
+            props.navigation.navigate(ScreenNames.Results, { data: { ...props } });
         }
     }
 
@@ -344,7 +312,7 @@ const ClientSearch = (props) => {
                     disabled={Categorychozen ? false : true}
                     style={[styles.searchbutton, Categorychozen ? styles.searchbutton : styles.searchbuttonWithoutSelect]}
                 >
-                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.darkGold }}>أبحث</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.puprble }}>أبحث</Text>
                 </TouchableOpacity>
             </View>
 
@@ -377,7 +345,7 @@ const styles = StyleSheet.create({
     },
     pressHeader: {
         width: '90%',
-        height: 60,
+        height: 50,
         backgroundColor: 'white',
         alignSelf: 'center',
         elevation: 5,
@@ -385,7 +353,7 @@ const styles = StyleSheet.create({
     },
     dateView: {
         width: '90%',
-        height: 540,
+        height: 550,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
@@ -394,7 +362,7 @@ const styles = StyleSheet.create({
     },
     pressDateView: {
         width: '90%',
-        height: 60,
+        height: 50,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
@@ -403,7 +371,7 @@ const styles = StyleSheet.create({
     },
     placeView: {
         width: '90%',
-        height: 450,
+        height: 200,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
@@ -412,7 +380,7 @@ const styles = StyleSheet.create({
     },
     pressplaceView: {
         width: '90%',
-        height: 60,
+        height: 50,
         backgroundColor: 'white',
         elevation: 5,
         borderRadius: 8,
@@ -473,8 +441,9 @@ const styles = StyleSheet.create({
         height: 30,
         width: 80,
         borderRadius: 5,
-        backgroundColor: colors.puprble,
-        elevation: 5,
+        //backgroundColor: colors.puprble,
+        borderWidth: 2,
+        borderColor: colors.puprble,
         alignItems: 'center',
         justifyContent: 'center',
         margin: 10,
@@ -486,8 +455,8 @@ const styles = StyleSheet.create({
         height: 40,
         width: 100,
         borderRadius: 5,
-        backgroundColor: colors.puprble,
-        elevation: 5,
+        borderWidth: 2,
+        borderColor: colors.puprble,
         alignItems: 'center',
         justifyContent: 'center',
         margin: 10,
@@ -509,16 +478,16 @@ const styles = StyleSheet.create({
         right: 0,
         opacity: 0.3
     },
-    choicesView: {
-        flexDirection: 'row',
-        alignSelf: 'center',
-        backgroundColor: colors.puprble,
-        width: 220,
-        height: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 35
-    },
+    // choicesView: {
+    //     flexDirection: 'row',
+    //     alignSelf: 'center',
+    //     backgroundColor: colors.puprble,
+    //     width: 220,
+    //     height: 40,
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     borderRadius: 35
+    // },
     choicesPView: {
         flexDirection: 'row',
         alignSelf: 'center',

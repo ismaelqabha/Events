@@ -135,11 +135,13 @@ const PaymentDetailComp = (props) => {
 
         const calculateAmountFromPersentage = (pers) => {
             const ReqPrice = reqInfo.requestInfo.Cost
+            console.log(">>", pers);
             if (pers < 100) {
+
                 const fact = ReqPrice * pers
                 const realAmount = fact / 100
-                setAmount(realAmount)
-                setPersentage(pers)
+                setAmount(realAmount?.toFixed(1).toString() || '0')
+                setPersentage(parseInt(pers)?.toFixed(1).toString() || '0')
             } else {
                 console.log("persentage is more than 100%");
             }
@@ -150,8 +152,8 @@ const PaymentDetailComp = (props) => {
             if (amou < ReqPrice) {
                 const value = amou / ReqPrice
                 const pers = value * 100
-                setAmount(amou)
-                setPersentage(pers)
+                setAmount(parseInt(amou)?.toFixed(1).toString() || '0')
+                setPersentage(pers?.toFixed(1).toString() || '0')
             } else {
                 console.log("amount is more than Total Cost");
             }
@@ -176,14 +178,14 @@ const PaymentDetailComp = (props) => {
                     paymentStutes: 'not paid'
                 }
                 updateArray(data, index)
-    
+
                 setPaymentDate(fDate);
             } else {
                 console.log("date not coorect");
                 setPaymentDate(cuurentDate);
             }
 
-            
+
         }
         const showMode = (currentMode) => {
             setShow(true);
@@ -234,42 +236,36 @@ const PaymentDetailComp = (props) => {
                 <View style={styles.inputView}>
 
                     <TextInput style={styles.input}
-                        keyboardType={'default'}
+                        keyboardType={'numeric'}
                         placeholder={'الدفعة'}
                         value={amount}
-                        onChangeText={(val) => calculatePersentageFromAmount(val)}
-
-                    // onEndEditing={() => {
-                    //     const data = {
-                    //         id: payId,
-                    //         PayDate: paymentDate,
-                    //         pers: persentage,
-                    //         paymentStutes: 'not paid'
-                    //     }
-                    //     updateArray(data, index)
-                    // }}
+                        onChangeText={(val) => setAmount(val)}
+                        onEndEditing={(val) => calculatePersentageFromAmount(val.nativeEvent.text)}
                     />
-                    <View style={styles.inputPersentageView}>
 
+                    <View style={styles.inputPersentageView}>
                         <TextInput style={{ fontSize: 18 }}
-                            keyboardType={'default'}
+                            keyboardType={'numeric'}
                             placeholder={'النسبة'}
                             value={persentage}
 
                             onChangeText={(val) => setPersentage(val)}
+
                             onEndEditing={(val) => {
+                                calculateAmountFromPersentage(val.nativeEvent.text)
                                 const data = {
                                     id: payId,
                                     PayDate: paymentDate,
                                     pers: persentage,
                                     paymentStutes: 'not paid'
                                 }
-                                updateArray(data, index)
-                                calculateAmountFromPersentage(val)
+                                 updateArray(data, index)
+
                             }}
                         />
                         <Text style={styles.text}>%</Text>
                     </View>
+
                 </View>
             </View>
         )

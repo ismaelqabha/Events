@@ -3,6 +3,7 @@ import React from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
 
+
 const ReviewsScreen = (props) => {
     const { clientReview, providerReview } = props.route?.params || {}
     const onPressHandler = () => {
@@ -62,11 +63,17 @@ const ReviewsScreen = (props) => {
     }
     const renderReview = () => {
         if (clientReview) {
-            return clientReviewInfo()
+            return <View>
+                {clientReviewInfo()}
+            </View>
+             
             
         }
         if(providerReview) {
-            ProviderReviewInfo
+            return <View>
+            {ProviderReviewInfo()}
+        </View>
+            
         }
     }
     return (

@@ -112,6 +112,7 @@ export default function Splash(props) {
     const getDataFromApi = () => {
         getHomePageData({ servType: servType }).then(res => {
             setServiceDataInfo(res)
+          // console.log("servData", res);
             getFavoritesFromApi()
         })
     }
@@ -126,6 +127,7 @@ export default function Splash(props) {
     const getRequestfromApi = () => {
         getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
             setRequestInfoAccUser(res)
+           // console.log("res request" , res);
         })
     }
 

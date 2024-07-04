@@ -9,7 +9,6 @@ import { addNewRequest, createNewEvent, getEventList, getEventsInfo, updateEvent
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
 import { SelectList } from 'react-native-dropdown-select-list';
-
 import { calculateTotalPrice, showMessage } from '../resources/Functions'
 import Recipt from '../components/ProviderComponents/recipt';
 

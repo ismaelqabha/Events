@@ -2,7 +2,6 @@ import ForgotPassword from "../src/screens/ForgotPassword";
 
 export const ScreenNames = {
     SignIn: 'SignIn',
-    SignUp: 'SignUp',
     ForgotPassword: 'ForgotPassword',
     //Client Screens
     ClientBook: 'ClientBook',
@@ -12,7 +11,6 @@ export const ScreenNames = {
     ClientEvents: 'ClientEvents',
     FileFavorites: 'FileFavorites',
     Favorites: 'Favorites',
-    ServiceDetail: 'ServiceDetail',
     SubDetailPrices: 'SubDetailPrices',
     Campaigns: 'Campaigns',
     ClientSearch: 'ClientSearch',

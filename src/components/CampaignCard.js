@@ -1,23 +1,30 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
+import { View, StyleSheet, Image, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
-import SearchContext from '../../store/SearchContext';
+import { colors } from '../assets/AppColors';
 
 
 const CampaignCard = (props) => {
-    const { campImag, campTitle, campDesc } = props;
+    const { campImag, campTitle, isFromServiceDesc } = props;
     const navigation = useNavigation();
-    const { reachCampaignfrom } = useContext(SearchContext);
+
 
     const onCaardPress = () => {
-        navigation.navigate(ScreenNames.Campaigns, { data: { ...props } })
+        navigation.navigate(ScreenNames.Campaigns, { data: { ...props }, isFromServiceDesc })
     }
 
     const renderCampaighn = () => {
-        // if (reachCampaignfrom == 'fromHome') {
-            return (<View style={styles.forHome}>
-                <TouchableOpacity style={styles.touch} onPress={onCaardPress}>
+        if (isFromServiceDesc) {
+            return (<Pressable style={styles.forDescr} onPress={onCaardPress}>
+                <Text style={styles.cardDesctxt}>{campTitle}</Text>
+                <View style={styles.img}>
+                    <Image style={{ width: 100, height: 100, borderRadius: 30 }} source={{ uri: campImag }} />
+                </View>
+            </Pressable>)
+        } else {
+            return (
+                <Pressable style={styles.forHome} onPress={onCaardPress}>
                     <View style={styles.image}>
                         <Image style={{ flex: 1, borderTopLeftRadius: 30, borderBottomLeftRadius: 30 }} source={{ uri: campImag }} />
                     </View>
@@ -26,26 +33,10 @@ const CampaignCard = (props) => {
                         <Text style={styles.detailText}>التفاصيل</Text>
                     </View>
 
-                </TouchableOpacity>
-            </View>)
-        //}
-        // if (reachCampaignfrom == 'fromRequest') {
 
-        // }
-        // if (reachCampaignfrom == 'fromServiceDescr') {
-        //     return (<View style={styles.forDescr}>
-        //         <TouchableOpacity style={styles.touch} onPress={onCaardPress}>
-        //             <View style={styles.img}>
-        //                 <Image style={{ flex: 1 }} source={{ uri: campImag }} />
-        //             </View>
-        //             <View>
-        //                 <Text style={styles.cardDesctxt}>{campTitle}</Text>
+                </Pressable>)
+        }
 
-        //             </View>
-        //             <Text style={styles.detailText}>التفاصيل</Text>
-        //         </TouchableOpacity>
-        //     </View>)
-        // }
     }
 
     return (
@@ -62,61 +53,61 @@ const styles = StyleSheet.create({
     forHome: {
         backgroundColor: '#fff',
         borderRadius: 30,
-        shadowRadius: 4,
         elevation: 3,
         margin: 10,
         width: 200,
         height: 180,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     forDescr: {
         alignSelf: 'center',
         backgroundColor: '#fff',
-        borderRadius: 8,
+        borderRadius: 30,
         padding: 10,
-        shadowRadius: 4,
-        elevation: 3,
-        margin: 5,
-        width: 350,
-        height: 220
+        elevation: 5,
+        marginVertical: 10,
+        width: '100%',
+        height: 120,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end'
+
     },
     image: {
-        width: "60%",
+
+        width: "50%",
         height: '100%',
     },
     title: {
         alignItems: 'center',
         justifyContent: 'center',
-        flex: 1
+        width: '50%'
     },
     titleTxt: {
         fontSize: 14,
-        color: 'black',
+        color: colors.puprble,
     },
     img: {
-        width: "100%",
-        height: 150,
-        borderRadius: 8,
-        marginBottom: 8,
+        // borderRadius: 8,
+        // marginBottom: 8,
     },
     cardDesctxt: {
         fontSize: 15,
         fontWeight: 'bold',
+        color: colors.puprble,
+        marginRight: 20
     },
     description: {
         fontSize: 16,
         color: '#777',
     },
 
-    touch: {
-        flexDirection: 'row',
-        flex: 1,
-    },
     detailText: {
         color: 'gray',
         position: 'absolute',
-        bottom: 0,
-        marginBottom: 30
+        bottom: 5,
     }
 })
 

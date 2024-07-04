@@ -19,12 +19,12 @@ const ProviderShowRequest = (props) => {
     const { isFirst, campInfo, setRequestInfoByService, requestInfoByService } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
 
-    const { reqInfo ,fromProviderDuePay} = props.route?.params || {}
+    const { reqInfo, fromProviderDuePay, fromRequestCard } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-    console.log("reqInfo", reqInfo.ReqDate);
+    //console.log("reqInfo", reqInfo);
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
@@ -239,7 +239,7 @@ const ProviderShowRequest = (props) => {
         );
     }
     const refuse = () => {
-        
+
         const newData = {
             RequestId: reqInfo.requestInfo.RequestId,
             ReqStatus: 'refuse'
@@ -249,7 +249,7 @@ const ProviderShowRequest = (props) => {
     }
     const updateInfo = (infoData) => {
         const requestInfoAccServiceIndex = requestInfoByService?.findIndex(item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId)
-       
+
         updateRequest(infoData).then(res => {
             if (res.message === 'Updated Sucessfuly') {
                 const data = requestInfoByService || [];
@@ -273,7 +273,7 @@ const ProviderShowRequest = (props) => {
     const renderPaymentDetail = () => {
         return (
             <View>
-                <PaymentDetailComp reqInfo={reqInfo} setShowPaymentModal={setShowPaymentModal}/>
+                <PaymentDetailComp reqInfo={reqInfo} setShowPaymentModal={setShowPaymentModal} />
             </View>
 
         )
@@ -313,13 +313,14 @@ const ProviderShowRequest = (props) => {
                         color={"black"}
                         size={25} />
                 </Pressable>
-                {fromProviderDuePay && <Pressable onPress={moreModalPress}>
-                    <Fontisto
-                        style={styles.icon}
-                        name={"more-v"}
-                        color={"black"}
-                        size={20} />
-                </Pressable>}
+                {fromProviderDuePay == undefined &&
+                    <Pressable onPress={moreModalPress}>
+                        <Fontisto
+                            style={styles.icon}
+                            name={"more-v"}
+                            color={"black"}
+                            size={20} />
+                    </Pressable>}
             </View>)
     }
     const renderSendingReqDate = () => {
@@ -499,7 +500,7 @@ const ProviderShowRequest = (props) => {
         }
     }
     const renderPaymentInfo = () => {
-       
+
         return reqInfo.requestInfo.paymentInfo.map(item => {
             const amount = calculatePersentage(item.pers)
             return (
@@ -551,7 +552,7 @@ const ProviderShowRequest = (props) => {
             {isSelectedFromCampign(reqInfo.requestInfo.reservationDetail[0])}
         </View>)
     }
-
+    // console.log("fromProviderDuePay", fromProviderDuePay);
 
     return (
         <View style={styles.container}>
@@ -563,7 +564,8 @@ const ProviderShowRequest = (props) => {
 
                 {renderfinalCost()}
                 {isRequestWaitingPayForPaymentInfo()}
-                {!fromProviderDuePay && moreModal()}
+                {fromProviderDuePay == undefined && moreModal()}
+                {/* {moreModal()} */}
                 {renderModal()}
 
             </ScrollView>

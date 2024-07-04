@@ -12,6 +12,7 @@ import moment from "moment";
 const ProviderReservationCard = (props) => {
     const { fromWaitingScreen, fromReservationScreen, fromWaitingPayScreen, fromProviderPartallyPaid, resDate } = props
     const { eventTypeInfo } = useContext(SearchContext);
+    const [fromRequestCard, setFromRequestCard] = useState(true)
     const navigation = useNavigation();
     const reqInfo = { ...props }
 
@@ -144,7 +145,7 @@ const ProviderReservationCard = (props) => {
     const requestWaitingReplyCard = () => {
         return (
             <View style={styles.card}>
-                <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo, fromRequestCard })}>
                     {renderRequestDate()}
                     {renderEventType()}
                     {renderSingleReq()}
@@ -157,7 +158,7 @@ const ProviderReservationCard = (props) => {
         return filteredRes.map(item => {
             return (
                 <View style={styles.card}>
-                    <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo })}>
+                    <Pressable style={styles.reqInfo} onPress={() => navigation.navigate(ScreenNames.ProviderShowRequest, { reqInfo, fromRequestCard })}>
                         <Text style={styles.dateTxt}>حجز متعدد الايام</Text>
                         {renderRequestDate()}
                         {renderEventType()}
