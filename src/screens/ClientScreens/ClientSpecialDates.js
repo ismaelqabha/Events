@@ -27,6 +27,7 @@ const ClientSpecialDates = (props) => {
   const [date, setDate] = useState(new Date());
   const [eventTitle, setEventTitle] = useState(null);
   const [eventdate, setEventDate] = useState(null);
+  const [eventId, setEventId] = useState();
 
   const backPress = () => {
     props.navigation.goBack();
@@ -34,9 +35,10 @@ const ClientSpecialDates = (props) => {
   const closeModalPress = () => {
     setShowSpecialDMoodal(false)
   }
-  const whenPressMoretoUpdate = () => {
+  const whenPressMoretoUpdate = (id) => {
     setIsAdding(false)
     setShowEditingMoodal(true)
+    setEventId(id)
   }
   const whenPressAdd = () => {
     setIsAdding(true)
@@ -77,7 +79,7 @@ const ClientSpecialDates = (props) => {
           <View style={styles.item}>
 
             <View style={styles.supItem}>
-              <Pressable onPress={whenPressMoretoUpdate}
+              <Pressable onPress={() => whenPressMoretoUpdate(item.id)}
               >
                 <Feather
                   name={'more-vertical'}
@@ -97,7 +99,7 @@ const ClientSpecialDates = (props) => {
                 size={25} />
             </View>
           </View>
-          {moreModal(item.eventName)}
+          {moreModal()}
         </View>
       )
     })
@@ -198,7 +200,7 @@ const ClientSpecialDates = (props) => {
 
 
   /// Removing special Event
-  const onRemovePress = (id) => {
+  const onRemovePress = () => {
     Alert.alert(
       'تأكيد',
       'هل انت متأكد من الحذف ؟ ',
@@ -209,14 +211,36 @@ const ClientSpecialDates = (props) => {
         },
         {
           text: 'نعم',
-          onPress: () => removeSpecialEvent(id),
+          onPress: () => removeSpecialEvent(),
           style: 'destructive', // Use 'destructive' for a red-colored button
         },
       ],
       { cancelable: false } // Prevent closing the alert by tapping outside
     );
   }
-  const removeSpecialEvent = (id) => {
+  const removeSpecialEvent = () => {
+    const SEitem = spcialEvents.filter(elme => elme.id !== eventId)
+
+    
+    const newData = {
+      USER_ID: userId,
+      SpecialDates: [...SEitem]
+    }
+
+    updateUserData(newData).then(res => {
+
+      if (res.message === 'Updated Successfully') {
+
+        setSpcialEvents([...SEitem])
+        setShowEditingMoodal(false)
+        ToastAndroid.showWithGravity(
+          'تم التعديل بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+
+    })
 
   }
 
@@ -256,6 +280,7 @@ const ClientSpecialDates = (props) => {
   }
   const addNewSpecialEvent = () => {
     const addNewSEvent = {
+      id:'',
       eventDate: eventdate,
       eventName: eventTitle
     }
@@ -288,7 +313,7 @@ const ClientSpecialDates = (props) => {
 
 
   /// updating special Event
-  const moreModal = (id) => {
+  const moreModal = () => {
     return (
       <Modal
         transparent
@@ -303,17 +328,17 @@ const ClientSpecialDates = (props) => {
             </Pressable>
 
             <View style={styles.modalbody}>
-              {moreOperation(id)}
+              {moreOperation()}
             </View>
           </View>
         </View>
       </Modal>
     )
   }
-  const moreOperation = (id) => {
+  const moreOperation = () => {
     return (
       <View style={styles.moreChoice}>
-        <Pressable style={styles.moreItem} onPress={() => onEditingPress(id)}>
+        <Pressable style={styles.moreItem} onPress={onEditingPress}>
           <Feather
             name={"edit"}
             color={colors.silver}
@@ -321,7 +346,7 @@ const ClientSpecialDates = (props) => {
           <Text style={styles.moreTxt}>تعديل</Text>
         </Pressable>
 
-        <Pressable style={styles.moreItem} onPress={() => onRemovePress(id)}>
+        <Pressable style={styles.moreItem} onPress={onRemovePress}>
           <AntDesign
             name={"delete"}
             color={colors.silver}
@@ -331,10 +356,11 @@ const ClientSpecialDates = (props) => {
       </View>
     )
   }
-  const onEditingPress = (id) => {
-    const SEitemIndex = spcialEvents.findIndex(elme => elme.eventName === id)
+  const onEditingPress = () => {
+    const SEitemIndex = spcialEvents.findIndex(elme => elme.id === eventId)
     const SE = spcialEvents
     if (SEitemIndex > -1) {
+      
       setEventTitle(SE[SEitemIndex].eventName)
       setEventDate(SE[SEitemIndex].eventDate)
     }
@@ -342,7 +368,7 @@ const ClientSpecialDates = (props) => {
     setShowSpecialDMoodal(true)
   }
   const updatedSEvent = () => {
-    const SEitemIndex = spcialEvents.findIndex(elme => elme.eventName === eventTitle)
+    const SEitemIndex = spcialEvents.findIndex(elme => elme.id === eventId)
     const SE = spcialEvents
     if (SEitemIndex > -1) {
       SE[SEitemIndex].eventName = eventTitle
@@ -361,8 +387,8 @@ const ClientSpecialDates = (props) => {
         setSpcialEvents([...SE])
         setShowSpecialDMoodal(false)
 
-        // setEventTitle(null)
-        // setEventDate(null)
+         setEventTitle(null)
+         setEventDate(null)
         ToastAndroid.showWithGravity(
           'تم التعديل بنجاح',
           ToastAndroid.SHORT,

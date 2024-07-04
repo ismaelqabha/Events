@@ -15,32 +15,34 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import Feather from 'react-native-vector-icons/Feather'
 import Entypo from "react-native-vector-icons/Entypo";
 import { colors } from '../assets/AppColors';
+import UsersContext from '../../store/UsersContext';
 
 
 
 const EventsCard = (props) => {
-    
+
     const navigation = useNavigation();
-    const { eventName, eventDate, eventCost, eventTitleId, EventId , eventEditing , setIsRefreshing } = props;
+    const { eventName, eventDate, eventCost, eventTitleId, EventId, eventEditing, setIsRefreshing } = props;
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(false)
     const [deleteEvent, setDeleteEvent] = useState(false)
 
     const [eventTypeName, setEventTypeName] = useState()
-    const [fileEventName, setfileEventName] = useState();
+    const [fileEventName, setfileEventName] = useState(null);
     const [dateOfEvent, setDateOfEvent] = useState([])
-    const [eventType, setEventType] = useState()
+    const [eventType, setEventType] = useState(null)
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
 
 
-    const { eventTypeInfo, userId, eventInfo, setEventInfo } = useContext(SearchContext);
+    const { eventTypeInfo, eventInfo, setEventInfo, requestInfoAccUser } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
 
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === EventId && item.userId === userId)
 
-    // console.log("eventTitleId", eventTitleId);
+    console.log("requestInfoAccUser", requestInfoAccUser);
 
     const getEventTitle = () => {
         return eventTypeInfo.filter(item => {
@@ -49,7 +51,13 @@ const EventsCard = (props) => {
     }
 
     const eventTitle = getEventTitle()
-    // console.log("eventTitle", eventTitle);
+
+    const filterReqAccEventFile = () => {
+        return requestInfoAccUser?.map(item => {
+            return item.ReqEventId === EventId
+        })
+    }
+
 
     useEffect(() => {
         getEventTypeInfo()
@@ -70,12 +78,19 @@ const EventsCard = (props) => {
         const TypeId = eventTypeInfo[eventTypeIndex].Id
         return TypeId
     }
+    const getTitleEventType = (id) => {
+        const eventTypeIndex = eventTypeInfo.findIndex(item => item.Id === id)
+        const Typetitle = eventTypeInfo[eventTypeIndex].eventTitle
+        return Typetitle
+    }
+
     const onModalCancelPress = () => {
         setShowModal(false)
     }
     const onModalSavePress = () => {
-        if (fileEventName !== undefined) {
-            if (eventType !== undefined) {
+        if (fileEventName !== null) {
+            if (eventType !== null) {
+                // console.log("eventType", eventType);
                 const evTitID = getEventTypeID(eventType)
 
                 updateEventInfo(evTitID)
@@ -125,28 +140,73 @@ const EventsCard = (props) => {
         setShow(true);
         setMode(currentMode);
     }
-    const renderExpireDate = () => {
+    const renderFileEventForm = () => {
+        const reqData = filterReqAccEventFile()
+        const title = getTitleEventType(eventTitleId)
+        console.log("reqData", reqData);
         return (
             <View>
-                <Pressable onPress={() => showMode('date')} >
-                    <View style={styles.viewDate}>
-                        <Text style={styles.datetxt}>{dateOfEvent}</Text>
-                        <Entypo
-                            name='calendar'
-                            style={{ fontSize: 30, color: colors.silver, paddingRight: 20 }}
-                        />
-                    </View>
-                </Pressable>
-                {show && (
-                    <DateTimePicker
-                        testID='dateTimePicker'
-                        value={date}
-                        mode={mode}
-                        is24Hour={true}
-                        display='calendar'
-                        onChange={onChange}
+                <View style={styles.body}>
+                    {reqData.length > 0 ?
+                        <View style={styles.input}>
+                            <Text>{title}</Text>
+                        </View> :
+                        <View style={{ width: '100%', marginTop: 20 }}>
+                            <SelectList
+                                data={eventTypeName}
+                                setSelected={val => {
+                                    setEventType(val);
+                                }}
+                                placeholder={eventTitle[0].eventTitle}
+                                boxStyles={styles.dropdown}
+                                inputStyles={styles.droptext}
+                                dropdownTextStyles={styles.dropstyle}
+                            />
+                        </View>}
+                    <TextInput
+                        style={styles.input}
+                        keyboardType='default'
+                        placeholder={eventName}
+                        onChangeText={setfileEventName}
                     />
-                )}
+                    <View>
+                        {reqData.length > 0 ?
+                            <View style={styles.viewDate}>
+                                <Text style={styles.datetxt}>{dateOfEvent}</Text>
+                                <Entypo
+                                    name='calendar'
+                                    style={{ fontSize: 30, color: colors.silver, paddingRight: 20 }}
+                                />
+                            </View> :
+                            <Pressable onPress={() => showMode('date')} >
+                                <View style={styles.viewDate}>
+                                    <Text style={styles.datetxt}>{dateOfEvent}</Text>
+                                    <Entypo
+                                        name='calendar'
+                                        style={{ fontSize: 30, color: colors.silver, paddingRight: 20 }}
+                                    />
+                                </View>
+                            </Pressable>}
+                        {show && (
+                            <DateTimePicker
+                                testID='dateTimePicker'
+                                value={date}
+                                mode={mode}
+                                is24Hour={true}
+                                display='calendar'
+                                onChange={onChange}
+                            />
+                        )}
+                    </View>
+                </View>
+                <View style={styles.btn}>
+                    <Pressable onPress={() => onModalCancelPress()} >
+                        <Text style={styles.modaltext}>الغاء الامر</Text>
+                    </Pressable>
+                    <Pressable onPress={() => onModalSavePress()} >
+                        <Text style={styles.modaltext}>حفظ</Text>
+                    </Pressable>
+                </View>
             </View>
         )
     }
@@ -162,36 +222,7 @@ const EventsCard = (props) => {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.detailModal}>
-
-                        <View style={styles.body}>
-                            <View style={{ width: '100%', marginTop: 20 }}>
-                                <SelectList
-                                    data={eventTypeName}
-                                    setSelected={val => {
-                                        setEventType(val);
-                                    }}
-                                    placeholder={eventTitle[0].eventTitle}
-                                    boxStyles={styles.dropdown}
-                                    inputStyles={styles.droptext}
-                                    dropdownTextStyles={styles.dropstyle}
-                                />
-                            </View>
-                            <TextInput
-                                style={styles.input}
-                                keyboardType='default'
-                                placeholder={eventName}
-                                onChangeText={setfileEventName}
-                            />
-                            {eventDate.length < 1 && renderExpireDate()}
-                        </View>
-                        <View style={styles.btn}>
-                            <Pressable onPress={() => onModalCancelPress()} >
-                                <Text style={styles.modaltext}>الغاء الامر</Text>
-                            </Pressable>
-                            <Pressable onPress={() => onModalSavePress()} >
-                                <Text style={styles.modaltext}>حفظ</Text>
-                            </Pressable>
-                        </View>
+                        {renderFileEventForm()}
                     </View>
                 </View>
 
@@ -199,22 +230,24 @@ const EventsCard = (props) => {
         )
     }
     const updateEventInfo = (eventTypeId) => {
+        //console.log(fileEventName);
         const editEventItem = {
             EventId: EventId,
             eventName: fileEventName,
             eventTitleId: eventTypeId,
             eventDate: dateOfEvent,
+            eventCost: eventCost
         }
         updateEvent(editEventItem).then(res => {
-            
-            const ev = eventInfo || [];
-            if (eventItemIndex > -1) {
-                ev[eventItemIndex] = editEventItem;
+            if (res.message === 'Updated Sucessfuly') {
+                const ev = eventInfo || [];
+                if (eventItemIndex > -1) {
+                    ev[eventItemIndex] = editEventItem;
+                }
+
+                setEventInfo([...ev])
+                setIsRefreshing(true)
             }
-             setEventInfo([...ev])
-             setIsRefreshing(true)
-           // console.log("Ok");
-            // eventEditing(ev)
         })
     }
 
@@ -244,56 +277,23 @@ const EventsCard = (props) => {
                 const delData = eventInfo
                 const newData = delData?.filter(item => item !== EventId)
                 setEventInfo([...newData])
+
+                ToastAndroid.showWithGravity('تم اٍلالغاء بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+                )
             }
         })
 
-        ToastAndroid.showWithGravity('تم اٍلالغاء بنجاح',
-            ToastAndroid.SHORT,
-            ToastAndroid.BOTTOM
-        )
+
     }
-
-
-
-    // console.log("eventType", eventType);
-
-    // const UpdateRequest = () => {
-    //     const newRequestInfo = {
-    //         RequestId: RequestIdState,
-    //         ReqEventId: props.EventId,
-    //         reservationTime: TimeText
-    //     }
-    //     updateRequestAPI(newRequestInfo).then(res => {
-    //         const req = requestInfo || [];
-    //         if (requestItemIndex > -1) {
-    //             req[requestItemIndex] = newRequestInfo;
-    //         }
-    //         setRequestInfo([...req])
-    //     })
-    // }
-    // const UpdateEventInfo = () => {
-    //     const newEventItem = {
-    //         EventId: props.EventId,
-    //         userId: userId,
-    //         eventDate: moment(requestedDate).format('L'),
-    //         // eventCost: "50890",
-    //     }
-    //     updateEvent(newEventItem).then(res => {
-    //         const ev = eventInfo || [];
-    //         if (eventItemIndex > -1) {
-    //             ev[eventItemIndex] = newEventItem;
-    //         }
-    //         setEventInfo([...ev, newEventItem])
-    //     })
-    // }
-
 
     const onCaardPress = () => {
         navigation.navigate(ScreenNames.ClientBook, { data: { ...props } })
     }
 
     const whenPressLong = () => {
-        if (eventDate.length < 1 && eventCost === 0) {
+        if (eventCost === 0) {
             setDeleteEvent(true)
         }
         setEditing(true)
@@ -301,6 +301,9 @@ const EventsCard = (props) => {
 
 
     const eventEditPress = () => {
+        setEventType(eventTitleId)
+        setfileEventName(eventName)
+        setDateOfEvent(eventDate)
         setShowModal(true)
     }
     //console.log("eventDate.length", eventDate.length);

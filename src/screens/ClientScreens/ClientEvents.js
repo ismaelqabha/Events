@@ -17,21 +17,30 @@ import { colors } from '../../assets/AppColors';
 
 const ClientEvents = (props) => {
     const { isFromAddEventClick, data } = props.route?.params || {}
+
     const [showModal, setShowModal] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [fileEventName, setfileEventName] = useState();
     const { userId } = useContext(UsersContext);
-    const { eventInfo, setEventInfo, eventTypeInfo, setRequestInfoAccUser } = useContext(SearchContext);
+    const { eventInfo, setEventInfo, eventTypeInfo } = useContext(SearchContext);
     const [eventTypeName, setEventTypeName] = useState()
-    const [eventName, setEventName] = useState()
+
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('date');
     const [show, setShow] = useState(false);
 
+    const [fileEventName, setfileEventName] = useState(null);
+    const [eventName, setEventName] = useState(null)
     const [dateOfEvent, setDateOfEvent] = useState([])
-    // const [eventTypeId, setEventTypeId] = useState()
-    // console.log("eventInfo", eventInfo);
+
+
+    var evDate
+    var todayDate = new Date();
+
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
+    todayDate.setMilliseconds(0);
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -42,16 +51,14 @@ const ClientEvents = (props) => {
     const onModalCancelPress = () => {
         setShowModal(false)
     }
-    const onModalSavePress = () => {
-        if (fileEventName !== undefined) {
-            if (eventName !== undefined) {
-                const evTitID = getEventTypeID(eventName)
 
+    // Add new event File
+
+    const onModalSavePress = () => {
+        if (fileEventName !== null) {
+            if (eventName !== null) {
+                const evTitID = getEventTypeID(eventName)
                 creatNewEvent(evTitID)
-                ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM
-                )
                 setShowModal(false)
             } else {
                 Alert.alert(
@@ -81,85 +88,10 @@ const ClientEvents = (props) => {
         }
 
     }
-    // const getEventsfromApi = () => {
-    //     getEventsInfo({ userId: userId }).then(res => {
-    //         setEventInfo(res)
-    //     })
-    // }
-
-    // const getRequestfromApi = () => {
-    //     getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
-    //         setRequestInfoAccUser(res)
-    //     })
-    // }
-
-    const getEventTypeInfo = () => {
-        const eventList = []
-        eventTypeInfo.forEach(element => {
-            eventList.push(element?.eventTitle)
-        })
-        eventList.sort()
-        setEventTypeName(eventList)
-    }
-
     const getEventTypeID = (val) => {
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
         const TypeId = eventTypeInfo[eventTypeIndex].Id
         return TypeId
-    }
-
-    const eventEditing = (eventID) => {
-        const id = getEventTypeID(props.eventTitleId)
-        setfileEventName(props.eventName)
-        // setEventName()
-        setDateOfEvent(props.eventDate)
-        setShowModal(true)
-    }
-
-    const creatNewEvent = (eventTypeId) => {
-        const newEventItem = {
-            userId: userId,
-            eventName: fileEventName,
-            eventTitleId: eventTypeId,
-            eventDate: dateOfEvent,
-            eventCost: 0
-        }
-        createNewEvent(newEventItem).then(res => {
-            const evnt = eventInfo || [];
-            evnt.push(newEventItem)
-            setEventInfo([...evnt])
-        })
-    }
-
-    useEffect(() => {
-        // getEventsfromApi()
-        getEventTypeInfo()
-        // getRequestfromApi()
-    }, [])
-
-    const renderHeader = () => {
-        return (
-            <View style={styles.header}>
-                <Pressable onPress={onPressHandler}>
-                    <AntDesign
-                        style={styles.iconBack}
-                        name={"left"}
-                        color={colors.puprble}
-                        size={20} />
-                </Pressable>
-
-                <Text style={styles.txt}>منسباتي</Text>
-                <Pressable
-                    onPress={onPressModalHandler}
-                >
-                    <Entypo
-                        style={styles.icon}
-                        name={"plus"}
-                        color={colors.puprble}
-                        size={30} />
-                </Pressable>
-            </View>
-        )
     }
     const onChange = (event, selectedDate) => {
         setShow(false)
@@ -168,7 +100,23 @@ const ClientEvents = (props) => {
 
         let tempDate = new Date(currentDate);
         let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
-        setDateOfEvent(fDate);
+        evDate = new Date(fDate)
+        if (evDate > todayDate) {
+            setDateOfEvent(fDate);
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء اختيار تاريخ أكبر من تاريخ اليوم',
+                [
+                    {
+                        text: 'Ok',
+                        // style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
+       
     }
     const showMode = (currentMode) => {
         setShow(true);
@@ -235,10 +183,10 @@ const ClientEvents = (props) => {
                             {renderExpireDate()}
                         </View>
                         <View style={styles.btn}>
-                            <Pressable onPress={() => onModalCancelPress()} >
+                            <Pressable onPress={onModalCancelPress} >
                                 <Text style={styles.modaltext}>الغاء الامر</Text>
                             </Pressable>
-                            <Pressable onPress={() => onModalSavePress()} >
+                            <Pressable onPress={onModalSavePress} >
                                 <Text style={styles.modaltext}>حفظ</Text>
                             </Pressable>
                         </View>
@@ -248,13 +196,84 @@ const ClientEvents = (props) => {
             </Modal>
         )
     }
+    const creatNewEvent = (eventTypeId) => {
+        const newEventItem = {
+            userId: userId,
+            eventName: fileEventName,
+            eventTitleId: eventTypeId,
+            eventDate: dateOfEvent,
+            eventCost: 0
+        }
+        createNewEvent(newEventItem).then(res => {
+            console.log(res.message);
+            if (res.message === 'Event Created') {
+                const evnt = eventInfo || [];
+                evnt.push(newEventItem)
+                setEventInfo([...evnt])
+                ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+
+                )
+            }
+        })
+    }
+
+    const getEventTypeInfo = () => {
+        const eventList = []
+        eventTypeInfo.forEach(element => {
+            eventList.push(element?.eventTitle)
+        })
+        eventList.sort()
+        setEventTypeName(eventList)
+    }
+
+    const eventEditing = (eventID) => {
+        const id = getEventTypeID(props.eventTitleId)
+        setfileEventName(props.eventName)
+        // setEventName()
+        setDateOfEvent(props.eventDate)
+        setShowModal(true)
+    }
+
+   
+
+    useEffect(() => {
+        getEventTypeInfo()
+    }, [])
+
+    const renderHeader = () => {
+        return (
+            <View style={styles.header}>
+                <Pressable onPress={onPressHandler}>
+                    <AntDesign
+                        style={styles.iconBack}
+                        name={"left"}
+                        color={colors.puprble}
+                        size={20} />
+                </Pressable>
+
+                <Text style={styles.txt}>منسباتي</Text>
+                <Pressable
+                    onPress={onPressModalHandler}
+                >
+                    <Entypo
+                        style={styles.icon}
+                        name={"plus"}
+                        color={colors.puprble}
+                        size={30} />
+                </Pressable>
+            </View>
+        )
+    }
+
 
     // console.log("eventInfo",eventInfo);
     const query = () => {
         return eventInfo || [];
     }
     const renderCard = ({ item }) => {
-        return <EventsCard  {...item}  eventEditing={eventEditing} setIsRefreshing={setIsRefreshing} />;
+        return <EventsCard  {...item} eventEditing={eventEditing} setIsRefreshing={setIsRefreshing} />;
     };
 
     return (
