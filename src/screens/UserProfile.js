@@ -11,7 +11,21 @@ import { showMessage } from '../resources/Functions';
 const UserProfile = (props) => {
     const { userId } = useContext(UsersContext);
     const { data } = props.route?.params || {}
-    const [status, setStatus] = useState(data?.relationStatus || 'طلب انشاء علاقة ')
+    const getStatus = (relationStatus) => {
+        if (!relationStatus) {
+            return 'طلب انشاء علاقة';
+        }
+        switch (relationStatus) {
+            case 'pending':
+                return 'Cancel request';
+            case 'accepted':
+                return 'Cancel relation';
+            default:
+                return 'طلب انشاء علاقة';
+        }
+    };
+
+    const [status, setStatus] = useState(() => getStatus(data?.relationStatus));
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -141,17 +155,27 @@ const UserProfile = (props) => {
         )
     }
     const onAddPress = () => {
-        addFriend({ userId1: userId, userId2: data?.USER_ID }).then((res) => {
-            if (res) {
-                if (res?.error) {
-                    showMessage(res?.error)
-                } else {
-                    showMessage("request successfully sent.")
-                    setStatus((res?.status))
+            const remove = status === 'Cancel request' || status === 'Cancel relation';
+            console.log("rempve ", remove);
+            addFriend({
+                userId1: userId,
+                userId2: data?.USER_ID,
+                remove: remove
+            }).then((res) => {
+                console.log("res ", res);
+                if (res) {
+                    if (res?.error) {
+                        showMessage(res?.error || "");
+                    } else {
+                        showMessage(res?.message || "");
+                        setStatus(getStatus(res?.user?.status || null) || 'طلب انشاء علاقة');
+                    }
                 }
-            }
-        })
-    }
+            }).catch((e) => {
+                console.log("error ", e);
+                showMessage("there has been an error!");
+            });
+    };
 
     return (
         <View style={styles.container}>
