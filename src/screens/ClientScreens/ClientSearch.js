@@ -1,19 +1,17 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Pressable, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { ScreenNames } from '../../route/ScreenNames';
-import SearchContext from '../../store/SearchContext';
-import ServiceCard from '../components/ServiceCard';
-import { servicesCategory } from '../resources/data';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from '@react-navigation/native';
 import { FlatList } from 'react-native-gesture-handler';
-import MonthCom from '../components/MonthCom';
 import { SelectList } from 'react-native-dropdown-select-list'
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { getCities, getRegions } from '../resources/API';
-import ClientCalender from '../components/ClientCalender';
-import AddNewDates from '../components/AddNewDates';
-import { colors } from '../assets/AppColors';
+import { getRegions } from '../../resources/API';
+import ClientCalender from '../../components/ClientCalender';
+import { colors } from '../../assets/AppColors';
+import ServiceCard from '../../components/ServiceCard';
+import SearchContext from '../../../store/SearchContext';
+import { servicesCategory } from '../../resources/data';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 
 const ClientSearch = (props) => {

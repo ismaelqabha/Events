@@ -1,21 +1,20 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Pressable, Text, Modal, Alert, TextInput } from 'react-native';
-import SearchContext from '../../store/SearchContext';
-import HomeCards from '../components/HomeCards';
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { ScrollView } from 'react-native-gesture-handler';
 import Slider from '@react-native-community/slider'
 import { SelectList } from 'react-native-dropdown-select-list'
 import moment from "moment";
-import { colors } from '../assets/AppColors';
-import { hallData } from '../resources/data';
-import HallTypeCard from '../components/HallTypeCard';
-import ClientCalender from '../components/ClientCalender';
-import ServiceProviderContext from '../../store/ServiceProviderContext';
 import { logProfileData } from 'react-native-calendars/src/Profiler';
-import { getRequestbyUserId } from '../resources/API';
-import UsersContext from '../../store/UsersContext';
+import UsersContext from '../../../store/UsersContext';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import SearchContext from '../../../store/SearchContext';
+import HallTypeCard from '../../components/HallTypeCard';
+import { hallData } from '../../resources/data';
+import { colors } from '../../assets/AppColors';
+import HomeCards from '../../components/HomeCards';
+import ClientCalender from '../../components/ClientCalender';
 
 
 
@@ -30,8 +29,8 @@ const Results = (props) => {
         periodDatesforSearch, setperiodDatesforSearch,
         regionData, setRequestInfo,
     } = useContext(SearchContext);
-    const { hallType } = useContext(ServiceProviderContext)
 
+    const { hallType } = useContext(ServiceProviderContext)
     const { userId } = useContext(UsersContext);
 
     const [date, setDate] = useState(new Date());

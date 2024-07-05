@@ -4,12 +4,12 @@ import React, { useEffect, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import ClientHomeAds from "../src/screens/ClientHomeAds";
 import FileFavorites from "../src/screens/FileFavorites";
-import ClientProfile from '../src/screens/ClientProfile';
 import { ScreenNames } from "./ScreenNames";
 import { colors } from '../src/assets/AppColors';
 import Icon, { Icons } from "../src/components/Icons"
 import * as Animatable from 'react-native-animatable';
 import ClientEvents from '../src/screens/ClientScreens/ClientEvents';
+import ClientProfile from '../src/screens/ClientScreens/ClientProfile';
 
 const TabArr = [
     { route: ScreenNames.ClientHomeAds, label: 'الرئيسيه', type: Icons.Ionicons, activeIcon: 'home', inActiveIcon: 'home', component: ClientHomeAds },

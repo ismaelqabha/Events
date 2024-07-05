@@ -22,7 +22,7 @@ import UsersContext from '../../store/UsersContext';
 const EventsCard = (props) => {
 
     const navigation = useNavigation();
-    const { eventName, eventDate, eventCost, eventTitleId, EventId, eventEditing, setIsRefreshing } = props;
+    const { eventName, eventDate, eventCost, eventTitleId, EventId, setIsRefreshing } = props;
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(false)
     const [deleteEvent, setDeleteEvent] = useState(false)
@@ -41,8 +41,14 @@ const EventsCard = (props) => {
     const { userId } = useContext(UsersContext);
 
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === EventId && item.userId === userId)
+    var evDate
+    var todayDate = new Date();
 
-    console.log("requestInfoAccUser", requestInfoAccUser);
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
+    todayDate.setMilliseconds(0);
+    //console.log("requestInfoAccUser", requestInfoAccUser[0].requestInfo);
 
     const getEventTitle = () => {
         return eventTypeInfo.filter(item => {
@@ -53,8 +59,8 @@ const EventsCard = (props) => {
     const eventTitle = getEventTitle()
 
     const filterReqAccEventFile = () => {
-        return requestInfoAccUser?.map(item => {
-            return item.ReqEventId === EventId
+        return requestInfoAccUser?.filter(item => {
+            return item.requestInfo.ReqEventId === EventId
         })
     }
 
@@ -85,20 +91,19 @@ const EventsCard = (props) => {
     }
 
     const onModalCancelPress = () => {
+        setDeleteEvent(false)
+        setEditing(false)
         setShowModal(false)
     }
     const onModalSavePress = () => {
         if (fileEventName !== null) {
             if (eventType !== null) {
-                // console.log("eventType", eventType);
-                const evTitID = getEventTypeID(eventType)
+                const title = getTitleEventType(eventTitleId)
+                const val = eventType || title
+                const evTitID = getEventTypeID(val)
 
                 updateEventInfo(evTitID)
-                ToastAndroid.showWithGravity('تم التعديل',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM
-                )
-                setShowModal(false)
+
             } else {
                 Alert.alert(
                     'تنبية',
@@ -134,26 +139,62 @@ const EventsCard = (props) => {
 
         let tempDate = new Date(currentDate);
         let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
-        setDateOfEvent(fDate);
+        evDate = new Date(fDate)
+        if (evDate > todayDate) {
+            setDateOfEvent(fDate);
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء اختيار تاريخ أكبر من تاريخ اليوم',
+                [
+                    {
+                        text: 'Ok',
+                        // style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
     }
     const showMode = (currentMode) => {
         setShow(true);
         setMode(currentMode);
     }
+    const renderMultibleDate = () => {
+        return eventDate.map(item => {
+            return (
+                <View style={styles.viewMultiDate}>
+                    <Text style={styles.datetxt}>{item}</Text>
+                </View>
+            )
+        })
+    }
+    const renderModalFooter = () => {
+        return (
+            <View style={styles.btn}>
+                <Pressable onPress={onModalCancelPress} >
+                    <Text style={styles.modaltext}>الغاء الامر</Text>
+                </Pressable>
+                <Pressable onPress={onModalSavePress} >
+                    <Text style={styles.modaltext}>حفظ</Text>
+                </Pressable>
+            </View>
+        )
+    }
     const renderFileEventForm = () => {
         const reqData = filterReqAccEventFile()
         const title = getTitleEventType(eventTitleId)
-        console.log("reqData", reqData);
         return (
-            <View>
-                <View style={styles.body}>
+            <View style={styles.body}>
+                <View style={{ width: '100%' }}>
                     {reqData.length > 0 ?
-                        <View style={styles.input}>
+                        <View style={styles.showTypeView}>
                             <Text>{title}</Text>
                         </View> :
                         <View style={{ width: '100%', marginTop: 20 }}>
                             <SelectList
                                 data={eventTypeName}
+                              
                                 setSelected={val => {
                                     setEventType(val);
                                 }}
@@ -163,51 +204,54 @@ const EventsCard = (props) => {
                                 dropdownTextStyles={styles.dropstyle}
                             />
                         </View>}
-                    <TextInput
-                        style={styles.input}
-                        keyboardType='default'
-                        placeholder={eventName}
-                        onChangeText={setfileEventName}
-                    />
-                    <View>
-                        {reqData.length > 0 ?
+                </View>
+                <TextInput
+                    style={styles.input}
+                    keyboardType='default'
+                    placeholder={eventName}
+                    onChangeText={setfileEventName}
+                />
+                <View style={{ width: '100%' }}>
+                    {reqData.length > 0 ?
+                        <View>
+                            {eventDate.length > 1 ?
+                                renderMultibleDate()
+                                :
+                                <View style={styles.viewDate}>
+                                    <Text style={styles.datetxt}>{eventDate}</Text>
+                                    <Entypo
+                                        name='calendar'
+                                        style={{ fontSize: 30, color: colors.silver, paddingRight: 20 }}
+                                    />
+                                </View>}
+                        </View>
+                        :
+                        <Pressable onPress={() => showMode('date')} >
                             <View style={styles.viewDate}>
                                 <Text style={styles.datetxt}>{dateOfEvent}</Text>
                                 <Entypo
                                     name='calendar'
                                     style={{ fontSize: 30, color: colors.silver, paddingRight: 20 }}
                                 />
-                            </View> :
-                            <Pressable onPress={() => showMode('date')} >
-                                <View style={styles.viewDate}>
-                                    <Text style={styles.datetxt}>{dateOfEvent}</Text>
-                                    <Entypo
-                                        name='calendar'
-                                        style={{ fontSize: 30, color: colors.silver, paddingRight: 20 }}
-                                    />
-                                </View>
-                            </Pressable>}
-                        {show && (
-                            <DateTimePicker
-                                testID='dateTimePicker'
-                                value={date}
-                                mode={mode}
-                                is24Hour={true}
-                                display='calendar'
-                                onChange={onChange}
-                            />
-                        )}
-                    </View>
+                            </View>
+                        </Pressable>}
+                    {show && (
+                        <DateTimePicker
+                            testID='dateTimePicker'
+                            value={date}
+                            mode={mode}
+                            is24Hour={true}
+                            display='calendar'
+                            onChange={onChange}
+                        />
+                    )}
                 </View>
-                <View style={styles.btn}>
-                    <Pressable onPress={() => onModalCancelPress()} >
-                        <Text style={styles.modaltext}>الغاء الامر</Text>
-                    </Pressable>
-                    <Pressable onPress={() => onModalSavePress()} >
-                        <Text style={styles.modaltext}>حفظ</Text>
-                    </Pressable>
+                <View style={{ width: '100%' }}>
+                    {renderModalFooter()}
                 </View>
+
             </View>
+
         )
     }
     const updateEventModal = () => {
@@ -230,7 +274,6 @@ const EventsCard = (props) => {
         )
     }
     const updateEventInfo = (eventTypeId) => {
-        //console.log(fileEventName);
         const editEventItem = {
             EventId: EventId,
             eventName: fileEventName,
@@ -244,9 +287,15 @@ const EventsCard = (props) => {
                 if (eventItemIndex > -1) {
                     ev[eventItemIndex] = editEventItem;
                 }
-
+                ToastAndroid.showWithGravity('تم التعديل',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+                )
+                setShowModal(false)
                 setEventInfo([...ev])
                 setIsRefreshing(true)
+                setDeleteEvent(false)
+                setEditing(false)
             }
         })
     }
@@ -299,9 +348,9 @@ const EventsCard = (props) => {
         setEditing(true)
     }
 
-
     const eventEditPress = () => {
-        setEventType(eventTitleId)
+        const val = getTitleEventType(eventTitleId)
+        setEventType(val)
         setfileEventName(eventName)
         setDateOfEvent(eventDate)
         setShowModal(true)
@@ -481,6 +530,16 @@ const styles = StyleSheet.create({
         borderWidth: 0.6,
         borderColor: 'gray',
     },
+    viewMultiDate: {
+        height: 50,
+        width: '100%',
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 0.6,
+        borderColor: 'gray',
+        marginBottom: 10
+    },
     datetxt: {
         fontSize: 15,
         marginRight: 90,
@@ -492,11 +551,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 50,
         width: '100%',
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
         position: 'absolute',
-        bottom: 0
+        bottom: -60
     },
+    showTypeView: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 50,
+        width: '100%',
+        borderWidth: 0.6,
+        borderRadius: 10,
+        borderColor: 'gray',
+        fontSize: 15,
+        color: 'black',
+        marginTop: 20
+    }
 })
 
 export default EventsCard;

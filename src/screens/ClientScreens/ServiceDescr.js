@@ -1,22 +1,22 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal } from 'react-native';
-import { ScreenNames } from '../../route/ScreenNames';
-import SearchContext from '../../store/SearchContext';
-import UsersContext from '../../store/UsersContext';
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
-import CampaignCard from '../components/CampaignCard';
+//import CampaignCard from '../../components/CampaignCard';
+
 import Fontisto from "react-native-vector-icons/Fontisto";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { colors } from "../assets/AppColors"
 import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
-import ClientCalender from '../components/ClientCalender';
-import { Button } from 'react-native-elements';
+import SearchContext from '../../../store/SearchContext';
+import { colors } from '../../assets/AppColors';
+import { ScreenNames } from '../../../route/ScreenNames';
+import CampaignCard from '../../components/CampaignCard';
+import ClientCalender from '../../components/ClientCalender';
 
 
 const ServiceDescr = (props) => {
@@ -320,7 +320,7 @@ const ServiceDescr = (props) => {
                 <View style={styles.changeDatecenteredView}>
                     <View style={styles.changeDatedetailModal}>
                         <View style={{ marginTop: 20 }}>
-                            <ClientCalender  {...data} />
+                            <ClientCalender  {...data}/>
 
                             <Pressable onPress={() => setChangeDateshowModal(false)} style={{ width: '100%', alignItems: 'center', justifyContent: 'center', height: 60 }}>
                                 <Text>بحث</Text>
@@ -614,7 +614,7 @@ const ServiceDescr = (props) => {
             <View style={styles.locationView}>
                 <Image
                     style={styles.mapImage}
-                    source={require('../assets/photos/location.png')} />
+                    source={require('../../assets/photos/location.png')} />
             </View>
         )
     }
@@ -682,7 +682,7 @@ const ServiceDescr = (props) => {
                     //onPress={() => onPressModalHandler()}
                     >
                         <Text>{item.social}</Text>
-                        <Image style={styles.Xstyle} source={require('../assets/photos/X-Logo.png')} />
+                        <Image style={styles.Xstyle} source={require('../../assets/photos/X-Logo.png')} />
                     </Pressable>
                 </View>
             }

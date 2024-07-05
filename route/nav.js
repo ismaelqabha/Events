@@ -1,14 +1,9 @@
 import React from "react";
 import { ScreenNames } from "../route/ScreenNames";
 import SignIn from "../src/screens/SignIn";
-
-import ClientHomeAds from "../src/screens/ClientHomeAds";
-
-import ServiceDescr from "../src/screens/ServiceDescr";
-
 import ClientRequest from "../src/screens/ClientRequest";
 import Favorites from "../src/screens/Favorites";
-import ClientSearch from "../src/screens/ClientSearch";
+
 
 import ProviderChooseService from '../src/screens/ProviderScreens/ProviderChooseService';
 import ProviderSetPhotos from "../src/screens/ProviderScreens/ProviderSetPhotos";
@@ -29,7 +24,6 @@ import { Easing } from "react-native";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 import HomeNavigator from "./HomeNavigator";
 import Splash from "../src/screens/Splash";
-import Results from "../src/screens/Results";
 import SearchServcies from "../src/screens/SearchServcies";
 
 import SubDetailPrices from "../src/screens/SubDetailPrices";
@@ -69,6 +63,9 @@ import MakePayment from "../src/screens/Payment Screens/MakePayment";
 import ClientBook from "../src/screens/ClientScreens/ClientBook";
 import ClientSpecialDates from "../src/screens/ClientScreens/ClientSpecialDates";
 import ReviewsScreen from "../src/screens/ReviewsScreen";
+import ClientSearch from "../src/screens/ClientScreens/ClientSearch";
+import Results from "../src/screens/ClientScreens/Results";
+import ServiceDescr from "../src/screens/ClientScreens/ServiceDescr";
 
 
 

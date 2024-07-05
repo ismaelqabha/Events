@@ -1,30 +1,17 @@
-import { StyleSheet, Text, View, Pressable, ScrollView, FlatList, Modal, TextInput, ToastAndroid } from 'react-native'
-import React, { useContext, useState } from 'react'
+import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native'
+import React, { useContext,useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
-import Feather from "react-native-vector-icons/Feather"
-import Entypo from "react-native-vector-icons/Entypo"
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Fontisto from "react-native-vector-icons/Fontisto";
-import { ScreenNames } from '../../route/ScreenNames';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import SearchContext from '../../../store/SearchContext';
-import UsersContext from '../../../store/UsersContext';
 import { colors } from '../../assets/AppColors';
 import EventsCard from '../../components/EventsCard';
 
 
 const ClientOldEvents = (props) => {
-    const { userId } = useContext(UsersContext);
     const { eventInfo, requestInfoAccUser } = useContext(SearchContext);
 
-    var eventDate
-    var todayDate = new Date();
-
-    todayDate.setHours(0);
-    todayDate.setMinutes(0);
-    todayDate.setSeconds(0);
-    todayDate.setMilliseconds(0);
-
+    useEffect(() => {
+        
+      }, [])
 
     const onBackHandler = () => {
         props.navigation.goBack();
@@ -56,21 +43,27 @@ const ClientOldEvents = (props) => {
             return []
         }
     }
+    
+    const filterRequestAccEventFile = (id) => {
+        if (requestInfoAccUser.message !== "no Request") {
+            const reqInfo = requestInfoAccUser.filter(item => {
+                return item.requestInfo.ReqEventId === id
+            })
+            return reqInfo
+        } else {
+            return []
+        }
+    }
 
     const getEvents = () => {
+        const reqData = getBookingInfo()
         return eventInfo.filter(eventItem => {
-            if (eventItem.eventDate.length > 1) {
-                return eventItem.eventDate.filter(dateItem => {
-                    evDate = new Date(dateItem)
-                   // console.log(evDate , todayDate, evDate < todayDate);
-                    return evDate < todayDate
-                })
-            } else {
-                evDate = new Date(eventItem.eventDate)
-                //console.log(">>>",evDate , todayDate, evDate < todayDate);
-                return eventItem.eventDate < todayDate
-            }
-
+            const reqDataAccfile = filterRequestAccEventFile(eventItem.EventId)
+            return reqData.find(item => {
+                if (reqData.length === reqDataAccfile.length) {
+                    return item.requestInfo.ReqEventId === eventItem.EventId
+                }
+            })
         })
     }
     const renderEventsCard = () => {
