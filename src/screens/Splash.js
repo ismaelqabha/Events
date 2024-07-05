@@ -10,7 +10,7 @@ import { asyncFunctions, showMessage } from '../resources/Functions';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function Splash(props) {
-    const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo, setEventInfo, setRequestInfoAccUser } = useContext(SearchContext);
+    const { setServiceDataInfo, setUserFavorates, servType, setEventTypeInfo, setEventInfo, setRequestInfoAccUser, userFavorates } = useContext(SearchContext);
     const { setUserInfo, userId, setuserId, setUserName } = useContext(UsersContext);
 
     let userEmail
@@ -97,17 +97,17 @@ export default function Splash(props) {
             setEventInfo(res[0].userEvents)
             setuserId(res[0].userInfo.USER_ID)
             setUserName(res[0].userInfo.User_name)
-
+            setUserFavorates(res[0].favoriteUser)
         })
     }
 
-    const getFavoritesFromApi = () => {
-        getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
-            !resjson?.message &&
-                setUserFavorates(resjson)
-            LoginUser()
-        })
-    }
+    // const getFavoritesFromApi = () => {
+    //     getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
+    //         !resjson?.message &&
+    //             setUserFavorates(resjson)
+    //         LoginUser()
+    //     })
+    // }
 
     const getDataFromApi = () => {
         getHomePageData({ servType: servType }).then(res => {

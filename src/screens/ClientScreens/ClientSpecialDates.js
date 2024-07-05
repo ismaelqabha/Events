@@ -4,11 +4,12 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Feather from "react-native-vector-icons/Feather"
 import Entypo from "react-native-vector-icons/Entypo"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Fontisto from "react-native-vector-icons/Fontisto";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import UsersContext from '../../../store/UsersContext';
 import { updateUserData } from '../../resources/API';
 import { colors } from '../../assets/AppColors';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
 
 const ClientSpecialDates = (props) => {
@@ -16,10 +17,8 @@ const ClientSpecialDates = (props) => {
   const userData = userInfo
 
   const [spcialEvents, setSpcialEvents] = useState(userData.SpecialDates)
-
   const [showSpecialDMoodal, setShowSpecialDMoodal] = useState(false)
   const [showEditingMoodal, setShowEditingMoodal] = useState(false)
-
   const [isAdding, setIsAdding] = useState(true)
 
   const [mode, setMode] = useState('date');
@@ -28,6 +27,8 @@ const ClientSpecialDates = (props) => {
   const [eventTitle, setEventTitle] = useState(null);
   const [eventdate, setEventDate] = useState(null);
   const [eventId, setEventId] = useState();
+
+  let SDid = uuidv4();
 
   const backPress = () => {
     props.navigation.goBack();
@@ -280,7 +281,7 @@ const ClientSpecialDates = (props) => {
   }
   const addNewSpecialEvent = () => {
     const addNewSEvent = {
-      id:'',
+      id: SDid,
       eventDate: eventdate,
       eventName: eventTitle
     }
