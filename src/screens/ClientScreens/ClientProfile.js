@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, ScrollView, Image } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -7,13 +7,15 @@ import Fontisto from "react-native-vector-icons/Fontisto";
 import UsersContext from '../../../store/UsersContext';
 import { colors } from '../../assets/AppColors';
 import { ScreenNames } from '../../../route/ScreenNames';
+import { getRelations } from '../../resources/API';
 
 
 
 const ClientProfile = (props) => {
-    const { userInfo } = useContext(UsersContext);
+    const { userInfo, userId } = useContext(UsersContext);
     const userData = userInfo
-
+    const [relations, setRelations] = useState([])
+    const [loading, setLoading] = useState(true)
     const [displayCount, setDisplayCount] = useState(5);
     const clientReview = true
 
@@ -28,6 +30,18 @@ const ClientProfile = (props) => {
         )
     }
 
+    useEffect(() => {
+        setLoading(true)
+        getRelations({ userId }).then((relations) => {
+
+            if (relations && relations.error) {
+                showMessage("there has been an error")
+            } else {
+                setLoading(false)
+                setRelations(relations)
+            }
+        })
+    }, [])
     ///
     const renderOldEvents = () => {
         return (<View>
@@ -61,9 +75,9 @@ const ClientProfile = (props) => {
     }
     const renderRelations = () => {
         return (<View>
-            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ClientRelations)}>
-                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: 90}}>
-                <Text style={styles.basicInfo}>{userData.UserRelations.length > 0 && userData.UserRelations.length}</Text>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ClientRelations, { relations, loading })}>
+                <View style={styles.relationLabel}>
+                    <Text style={styles.basicInfo}>{relations?.length > 0 && "(" + relations?.length + ")"}</Text>
                     <Text style={styles.basicInfo}>علاقاتي</Text>
                 </View>
                 <View style={styles.IconView}>
@@ -116,7 +130,7 @@ const ClientProfile = (props) => {
         </View>)
     }
     const specialDatesItem = () => {
-        const specailEv = userData.SpecialDates
+        const specailEv = userData.SpecialDates || []
         return specailEv.slice(0, displayCount).map(item => {
             return (
                 <View style={styles.item}>
@@ -158,12 +172,12 @@ const ClientProfile = (props) => {
                     {renderOldEvents()}
                     {renderFeedBack()}
                 </View>
-
-                <Text style={styles.txt}>مناسبات خاصة</Text>
-                <View style={styles.viewSet}>
-                    {renderSpecialEvents()}
-                </View>
-
+                {userData.SpecialDates && <View>
+                    <Text style={styles.txt}>مناسبات خاصة</Text>
+                    <View style={styles.viewSet}>
+                        {renderSpecialEvents()}
+                    </View>
+                </View>}
                 <View style={{ height: 110 }}></View>
             </ScrollView>
         </View>
@@ -266,5 +280,11 @@ const styles = StyleSheet.create({
     moreTxt: {
         fontSize: 15
     },
-    
+    relationLabel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: 90
+    }
+
 })

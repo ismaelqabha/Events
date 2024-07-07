@@ -15,6 +15,7 @@ const GoogleSignInButton = (props) => {
         try {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
+            console.log("userInfo", userInfo);
             await LoginGoogleUser({ idToken: userInfo.idToken }).then((res) => {
                 if (res.message === "User created") {
                     showMessage('تم انشاء الحساب بنجاح');

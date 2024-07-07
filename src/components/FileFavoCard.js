@@ -11,8 +11,9 @@ import Entypo from "react-native-vector-icons/Entypo";
 
 
 const FileFavoCard = (props) => {
-    const { isFromFavorateClick, fileName, fileImg, fileId } = props;
-    const { ServId, userId, userFavorates, setUserFavorates, fileFavoriteState, setFileFavoriteState } = useContext(SearchContext);
+    const { isFromFavorateClick, fileName, fileImg, fileId, favoListServiceId } = props;
+
+    const { ServId, userId, userFavorates, setUserFavorates, fileFavoriteState, setFileFavoriteState, favorites, setFavorites } = useContext(SearchContext);
     const navigation = useNavigation();
     const [showMenu, setShowMenu] = useState(false)
     const [showModal, setShowModal] = useState(false);
@@ -21,9 +22,29 @@ const FileFavoCard = (props) => {
     const [favoritelistbyFileId, setFavoritelistbyFileId] = useState([]);
     const [serviceId, setServiceId] = useState();
 
-
+    const fileFavoritesIndex = favorites?.findIndex(item => item.fileId === fileId)
 
     const fileFavoriteIndex = fileFavoriteState?.findIndex(item => item.fileId === fileId)
+
+    const updateFavorits = () => {
+        const favoriteList = favoListServiceId || []
+        favoriteList.push(ServId)
+
+        const newfavoritRecord = {
+            fileId: fileId,
+            fileImg: '',
+            fileName: fileName,
+            favoListServiceId: favoriteList
+        }
+
+        UpdateFileFavorite(newfavoritRecord).then(res => {
+            const file = favorites || [];
+            if (fileFavoritesIndex > -1) {
+                file[fileFavoritesIndex] = newfavoritRecord;
+            }
+            setFavorites([...file])
+        })
+    }
 
     const resetStack = () => {
         navigation.reset({
@@ -34,7 +55,12 @@ const FileFavoCard = (props) => {
         })
     }
     const setNewFavoritFromApi = () => {
-        const newFavorateItem = { favoListFileId: fileId, favoListUserId: userId, favoListServiceId: ServId }
+        const newFavorateItem = {
+            favoListFileId: fileId,
+            favoListUserId: userId,
+            favoListServiceId: ServId
+        }
+
         AddNewFavorites(newFavorateItem).then(res => {
             const userFav = userFavorates || [];
             userFav.push(newFavorateItem)
@@ -44,13 +70,13 @@ const FileFavoCard = (props) => {
     }
 
     const onCaardPress = () => {
-        setShowMenu(false)
+        // setShowMenu(false)
         if (!isFromFavorateClick) {
             navigation.navigate(ScreenNames.Favorites, { fileName: fileName, fileId: fileId })
             return;
         }
-        setNewFavoritFromApi()
-        resetStack()
+        updateFavorits()
+        //resetStack()
     }
 
     const whencardLongPress = () => {
@@ -73,7 +99,7 @@ const FileFavoCard = (props) => {
         });
     }
     useEffect(() => {
-        getFavoItemfromAPI()
+        // getFavoItemfromAPI()
     }, [])
 
     const removeFavoritList = () => {
@@ -140,46 +166,8 @@ const FileFavoCard = (props) => {
         setShowModal(false)
     }
 
-
-    return (
-        <View style={styles.container}>
-            {/* <Card >
-                <TouchableOpacity style={styles.cardHeader}
-                    onPress={onCaardPress} onLongPress={whencardLongPress}
-                >
-                    {showMenu &&
-                        <View style={styles.settingView}>
-                            {letMenuShow()}
-                        </View>
-                    }
-                    <Card.Image
-                        style={styles.image}
-                        source={{ uri: fileImg }}
-                    />
-                    <Card.Title style={{ fontSize: 20, marginLeft: 90 }}>{fileName}</Card.Title>
-                </TouchableOpacity>
-            </Card> */}
-
-            <View style={styles.card}>
-                <View style={styles.imgView}>
-                    <Image style={styles.image} source={require('../assets/photos/abofaneh.png')} />
-                </View>
-                <View style={styles.titleView}>
-                    <Text style={styles.titleTxt}>{fileName}</Text>
-                </View>
-                <View style={styles.iconView}>
-                <Pressable onPress={onCaardPress}
-                >
-                    <Entypo
-                        style={styles.icon}
-                        name={"plus"}
-                        color={"black"}
-                        size={20} />
-                </Pressable>
-                </View>
-            </View>
-
-
+    const editingModal = () => {
+        return (
             <Modal
                 transparent
                 visible={showModal}
@@ -205,6 +193,10 @@ const FileFavoCard = (props) => {
                     </View>
                 </View>
             </Modal>
+        )
+    }
+    const updtaingModal = () => {
+        return (
             <Modal
                 transparent
                 visible={showUpdateModal}
@@ -231,6 +223,48 @@ const FileFavoCard = (props) => {
                 </View>
 
             </Modal>
+        )
+    }
+
+
+    return (
+        <View style={styles.container}>
+            {/* <Card >
+                <TouchableOpacity style={styles.cardHeader}
+                    onPress={onCaardPress} onLongPress={whencardLongPress}
+                >
+                    {showMenu &&
+                        <View style={styles.settingView}>
+                            {letMenuShow()}
+                        </View>
+                    }
+                    <Card.Image
+                        style={styles.image}
+                        source={{ uri: fileImg }}
+                    />
+                    <Card.Title style={{ fontSize: 20, marginLeft: 90 }}>{fileName}</Card.Title>
+                </TouchableOpacity>
+            </Card> */}
+
+            <Pressable style={styles.card} onPress={onCaardPress}>
+                <View style={styles.imgView}>
+                    <Image style={styles.image} source={require('../assets/photos/abofaneh.png')} />
+                </View>
+                <View style={styles.titleView}>
+                    <Text style={styles.titleTxt}>{fileName}</Text>
+                </View>
+                <View style={styles.iconView}>
+
+                    <Entypo
+                        style={styles.icon}
+                        name={"plus"}
+                        color={"black"}
+                        size={20} />
+
+                </View>
+            </Pressable>
+            {editingModal()}
+            {updtaingModal()}
         </View>
     );
 }
@@ -256,7 +290,7 @@ const styles = StyleSheet.create({
     titleView: {
         width: 150,
         height: 60,
-       // borderWidth: 1,
+        // borderWidth: 1,
         margin: 5,
         alignSelf: 'center',
         marginLeft: 30,
@@ -272,7 +306,7 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 8,
     },
-    iconView:{
+    iconView: {
         width: 60,
         height: 60,
         margin: 5,

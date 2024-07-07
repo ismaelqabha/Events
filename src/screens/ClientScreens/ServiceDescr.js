@@ -21,7 +21,7 @@ import ClientCalender from '../../components/ClientCalender';
 
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
-    // console.log("data", data.relatedCamp.length);
+     //console.log("data", data);
     const [showModal, setShowModal] = useState(false);
     const [changeDateshowModal, setChangeDateshowModal] = useState(false);
     const [changeDateIsLocal, setchangeDateIsLocal] = useState(false);

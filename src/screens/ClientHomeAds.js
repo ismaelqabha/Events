@@ -16,6 +16,7 @@ import Interactable from 'react-native-interactable';
 import UsersContext from '../../store/UsersContext';
 import { getEventsInfo } from '../resources/API';
 import { asyncFunctions } from '../resources/Functions';
+import SuggestionsServicesComp from '../components/SuggestionsServicesComp';
 
 const ClientHomeAds = (props) => {
     const { cat, setCat,
@@ -232,8 +233,10 @@ const ClientHomeAds = (props) => {
             >
                 <Text>Test</Text>
             </Interactable.View> */}
+
             <ScrollView contentContainerStyle={styles.home}>
 
+              {/* <SuggestionsServicesComp /> */}
 
                 <View style={styles.centents}>
                     <View style={styles.itemView}>

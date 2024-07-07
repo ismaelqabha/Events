@@ -15,6 +15,8 @@ const SearchProvider = props => {
   const [ServId, setServId] = useState('');
 
   // Data service favorites
+  const [favorites, setFavorites] = useState([])
+  const [allServicesFavorites, setAllServicesFavorites] = useState([])
   const [userFavorates, setUserFavorates] = useState([])
   const [fileFavoriteState, setFileFavoriteState] = useState([])
 
@@ -87,6 +89,10 @@ const SearchProvider = props => {
         setSType,
         ServId,
         setServId,
+        favorites, 
+        setFavorites,
+        allServicesFavorites, 
+        setAllServicesFavorites,
         userFavorates,
         setUserFavorates,
         fileFavoriteState,

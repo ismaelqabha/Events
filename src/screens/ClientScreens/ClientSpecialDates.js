@@ -37,6 +37,7 @@ const ClientSpecialDates = (props) => {
     setShowSpecialDMoodal(false)
   }
   const whenPressMoretoUpdate = (id) => {
+    //console.log(id);
     setIsAdding(false)
     setShowEditingMoodal(true)
     setEventId(id)
@@ -74,7 +75,7 @@ const ClientSpecialDates = (props) => {
     </View>)
   }
   const specialDatesItem = () => {
-    return userData.SpecialDates.map(item => {
+    return spcialEvents.map(item => {
       return (
         <View>
           <View style={styles.item}>
@@ -222,7 +223,7 @@ const ClientSpecialDates = (props) => {
   const removeSpecialEvent = () => {
     const SEitem = spcialEvents.filter(elme => elme.id !== eventId)
 
-    
+
     const newData = {
       USER_ID: userId,
       SpecialDates: [...SEitem]
@@ -361,7 +362,7 @@ const ClientSpecialDates = (props) => {
     const SEitemIndex = spcialEvents.findIndex(elme => elme.id === eventId)
     const SE = spcialEvents
     if (SEitemIndex > -1) {
-      
+
       setEventTitle(SE[SEitemIndex].eventName)
       setEventDate(SE[SEitemIndex].eventDate)
     }
@@ -388,8 +389,8 @@ const ClientSpecialDates = (props) => {
         setSpcialEvents([...SE])
         setShowSpecialDMoodal(false)
 
-         setEventTitle(null)
-         setEventDate(null)
+        setEventTitle(null)
+        setEventDate(null)
         ToastAndroid.showWithGravity(
           'تم التعديل بنجاح',
           ToastAndroid.SHORT,

@@ -24,7 +24,6 @@ import { Easing } from "react-native";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 import HomeNavigator from "./HomeNavigator";
 import Splash from "../src/screens/Splash";
-import SearchServcies from "../src/screens/SearchServcies";
 
 import SubDetailPrices from "../src/screens/SubDetailPrices";
 import Campaigns from "../src/screens/Campaigns";
@@ -66,6 +65,7 @@ import ReviewsScreen from "../src/screens/ReviewsScreen";
 import ClientSearch from "../src/screens/ClientScreens/ClientSearch";
 import Results from "../src/screens/ClientScreens/Results";
 import ServiceDescr from "../src/screens/ClientScreens/ServiceDescr";
+import SearchServcies from "../src/screens/ClientScreens/SearchServcies";
 
 
 

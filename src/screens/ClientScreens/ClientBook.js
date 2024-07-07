@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Pressable, ScrollView, Image } from 'react-nati
 import AntDesign from "react-native-vector-icons/AntDesign";
 import SearchContext from '../../../store/SearchContext';
 import BookingCard from '../../components/BookingCard';
+import SuggestionsServicesComp from '../../components/SuggestionsServicesComp';
 
 
 const ClientBook = (props) => {
@@ -16,7 +17,7 @@ const ClientBook = (props) => {
     }
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
-           // console.log("requestInfoAccUser", requestInfoAccUser[1].requestInfo.paymentInfo);
+            // console.log("requestInfoAccUser", requestInfoAccUser[1].requestInfo.paymentInfo);
             const clientReq = requestInfoAccUser.filter(item => {
                 return item.requestInfo.ReqEventId == data.EventId;
             })
@@ -31,13 +32,13 @@ const ClientBook = (props) => {
         //console.log("******", reqData[1].requestInfo.paymentInfo);
         return reqData.map(item => {
             return <BookingCard {...item.requestInfo}
-            services={item?.serviceData}
-            images={item?.serviceImage}
-            relatedCamp={item?.serviceCamp} 
-            realPayments={item?.payments}
-            BookDates={item?.BookDates}
-            serviceRequests={item?.serviceRequests}
-            eventData={data} />
+                services={item?.serviceData}
+                images={item?.serviceImage}
+                relatedCamp={item?.serviceCamp}
+                realPayments={item?.payments}
+                BookDates={item?.BookDates}
+                serviceRequests={item?.serviceRequests}
+                eventData={data} />
         })
     }
 
@@ -62,6 +63,11 @@ const ClientBook = (props) => {
             </View>
             <ScrollView contentContainerStyle={styles.home}>
                 {renderRequestData()}
+                <View style={{marginVertical : 20}}>
+                    <Text style={styles.title}>خدمات قد تهمك</Text>
+                    <SuggestionsServicesComp />
+                </View>
+
             </ScrollView>
         </View>
     );

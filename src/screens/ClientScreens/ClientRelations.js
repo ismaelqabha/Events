@@ -1,44 +1,20 @@
 import { StyleSheet, Text, View, Pressable, ScrollView, Image, Modal, TextInput, ToastAndroid, Animated } from 'react-native'
 import React, { useContext, useEffect, useState, useRef } from 'react'
-import AntDesign from "react-native-vector-icons/AntDesign";
-import Feather from "react-native-vector-icons/Feather"
-import Entypo from "react-native-vector-icons/Entypo"
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Fontisto from "react-native-vector-icons/Fontisto";
-import SearchContext from '../../../store/SearchContext';
+import AntDesign from "react-native-vector-icons/AntDesign"
 import UsersContext from '../../../store/UsersContext';
 import { colors } from '../../assets/AppColors';
 import { ScreenNames } from '../../../route/ScreenNames';
-import { getRelations, searchUsersAPI } from '../../resources/API';
+import { searchUsersAPI } from '../../resources/API';
 import { showMessage } from '../../resources/Functions';
 import { ActivityIndicator } from 'react-native-paper';
-import { randomUUID } from 'crypto';
-import { log } from 'util';
-
 
 const ClientRelations = (props) => {
-  const { userInfo, setUserInfo, userId } = useContext(UsersContext);
-  const userData = userInfo
-  
-  const { } = useContext(SearchContext);
-  const [relations, setRelations] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { userId } = useContext(UsersContext);
   const [searched, setSearched] = useState('')
   const [searchResults, setSearchResults] = useState([]);
   const slideInAnimation = useRef(new Animated.Value(0)).current;
+  const { relations, loading } = props.route.params || []
 
-  useEffect(() => {
-    setLoading(true)
-    getRelations({ userId }).then((relations) => {
-    
-      if (relations && relations.error) {
-        showMessage("there has been an error")
-      } else {
-        setLoading(false)
-        setRelations(relations)
-      }
-    })
-  }, [])
 
   const searchUsers = async (query) => {
     try {
@@ -118,7 +94,7 @@ const ClientRelations = (props) => {
       <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
         <Pressable onPress={() => goToProfile(user?.userInfo)}>
           <Text style={styles.basicInfo}>{user?.userInfo?.User_name}</Text>
-          <Text style={styles.basicInfoTitle}>{user?.userInfo?.relationStatus}</Text>
+          <Text style={styles.basicInfoTitle}>{user?.userInfo?.relationshipType}</Text>
         </Pressable>
         <Image source={{ uri: user.userInfo?.UserPhoto }} style={styles.ImageView} />
       </Animated.View>
@@ -138,7 +114,7 @@ const ClientRelations = (props) => {
       if (filteredFriendsCount === 0 && searchResultsCount === 0) {
         return (
           <View style={{ alignSelf: "center" }}>
-            <Text>لا يوجد نتائج </Text>
+            <Text style={styles.relationLabelText}>لا يوجد نتائج </Text>
           </View>
         );
       }
@@ -146,18 +122,23 @@ const ClientRelations = (props) => {
       return (
         <View>
           {filteredFriendsCount > 0 && (
-            <>
-              <Text>Already a friend</Text>
+            <View>
+              <View style={styles.relationLabelView}>
+                <Text style={styles.relationLabelText}>علاقاتي</Text>
+              </View>
               {friends(filteredFriends, true)}
-            </>
+            </View>
           )}
           {searchResultsCount > 0 && (
-            <>
-              <Text>Add a friend</Text>
+            <View>
+              <View style={styles.relationLabelView}>
+                <Text style={styles.relationLabelText}>علاقات جديدة</Text>
+              </View>
               {friends(searchResults)}
-            </>
-          )}
-        </View>
+            </View>
+          )
+          }
+        </View >
       );
     } else {
       return relations && relations.length > 0 ? friends(relations, false) : noFriends();
@@ -178,8 +159,8 @@ const ClientRelations = (props) => {
   const noFriends = () => {
     return (
       <View style={{ alignSelf: "center" }}>
-        <Text>There are no relations</Text>
-        <Text>Search for people</Text>
+        <Text style={styles.relationLabelText}>لا يوجد علاقات قائمة حاليا</Text>
+        <Text style={styles.relationLabelText}>ابحث عن علاقات جديدة</Text>
       </View>
     );
   };
@@ -187,7 +168,7 @@ const ClientRelations = (props) => {
 
   const renderRelation = () => {
     return (
-      <View style={{ width: '90%', alignSelf: 'center' }}>
+      <View style={{ width: '100%', alignSelf: 'center' }}>
         {loading && <ActivityIndicator style={{ alignSelf: 'center', marginTop: '50%' }} size={50} />}
         {!loading && allRelations()}
       </View>
@@ -270,5 +251,19 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginLeft: 15
   },
+  relationLabelView: {
+    height: 40,
+    justifyContent: 'center',
+    marginVertical: 20,
+    backgroundColor: colors.gold,
+    paddingRight: 10,
+    width: '98%',
+    alignSelf: 'center'
+  },
+  relationLabelText: {
+    fontSize: 18,
+    color: colors.puprble,
+    fontWeight: 'bold'
+  }
 
 })

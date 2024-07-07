@@ -8,6 +8,7 @@ import SIZES from '../resources/sizes';
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RemoveFavorite, getFavoritesforUser } from '../resources/API';
 import { colors } from '../assets/AppColors';
+import UsersContext from '../../store/UsersContext';
 
 const height = SIZES.screenWidth * 0.6;
 const width = SIZES.screenWidth - 10;
@@ -15,7 +16,8 @@ const width = SIZES.screenWidth - 10;
 const SliderImage = (props) => {
     const navigation = useNavigation();
     const [active, setActive] = useState();
-    const { setSType, userFavorates, setUserFavorates, setImgOfServeice, userId,setServId } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
+    const { setSType, userFavorates, setUserFavorates, setImgOfServeice, setServId, favorites, setFavorites } = useContext(SearchContext);
 
 
     const checkIfFavorate = () => {
@@ -23,8 +25,17 @@ const SliderImage = (props) => {
             item.favoListServiceId === props.service_id)
         return !!isFav;
     }
-    
 
+    const checkFavorates = () => {
+        const isFav = favorites?.find(item => {
+            return item.favoListServiceId.find(elem => {
+                elem === props.service_id
+            })
+        })
+        return !!isFav;
+    }
+
+//console.log("props", props.images[0]);
 
     const removeFromFavorates = () => {
         RemoveFavorite({ favoListUserId: userId, favoListServiceId: props.service_id }).then(res => {

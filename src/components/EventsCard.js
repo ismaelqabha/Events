@@ -194,7 +194,7 @@ const EventsCard = (props) => {
                         <View style={{ width: '100%', marginTop: 20 }}>
                             <SelectList
                                 data={eventTypeName}
-                              
+
                                 setSelected={val => {
                                     setEventType(val);
                                 }}
@@ -324,7 +324,7 @@ const EventsCard = (props) => {
         deleteEventInfo({ EventId: EventId }).then(res => {
             if (res.message === "Deleted Sucessfuly") {
                 const delData = eventInfo
-                const newData = delData?.filter(item => item !== EventId)
+                const newData = delData?.filter(item => item?.EventId !== EventId)
                 setEventInfo([...newData])
 
                 ToastAndroid.showWithGravity('تم اٍلالغاء بنجاح',

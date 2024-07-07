@@ -116,7 +116,7 @@ const ClientEvents = (props) => {
                 { cancelable: false } // Prevent closing the alert by tapping outside
             );
         }
-       
+
     }
     const showMode = (currentMode) => {
         setShow(true);
@@ -201,12 +201,13 @@ const ClientEvents = (props) => {
             userId: userId,
             eventName: fileEventName,
             eventTitleId: eventTypeId,
-            eventDate: dateOfEvent,
+            eventDate: Array.isArray(dateOfEvent) ? dateOfEvent : [dateOfEvent],
             eventCost: 0
         }
         createNewEvent(newEventItem).then(res => {
             console.log(res.message);
             if (res.message === 'Event Created') {
+                setDateOfEvent([])
                 const evnt = eventInfo || [];
                 evnt.push(newEventItem)
                 setEventInfo([...evnt])
@@ -236,7 +237,7 @@ const ClientEvents = (props) => {
         setShowModal(true)
     }
 
-   
+
 
     useEffect(() => {
         getEventTypeInfo()
@@ -266,8 +267,6 @@ const ClientEvents = (props) => {
             </View>
         )
     }
-
-
     // console.log("eventInfo",eventInfo);
     const query = () => {
         return eventInfo || [];

@@ -31,6 +31,8 @@ const HomeCards = (props) => {
         }
     }
 
+    // console.log(">>>>", props);
+
     return (
         <View style={styles.container}>
             <SliderImage  {...props} />

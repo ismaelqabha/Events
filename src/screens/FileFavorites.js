@@ -4,15 +4,17 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import SearchContext from '../../store/SearchContext';
 import FileFavoCard from '../components/FileFavoCard';
-import { v4 as uuidv4 } from 'uuid';
-import { AddFileFavorite, getFileFavoriteBage } from '../resources/API';
+import { AddFileFavorite } from '../resources/API';
+import UsersContext from '../../store/UsersContext';
+import { colors } from '../assets/AppColors';
 
 
 const FileFavorites = (props) => {
     const { isFromFavorateClick, service_id } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [fileFavoriteName, setfileFavoriteName] = useState();
-    const { userId, fileFavoriteState, setFileFavoriteState, ImgOfServeice, ServId } = useContext(SearchContext);
+    const {userId} = useContext(UsersContext);
+    const {favorites,setFavorites } = useContext(SearchContext);
 
     const onPressModalHandler = () => {
         setShowModal(true);
@@ -21,28 +23,13 @@ const FileFavorites = (props) => {
         props.navigation.goBack();
     }
 
-    const getFavFileFromApi = () => {
-        getFileFavoriteBage({ fileFavoUserId: userId }).then(res => {
-            setFileFavoriteState(res)
-        })
-    }
-
     useEffect(() => {
-        getFavFileFromApi()
-    }, [])
 
-    // const query = () => {
-    //     // if (!data.fileId) {
-    //     //     return fileFavoriteState || [];
-    //     // }
-    //     return fileFavoriteState?.filter(id => {
-    //         return id.fileFavoUserId == userId;
-    //     })
-    // }
+    }, [])
 
     const renderFiles = () => {
 
-        const data = fileFavoriteState || [];
+        const data = favorites || [];
         const cardsArray = data?.map(card => {
             return <FileFavoCard  {...card} isFromFavorateClick={isFromFavorateClick} />;
         });
@@ -50,26 +37,80 @@ const FileFavorites = (props) => {
         return cardsArray;
     };
     const AddNewFile = () => {
-        AddFileFavorite({ fileName: fileFavoriteName, fileFavoUserId: userId }).then(res => {
+        const newDateCreated = {
+            fileName: fileFavoriteName,
+            fileFavoUserId: userId
+        }
 
-            const newDateCreated = {
-                fileName: fileFavoriteName,
-                fileFavoUserId: userId
-            }
+        AddFileFavorite(newDateCreated).then(res => {
 
             if (res.message === "File Created") {
-                setFileFavoriteState([...fileFavoriteState, newDateCreated])
+                setFavorites([...favorites, newDateCreated])
+                ToastAndroid.showWithGravity('تم اٍنشاء الملف بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+                )
             }
         })
     }
 
     const onAddFileFavoPress = () => {
         AddNewFile()
-        renderFiles()
         setShowModal(false)
-        ToastAndroid.showWithGravity('تم اٍنشاء الملف بنجاح',
-            ToastAndroid.SHORT,
-            ToastAndroid.BOTTOM
+    }
+    const renderHeader = () => {
+        return(
+            <View style={styles.header}>
+            <Pressable onPress={onPressHandler}>
+                <AntDesign
+                    style={styles.iconBack}
+                    name={"left"}
+                    color={"black"}
+                    size={20} />
+            </Pressable>
+            <Text style={styles.txt}>مفضلاتي</Text>
+            <Pressable
+                onPress={onPressModalHandler}
+            >
+                <Entypo
+                    style={styles.icon}
+                    name={"plus"}
+                    color={"black"}
+                    size={30} />
+            </Pressable>
+        </View>
+        )
+    }
+    const renderAddFileModal = () => {
+        return(
+            <Modal
+            transparent
+            visible={showModal}
+            animationType='fade'
+            onRequestClose={() =>
+                setShowModal(false)
+            }
+        >
+            <View style={styles.centeredView}>
+                <View style={styles.detailModal}>
+                    <View style={styles.Motitle}>
+                        <Text style={styles.text}>انشاء ملف مفضلة</Text>
+                    </View>
+                    <View style={styles.Mbody}>
+                        <TextInput
+                            style={styles.input}
+                            keyboardType='default'
+                            placeholder='ادخل اسم الملف '
+                            onChangeText={setfileFavoriteName}
+                        />
+                    </View>
+                    <Pressable onPress={onAddFileFavoPress} style={styles.btn}>
+                        <Text style={styles.text}>حفظ</Text>
+                    </Pressable>
+                </View>
+            </View>
+
+        </Modal>
         )
     }
 
@@ -77,62 +118,16 @@ const FileFavorites = (props) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Pressable onPress={onPressHandler}>
-                    <AntDesign
-                        style={styles.iconBack}
-                        name={"left"}
-                        color={"black"}
-                        size={20} />
-                </Pressable>
-                <Text style={styles.txt}>مفضلاتي</Text>
-                <Pressable
-                    onPress={() => onPressModalHandler()}
-                >
-                    <Entypo
-                        style={styles.icon}
-                        name={"plus"}
-                        color={"black"}
-                        size={30} />
-                </Pressable>
-            </View>
-
-
+           {renderHeader()}
             <View style={styles.body}>
                 <ScrollView contentContainerStyle={styles.home}>
                     {renderFiles()}
                 </ScrollView>
+
+                {renderAddFileModal()}
             </View>
 
-            <Modal
-                transparent
-                visible={showModal}
-                animationType='fade'
-                onRequestClose={() =>
-                    setShowModal(false)
-                }
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.detailModal}>
-                        <View style={styles.Motitle}>
-                            <Text style={styles.text}>انشاء ملف مفضلة</Text>
-                        </View>
-                        <View style={styles.Mbody}>
-                            <Text style={styles.text}>اسم الملف</Text>
-                            <TextInput
-                                style={styles.input}
-                                keyboardType='default'
-                                placeholder='ادخل اسم الملف '
-                                onChangeText={setfileFavoriteName}
-                            />
-                        </View>
-                        <Pressable onPress={() => onAddFileFavoPress()} style={styles.btn}>
-                            <Text style={styles.text}>حفظ</Text>
-                        </Pressable>
-                    </View>
-                </View>
-
-            </Modal>
+           
         </View>
     );
 }
@@ -144,7 +139,6 @@ const styles = StyleSheet.create({
     txt: {
         fontSize: 20,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
-        //fontWeight: 'bold',
         color: 'black',
     },
     header: {
@@ -162,14 +156,13 @@ const styles = StyleSheet.create({
     body: {
         width: '100%',
         height: 565,
-        //backgroundColor: 'white',
         marginTop: 20,
     },
 
 
     detailModal: {
-        width: 320,
-        height: 250,
+        width: '90%',
+        height: 180,
         backgroundColor: '#ffffff',
         borderColor: '#000',
         borderRadius: 20,
@@ -184,41 +177,31 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'gray',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
     },
     Mbody: {
-        height: 120,
-        marginTop: 50,
-        alignSelf: 'flex-end',
-        marginRight: 50,
+        marginVertical: 20,
+        width: '100%',
+        alignItems: 'center',
     },
     text: {
         textAlign: 'center',
-        fontSize: 20,
+        fontSize: 16,
         color: 'black'
     },
     btn: {
-        //borderWidth: 1,
         height: 40,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        backgroundColor: 'gray',
+        width: '100%',
+        position: 'absolute',
+        bottom: 0
     },
     input: {
         textAlign: 'center',
         height: 50,
-        width: 200,
+        width: "90%",
         borderWidth: 1,
-        borderRadius: 30,
-        borderColor: 'black',
-        fontSize: 15,
-        fontWeight: 'bold',
-        // marginTop: 20,
-        marginRight: 10,
-        color: 'black',
-        backgroundColor: '#fffaf0',
+        borderRadius: 10,
+        borderColor: colors.silver,
+        fontSize: 18,
     },
 })
 

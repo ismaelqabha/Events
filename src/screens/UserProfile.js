@@ -11,15 +11,16 @@ import { showMessage } from '../resources/Functions';
 const UserProfile = (props) => {
     const { userId } = useContext(UsersContext);
     const { data } = props.route?.params || {}
+    
     const getStatus = (relationStatus) => {
         if (!relationStatus) {
             return 'طلب انشاء علاقة';
         }
         switch (relationStatus) {
             case 'pending':
-                return 'Cancel request';
+                return 'الغاء الطلب';
             case 'accepted':
-                return 'Cancel relation';
+                return 'الغاء علاقة';
             default:
                 return 'طلب انشاء علاقة';
         }
