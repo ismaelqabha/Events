@@ -71,7 +71,7 @@ const ClientRelations = (props) => {
           value={searched}
           onChangeText={handleSearch}
         />
-        <AntDesign style={styles.icon} name={"search1"} color={"black"} size={25} />
+        <AntDesign style={styles.icon} name={"search1"} color={colors.silver} size={25} />
       </View>
     )
   }
@@ -218,8 +218,6 @@ const styles = StyleSheet.create({
   },
   searchinput: {
     alignContent: 'center',
-    textAlign: 'right',
-    height: 40,
     width: 250,
     fontSize: 17,
     fontWeight: 'bold',

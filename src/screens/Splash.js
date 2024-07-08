@@ -93,7 +93,7 @@ export default function Splash(props) {
 
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
-            //console.log("res", res);
+            console.log("res", res);
             //console.log("res[0].services", res[0].services);
             setUserInfo(res[0].userInfo)
             setEventInfo(res[0].userEvents)
@@ -108,15 +108,16 @@ export default function Splash(props) {
         getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
             !resjson?.message &&
                 setUserFavorates(resjson)
-            LoginUser()
+            
         })
     }
 
     const getDataFromApi = () => {
         getHomePageData({ servType: servType }).then(res => {
             setServiceDataInfo(res)
+            LoginUser()
           // console.log("servData", res);
-             getFavoritesFromApi()
+             //getFavoritesFromApi()
         })
     }
     const getEventListfromApi = () => {

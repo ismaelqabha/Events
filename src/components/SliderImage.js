@@ -1,12 +1,12 @@
 
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView, Dimensions, Pressable, ImageBackground } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView, Dimensions, Pressable, ImageBackground, ToastAndroid } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SIZES from '../resources/sizes';
 import Icon from "react-native-vector-icons/FontAwesome";
-import { RemoveFavorite, getFavoritesforUser } from '../resources/API';
+import { RemoveFavorite, UpdateFileFavorite, getFavoritesforUser } from '../resources/API';
 import { colors } from '../assets/AppColors';
 import UsersContext from '../../store/UsersContext';
 
@@ -19,38 +19,83 @@ const SliderImage = (props) => {
     const { userId } = useContext(UsersContext);
     const { setSType, userFavorates, setUserFavorates, setImgOfServeice, setServId, favorites, setFavorites } = useContext(SearchContext);
 
+    // console.log("favorites", favorites);
 
-    const checkIfFavorate = () => {
-        const isFav = userFavorates?.find(item =>
-            item.favoListServiceId === props.service_id)
-        return !!isFav;
-    }
+    // const checkIfFavorate = () => {
+    //     const isFav = userFavorates?.find(item =>
+    //         item.favoListServiceId === props.service_id)
+    //     return !!isFav;
+    // }
+    useEffect(() => {
+        // const data = filterFavoritesFile()
+        // console.log("data", data);
+    }, [])
 
     const checkFavorates = () => {
         const isFav = favorites?.find(item => {
             return item.favoListServiceId.find(elem => {
-                elem === props.service_id
+                return elem === props.service_id
             })
         })
         return !!isFav;
     }
 
-//console.log("props", props.images[0]);
+    //console.log("props", props.images[0]);
 
-    const removeFromFavorates = () => {
-        RemoveFavorite({ favoListUserId: userId, favoListServiceId: props.service_id }).then(res => {
-            setUserFavorates(res?.favorates)
-        })
-    }
+    // const removeFromFavorates = () => {
+    //     RemoveFavorite({ favoListUserId: userId, favoListServiceId: props.service_id }).then(res => {
+    //         setUserFavorates(res?.favorates)
+    //     })
+    // }
 
     const navigateToFavoratesList = () => {
         setImgOfServeice(props.img)
         navigation.navigate(ScreenNames.FileFavorites, { isFromFavorateClick: true }, { ...props });
     }
 
+    const filterFavoritesFile = () => {
+        const file = favorites?.findIndex(item => {
+            return item.favoListServiceId.find(elem => {
+                return elem === props.service_id
+            })
+        })
+        return file;
+    }
+
+    const updatefavorites = () => {
+        const fileFavoritesIndex = filterFavoritesFile()
+        const file = favorites || [];
+       
+        const favoSer = file[fileFavoritesIndex].favoListServiceId.filter(elme => elme !== props.service_id)
+
+        const newData = {
+            fileId: file[fileFavoritesIndex].fileId,
+            fileImg: '',
+            fileName: file[fileFavoritesIndex].fileName,
+            favoListServiceId: [...favoSer]
+        }
+        console.log(newData);
+
+        UpdateFileFavorite(newData).then(res => {
+            if (res.message === 'Updated Sucessfuly') {
+
+                if (fileFavoritesIndex > -1) {
+                    file[fileFavoritesIndex] = newData;
+                }
+                setFavorites([...file])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+
+        })
+    }
+
     const OnClickFavorite = () => {
-        if (checkIfFavorate()) {
-            removeFromFavorates()
+        if (checkFavorates()) {
+            updatefavorites()
         } else {
             setServId(props.service_id)
             navigateToFavoratesList()
@@ -108,8 +153,8 @@ const SliderImage = (props) => {
                 <View style={styles.heartView}>
                     <Icon
                         style={styles.icon}
-                        name={(checkIfFavorate()) ? "heart" : "heart-o"}
-                        color={(checkIfFavorate()) ? "red" : colors.puprble}
+                        name={(checkFavorates()) ? "heart" : "heart-o"}
+                        color={(checkFavorates()) ? "red" : colors.puprble}
                         size={25} />
                 </View>
             </Pressable>

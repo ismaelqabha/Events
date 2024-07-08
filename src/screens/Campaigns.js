@@ -1,16 +1,23 @@
 import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-native'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect,useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
 import { ScreenNames } from '../../route/ScreenNames';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import SearchContext from '../../store/SearchContext';
 import { getServiceBySerId } from '../resources/API';
+import moment from 'moment';
 
 
 const Campaigns = (props) => {
     const { data ,isFromServiceDesc} = props?.route.params
     const { ServiceInfoById, setServiceInfoById, ServiceDataInfo } = useContext(SearchContext);
+
+    
+    const [date, setDate] = useState(new Date());
+    const [currentDate, setcurrentDate] = useState(date.getDate() + 1)
+    const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
+    const [currentYear, setcurrentYear] = useState(date.getFullYear())
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -19,15 +26,15 @@ const Campaigns = (props) => {
 
 
 
-    const getServiceDataFromApi = () => {
-        getServiceBySerId({ service_id: data.serviceId }).then(res => {
-            setServiceInfoById(res)
-            //console.log("res", res);
-        })
-    }
-    useEffect(() => {
-        getServiceDataFromApi()
-    }, [])
+    // const getServiceDataFromApi = () => {
+    //     getServiceBySerId({ service_id: data.serviceId }).then(res => {
+    //         setServiceInfoById(res)
+    //         //console.log("res", res);
+    //     })
+    // }
+    // useEffect(() => {
+    //     getServiceDataFromApi()
+    // }, [])
 
     const filterServiceInfo = () => {
         return ServiceDataInfo.filter(item => {
@@ -66,7 +73,75 @@ const Campaigns = (props) => {
             </View>
         )
     }
+    const countAllRequestDates = (allRequests, dataforReservation) => {
+        var countAllDates = 0
+        allRequests.forEach(item => {
+            item.reservationDetail.forEach(element => {
+                if (element.reservationDate == dataforReservation) {
+                    countAllDates += 1
+                }
+            });
+        })
+        return countAllDates
+    }
+    const checkDate = (dataforReservation, source, allRequests, maxNumOfReq) => {
+        //console.log("allRequests", allRequests);
+        const countAllDates = countAllRequestDates(allRequests, dataforReservation)
+        const servicedate = source
+        console.log(countAllDates, maxNumOfReq);
+        if (countAllDates < maxNumOfReq) {
+
+            const DateFiltered = servicedate[0].dates?.find(dat => {
+                if (servicedate[0].dates.length > 1) {
+                    return dat.time === dataforReservation && (dat.status === 'full' || dat.status === 'holiday')
+                } else {
+                    return dataforReservation
+                }
+            });
+
+            return !!DateFiltered
+
+        } else {
+            return true
+        }
+    }
+    const findFirstDateAvailable = (serviceDates, allRequests, maxNumOfReq) => {
+
+        var daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
+        let completeDate = ''
+
+        if (currentDate > daysInMonth) {
+            if ((currentMonth + 1) > 12) {
+                daysInMonth = moment((currentYear + 1) + '-' + (currentMonth - 11)).daysInMonth()
+                for (var day = 1; day <= daysInMonth; day++) {
+                    completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
+                    if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                        break
+                    }
+                }
+            } else {
+
+                daysInMonth = moment(currentYear + '-' + (currentMonth + 1)).daysInMonth()
+                for (var day = 1; day <= daysInMonth; day++) {
+                    completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
+                    if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                        break
+                    }
+                }
+            }
+        } else {
+            for (var day = currentDate; day <= daysInMonth; day++) {
+                completeDate = currentYear + '-' + currentMonth + '-' + day
+                if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                    break
+                }
+            }
+        }
+
+        return completeDate
+    };
     const onCheckAvailablePress = () => {
+        const firstDate = findFirstDateAvailable(data.serviceDates, data.serviceRequests, data.serviceData.maxNumberOFRequest)
         relatedCamp = {
             CampId: data.CampId,
             campCatType: data.campCatType,
@@ -93,7 +168,8 @@ const Campaigns = (props) => {
             images: data.serviceImages,
             BookDates: data.serviceDates,
             serviceRequests: data.serviceRequests,
-            relatedCamp: relatedCamp
+            relatedCamp: relatedCamp,
+            availableDates: firstDate
         }
 
 
@@ -132,6 +208,7 @@ const Campaigns = (props) => {
             <View style={styles.body}>
                 <View style={styles.Offertitle}>
                     <Text style={styles.titletxt}>{data.campTitle}</Text>
+                    <Text style={styles.titletxt}>{"من" +" "+ data.serviceData.title}</Text>
                     {renderPrice()}
                 </View>
                 {seperator()}

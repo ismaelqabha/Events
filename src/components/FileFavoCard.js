@@ -24,7 +24,6 @@ const FileFavoCard = (props) => {
 
     const fileFavoritesIndex = favorites?.findIndex(item => item.fileId === fileId)
 
-    const fileFavoriteIndex = fileFavoriteState?.findIndex(item => item.fileId === fileId)
 
     const updateFavorits = () => {
         const favoriteList = favoListServiceId || []
@@ -34,15 +33,20 @@ const FileFavoCard = (props) => {
             fileId: fileId,
             fileImg: '',
             fileName: fileName,
-            favoListServiceId: favoriteList
+            favoListServiceId: [...favoriteList]
         }
-
+        console.log("newfavoritRecord", newfavoritRecord);
         UpdateFileFavorite(newfavoritRecord).then(res => {
             const file = favorites || [];
             if (fileFavoritesIndex > -1) {
                 file[fileFavoritesIndex] = newfavoritRecord;
             }
             setFavorites([...file])
+            ToastAndroid.showWithGravity(
+                'تم التعديل بنجاح',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+            );
         })
     }
 
@@ -54,25 +58,12 @@ const FileFavoCard = (props) => {
             ]
         })
     }
-    const setNewFavoritFromApi = () => {
-        const newFavorateItem = {
-            favoListFileId: fileId,
-            favoListUserId: userId,
-            favoListServiceId: ServId
-        }
-
-        AddNewFavorites(newFavorateItem).then(res => {
-            const userFav = userFavorates || [];
-            userFav.push(newFavorateItem)
-            setUserFavorates([...userFav])
-        })
-        navigation.navigate(ScreenNames.Results)
-    }
+    
 
     const onCaardPress = () => {
         // setShowMenu(false)
         if (!isFromFavorateClick) {
-            navigation.navigate(ScreenNames.Favorites, { fileName: fileName, fileId: fileId })
+            navigation.navigate(ScreenNames.Favorites, { fileName: fileName, fileId: fileId, favoListServiceId: favoListServiceId })
             return;
         }
         updateFavorits()
@@ -86,44 +77,44 @@ const FileFavoCard = (props) => {
         setShowModal(true)
     }
 
-    const getFavoItemfromAPI = () => {
-        getFavoritesbyFileId({ favoListFileId: fileId }).then(res => {
-            setFavoritelistbyFileId(res)
-        })
-        getServiceID()
-    }
-    const getServiceID = () => {
-        const favoriteData = favoritelistbyFileId || [];
-        return favoriteData?.map(item => {
-            return setServiceId(item.favoListServiceId)
-        });
-    }
+    // const getFavoItemfromAPI = () => {
+    //     getFavoritesbyFileId({ favoListFileId: fileId }).then(res => {
+    //         setFavoritelistbyFileId(res)
+    //     })
+    //     getServiceID()
+    // }
+    // const getServiceID = () => {
+    //     const favoriteData = favoritelistbyFileId || [];
+    //     return favoriteData?.map(item => {
+    //         return setServiceId(item.favoListServiceId)
+    //     });
+    // }
     useEffect(() => {
         // getFavoItemfromAPI()
     }, [])
 
-    const removeFavoritList = () => {
-        RemoveFavorite({ favoListUserId: userId, favoListServiceId: serviceId }).then(res => {
-            setUserFavorates(res?.favorates)
-        })
-    }
+    // const removeFavoritList = () => {
+    //     RemoveFavorite({ favoListUserId: userId, favoListServiceId: serviceId }).then(res => {
+    //         setUserFavorates(res?.favorates)
+    //     })
+    // }
 
-    const removing = () => {
-        DeleteFileFavorite({ fileId: fileId }).then(res => {
+    // const removing = () => {
+    //     DeleteFileFavorite({ fileId: fileId }).then(res => {
 
-            if (res.message === "Delete Sucessfuly") {
-                const delData = fileFavoriteState
-                const newData = delData?.filter(item => item !== fileId)
-                setFileFavoriteState([...newData])
-            }
-        })
-        removeFavoritList()
-        setShowModal(false)
-        ToastAndroid.showWithGravity('تم اٍلالغاء بنجاح',
-            ToastAndroid.SHORT,
-            ToastAndroid.BOTTOM
-        )
-    }
+    //         if (res.message === "Delete Sucessfuly") {
+    //             const delData = fileFavoriteState
+    //             const newData = delData?.filter(item => item !== fileId)
+    //             setFileFavoriteState([...newData])
+    //         }
+    //     })
+    //     removeFavoritList()
+    //     setShowModal(false)
+    //     ToastAndroid.showWithGravity('تم اٍلالغاء بنجاح',
+    //         ToastAndroid.SHORT,
+    //         ToastAndroid.BOTTOM
+    //     )
+    // }
 
     const letMenuShow = () => {
         return (
@@ -133,38 +124,38 @@ const FileFavoCard = (props) => {
         )
     }
 
-    const onDeletePress = () => {
-        Alert.alert(
-            'تأكيد',
-            'هل انت متأكد من الحذف ؟ ',
-            [
-                {
-                    text: 'الغاء الامر',
-                    style: 'cancel',
-                },
-                {
-                    text: 'حذف',
-                    onPress: () => removing(),
-                    style: 'destructive', // Use 'destructive' for a red-colored button
-                },
-            ],
-            { cancelable: false } // Prevent closing the alert by tapping outside
-        );
+    // const onDeletePress = () => {
+    //     Alert.alert(
+    //         'تأكيد',
+    //         'هل انت متأكد من الحذف ؟ ',
+    //         [
+    //             {
+    //                 text: 'الغاء الامر',
+    //                 style: 'cancel',
+    //             },
+    //             {
+    //                 text: 'حذف',
+    //                 onPress: () => removing(),
+    //                 style: 'destructive', // Use 'destructive' for a red-colored button
+    //             },
+    //         ],
+    //         { cancelable: false } // Prevent closing the alert by tapping outside
+    //     );
 
-    }
+    // }
 
-    const onUpdatePress = () => {
-        const editFileInfo = { fileName: fileFavoriteName }
-        UpdateFileFavorite(editFileInfo).then(res => {
-            const file = fileFavoriteState || [];
-            if (fileFavoriteIndex > -1) {
-                file[fileFavoriteIndex] = editFileInfo;
-            }
-            setFileFavoriteState([...file])
-        })
-        setShowUpdateModal(false)
-        setShowModal(false)
-    }
+    // const onUpdatePress = () => {
+    //     const editFileInfo = { fileName: fileFavoriteName }
+    //     UpdateFileFavorite(editFileInfo).then(res => {
+    //         const file = fileFavoriteState || [];
+    //         if (fileFavoriteIndex > -1) {
+    //             file[fileFavoriteIndex] = editFileInfo;
+    //         }
+    //         setFileFavoriteState([...file])
+    //     })
+    //     setShowUpdateModal(false)
+    //     setShowModal(false)
+    // }
 
     const editingModal = () => {
         return (
@@ -179,7 +170,7 @@ const FileFavoCard = (props) => {
                 <View style={styles.centeredView}>
                     <View style={styles.detailModal}>
                         <View style={styles.Mbody}>
-                            <Pressable onPress={() => onDeletePress()}
+                            <Pressable //onPress={() => onDeletePress()}
                             //style={styles.btn}
                             >
                                 <Text style={styles.text}>حذف</Text>
@@ -216,7 +207,8 @@ const FileFavoCard = (props) => {
                                 onChangeText={setfileFavoriteName}
                             />
                         </View>
-                        <Pressable onPress={() => onUpdatePress()} style={styles.btn}>
+                        <Pressable //onPress={() => onUpdatePress()} 
+                        style={styles.btn}>
                             <Text style={styles.text}>حفظ</Text>
                         </Pressable>
                     </View>
@@ -229,22 +221,6 @@ const FileFavoCard = (props) => {
 
     return (
         <View style={styles.container}>
-            {/* <Card >
-                <TouchableOpacity style={styles.cardHeader}
-                    onPress={onCaardPress} onLongPress={whencardLongPress}
-                >
-                    {showMenu &&
-                        <View style={styles.settingView}>
-                            {letMenuShow()}
-                        </View>
-                    }
-                    <Card.Image
-                        style={styles.image}
-                        source={{ uri: fileImg }}
-                    />
-                    <Card.Title style={{ fontSize: 20, marginLeft: 90 }}>{fileName}</Card.Title>
-                </TouchableOpacity>
-            </Card> */}
 
             <Pressable style={styles.card} onPress={onCaardPress}>
                 <View style={styles.imgView}>

@@ -4,8 +4,6 @@ import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
-//import CampaignCard from '../../components/CampaignCard';
-
 import Fontisto from "react-native-vector-icons/Fontisto";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
