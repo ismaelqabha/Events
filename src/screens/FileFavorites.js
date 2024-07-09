@@ -10,11 +10,11 @@ import { colors } from '../assets/AppColors';
 
 
 const FileFavorites = (props) => {
-    const { isFromFavorateClick, service_id } = props.route?.params || {}
+    const { isFromFavorateClick, lastSerLogoSelected ,serviceId} = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [fileFavoriteName, setfileFavoriteName] = useState();
-    const {userId} = useContext(UsersContext);
-    const {favorites,setFavorites } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
+    const { favorites, setFavorites } = useContext(SearchContext);
 
     const onPressModalHandler = () => {
         setShowModal(true);
@@ -22,7 +22,7 @@ const FileFavorites = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-
+    
     useEffect(() => {
 
     }, [])
@@ -31,7 +31,10 @@ const FileFavorites = (props) => {
 
         const data = favorites || [];
         const cardsArray = data?.map(card => {
-            return <FileFavoCard  {...card} isFromFavorateClick={isFromFavorateClick} />;
+            return <FileFavoCard  {...card} 
+            isFromFavorateClick={isFromFavorateClick} 
+            lastSerLogoSelected={lastSerLogoSelected} 
+            serviceId={serviceId}/>;
         });
 
         return cardsArray;
@@ -59,58 +62,58 @@ const FileFavorites = (props) => {
         setShowModal(false)
     }
     const renderHeader = () => {
-        return(
+        return (
             <View style={styles.header}>
-            <Pressable onPress={onPressHandler}>
-                <AntDesign
-                    style={styles.iconBack}
-                    name={"left"}
-                    color={"black"}
-                    size={20} />
-            </Pressable>
-            <Text style={styles.txt}>مفضلاتي</Text>
-            <Pressable
-                onPress={onPressModalHandler}
-            >
-                <Entypo
-                    style={styles.icon}
-                    name={"plus"}
-                    color={"black"}
-                    size={30} />
-            </Pressable>
-        </View>
+                <Pressable onPress={onPressHandler}>
+                    <AntDesign
+                        style={styles.iconBack}
+                        name={"left"}
+                        color={"black"}
+                        size={20} />
+                </Pressable>
+                <Text style={styles.txt}>مفضلاتي</Text>
+                <Pressable
+                    onPress={onPressModalHandler}
+                >
+                    <Entypo
+                        style={styles.icon}
+                        name={"plus"}
+                        color={"black"}
+                        size={30} />
+                </Pressable>
+            </View>
         )
     }
     const renderAddFileModal = () => {
-        return(
+        return (
             <Modal
-            transparent
-            visible={showModal}
-            animationType='fade'
-            onRequestClose={() =>
-                setShowModal(false)
-            }
-        >
-            <View style={styles.centeredView}>
-                <View style={styles.detailModal}>
-                    <View style={styles.Motitle}>
-                        <Text style={styles.text}>انشاء ملف مفضلة</Text>
+                transparent
+                visible={showModal}
+                animationType='fade'
+                onRequestClose={() =>
+                    setShowModal(false)
+                }
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.detailModal}>
+                        <View style={styles.Motitle}>
+                            <Text style={styles.text}>انشاء ملف مفضلة</Text>
+                        </View>
+                        <View style={styles.Mbody}>
+                            <TextInput
+                                style={styles.input}
+                                keyboardType='default'
+                                placeholder='ادخل اسم الملف '
+                                onChangeText={setfileFavoriteName}
+                            />
+                        </View>
+                        <Pressable onPress={onAddFileFavoPress} style={styles.btn}>
+                            <Text style={styles.text}>حفظ</Text>
+                        </Pressable>
                     </View>
-                    <View style={styles.Mbody}>
-                        <TextInput
-                            style={styles.input}
-                            keyboardType='default'
-                            placeholder='ادخل اسم الملف '
-                            onChangeText={setfileFavoriteName}
-                        />
-                    </View>
-                    <Pressable onPress={onAddFileFavoPress} style={styles.btn}>
-                        <Text style={styles.text}>حفظ</Text>
-                    </Pressable>
                 </View>
-            </View>
 
-        </Modal>
+            </Modal>
         )
     }
 
@@ -118,7 +121,7 @@ const FileFavorites = (props) => {
 
     return (
         <View style={styles.container}>
-           {renderHeader()}
+            {renderHeader()}
             <View style={styles.body}>
                 <ScrollView contentContainerStyle={styles.home}>
                     {renderFiles()}
@@ -127,7 +130,7 @@ const FileFavorites = (props) => {
                 {renderAddFileModal()}
             </View>
 
-           
+
         </View>
     );
 }

@@ -6,16 +6,16 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Favorites = (props) => {
     const context = useContext(SearchContext);
-    const { allServicesFavorites } = context;
-    const { fileName, favoListServiceId,fileId } = props?.route.params;
-    const [userFavorates, setUserFavorates] = useState([])
+    const { allServicesFavorites, favorites } = context;
+    const { fileName, fileId } = props?.route.params;
+
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
 
     useEffect(() => {
-    
+
     }, [])
 
     const filterservices = () => {
@@ -23,40 +23,31 @@ const Favorites = (props) => {
             return item.serInfo !== null && item.serImages.length > 0
         })
     }
-    
 
-    const getServiceDetail = () => {
-          const data = filterservices()
-
-        return data.filter(item => {
-            return favoListServiceId.filter(elem => {
-                
-                if (elem !== null) {
-                    return elem === item.serInfo.service_id && elem === item.serImages.serviceID
-                } else {
-                    return 0
-                }
-                
-            })
+    const filterFavoFiles = () => {
+        return favorites.filter(item => {
+            return item.fileId === fileId
         })
     }
 
-    const renderCard = () => {
-        const data = getServiceDetail()
-        console.log("data", data);
-        const cardsArray = data?.map(card => {
-            return <HomeCards  {...card.serInfo}
-                images={card?.serImages}
-            />;
-        });
-        return cardsArray;
-    };
-    return (
-        <View style={styles.container}>
+
+    const getServiceDetail = () => {
+        const serviceData = filterservices()
+        const fileData = filterFavoFiles()
+
+        return serviceData.filter(item => {
+            return fileData[0].favoListServiceId.find(element => {
+                return element === item.serInfo.service_id
+            });
+
+        })
+    }
+
+    const renderHeader = () => {
+        return (
             <View style={styles.headerImg}>
                 <View style={styles.viewIcon}>
-                    <Pressable onPress={onPressHandler}
-                    >
+                    <Pressable onPress={onPressHandler}>
                         <Ionicons
                             style={styles.icon}
                             name={"arrow-back"}
@@ -68,6 +59,21 @@ const Favorites = (props) => {
                     <Text style={styles.title}>{fileName}</Text>
                 </View>
             </View>
+        )
+    }
+
+    const renderCard = () => {
+        const data = getServiceDetail()
+        const cardsArray = data?.map(card => {
+            return <HomeCards  {...card.serInfo}
+                images={card?.serImages}
+            />;
+        });
+        return cardsArray;
+    };
+    return (
+        <View style={styles.container}>
+            {renderHeader()}
             <View style={styles.body}>
                 <ScrollView contentContainerStyle={styles.contentContainerStyle}>
                     {renderCard()}
@@ -101,7 +107,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 60,
         justifyContent: 'space-between',
-        marginTop: 10,
+        alignItems: 'center',
     },
     viewIcon: {
         alignItems: 'center',

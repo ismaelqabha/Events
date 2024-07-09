@@ -6,9 +6,9 @@ import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SIZES from '../resources/sizes';
 import Icon from "react-native-vector-icons/FontAwesome";
-import { RemoveFavorite, UpdateFileFavorite, getFavoritesforUser } from '../resources/API';
+import { UpdateFileFavorite } from '../resources/API';
 import { colors } from '../assets/AppColors';
-import UsersContext from '../../store/UsersContext';
+
 
 const height = SIZES.screenWidth * 0.6;
 const width = SIZES.screenWidth - 10;
@@ -16,19 +16,12 @@ const width = SIZES.screenWidth - 10;
 const SliderImage = (props) => {
     const navigation = useNavigation();
     const [active, setActive] = useState();
-    const { userId } = useContext(UsersContext);
-    const { setSType, userFavorates, setUserFavorates, setImgOfServeice, setServId, favorites, setFavorites } = useContext(SearchContext);
+    const {  favorites, setFavorites } = useContext(SearchContext);
 
-    // console.log("favorites", favorites);
 
-    // const checkIfFavorate = () => {
-    //     const isFav = userFavorates?.find(item =>
-    //         item.favoListServiceId === props.service_id)
-    //     return !!isFav;
-    // }
+   
     useEffect(() => {
-        // const data = filterFavoritesFile()
-        // console.log("data", data);
+       
     }, [])
 
     const checkFavorates = () => {
@@ -40,17 +33,11 @@ const SliderImage = (props) => {
         return !!isFav;
     }
 
-    //console.log("props", props.images[0]);
-
-    // const removeFromFavorates = () => {
-    //     RemoveFavorite({ favoListUserId: userId, favoListServiceId: props.service_id }).then(res => {
-    //         setUserFavorates(res?.favorates)
-    //     })
-    // }
-
     const navigateToFavoratesList = () => {
-        setImgOfServeice(props.img)
-        navigation.navigate(ScreenNames.FileFavorites, { isFromFavorateClick: true }, { ...props });
+        const serviceId = props.service_id
+        const index = props.images[0].logoArray?.findIndex((val) => val === true)
+        const lastSerLogoSelected = props.images[0]?.serviceImages[index]
+        navigation.navigate(ScreenNames.FileFavorites, { isFromFavorateClick: true , lastSerLogoSelected, serviceId}, { ...props });
     }
 
     const filterFavoritesFile = () => {
@@ -74,7 +61,6 @@ const SliderImage = (props) => {
             fileName: file[fileFavoritesIndex].fileName,
             favoListServiceId: [...favoSer]
         }
-        console.log(newData);
 
         UpdateFileFavorite(newData).then(res => {
             if (res.message === 'Updated Sucessfuly') {
@@ -97,7 +83,6 @@ const SliderImage = (props) => {
         if (checkFavorates()) {
             updatefavorites()
         } else {
-            setServId(props.service_id)
             navigateToFavoratesList()
         }
     }
@@ -109,14 +94,12 @@ const SliderImage = (props) => {
         }
     }
     const onImagesPress = () => {
-        setSType((props.servType))
         navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props } })
     }
 
 
     const renderImages = () => {
         const imageArray = props.images[0].serviceImages
-
         return imageArray?.map((image, index) => {
             return (
                 <Pressable onPress={onImagesPress}>

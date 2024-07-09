@@ -12,13 +12,13 @@ const SearchProvider = props => {
   const [serviceTitle, setserviceTitle] = useState()
   const [serviceCat, setServiceCat] = useState();
   const [sType, setSType] = useState();
-  const [ServId, setServId] = useState('');
+  // const [ServId, setServId] = useState('');
 
   // Data service favorites
   const [favorites, setFavorites] = useState([])
   const [allServicesFavorites, setAllServicesFavorites] = useState([])
-  const [userFavorates, setUserFavorates] = useState([])
-  const [fileFavoriteState, setFileFavoriteState] = useState([])
+  // const [userFavorates, setUserFavorates] = useState([])
+  // const [fileFavoriteState, setFileFavoriteState] = useState([])
 
   // service Info
   const [ServiceDataInfo, setServiceDataInfo] = useState([])
@@ -66,7 +66,7 @@ const SearchProvider = props => {
 
   const [userPayment, setUserPayment] = useState([])
   const [serviceImg, setserviceImg] = useState([])
-  const [ImgOfServeice, setImgOfServeice] = useState()
+  //const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
 
   // query Dates
@@ -87,24 +87,24 @@ const SearchProvider = props => {
         setServiceCat,
         sType,
         setSType,
-        ServId,
-        setServId,
+        // ServId,
+        // setServId,
         favorites, 
         setFavorites,
         allServicesFavorites, 
         setAllServicesFavorites,
-        userFavorates,
-        setUserFavorates,
-        fileFavoriteState,
-        setFileFavoriteState,
+        // userFavorates,
+        // setUserFavorates,
+        // fileFavoriteState,
+        // setFileFavoriteState,
         requestInfoByService,
         setRequestInfoByService,
         requestInfoAccUser, 
         setRequestInfoAccUser,
         resDetail,
         setResDetail,
-        ImgOfServeice,
-        setImgOfServeice,
+        // ImgOfServeice,
+        // setImgOfServeice,
         userPayment,
         setUserPayment,
         isDateAvailable,
