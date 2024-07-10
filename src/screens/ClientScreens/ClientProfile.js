@@ -155,6 +155,22 @@ const ClientProfile = (props) => {
             </Pressable>
         </View>)
     }
+    const renderInvitations = () => {
+        return (<View>
+            <Pressable style={styles.item} //onPress={() =>props.navigation.navigate(ScreenNames.ClientDuePayments)}
+            >
+                <View>
+                    <Text style={styles.basicInfo}>بطاقات الدعوة الواردة</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Entypo
+                        name={"mail"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
+        </View>)
+    }
 
 
     return (
@@ -166,7 +182,7 @@ const ClientProfile = (props) => {
 
                 <Text style={styles.txt}>العمليات</Text>
                 <View style={styles.viewSet}>
-
+                    {renderInvitations()}
                     {renderDuePayment()}
                     {renderRelations()}
                     {renderOldEvents()}
