@@ -241,7 +241,6 @@ const ServiceDescr = (props) => {
                 });
                 return dateArray;
             } catch (e) {
-                console.log(JSON.stringify(e));
                 return <View>
                     <Text>{JSON.stringify(e)}</Text>
                 </View>
