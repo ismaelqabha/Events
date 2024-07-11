@@ -16,12 +16,12 @@ const width = SIZES.screenWidth - 10;
 const SliderImage = (props) => {
     const navigation = useNavigation();
     const [active, setActive] = useState();
-    const {  favorites, setFavorites } = useContext(SearchContext);
+    const { favorites, setFavorites } = useContext(SearchContext);
 
 
-   
+
     useEffect(() => {
-       
+
     }, [])
 
     const checkFavorates = () => {
@@ -37,7 +37,7 @@ const SliderImage = (props) => {
         const serviceId = props.service_id
         const index = props.images[0].logoArray?.findIndex((val) => val === true)
         const lastSerLogoSelected = props.images[0]?.serviceImages[index]
-        navigation.navigate(ScreenNames.FileFavorites, { isFromFavorateClick: true , lastSerLogoSelected, serviceId}, { ...props });
+        navigation.navigate(ScreenNames.FileFavorites, { isFromFavorateClick: true, lastSerLogoSelected, serviceId }, { ...props });
     }
 
     const filterFavoritesFile = () => {
@@ -52,7 +52,7 @@ const SliderImage = (props) => {
     const updatefavorites = () => {
         const fileFavoritesIndex = filterFavoritesFile()
         const file = favorites || [];
-       
+
         const favoSer = file[fileFavoritesIndex].favoListServiceId.filter(elme => elme !== props.service_id)
 
         const newData = {

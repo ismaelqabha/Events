@@ -172,7 +172,6 @@ const Campaigns = (props) => {
             availableDates: firstDate
         }
 
-
          props.navigation.navigate(ScreenNames.ServiceDescr, { data: serviceInfoObj, isFromCampaign: true })
     }
 
