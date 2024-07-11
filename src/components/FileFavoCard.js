@@ -24,9 +24,6 @@ const FileFavoCard = (props) => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     const [fileFavoriteName, setfileFavoriteName] = useState();
-
-
-
     const fileFavoritesIndex = favorites?.findIndex(item => item.fileId === fileId)
 
 

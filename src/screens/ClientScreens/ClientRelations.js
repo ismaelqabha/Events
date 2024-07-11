@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Pressable, ScrollView, Image, Modal, TextInput, ToastAndroid, Animated } from 'react-native'
 import React, { useContext, useEffect, useState, useRef } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign"
+import Ionicons from "react-native-vector-icons/Ionicons"
 import UsersContext from '../../../store/UsersContext';
 import { colors } from '../../assets/AppColors';
 import { ScreenNames } from '../../../route/ScreenNames';
@@ -63,16 +64,24 @@ const ClientRelations = (props) => {
 
   const searchBar = () => {
     return (
-      <View style={styles.searchbar}>
-        <TextInput
-          style={styles.searchinput}
-          keyboardType="default"
-          placeholder='بحث العلاقات'
-          value={searched}
-          onChangeText={handleSearch}
-        />
-        <AntDesign style={styles.icon} name={"search1"} color={colors.silver} size={25} />
+      <View style={styles.searchView}>
+        <Pressable style={styles.addRelaView} onPress={() =>props.navigation.navigate(ScreenNames.ClientIncomingRelation)}>
+          <Ionicons name={"person-add"} color={colors.puprble} size={30} />
+          <Text style={styles.addRelaText}>2</Text>
+        </Pressable>
+
+        <View style={styles.searchbar}>
+          <TextInput
+            style={styles.searchinput}
+            keyboardType="default"
+            placeholder='بحث العلاقات'
+            value={searched}
+            onChangeText={handleSearch}
+          />
+          <AntDesign name={"search1"} color={colors.silver} size={25} />
+        </View>
       </View>
+
     )
   }
 
@@ -212,7 +221,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.silver,
     height: 50,
-    width: '90%',
+    width: '80%',
     borderRadius: 8,
     paddingRight: 10
   },
@@ -262,6 +271,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.puprble,
     fontWeight: 'bold'
-  }
+  },
+  searchView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around'
 
+  },
+  addRelaView: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
+  },
+  addRelaText: {
+    color: 'red',
+    fontSize: 15,
+    fontWeight: 'bold',
+    position: 'absolute',
+    right: -5
+  }
 })

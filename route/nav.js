@@ -66,6 +66,7 @@ import ClientSearch from "../src/screens/ClientScreens/ClientSearch";
 import Results from "../src/screens/ClientScreens/Results";
 import ServiceDescr from "../src/screens/ClientScreens/ServiceDescr";
 import SearchServcies from "../src/screens/ClientScreens/SearchServcies";
+import ClientIncomingRelation from "../src/screens/ClientIncomingRelation";
 
 
 
@@ -131,6 +132,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ClientShowRequest} component={ClientShowRequest} />
                 <Stack.Screen name={ScreenNames.ClientDuePayments} component={ClientDuePayments} />
                 <Stack.Screen name={ScreenNames.ClientPayment} component={ClientPayment} />
+                <Stack.Screen name={ScreenNames.ClientIncomingRelation} component={ClientIncomingRelation} />
                 <Stack.Screen name={ScreenNames.ClientOldEvents} component={ClientOldEvents} />
                 <Stack.Screen name={ScreenNames.RequestDuePaymentsShow} component={RequestDuePaymentsShow} />
                 <Stack.Screen name={ScreenNames.PaymentDetail} component={PaymentDetail} />
