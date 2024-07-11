@@ -45,16 +45,21 @@ const ClientHomeAds = (props) => {
     }, [userInfo])
 
     const checkSetUp = () => {
+        console.log("checking setup.");
         // if its not a google account then its already setup
         if (!userInfo?.isGoogle) {
+            console.log("user is not from google, set up done!");
             return;
         }
         // if setup has been already finised
         if (userInfo?.isSetUpFinished) {
+            console.log("user setup is finished!");
             return;
         } else if (isFinishedSetup) {
+            console.log("user finished setting up!");
             return
-        } {
+        } else {
+            console.log("user setup is'nt finished, starting setup!");
             startSetup()
         }
 
@@ -236,7 +241,7 @@ const ClientHomeAds = (props) => {
 
             <ScrollView contentContainerStyle={styles.home}>
 
-              {/* <SuggestionsServicesComp /> */}
+                {/* <SuggestionsServicesComp /> */}
 
                 <View style={styles.centents}>
                     <View style={styles.itemView}>

@@ -10,7 +10,7 @@ import { asyncFunctions, showMessage } from '../resources/Functions';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function Splash(props) {
-    const { setServiceDataInfo,  servType, 
+    const { setServiceDataInfo, servType,
         setEventTypeInfo, setEventInfo, setRequestInfoAccUser, setFavorites, setAllServicesFavorites } = useContext(SearchContext);
     const { setUserInfo, userId, setuserId, setUserName } = useContext(UsersContext);
 
@@ -33,8 +33,7 @@ export default function Splash(props) {
             asyncFunctions.getItem("userInfo")
                 .then(userInfo => {
                     userInfo = JSON.parse(userInfo)
-                    const idToken = userInfo?.idToken
-                    if (idToken) {
+                    if (userInfo?.isGoogle) {
                         checkIfGoogle()
                     } else {
                         isGoogle = false
@@ -67,6 +66,7 @@ export default function Splash(props) {
 
     const LoginUser = () => {
         if (signInFlag || isGoogle) {
+            console.log("signing in!");
             props.navigation.replace('Drawr')
             return
         }
@@ -108,7 +108,7 @@ export default function Splash(props) {
     //     getFavoritesforUser({ favoListUserId: userId }).then(resjson => {
     //         !resjson?.message &&
     //             setUserFavorates(resjson)
-            
+
     //     })
     // }
 
@@ -129,7 +129,7 @@ export default function Splash(props) {
     const getRequestfromApi = () => {
         getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
             setRequestInfoAccUser(res)
-           // console.log("res request" , res);
+            // console.log("res request" , res);
         })
     }
 

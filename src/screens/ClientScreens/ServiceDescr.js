@@ -19,7 +19,7 @@ import ClientCalender from '../../components/ClientCalender';
 
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
-     //console.log("data", data);
+    //console.log("data", data);
     const [showModal, setShowModal] = useState(false);
     const [changeDateshowModal, setChangeDateshowModal] = useState(false);
     const [changeDateIsLocal, setchangeDateIsLocal] = useState(false);
@@ -38,8 +38,6 @@ const ServiceDescr = (props) => {
     const [requestData, setRequestData] = useState(data.serviceRequests);
 
     const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
-
-
 
     // const getRequestfromApi = () => {
     //     getRequestbyUserId({ ReqUserId: userId }).then(res => {
@@ -200,51 +198,35 @@ const ServiceDescr = (props) => {
 
     // render Service Dates Info from result screen
     const SelectDatePressed = (dat, setIsPressed, pressed) => {
-        const index = requestedDate.findIndex((date) => date === dat);
-        if (index === -1) {
-            setIsPressed(true);
-            setrequestedDate([...requestedDate, dat]);
+        if (Array.isArray(requestedDate)) {
+            const index = requestedDate.findIndex((date) => date === dat);
+            if (index === -1) {
+                setIsPressed(true);
+                setrequestedDate([...requestedDate, dat]);
+            } else {
+                setIsPressed(false);
+                const newDates = [...requestedDate.slice(0, index), ...requestedDate.slice(index + 1)];
+                setrequestedDate(newDates);
+            }
         } else {
-            setIsPressed(false);
-            const newDates = [...requestedDate.slice(0, index), ...requestedDate.slice(index + 1)];
-            setrequestedDate(newDates);
+            if (requestedDate) {
+                if (requestedDate === dat) {
+                    setIsPressed(false);
+                    setrequestedDate([]);
+                } else {
+                    setIsPressed(true);
+                    setrequestedDate([requestedDate, dat]);
+                }
+            }
         }
     };
     const renderDates = (dateSource) => {
         moment.locale('ar-dz');
         if (Array.isArray(dateSource)) {
             const DatesAvailable = dateSource
-           // console.log("DatesAvailable", DatesAvailable);
-            try {
-                const dateArray = DatesAvailable?.map(dat => {
-                    const [pressed, setIsPressed] = useState(false)
-
-                    useEffect(() => {
-                        const found = requestedDate.find((date) => date === dat)
-                        if (found) {
-                            setIsPressed(true)
-                        } else {
-                            setIsPressed(false)
-                        }
-                    }, [])
-
-                    return <View style={styles.dateView}>
-                        <Pressable style={[styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
-                            onPress={() => SelectDatePressed(dat, setIsPressed, pressed)}
-                        >
-                            <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
-                            <Text style={styles.datetext}>
-                                {moment(dat).format('L')}
-                            </Text>
-                        </Pressable>
-                    </View>;
-                });
-                return dateArray;
-            } catch (e) {
-                return <View>
-                    <Text>{JSON.stringify(e)}</Text>
-                </View>
-            }
+            // console.log("DatesAvailable", DatesAvailable);
+            const dateArray = DatesAvailable?.map(dat => <DateComp dat={dat} />);
+            return dateArray;
         } else {
             const firstAvilableDate = dateSource
             setrequestedDate(firstAvilableDate)
@@ -264,6 +246,41 @@ const ServiceDescr = (props) => {
 
         }
     };
+
+    const DateComp = (props) => {
+        const [pressed, setIsPressed] = useState(false)
+        const dat = props?.dat
+        useEffect(() => {
+            if (Array.isArray(requestedDate)) {
+                const found = requestedDate?.find((date) => date === dat)
+                if (found) {
+                    setIsPressed(true)
+                } else {
+                    setIsPressed(false)
+                }
+            } else {
+                if (requestedDate) {
+                    if (requestedDate === dat) {
+                        setIsPressed(true)
+                    } else {
+                        setIsPressed(false)
+                    }
+                }
+            }
+
+        }, [])
+
+        return <View style={styles.dateView}>
+            <Pressable style={[styles.viewselectdate, pressed ? styles.viewselectdatepress : styles.viewselectdate]}
+                onPress={() => SelectDatePressed(dat, setIsPressed, pressed)}
+            >
+                <Text style={styles.datetext}>{moment(dat).format('dddd')}</Text>
+                <Text style={styles.datetext}>
+                    {moment(dat).format('L')}
+                </Text>
+            </Pressable>
+        </View>;
+    }
     const renderDatesAvailable = (dateSource) => {
         return (
             <View>
@@ -275,7 +292,7 @@ const ServiceDescr = (props) => {
         )
     }
     const displayDates = (dateSource) => {
-        if (!isFromClientRequest ) {
+        if (!isFromClientRequest) {
             return (
                 <View>
                     {renderDatesAvailable(dateSource)}
@@ -285,7 +302,6 @@ const ServiceDescr = (props) => {
     }
     const getDatesInfoSource = () => {
         if (changeDateIsLocal) {
-           // console.log(dateFromCalender);
             return (
                 <View>
                     {displayDates(dateFromCalender)}
@@ -317,9 +333,12 @@ const ServiceDescr = (props) => {
                 <View style={styles.changeDatecenteredView}>
                     <View style={styles.changeDatedetailModal}>
                         <View style={{ marginTop: 20 }}>
-                            <ClientCalender  {...data}/>
+                            <ClientCalender  {...data} />
 
-                            <Pressable onPress={() => setChangeDateshowModal(false)} style={{ width: '100%', alignItems: 'center', justifyContent: 'center', height: 60 }}>
+                            <Pressable onPress={() => {
+                                setrequestedDate([])
+                                setChangeDateshowModal(false)
+                            }} style={{ width: '100%', alignItems: 'center', justifyContent: 'center', height: 60 }}>
                                 <Text>بحث</Text>
                             </Pressable>
                         </View>
@@ -618,7 +637,7 @@ const ServiceDescr = (props) => {
     const renderCampeigns = () => {
         const campArray = data.relatedCamp?.map(offer => {
             return <View style={styles.HallView}>
-                < CampaignCard  {...offer} isFromServiceDesc={isFromServiceDesc}/>
+                < CampaignCard  {...offer} isFromServiceDesc={isFromServiceDesc} />
             </View>
         });
         //console.log("campArray", campArray);
@@ -1119,11 +1138,11 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         borderRadius: 30
     },
-    detailPressedView: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'flex-end', 
-        marginVertical: 10 
+    detailPressedView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginVertical: 10
     }
 })
 
