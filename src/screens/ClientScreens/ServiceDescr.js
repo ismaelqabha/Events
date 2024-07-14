@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal, Linking } from 'react-native';
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
 import moment from 'moment';
@@ -15,12 +15,14 @@ import { colors } from '../../assets/AppColors';
 import { ScreenNames } from '../../../route/ScreenNames';
 import CampaignCard from '../../components/CampaignCard';
 import ClientCalender from '../../components/ClientCalender';
+import { showMessage } from '../../resources/Functions';
 
 
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
+    const servicePhone = props.route.params?.data?.servicePhone;
     const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
-    
+
     //console.log("data", data);
     const [showModal, setShowModal] = useState(false);
     const [changeDateshowModal, setChangeDateshowModal] = useState(false);
@@ -36,7 +38,9 @@ const ServiceDescr = (props) => {
     const [subDetArray, setSubDetArray] = useState([]);
     const [requestData, setRequestData] = useState(data.serviceRequests);
 
+
     
+
 
     // const getRequestfromApi = () => {
     //     getRequestbyUserId({ ReqUserId: userId }).then(res => {
@@ -623,12 +627,36 @@ const ServiceDescr = (props) => {
     }
     const renderserviceLocation = () => {
         return (
-            <View style={styles.locationView}>
+            <Pressable onPress={openMap} style={styles.locationView}>
                 <Image
                     style={styles.mapImage}
                     source={require('../../assets/photos/location.png')} />
-            </View>
+            </Pressable >
         )
+    }
+
+    const openMap = () => {
+        const { location } = props.route.params.data;
+
+        if (location && location.coordinates) {
+            const [longitude, latitude] = location.coordinates;
+
+            // Construct the URL for opening the location in the map app
+            const url = Platform.select({
+                ios: `maps:0,0?q=${latitude},${longitude}`,
+                android: `geo:0,0?q=${latitude},${longitude}`
+            });
+
+            // Open the URL
+            Linking.openURL(url).catch(err => {
+                console.error('An error occurred', err)
+                showMessage('An error occurred')
+            });
+        } else {
+            console.error('Location coordinates are not available');
+            showMessage('Location coordinates are not available')
+
+        }
     }
     const renderCampeigns = () => {
         const campArray = data.relatedCamp?.map(offer => {
@@ -639,67 +667,79 @@ const ServiceDescr = (props) => {
         //console.log("campArray", campArray);
         return campArray;
     }
+    const openSocialMedia = (url) => {
+        if (url) {
+            Linking.openURL(url).catch(err => {
+                console.error('An error occurred', err)
+                showMessage('An error occurred')
+            });
+        } else {
+            showMessage("url is wrong")
+        }
+    }
+
     const renderSoialMedia = () => {
         return data.socialMedia.map(item => {
-            if (item.social == "facebook") {
-                return <View>
-                    <Pressable
-                    >
-                        <Entypo
-                            name={"facebook"}
-                            color={'blue'}
-                            size={35} />
-                    </Pressable>
-                </View>
+            const { social, link: url } = item;
+            if (social === "facebook") {
+                return (
+                    <View key={social}>
+                        <Pressable onPress={() => openSocialMedia(url)}>
+                            <Entypo
+                                name={"facebook"}
+                                color={'blue'}
+                                size={35} />
+                        </Pressable>
+                    </View>
+                )
             }
-            if (item.social == "instagram") {
-                return <View>
-                    <Pressable
-                    //onPress={() => onPressModalHandler()}
-                    >
-                        <Entypo
-                            name={"instagram"}
-                            color={'black'}
-                            size={35} />
-                    </Pressable>
-                </View>
+            if (social === "instagram") {
+                return (
+                    <View key={social}>
+                        <Pressable onPress={() => openSocialMedia(url)}>
+                            <Entypo
+                                name={"instagram"}
+                                color={'black'}
+                                size={35} />
+                        </Pressable>
+                    </View>
+                )
             }
-            if (item.social == "tiktok") {
-                return <View>
-                    <Pressable
-                    //onPress={() => onPressModalHandler()}
-                    >
-                        <FontAwesome5Brands
-                            name={"tiktok"}
-                            color={'black'}
-                            size={35} />
-                    </Pressable>
-                </View>
+            if (social === "tiktok") {
+                return (
+                    <View key={social}>
+                        <Pressable onPress={() => openSocialMedia(url)}>
+                            <FontAwesome5Brands
+                                name={"tiktok"}
+                                color={'black'}
+                                size={35} />
+                        </Pressable>
+                    </View>
+                )
             }
-            if (item.social == "youtube") {
-                return <View>
-                    <Pressable
-                    //onPress={() => onPressModalHandler()}
-                    >
-                        <Entypo
-                            name={"youtube"}
-                            color={'red'}
-                            size={35} />
-                    </Pressable>
-                </View>
+            if (social === "youtube") {
+                return (
+                    <View key={social}>
+                        <Pressable onPress={() => openSocialMedia(url)}>
+                            <Entypo
+                                name={"youtube"}
+                                color={'red'}
+                                size={35} />
+                        </Pressable>
+                    </View>
+                )
             }
-            if (item.social == "X") {
-                return <View>
-                    <Pressable
-                    //onPress={() => onPressModalHandler()}
-                    >
-                        <Text>{item.social}</Text>
-                        <Image style={styles.Xstyle} source={require('../../assets/photos/X-Logo.png')} />
-                    </Pressable>
-                </View>
+            if (social === "X") {
+                return (
+                    <View key={social}>
+                        <Pressable onPress={() => openSocialMedia(url)}>
+                            <Text>{social}</Text>
+                            <Image style={styles.Xstyle} source={require('../../assets/photos/X-Logo.png')} />
+                        </Pressable>
+                    </View>
+                )
             }
         })
-
     }
     const seperator = () => {
         return (
@@ -734,16 +774,29 @@ const ServiceDescr = (props) => {
     }
     const renderPhoneContact = () => {
         return (
-            <Pressable
-            //onPress={() => onPressModalHandler()}
-            >
+            <Pressable onPress={openPhoneApp}>
                 <FontAwesome
                     name={"phone-square"}
                     color={colors.puprble}
-                    size={35} />
+                    size={35}
+                />
             </Pressable>
-        )
-    }
+        );
+    };
+
+    const openPhoneApp = () => {
+        if (servicePhone) {
+            const phoneNumber = `tel:${servicePhone}`;
+            Linking.openURL(phoneNumber).catch(err => {
+                console.error('Error opening phone app', err)
+                showMessage("Error opening phone app")
+            }
+            );
+        } else {
+            console.log("Service phone number is not available");
+            showMessage("Service phone number is not available")
+        }
+    };
 
     const renderBody = () => {
         return (
@@ -861,7 +914,7 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     descView: {
-       
+
     },
     description: {
         marginVertical: 5,
