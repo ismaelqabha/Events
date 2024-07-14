@@ -51,18 +51,19 @@ const ClientCalendar = (props) => {
     const renderPeriodButton = (period, label) => (
         <Pressable
             style={[styles.dayRange, selectedPeriod === period && styles.dayRangeSelected]}
-            onPress={() => handlePeriodPress(period)}
-        >
+            onPress={() => handlePeriodPress(period)}>
+
             {period != 0 && <View style={{ alignItems: 'center' }}>
                 <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
                 <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
             </View>}
+
             <Text style={{ fontSize: 16, color: colors.puprble }}>{label}</Text>
         </Pressable>
     );
 
     const selectDate = (day) => {
-        console.log("day has been pressed");
+        //console.log("day has been pressed");
         setselectDateforSearch(day.dateString);
         setSelected(day.dateString);
         const availableDates = checkDateIsAvailable(day.dateString);
@@ -117,7 +118,6 @@ const ClientCalendar = (props) => {
             if (dateFiltered) {
                 return false
             }
-
         }
         return true;
     };

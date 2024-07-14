@@ -19,6 +19,8 @@ import ClientCalender from '../../components/ClientCalender';
 
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
+    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
+    
     //console.log("data", data);
     const [showModal, setShowModal] = useState(false);
     const [changeDateshowModal, setChangeDateshowModal] = useState(false);
@@ -31,13 +33,10 @@ const ServiceDescr = (props) => {
     const [showAllOpDetail, setShowAllOpDetail] = useState(false);
 
     const [isFromServiceDesc, setIsFromServiceDesc] = useState(true);
-
-
     const [subDetArray, setSubDetArray] = useState([]);
-
     const [requestData, setRequestData] = useState(data.serviceRequests);
 
-    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
+    
 
     // const getRequestfromApi = () => {
     //     getRequestbyUserId({ ReqUserId: userId }).then(res => {
@@ -51,8 +50,6 @@ const ServiceDescr = (props) => {
 
 
     useEffect(() => {
-        // getRequestfromApi();
-
         // Cleanup function to reset resDetail when component unmounts or re-renders
         return () => {
             resetResDetail();
@@ -246,7 +243,6 @@ const ServiceDescr = (props) => {
 
         }
     };
-
     const DateComp = (props) => {
         const [pressed, setIsPressed] = useState(false)
         const dat = props?.dat
@@ -808,17 +804,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     header: {
-        // backgroundColor: 'white',
+
         flexDirection: 'row',
         width: '100%',
         height: 50,
         alignItems: 'center',
         justifyContent: 'space-between',
-        //backgroundColor: 'rgba(0,0,0,0.2)',
-        // elevation: 5,
-        // position: 'absolute',
-        // top: 0,
     },
+
     sliderView: {
 
     },
@@ -868,8 +861,7 @@ const styles = StyleSheet.create({
         marginTop: 30
     },
     descView: {
-        // borderWidth: 1,
-        // height: 300
+       
     },
     description: {
         marginVertical: 5,

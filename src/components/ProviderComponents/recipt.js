@@ -27,7 +27,7 @@ const Recipt = ({
     data                 // Additional data used in rendering the receipt
 }) => {
 
-    console.log("totalPrice", totalPrice);
+    //console.log("totalPrice", totalPrice);
 
     //console.log("resDetail multi", resDetail);
     const renderSubDetRecipt = (subArray) => {

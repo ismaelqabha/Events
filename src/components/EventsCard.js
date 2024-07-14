@@ -59,9 +59,13 @@ const EventsCard = (props) => {
     const eventTitle = getEventTitle()
 
     const filterReqAccEventFile = () => {
-        return requestInfoAccUser?.filter(item => {
-            return item.requestInfo.ReqEventId === EventId
-        })
+        if (requestInfoAccUser.message !== "no Request") {
+            return requestInfoAccUser?.filter(item => {
+                return item.requestInfo.ReqEventId === EventId
+            })
+        } else {
+            return []
+        }
     }
 
 
@@ -355,9 +359,9 @@ const EventsCard = (props) => {
         setDateOfEvent(eventDate)
         setShowModal(true)
     }
-    //console.log("eventDate.length", eventDate.length);
-    return (
-        <View style={styles.container}>
+
+    const renderCard = () => {
+        return (
             <Pressable style={styles.card} onPress={onCaardPress} onLongPress={whenPressLong}>
 
                 <View style={styles.titlee}>
@@ -407,6 +411,22 @@ const EventsCard = (props) => {
                     </Text>
                 </View>
             </Pressable>
+
+        )
+    }
+
+    const renderPublicCard = () => {
+        return (
+            <Pressable style={styles.card2} onPress={onCaardPress}>
+                <View style={styles.eventNameView}>
+                    <Text style={styles.eventTxt}>{eventName === 'public event' && 'حجوزات عامة'}</Text>
+                </View>
+            </Pressable>
+        )
+    }
+    return (
+        <View style={styles.container}>
+            {eventName === 'public event' ? renderPublicCard() : renderCard()}
             {updateEventModal()}
         </View>
     );
@@ -423,7 +443,14 @@ const styles = StyleSheet.create({
         elevation: 5,
         width: '90%',
         height: 200,
-        // marginTop: 30,
+        margin: 5
+    },
+    card2: {
+        borderRadius: 20,
+        backgroundColor: 'white',
+        elevation: 5,
+        width: '90%',
+        height: 80,
         margin: 5
     },
     titlee: {
@@ -432,6 +459,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%',
         height: "25%",
+    },
+    eventNameView: {
+        width: '100%',
+        height: "90%",
+        alignItems: 'center',
+        justifyContent: 'center',
 
     },
     eventTxt: {

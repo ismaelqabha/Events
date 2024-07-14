@@ -29,7 +29,6 @@ const ClientBook = (props) => {
 
     const renderRequestData = () => {
         const reqData = queryRequest()
-        //console.log("******", reqData[1].requestInfo.paymentInfo);
         return reqData.map(item => {
             return <BookingCard {...item.requestInfo}
                 services={item?.serviceData}

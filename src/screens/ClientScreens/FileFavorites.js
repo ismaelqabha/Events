@@ -2,11 +2,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Image, Pressable, ScrollView, Modal, TextInput, ToastAndroid } from 'react-native';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
-import SearchContext from '../../store/SearchContext';
-import FileFavoCard from '../components/FileFavoCard';
-import { AddFileFavorite } from '../resources/API';
-import UsersContext from '../../store/UsersContext';
-import { colors } from '../assets/AppColors';
+import UsersContext from '../../../store/UsersContext';
+import SearchContext from '../../../store/SearchContext';
+ import FileFavoCard from '../../components/FileFavoCard';
+import { AddFileFavorite } from '../../resources/API';
+import { colors } from '../../assets/AppColors';
+
 
 
 const FileFavorites = (props) => {

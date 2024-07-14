@@ -32,6 +32,7 @@ const PaymentDetailComp = (props) => {
             paymentInfo: paymentDataArray
         }
         const result = checkSumPersentage()
+        console.log("result", result);
         if (result < 100) {
             updateRequest(newData).then(res => {
 

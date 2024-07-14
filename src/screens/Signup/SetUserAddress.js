@@ -267,12 +267,14 @@ const SetUserAddress = (props) => {
   };
 
   const saveData = async () => {
+    console.log("userId", userId);
     const body = {
       USER_ID: userId,
       UserRegion: createUserRegion,
       UserCity: userCity,
       isSetUpFinished: true,
     }
+    console.log("body ", body);
     await updateUserData(body)
       .then((response) => {
         if (response?.message === "Updated Successfully") {

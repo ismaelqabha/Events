@@ -20,7 +20,10 @@ const ProviderReservationCard = (props) => {
     const [providerSide, setProviderSide] = useState(true)
 
     const renderEventType = () => {
+        // console.log("eventTypeInfo", eventTypeInfo);
+        // console.log("props>>", props.requestInfo);
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.Id === props.requestInfo.ReqEventTypeId)
+        //console.log("eventTypeInfo", eventTypeIndex, eventTypeInfo[eventTypeIndex]);
         const eventTitle = eventTypeInfo[eventTypeIndex].eventTitle
         const eventPhoto = eventTypeInfo[eventTypeIndex].eventImg
 

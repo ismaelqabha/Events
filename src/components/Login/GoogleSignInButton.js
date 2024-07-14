@@ -17,14 +17,17 @@ const GoogleSignInButton = (props) => {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
             await LoginGoogleUser({ idToken: userInfo.idToken }).then((res) => {
-                if (res.message === "User created") {
-                    showMessage('تم انشاء الحساب بنجاح');
-                    NavigateToSplash(res?.user)
-                } else if (res.message === "User already exists") {
-                    showMessage('تم تسجيل الدخول بنجاح');
-                    NavigateToSplash(res?.user)
-                } else {
-                    showMessage('حدث خطأ أثناء تسجيل الدخول');
+                console.log("res ", res);
+                if (res) {
+                    if (res.message === "User created") {
+                        showMessage('تم انشاء الحساب بنجاح');
+                        NavigateToSplash(res?.user)
+                    } else if (res.message === "User already exists") {
+                        showMessage('تم تسجيل الدخول بنجاح');
+                        NavigateToSplash(res?.user)
+                    } else {
+                        showMessage('حدث خطأ أثناء تسجيل الدخول');
+                    }
                 }
             })
         } catch (error) {

@@ -2,7 +2,6 @@ import React from "react";
 import { ScreenNames } from "../route/ScreenNames";
 import SignIn from "../src/screens/SignIn";
 import ClientRequest from "../src/screens/ClientRequest";
-import Favorites from "../src/screens/Favorites";
 
 
 import ProviderChooseService from '../src/screens/ProviderScreens/ProviderChooseService';
@@ -13,7 +12,7 @@ import ProviderAddSubDetail from "../src/screens/ProviderScreens/ProviderAddSubD
 import ProviderAddServiceDetail from "../src/screens/ProviderScreens/ProviderAddServiceDetail";
 import ProviderSetPrice from "../src/screens/ProviderScreens/ProviderSetPrice";
 
-import FileFavorites from "../src/screens/FileFavorites";
+import FileFavorites from "../src/screens/ClientScreens/FileFavorites";
 
 
 import { NavigationContainer, StackActions } from "@react-navigation/native";
@@ -66,7 +65,9 @@ import ClientSearch from "../src/screens/ClientScreens/ClientSearch";
 import Results from "../src/screens/ClientScreens/Results";
 import ServiceDescr from "../src/screens/ClientScreens/ServiceDescr";
 import SearchServcies from "../src/screens/ClientScreens/SearchServcies";
-import ClientIncomingRelation from "../src/screens/ClientIncomingRelation";
+import ClientIncomingRelation from "../src/screens/ClientScreens/ClientIncomingRelation";
+import Favorites from "../src/screens/ClientScreens/Favorites";
+
 
 
 

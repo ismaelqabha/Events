@@ -11,6 +11,7 @@ import RequestDetail from '../components/RequestDetail';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { calculateTotalPrice, showMessage } from '../resources/Functions'
 import Recipt from '../components/ProviderComponents/recipt';
+import SetEventForRequest from '../components/SetEventForRequest';
 
 
 
@@ -57,14 +58,11 @@ const ClientRequest = (props) => {
     }
 
     const getEventsfromApi = () => {
-        // getEventsInfo({ userId: userId }).then(res => {
         if (eventInfo.message == 'No Event') {
             setIveEvent(false)
         } else {
-            setIveEvent(true)
-            // setEventInfo(res)
+            setIveEvent(true)   
         }
-        // })
     }
 
     const handleScrollToPosition = () => {
@@ -123,11 +121,15 @@ const ClientRequest = (props) => {
         const requestBody = {
             ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
             ReqStatus: 'waiting reply',
+
             ReqEventId: selectedEvent,
+
             Cost: totalPrice,
             ReqServId: data?.service_id,
             ReqUserId: userId,
+
             ReqEventTypeId: evTiltleId,
+
             reservationDetail: resDetail,
         }
 
@@ -171,6 +173,18 @@ const ClientRequest = (props) => {
             </View>
         )
     }
+    const renderFoter = () => {
+        return (
+            <View style={styles.foter}>
+                <Pressable onPress={() => onServiceRequest()}
+                    disabled={selectTime ? false : true}
+                    style={[styles.btnview, selectTime ? styles.btnview : styles.btnRequestApproved]}
+                >
+                    <Text style={styles.btntext}>ارسال طلب</Text>
+                </Pressable>
+            </View>
+        )
+    }
 
     // render service logo and title
     const renderServiceinfo = () => {
@@ -194,7 +208,24 @@ const ClientRequest = (props) => {
         />
     }
 
+
     // render reservation Dates
+
+    const handleDatePress = (item) => {
+        setSelectedDate(item)
+    }
+    const renderDate = (item, index) => {
+        return (
+            <Pressable ref={targetComponentRef} onPress={() => handleDatePress(item)} key={index} style={selectedDate === item ? styles.dateItemPressed : styles.dateItem}
+            >
+                <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
+                    {moment(item).format('dddd')}</Text>
+                <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
+                    {moment(item).format('L')}
+                </Text>
+            </Pressable>
+        )
+    }
     const renderRequestedDates = () => {
         if (Array.isArray(requestedDate)) {
             return requestedDate.map((item, index) => {
@@ -211,21 +242,6 @@ const ClientRequest = (props) => {
             )
         }
     }
-    const handleDatePress = (item) => {
-        setSelectedDate(item)
-    }
-    const renderDate = (item, index) => {
-        return (
-            <Pressable ref={targetComponentRef} onPress={() => handleDatePress(item)} key={index} style={selectedDate === item ? styles.dateItemPressed : styles.dateItem}
-            >
-                <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
-                    {moment(item).format('dddd')}</Text>
-                <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
-                    {moment(item).format('L')}
-                </Text>
-            </Pressable>
-        )
-    }
 
 
     /// request information and reservation detail
@@ -236,18 +252,7 @@ const ClientRequest = (props) => {
     }
 
 
-    const renderFoter = () => {
-        return (
-            <View style={styles.foter}>
-                <Pressable onPress={() => onServiceRequest()}
-                    disabled={selectTime ? false : true}
-                    style={[styles.btnview, selectTime ? styles.btnview : styles.btnRequestApproved]}
-                >
-                    <Text style={styles.btntext}>ارسال طلب</Text>
-                </Pressable>
-            </View>
-        )
-    }
+
 
     // Event Section
 
@@ -321,28 +326,29 @@ const ClientRequest = (props) => {
         })
     }
     const onPressModalHandler = () => {
-        getEventsType()
+        // getEventsType()
         setShowModal(true);
         getEventTypeInfo()
     }
-    
+
     const renderEvents = () => {
-        return (<View style={styles.eventView}>
-            <Text style={styles.text}>اِختر او قم باٍنشاء مناسبة</Text>
-            {IveEvent &&
-                renderEventInfo()
-            }
-            <Pressable style={styles.eventItem} onPress={onPressModalHandler}>
-                <Text style={styles.text}>اِنشاء مناسبة جديدة</Text>
-                <View style={styles.IconView}>
-                    <Entypo
-                        style={{ alignSelf: 'center' }}
-                        name={"plus"}
-                        color={colors.puprble}
-                        size={30} />
-                </View>
-            </Pressable>
-        </View>
+        return (
+            <View style={styles.eventView}>
+                <Text style={styles.text}>اِختر او قم باٍنشاء مناسبة</Text>
+                {IveEvent &&
+                    renderEventInfo()
+                }
+                <Pressable style={styles.eventItem} onPress={onPressModalHandler}>
+                    <Text style={styles.text}>اِنشاء مناسبة جديدة</Text>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={{ alignSelf: 'center' }}
+                            name={"plus"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                </Pressable>
+            </View>
         )
     }
     const filtereventInfo = () => {
@@ -355,14 +361,13 @@ const ClientRequest = (props) => {
         todayDate.setMilliseconds(0);
 
         return eventInfo.filter(item => {
-           
             return item.eventDate.find(dateElment => {
                 BookDate = new Date(dateElment)
                 const result = BookDate >= todayDate // || BookDate.length < 1
 
                 return result
             })
-           
+
         })
     }
     const UpdateEventInfo = () => {
@@ -394,6 +399,7 @@ const ClientRequest = (props) => {
     }
     const UpdateEventCostState = (eventId) => {
         eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
+
         const evCost = eventInfo[eventItemIndex].eventCost
         const lastTotal = evCost + totalPrice
         setEventTotalCost(lastTotal)
@@ -401,22 +407,21 @@ const ClientRequest = (props) => {
         const newExitDate = eventInfo[eventItemIndex].eventDate
 
         if (Array.isArray(requestedDate)) {
-
             requestedDate.forEach((item) => {
                 if (!(newExitDate.includes(item))) {
                     newExitDate.push(item)
                 }
             });
-            console.log("newExitDate", newExitDate);
+           
         } else {
             if (!(newExitDate.includes(requestedDate))) {
                 newExitDate.push(requestedDate)
             }
-            console.log("newExitDate", newExitDate);
         }
 
         setUpdatedEventDate(newExitDate)
         setEVENTID(eventId)
+        
     }
     const whenEventPress = (eventId, eventTitleId) => {
         setSelectedEvent(eventId || '');
@@ -502,6 +507,8 @@ const ClientRequest = (props) => {
         )
     }
 
+
+
     // Call the function to calculate the initial total price
 
     useEffect(() => {
@@ -523,6 +530,11 @@ const ClientRequest = (props) => {
                     </ScrollView>
                 </View>
                 {renderRequestInfo()}
+
+                <View style={styles.eventView}>
+                    <SetEventForRequest  serviceType={data?.servType}/>
+                </View>
+
                 {renderEvents()}
 
                 <Recipt

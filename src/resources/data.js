@@ -1,25 +1,6 @@
 import { ScreenNames } from '../../route/ScreenNames';
 
-export const Users = [
-    {
-        USER_ID: 1,
-        User_name: 'Ali',
-        Password: '123',
-        Email: '',
-        UserAdress: '',
-        UserPhone: '',
-        UserType: 'Client',
-    },
-    {
-        USER_ID: 2,
-        User_name: 'Ahmed',
-        Password: '000',
-        Email: '',
-        UserAdress: '',
-        UserPhone: '',
-        UserType: 'Provider',
-    },
-];
+
 export const EventType = [
     { key: '0', eventTitle: 'زفاف', img: (require('../assets/photos/wedding.png')) },
     { key: '1', eventTitle: 'خطوبة', img: (require('../assets/photos/engagment.png')) },

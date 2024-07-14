@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, Pressable, Image } from 'react-native';
 
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { colors } from '../assets/AppColors';
-import { images } from '../assets/photos/images';
+import { images } from '../../assets/photos/images';
+import { colors } from '../../assets/AppColors';
+
 
 
 const ClientIncomingRelation = (props) => {
