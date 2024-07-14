@@ -61,7 +61,6 @@ const SignIn = (props) => {
 
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
-            console.log("feteched user data ", res);
             setUserInfo(res)
             setuserId(res.user[0].USER_ID)
             setUserName(res.user[0].User_name)

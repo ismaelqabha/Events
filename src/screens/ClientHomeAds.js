@@ -66,7 +66,7 @@ const ClientHomeAds = (props) => {
     }
 
     const startSetup = () => {
-        navigation.replace(ScreenNames.SetUserAddress, { isFromGoogleUser: true })
+        navigation.replace(ScreenNames.CreateUpersonalInfo, { isFromGoogleUser: true })
     }
 
 
