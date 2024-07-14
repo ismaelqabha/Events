@@ -26,7 +26,7 @@ const SetUserAddress = (props) => {
     setLatitude,
     setLongitude, longitude, userId, setUserInfo } = useContext(UsersContext);
   const [addressError, setAddressError] = useState(false);
-  const isFromGoogle = props?.route?.params?.isFromGoogleUser
+  const isFromGoogle = props?.route?.params?.isFromGoogleUser || false
   const [disableLocation, setDisbaleLocation] = useState(false);
   const [showMyLocation, setshowMyLocation] = useState(false);
   const [regionData, setRegionData] = useState([])
@@ -34,7 +34,7 @@ const SetUserAddress = (props) => {
   const translateY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation()
 
-
+  console.log("props ", props.route.params);
   const onPressBack = () => {
     props.navigation.goBack();
   }
@@ -91,7 +91,7 @@ const SetUserAddress = (props) => {
     true
       ? props.navigation.navigate(ScreenNames.SetUserStatus
         , {
-          data: { ...props },
+          isFromGoogleUser: isFromGoogle
         })
       : missingData();
   };
@@ -224,24 +224,15 @@ const SetUserAddress = (props) => {
   };
 
   const RenderInformation = () => {
-    if (!isFromGoogle) {
-      return (
-        <ScrollWrapper onNextPress={onNextPress} onPressBack={onPressBack} dotPlace={1} amountDots={4}
-        >
-          <View style={styles.body}>
-            <Text style={styles.titleText}>العنوان</Text>
-            {RenderLocationDetails()}
-          </View>
-        </ScrollWrapper>
-      )
-    } else {
-      return (
+    return (
+      <ScrollWrapper onNextPress={onNextPress} onPressBack={onPressBack} dotPlace={1} amountDots={isFromGoogle ? 3 : 4}
+      >
         <View style={styles.body}>
           <Text style={styles.titleText}>العنوان</Text>
           {RenderLocationDetails()}
         </View>
-      )
-    }
+      </ScrollWrapper>
+    )
   }
 
   const RenderFooter = () => {
@@ -298,7 +289,6 @@ const SetUserAddress = (props) => {
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
       {RenderInformation()}
-      {isFromGoogle && RenderFooter()}
     </View>
   )
 }

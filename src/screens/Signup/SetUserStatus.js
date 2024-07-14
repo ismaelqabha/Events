@@ -1,71 +1,79 @@
-
-import { StyleSheet, Text, View, Pressable, TextInput, ScrollView } from 'react-native'
-import React, { useState, useContext, useEffect } from 'react'
-import { colors } from '../../assets/AppColors'
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { colors } from '../../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import { AppStyles } from '../../assets/res/AppStyles';
 import { ScreenNames } from '../../../route/ScreenNames';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
+import { updateUserData } from '../../resources/API';
+import { showMessage } from '../../resources/Functions';
 
 const SetUserStatus = (props) => {
-  const { userSpecialDate, setUserSpecialDate } = useContext(UsersContext);
+  const {
+    setUserInfo,
+    userPhone,
+    userBD,
+    userGender,
+    userStatus,
+    userCity,
+    createUserRegion,
+    userSpecialDate,
+    setUserSpecialDate,
+    userId
+  } = useContext(UsersContext);
+  const isFromGoogle = props?.route?.params?.isFromGoogleUser || false;
 
   const onPressBack = () => {
     props.navigation.goBack();
-  }
+  };
 
-  // const RenderFooter = () => {
-  //   return (
-  //     <View style={AppStyles.footer}>
-  //       {renderDots()}
-  //       <View style={AppStyles.footerPart}>
-  //         {RenderBackButton()}
-  //         {RenderNextButton()}
-  //       </View>
-  //     </View>);
-  // };
-  // const renderDots = () => {
-  //   return (
-  //     <View style={AppStyles.createuserDots}>
-  //       <View style={AppStyles.dots}></View>
-  //       <View style={AppStyles.dots}></View>
-  //       <View style={AppStyles.pressDot}></View>
-  //       <View style={AppStyles.dots}></View>
-  //     </View>
-  //   )
-  // }
-  // const RenderNextButton = () => {
-  //   return (
-  //     <Pressable
-  //       style={AppStyles.createUserNext}
-  //       onPress={() => onNextPress()}
-  //     >
-  //       <Text style={AppStyles.createUserNextTxt}>التالي</Text>
-  //     </Pressable>
-  //   );
-  // };
-  // const RenderBackButton = () => {
-  //   return (
-  //     <Pressable
-  //       style={AppStyles.createUserBack}
-  //       onPress={() => onPressBack()}>
-  //       <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
-  //     </Pressable>
-  //   );
-  // };
   const onNextPress = () => {
     true
-      ? props.navigation.navigate(ScreenNames.CreatePassword
-        , {
-          data: { ...props },
-        })
+      ? isFromGoogle ? saveData()
+        : props.navigation.navigate(ScreenNames.CreatePassword, { data: { ...props } })
       : missingData();
   };
 
+  const saveData = async () => {
+    const body = {
+      USER_ID: userId,
+      UserRegion: createUserRegion,
+      UserCity: userCity,
+      isSetUpFinished: true,
+      UserPhone: userPhone,
+      UserType: 'client',
+      Usergender: userGender,
+      UserbirthDate: userBD,
+      Userstatus: userStatus,
+      SpecialDates: userSpecialDate,
+      Userstatus: userStatus,
+    };
 
-  const checkStrings = val => {
+    try {
+      const response = await updateUserData(body);
+      if (response?.message === "Updated Successfully") {
+        if (response && response.user) {
+          console.log("Navigating to Splash screen...");
+          showMessage("set up finished successfuly")
+          setUserInfo(response.user);
+          props.navigation.replace("Drawr");
+        } else {
+          console.log("User data not found in response");
+          showMessage("there has been an error")
+        }
+      } else {
+        console.log("Response message is not 'Updated Successfully'");
+        showMessage("there has been an error")
+      }
+    } catch (e) {
+      console.error("Error updating", e);
+      showMessage("there has been an error ")
+    }
+  };
+
+  const checkStrings = (val) => {
     if (!val) {
       return false;
     } else if (val.trim().length <= 0) {
@@ -81,57 +89,53 @@ const SetUserStatus = (props) => {
   };
 
   const showMissingTitle = () => { };
-
   const showMissingSubTitle = () => { };
-
   const showMissingDescription = () => { };
 
-
   const addEvent = () => {
-    setUserSpecialDate([...userSpecialDate, { empty: "empty" }])
-  }
+    setUserSpecialDate([...userSpecialDate, { empty: "empty" }]);
+  };
 
   const renderEventItems = () => {
-    const fields = userSpecialDate?.map((val, index) => {
-      return <EventItemComponent val={val} index={index} />
-    })
-    return fields
-  }
+    return userSpecialDate?.map((val, index) => (
+      <EventItemComponent val={val} index={index} key={index} />
+    ));
+  };
 
   const removeEvent = (index) => {
-    console.log("index ", index);
     const newArray = [...userSpecialDate];
     newArray.splice(index, 1);
     setUserSpecialDate(newArray);
   };
 
-
   const updateSpecialEventArray = (data, index) => {
-    setUserSpecialDate(prevArray => {
+    setUserSpecialDate((prevArray) => {
       const newArray = [...prevArray];
       newArray[index] = data;
-      console.log("new Special events ", newArray);
       return newArray;
     });
   };
 
-  const renderUserSpecialDates = (props) => {
-    return (<View>
-      <Text style={styles.basicInfo}>هل ترغب في اضافة تواريخ لمناسبات عائلية خاصة ؟</Text>
+  const renderUserSpecialDates = () => {
+    return (
       <View>
-        <Pressable style={styles.item} onPress={addEvent}>
-          <Text style={styles.basicInfo}>اضافة</Text>
-          <View style={styles.IconView}>
-            <Entypo
-              style={styles.icon}
-              name={"plus"}
-              color={colors.puprble}
-              size={30} />
-          </View>
-        </Pressable>
+        <Text style={styles.basicInfo}>هل ترغب في اضافة تواريخ لمناسبات عائلية خاصة ؟</Text>
+        <View>
+          <Pressable style={styles.item} onPress={addEvent}>
+            <Text style={styles.basicInfo}>اضافة</Text>
+            <View style={styles.IconView}>
+              <Entypo
+                style={styles.icon}
+                name={"plus"}
+                color={colors.puprble}
+                size={30}
+              />
+            </View>
+          </Pressable>
+        </View>
       </View>
-    </View>)
-  }
+    );
+  };
 
   const EventItemComponent = (props) => {
     const [mode, setMode] = useState('date');
@@ -140,17 +144,15 @@ const SetUserStatus = (props) => {
     const [eventTitle, setEventTitle] = useState(null);
     const [eventDate, setEventDate] = useState('DD/MM/YYYY');
 
-
     useEffect(() => {
       if (props?.val && !props?.val?.empty) {
-        setEventDate(props?.val?.specialEventDate)
-        setEventTitle(props?.val?.specialEventTitle)
+        setEventDate(props?.val?.specialEventDate);
+        setEventTitle(props?.val?.specialEventTitle);
       }
-    }, [])
-
+    }, [props?.val]);
 
     const onChange = (event, selectedDate) => {
-      setShow(false)
+      setShow(false);
       const currentDate = selectedDate || date;
       setDate(currentDate);
 
@@ -158,19 +160,20 @@ const SetUserStatus = (props) => {
       let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
 
       setEventDate(fDate);
-    }
+
+      // Save the updated event date using updateSpecialEventArray
+      const data = {
+        specialEventTitle: eventTitle,
+        specialEventDate: fDate,
+      };
+      updateSpecialEventArray(data, props?.index);
+    };
+
     const showMode = (currentMode) => {
       setShow(true);
       setMode(currentMode);
-    }
-    const onSetEventDate = (evTitle, evDate, index) => {
-      showMode('date')
-      const data = {
-        specialEventTitle: evTitle,
-        specialEventDate: evDate,
-      }
-      updateSpecialEventArray(data, index)
-    }
+    };
+
     return (
       <View key={props?.index} style={styles.eventItem}>
         <Pressable style={styles.trash} onPress={() => removeEvent(props?.index)}>
@@ -183,48 +186,47 @@ const SetUserStatus = (props) => {
           value={eventTitle}
           onChangeText={(val) => setEventTitle(val)}
           onEndEditing={(event) => {
-            const text = event.nativeEvent.text
+            const text = event.nativeEvent.text;
             const data = {
               specialEventDate: eventDate,
               specialEventTitle: text,
-            }
-            updateSpecialEventArray(data, props?.index)
+            };
+            updateSpecialEventArray(data, props?.index);
           }}
         />
-        <Pressable onPress={() => onSetEventDate(eventTitle, eventDate, props?.index)}>
+        <Pressable onPress={() => showMode('date')}>
           <View style={styles.Bdate}>
-            <Text >{eventDate}</Text>
+            <Text>{eventDate}</Text>
             <Entypo
               style={styles.logoDate}
               name={"calendar"}
               color={"black"}
               size={30} />
           </View>
-          {show && (
-            <DateTimePicker
-              testID='dateTimePicker'
-              value={date}
-              mode={mode}
-              is24Hour={true}
-              display='calendar'
-              onChange={onChange}
-            />
-          )}
         </Pressable>
+        {show && (
+          <DateTimePicker
+            testID='dateTimePicker'
+            value={date}
+            mode={mode}
+            is24Hour={true}
+            display='calendar'
+            onChange={onChange}
+          />
+        )}
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <ScrollWrapper onNextPress={onNextPress} onPressBack={onPressBack} dotPlace={2} amountDots={4}>
+      <ScrollWrapper onNextPress={onNextPress} onPressBack={onPressBack} dotPlace={2} amountDots={isFromGoogle ? 3 : 4}>
         <View style={styles.body}>
           <Text style={styles.titleText}>تواريخ خاصة</Text>
           {renderUserSpecialDates()}
-
           <View style={styles.eventScroll}>
             <ScrollView nestedScrollEnabled={true}>
               {renderEventItems()}
@@ -233,10 +235,10 @@ const SetUserStatus = (props) => {
         </View>
       </ScrollWrapper>
     </View>
-  )
-}
+  );
+};
 
-export default SetUserStatus
+export default SetUserStatus;
 
 const styles = StyleSheet.create({
   container: {
