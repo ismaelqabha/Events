@@ -205,7 +205,6 @@ const ClientEvents = (props) => {
             eventCost: 0
         }
         createNewEvent(newEventItem).then(res => {
-            console.log(res.message);
             if (res.message === 'Event Created') {
                 setDateOfEvent([])
                 const evnt = eventInfo || [];

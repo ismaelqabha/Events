@@ -5,7 +5,7 @@ import SearchContext from '../store/SearchContext';
 const SearchProvider = props => {
 
   //user
-  
+
 
   const [cat, setCat] = useState('');
   const [isFirst, setIsfirst] = useState()
@@ -42,6 +42,11 @@ const SearchProvider = props => {
   const [requestInfoAccUser, setRequestInfoAccUser] = useState([])
   const [resDetail, setResDetail] = useState([])
   const [totalPrice, setTotalPrice] = useState(0)
+  const [evTiltleId, setEvTiltleId] = useState()
+  const [EVENTID, setEVENTID] = useState()
+  const [updatedEventDate, setUpdatedEventDate] = useState()
+  const [eventTotalCost, setEventTotalCost] = useState()
+
 
 
   const [orderSubdetail, setOrderSubdetail] = useState([])
@@ -76,7 +81,7 @@ const SearchProvider = props => {
   return (
     <SearchContext.Provider
       value={{
-        
+
         cat,
         setCat,
         isFirst,
@@ -89,9 +94,9 @@ const SearchProvider = props => {
         setSType,
         // ServId,
         // setServId,
-        favorites, 
+        favorites,
         setFavorites,
-        allServicesFavorites, 
+        allServicesFavorites,
         setAllServicesFavorites,
         // userFavorates,
         // setUserFavorates,
@@ -99,10 +104,18 @@ const SearchProvider = props => {
         // setFileFavoriteState,
         requestInfoByService,
         setRequestInfoByService,
-        requestInfoAccUser, 
+        requestInfoAccUser,
         setRequestInfoAccUser,
         resDetail,
         setResDetail,
+        evTiltleId, 
+        setEvTiltleId,
+        EVENTID, 
+        setEVENTID,
+        updatedEventDate, 
+        setUpdatedEventDate,
+        eventTotalCost, 
+        setEventTotalCost,
         // ImgOfServeice,
         // setImgOfServeice,
         userPayment,
@@ -135,7 +148,7 @@ const SearchProvider = props => {
         setselectDateforSearch,
         // selectMonthforSearch,
         // setselectMonthforSearch,
-        dateFromCalender, 
+        dateFromCalender,
         setDateFromCalender,
         datesforBooking,
         setDatesforBooking,

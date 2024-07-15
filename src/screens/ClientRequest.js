@@ -22,27 +22,27 @@ const ClientRequest = (props) => {
         requestedDate,
         resDetail,
         eventInfo, setEventInfo,
-        eventTypeInfo, totalPrice, setTotalPrice } = useContext(SearchContext);
+        eventTypeInfo, totalPrice, setTotalPrice,
+        evTiltleId, EVENTID, updatedEventDate, eventTotalCost } = useContext(SearchContext);
 
-
-    const [date, setDate] = useState(new Date());
-    const [IveEvent, setIveEvent] = useState(false);
-    const [showModal, setShowModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
     const [selectTime, setSelectTime] = useState(true);
-
-    const [fileEventName, setfileEventName] = useState();
+    const [date, setDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState()
 
-    const [requestDiscount, setRequestDiscount] = useState()
+    const [IveEvent, setIveEvent] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [fileEventName, setfileEventName] = useState();
+   
+
 
     const [eventTypeName, setEventTypeName] = useState()
     const [eventName, setEventName] = useState()
     const [eventTypeId, setEventTypeId] = useState()
-    const [eventTotalCost, setEventTotalCost] = useState()
-    const [evTiltleId, setEvTiltleId] = useState()
-    const [EVENTID, setEVENTID] = useState()
-    const [updatedEventDate, setUpdatedEventDate] = useState()
+    // const [eventTotalCost, setEventTotalCost] = useState()
+    // const [evTiltleId, setEvTiltleId] = useState()
+    // const [EVENTID, setEVENTID] = useState()
+    // const [updatedEventDate, setUpdatedEventDate] = useState()
 
 
     const scrollViewRef = useRef();
@@ -61,7 +61,7 @@ const ClientRequest = (props) => {
         if (eventInfo.message == 'No Event') {
             setIveEvent(false)
         } else {
-            setIveEvent(true)   
+            setIveEvent(true)
         }
     }
 
@@ -256,120 +256,120 @@ const ClientRequest = (props) => {
 
     // Event Section
 
-    const getEventTypeInfo = () => {
-        const eventList = []
-        eventTypeInfo.forEach(element => {
-            eventList.push(element?.eventTitle)
-        })
-        eventList.sort()
-        setEventTypeName(eventList)
-    }
-    const getEventTypeID = (val) => {
-        const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
-        const eventTypeId = eventTypeInfo[eventTypeIndex].Id
-        setEventTypeId(eventTypeId)
-    }
-    const onModalCancelPress = () => {
-        setShowModal(false)
-    }
-    const onModalSavePress = () => {
-        if (fileEventName !== undefined) {
-            if (eventName !== undefined) {
-                getEventTypeID(eventName)
-                creatNewEvent()
-                ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM
-                )
-                setShowModal(false)
+    // const getEventTypeInfo = () => {
+    //     const eventList = []
+    //     eventTypeInfo.forEach(element => {
+    //         eventList.push(element?.eventTitle)
+    //     })
+    //     eventList.sort()
+    //     setEventTypeName(eventList)
+    // }
+    // const getEventTypeID = (val) => {
+    //     const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
+    //     const eventTypeId = eventTypeInfo[eventTypeIndex].Id
+    //     setEventTypeId(eventTypeId)
+    // }
+    // const onModalCancelPress = () => {
+    //     setShowModal(false)
+    // }
+    // const onModalSavePress = () => {
+    //     if (fileEventName !== undefined) {
+    //         if (eventName !== undefined) {
+    //             getEventTypeID(eventName)
+    //             creatNewEvent()
+    //         } else {
+    //             Alert.alert(
+    //                 'تنبية',
+    //                 'الرجاء اختيار نوع المناسبة',
+    //                 [
+    //                     {
+    //                         text: 'Ok',
+    //                         // style: 'cancel',
+    //                     },
+    //                 ],
+    //                 { cancelable: false } // Prevent closing the alert by tapping outside
+    //             );
+    //         }
+    //     } else {
+    //         Alert.alert(
+    //             'تنبية',
+    //             'الرجاء اختيار اسم المناسبة',
+    //             [
+    //                 {
+    //                     text: 'Ok',
+    //                     // style: 'cancel',
+    //                 },
+    //             ],
+    //             { cancelable: false } // Prevent closing the alert by tapping outside
+    //         );
+    //     }
 
-            } else {
-                Alert.alert(
-                    'تنبية',
-                    'الرجاء اختيار نوع المناسبة',
-                    [
-                        {
-                            text: 'Ok',
-                            // style: 'cancel',
-                        },
-                    ],
-                    { cancelable: false } // Prevent closing the alert by tapping outside
-                );
-            }
-        } else {
-            Alert.alert(
-                'تنبية',
-                'الرجاء اختيار اسم المناسبة',
-                [
-                    {
-                        text: 'Ok',
-                        // style: 'cancel',
-                    },
-                ],
-                { cancelable: false } // Prevent closing the alert by tapping outside
-            );
-        }
+    // }
+    // const creatNewEvent = () => {
+    //     const newEventItem = {
+    //         userId: userId,
+    //         eventName: fileEventName,
+    //         eventTitleId: eventTypeId,
+    //         eventDate: requestedDate,
+    //         eventCost: eventTotalCost
+    //     }
+    //     createNewEvent(newEventItem).then(res => {
+    //         const evnt = eventInfo || [];
+    //         if (res.message === 'Event Created') {
+    //             evnt.push(newEventItem)
+    //             setEventInfo([...evnt])
+    //             ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
+    //                 ToastAndroid.SHORT,
+    //                 ToastAndroid.BOTTOM
+    //             )
+    //             setShowModal(false)
+    //         }
+    //     })
+    // }
+    // const onPressModalHandler = () => {
+    //     setShowModal(true);
+    //     getEventTypeInfo()
+    // }
 
-    }
-    const creatNewEvent = () => {
-        const newEventItem = {
-            userId: userId,
-            eventName: fileEventName,
-            eventTitleId: eventTypeId,
-            eventDate: requestedDate,
-            eventCost: eventTotalCost
-        }
-        createNewEvent(newEventItem).then(res => {
-            const evnt = eventInfo || [];
-            evnt.push(newEventItem)
-            setEventInfo([...evnt])
-        })
-    }
-    const onPressModalHandler = () => {
-        // getEventsType()
-        setShowModal(true);
-        getEventTypeInfo()
-    }
+    // const renderEvents = () => {
+    //     return (
+    //         <View style={styles.eventView}>
+    //             <Text style={styles.text}>اِختر او قم باٍنشاء مناسبة</Text>
+    //             {IveEvent &&
+    //                 renderEventInfo()
+    //             }
+    //             <Pressable style={styles.eventItem} onPress={onPressModalHandler}>
+    //                 <Text style={styles.text}>اِنشاء مناسبة جديدة</Text>
+    //                 <View style={styles.IconView}>
+    //                     <Entypo
+    //                         style={{ alignSelf: 'center' }}
+    //                         name={"plus"}
+    //                         color={colors.puprble}
+    //                         size={30} />
+    //                 </View>
+    //             </Pressable>
+    //         </View>
+    //     )
+    // }
+    // const filtereventInfo = () => {
+    //     var BookDate
+    //     var todayDate = new Date();
 
-    const renderEvents = () => {
-        return (
-            <View style={styles.eventView}>
-                <Text style={styles.text}>اِختر او قم باٍنشاء مناسبة</Text>
-                {IveEvent &&
-                    renderEventInfo()
-                }
-                <Pressable style={styles.eventItem} onPress={onPressModalHandler}>
-                    <Text style={styles.text}>اِنشاء مناسبة جديدة</Text>
-                    <View style={styles.IconView}>
-                        <Entypo
-                            style={{ alignSelf: 'center' }}
-                            name={"plus"}
-                            color={colors.puprble}
-                            size={30} />
-                    </View>
-                </Pressable>
-            </View>
-        )
-    }
-    const filtereventInfo = () => {
-        var BookDate
-        var todayDate = new Date();
+    //     todayDate.setHours(0);
+    //     todayDate.setMinutes(0);
+    //     todayDate.setSeconds(0);
+    //     todayDate.setMilliseconds(0);
 
-        todayDate.setHours(0);
-        todayDate.setMinutes(0);
-        todayDate.setSeconds(0);
-        todayDate.setMilliseconds(0);
+    //     return eventInfo.filter(item => {
+    //         return item.eventDate.find(dateElment => {
+    //             BookDate = new Date(dateElment)
+    //             const result = BookDate >= todayDate // || BookDate.length < 1
 
-        return eventInfo.filter(item => {
-            return item.eventDate.find(dateElment => {
-                BookDate = new Date(dateElment)
-                const result = BookDate >= todayDate // || BookDate.length < 1
+    //             return result
+    //         })
 
-                return result
-            })
-
-        })
-    }
+    //     })
+    // }
     const UpdateEventInfo = () => {
 
         const newEventItem = {
@@ -386,7 +386,7 @@ const ClientRequest = (props) => {
             }
 
             if (res.message === 'Updated Sucessfuly') {
-                setEventInfo([...ev, newEventItem])
+                setEventInfo([...ev])
                 showMessage("تم التعديل")
             } else {
                 showMessage("لم يتم التعديل")
@@ -397,115 +397,115 @@ const ClientRequest = (props) => {
         })
 
     }
-    const UpdateEventCostState = (eventId) => {
-        eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
+    // const UpdateEventCostState = (eventId) => {
+    //     eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
 
-        const evCost = eventInfo[eventItemIndex].eventCost
-        const lastTotal = evCost + totalPrice
-        setEventTotalCost(lastTotal)
+    //     const evCost = eventInfo[eventItemIndex].eventCost
+    //     const lastTotal = evCost + totalPrice
+    //     setEventTotalCost(lastTotal)
 
-        const newExitDate = eventInfo[eventItemIndex].eventDate
+    //     const newExitDate = eventInfo[eventItemIndex].eventDate
 
-        if (Array.isArray(requestedDate)) {
-            requestedDate.forEach((item) => {
-                if (!(newExitDate.includes(item))) {
-                    newExitDate.push(item)
-                }
-            });
-           
-        } else {
-            if (!(newExitDate.includes(requestedDate))) {
-                newExitDate.push(requestedDate)
-            }
-        }
+    //     if (Array.isArray(requestedDate)) {
+    //         requestedDate.forEach((item) => {
+    //             if (!(newExitDate.includes(item))) {
+    //                 newExitDate.push(item)
+    //             }
+    //         });
 
-        setUpdatedEventDate(newExitDate)
-        setEVENTID(eventId)
-        
-    }
-    const whenEventPress = (eventId, eventTitleId) => {
-        setSelectedEvent(eventId || '');
-        setEvTiltleId(eventTitleId)
-        UpdateEventCostState(eventId)
-    }
-    const renderEventInfo = () => {
-        const eventData = filtereventInfo()
-        return eventData.map((item, index) => {
-            const isSelected = selectedEvent === item.EventId;
-            return (
-                <Pressable key={index} style={styles.eventItem}>
-                    <View >
-                        <Text style={styles.text}>{item.eventName}</Text>
-                    </View>
-                    <View style={styles.IconView}>
-                        <Pressable style={styles.selectEvent}
-                            onPress={() => whenEventPress(item.EventId, item.eventTitleId)}
-                        >
-                            {isSelected && (
-                                <Entypo
-                                    style={{ alignSelf: 'center' }}
-                                    name={"check"}
-                                    color={colors.puprble}
-                                    size={20}
-                                />
-                            )}
-                        </Pressable>
-                    </View>
+    //     } else {
+    //         if (!(newExitDate.includes(requestedDate))) {
+    //             newExitDate.push(requestedDate)
+    //         }
+    //     }
 
-                </Pressable>
-            )
-        })
+    //     setUpdatedEventDate(newExitDate)
+    //     setEVENTID(eventId)
 
-    }
-    const setModal = () => {
-        return (
-            <Modal
-                transparent
-                visible={showModal}
-                animationType='fade'
-                onRequestClose={() =>
-                    setShowModal(false)
-                }
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.detailModal}>
-                        <View style={styles.Motitle}>
-                            <Text style={styles.modaltext}>انشاء مناسبة</Text>
-                        </View>
-                        <View style={styles.body}>
-                            <TextInput
-                                style={styles.input}
-                                keyboardType='default'
-                                placeholder='ادخل اسم المناسبة '
-                                onChangeText={setfileEventName}
-                            />
-                            <View style={{ width: '100%', marginVertical: 20 }}>
-                                <SelectList
-                                    data={eventTypeName}
-                                    setSelected={val => {
-                                        setEventName(val);
-                                    }}
-                                    placeholder={"أختر نوع المناسبة"}
-                                    boxStyles={styles.dropdown}
-                                    inputStyles={styles.droptext}
-                                    dropdownTextStyles={styles.dropstyle}
-                                />
-                            </View>
-                        </View>
-                        <View style={styles.btn}>
-                            <Pressable onPress={() => onModalCancelPress()} >
-                                <Text style={styles.modaltext}>الغاء الامر</Text>
-                            </Pressable>
-                            <Pressable onPress={() => onModalSavePress()} >
-                                <Text style={styles.modaltext}>حفظ</Text>
-                            </Pressable>
-                        </View>
-                    </View>
-                </View>
+    // }
+    // const whenEventPress = (eventId, eventTitleId) => {
+    //     setSelectedEvent(eventId || '');
+    //     // setEvTiltleId(eventTitleId)
+    //     UpdateEventCostState(eventId)
+    // }
+    // const renderEventInfo = () => {
+    //     const eventData = filtereventInfo()
+    //     return eventData.map((item, index) => {
+    //         const isSelected = selectedEvent === item.EventId;
+    //         return (
+    //             <Pressable key={index} style={styles.eventItem}>
+    //                 <View >
+    //                     <Text style={styles.text}>{item.eventName}</Text>
+    //                 </View>
+    //                 <View style={styles.IconView}>
+    //                     <Pressable style={styles.selectEvent}
+    //                         onPress={() => whenEventPress(item.EventId, item.eventTitleId)}
+    //                     >
+    //                         {isSelected && (
+    //                             <Entypo
+    //                                 style={{ alignSelf: 'center' }}
+    //                                 name={"check"}
+    //                                 color={colors.puprble}
+    //                                 size={20}
+    //                             />
+    //                         )}
+    //                     </Pressable>
+    //                 </View>
 
-            </Modal>
-        )
-    }
+    //             </Pressable>
+    //         )
+    //     })
+
+    // }
+    // const setModal = () => {
+    //     return (
+    //         <Modal
+    //             transparent
+    //             visible={showModal}
+    //             animationType='fade'
+    //             onRequestClose={() =>
+    //                 setShowModal(false)
+    //             }
+    //         >
+    //             <View style={styles.centeredView}>
+    //                 <View style={styles.detailModal}>
+    //                     <View style={styles.Motitle}>
+    //                         <Text style={styles.modaltext}>انشاء مناسبة</Text>
+    //                     </View>
+    //                     <View style={styles.body}>
+    //                         <TextInput
+    //                             style={styles.input}
+    //                             keyboardType='default'
+    //                             placeholder='ادخل اسم المناسبة '
+    //                             onChangeText={setfileEventName}
+    //                         />
+    //                         <View style={{ width: '100%', marginVertical: 20 }}>
+    //                             <SelectList
+    //                                 data={eventTypeName}
+    //                                 setSelected={val => {
+    //                                     setEventName(val);
+    //                                 }}
+    //                                 placeholder={"أختر نوع المناسبة"}
+    //                                 boxStyles={styles.dropdown}
+    //                                 inputStyles={styles.droptext}
+    //                                 dropdownTextStyles={styles.dropstyle}
+    //                             />
+    //                         </View>
+    //                     </View>
+    //                     <View style={styles.btn}>
+    //                         <Pressable onPress={() => onModalCancelPress()} >
+    //                             <Text style={styles.modaltext}>الغاء الامر</Text>
+    //                         </Pressable>
+    //                         <Pressable onPress={() => onModalSavePress()} >
+    //                             <Text style={styles.modaltext}>حفظ</Text>
+    //                         </Pressable>
+    //                     </View>
+    //                 </View>
+    //             </View>
+
+    //         </Modal>
+    //     )
+    // }
 
 
 
@@ -532,10 +532,10 @@ const ClientRequest = (props) => {
                 {renderRequestInfo()}
 
                 <View style={styles.eventView}>
-                    <SetEventForRequest  serviceType={data?.servType}/>
+                    <SetEventForRequest serviceType={data?.servType} />
                 </View>
 
-                {renderEvents()}
+                {/* {renderEvents()} */}
 
                 <Recipt
                     totalPrice={totalPrice}
@@ -550,7 +550,7 @@ const ClientRequest = (props) => {
                 </View>
                 {renderFoter()}
             </ScrollView>
-            {setModal()}
+            {/* {setModal()} */}
         </View>
     );
 }

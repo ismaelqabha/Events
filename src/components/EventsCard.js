@@ -297,7 +297,7 @@ const EventsCard = (props) => {
                 )
                 setShowModal(false)
                 setEventInfo([...ev])
-                setIsRefreshing(true)
+                // setIsRefreshing(true)
                 setDeleteEvent(false)
                 setEditing(false)
             }

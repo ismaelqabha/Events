@@ -1,24 +1,37 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Pressable,Alert, Modal,TextInput,ToastAndroid } from 'react-native'
 import React, {useEffect, useState, useContext} from 'react'
 import Entypo from "react-native-vector-icons/Entypo";
 import { colors } from '../assets/AppColors';
 import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
+import { createNewEvent } from '../resources/API';
+import { SelectList } from 'react-native-dropdown-select-list';
 
 
 const SetEventForRequest = (props) => {
     const { serviceType } = props
-    const {eventInfo, setEventInfo,requestedDate} = useContext(SearchContext);
+    const {eventInfo, setEventInfo,requestedDate, eventTypeInfo,
+        eventTotalCost, setEventTotalCost,totalPrice,
+        setUpdatedEventDate,
+        setEVENTID,
+        setEvTiltleId } = useContext(SearchContext);
     const { userId } = useContext(UsersContext);
 
     const [selectedEvent, setSelectedEvent] = useState('');
 
     const [IveEvent, setIveEvent] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
-    const [evTiltleId, setEvTiltleId] = useState()
-    const [EVENTID, setEVENTID] = useState()
-    const [updatedEventDate, setUpdatedEventDate] = useState()
-    const [eventTotalCost, setEventTotalCost] = useState()
+    const [fileEventName, setfileEventName] = useState();
+    const [eventName, setEventName] = useState()
+    const [eventTypeId, setEventTypeId] = useState()
+    const [eventTypeName, setEventTypeName] = useState()
+
+    // const [evTiltleId, setEvTiltleId] = useState()
+    // const [EVENTID, setEVENTID] = useState()
+    // const [updatedEventDate, setUpdatedEventDate] = useState()
+    // const [eventTotalCost, setEventTotalCost] = useState()
+    
 
     const serviceTypeList = ["تصوير"]
 
@@ -49,6 +62,134 @@ const SetEventForRequest = (props) => {
         checkIfThereIsEvent()
     }, [])
 
+    const setModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={showModal}
+                animationType='fade'
+                onRequestClose={() =>
+                    setShowModal(false)
+                }
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.detailModal}>
+                        <View style={styles.Motitle}>
+                            <Text style={styles.modaltext}>انشاء مناسبة</Text>
+                        </View>
+                        <View style={styles.body}>
+                            <TextInput
+                                style={styles.input}
+                                keyboardType='default'
+                                placeholder='ادخل اسم المناسبة '
+                                onChangeText={setfileEventName}
+                            />
+                            <View style={{ width: '100%', marginVertical: 20 }}>
+                                <SelectList
+                                    data={eventTypeName}
+                                    setSelected={val => {
+                                        setEventName(val);
+                                    }}
+                                    placeholder={"أختر نوع المناسبة"}
+                                    boxStyles={styles.dropdown}
+                                    inputStyles={styles.droptext}
+                                    dropdownTextStyles={styles.dropstyle}
+                                />
+                            </View>
+                        </View>
+                        <View style={styles.btn}>
+                            <Pressable onPress={onModalCancelPress} >
+                                <Text style={styles.modaltext}>الغاء الامر</Text>
+                            </Pressable>
+                            <Pressable onPress={onModalSavePress} >
+                                <Text style={styles.modaltext}>حفظ</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+
+            </Modal>
+        )
+    }
+
+
+    const onPressModalHandler = () => {
+        setShowModal(true);
+        getEventTypeInfo()
+    }
+
+    const getEventTypeInfo = () => {
+        const eventList = []
+        eventTypeInfo.forEach(element => {
+            eventList.push(element?.eventTitle)
+        })
+        eventList.sort()
+        setEventTypeName(eventList)
+    }
+
+    const getEventTypeID = (val) => {
+        const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
+        const eventTypeId = eventTypeInfo[eventTypeIndex].Id
+        setEventTypeId(eventTypeId)
+    }
+    const onModalCancelPress = () => {
+        setShowModal(false)
+    }
+    const onModalSavePress = () => {
+        if (fileEventName !== undefined) {
+            if (eventName !== undefined) {
+                getEventTypeID(eventName)
+                creatNewEvent()
+            } else {
+                Alert.alert(
+                    'تنبية',
+                    'الرجاء اختيار نوع المناسبة',
+                    [
+                        {
+                            text: 'Ok',
+                            // style: 'cancel',
+                        },
+                    ],
+                    { cancelable: false } // Prevent closing the alert by tapping outside
+                );
+            }
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء اختيار اسم المناسبة',
+                [
+                    {
+                        text: 'Ok',
+                        // style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
+
+    }
+    const creatNewEvent = () => {
+        const newEventItem = {
+            userId: userId,
+            eventName: fileEventName,
+            eventTitleId: eventTypeId,
+            eventDate: requestedDate,
+            eventCost: eventTotalCost
+        }
+        createNewEvent(newEventItem).then(res => {
+            const evnt = eventInfo || [];
+            if (res.message === 'Event Created') {
+                evnt.push(newEventItem)
+                setEventInfo([...evnt])
+                ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM
+                )
+                setShowModal(false)
+            }
+        })
+    }
+
     const renderEvents = () => {
         return (
             <View>
@@ -56,7 +197,7 @@ const SetEventForRequest = (props) => {
                 {IveEvent &&
                     renderEventInfo()
                 }
-                <Pressable style={styles.eventItem} //onPress={onPressModalHandler}
+                <Pressable style={styles.eventItem} onPress={onPressModalHandler}
                 >
                     <Text style={styles.text}>مناسبة جديدة</Text>
                     <View style={styles.IconView}>
@@ -121,7 +262,7 @@ const SetEventForRequest = (props) => {
         setEVENTID(eventId)
         
     }
-    
+
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
         return eventData.map((item, index) => {
@@ -155,6 +296,7 @@ const SetEventForRequest = (props) => {
         <View>
             <Text>{serviceType}</Text>
             {checkService()}
+            {setModal()}
         </View>
     )
 }
@@ -187,5 +329,76 @@ const styles = StyleSheet.create({
         height: 25,
         borderWidth: 2,
         borderColor: 'white'
+    },
+    detailModal: {
+        width: '90%',
+        height: 450,
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    Motitle: {
+        height: 70,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    modaltext: {
+        textAlign: 'center',
+        fontSize: 20,
+        color: 'black'
+    },
+    body: {
+        backgroundColor: 'white',
+        width: '95%',
+        height: 100,
+        marginBottom: 5,
+        paddingHorizontal: 5,
+        alignSelf: 'center',
+        borderRadius: 15,
+        justifyContent: 'center'
+    },
+    input: {
+        textAlign: 'center',
+        height: 50,
+        width: '100%',
+        borderWidth: 0.6,
+        borderRadius: 10,
+        borderColor: 'gray',
+        fontSize: 15,
+        color: 'black',
+    },
+    dropdown: {
+        height: 50,
+        width: '100%',
+        alignSelf: 'center',
+        borderRadius: 10,
+        textAlign: 'right',
+        borderWidth: 0.6
+    },
+    dropstyle: {
+        color: 'black',
+        fontSize: 18,
+    },
+    droptext: {
+        fontSize: 18,
+        color: 'black',
+    },
+    btn: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        height: 50,
+        width: '100%',
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        position: 'absolute',
+        bottom: 0
     },
 })
