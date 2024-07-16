@@ -23,7 +23,8 @@ const ClientRequest = (props) => {
         resDetail,
         eventInfo, setEventInfo,
         eventTypeInfo, totalPrice, setTotalPrice,
-        evTiltleId, EVENTID, updatedEventDate, eventTotalCost } = useContext(SearchContext);
+        evTiltleId, EVENTID, updatedEventDate, eventTotalCost
+    } = useContext(SearchContext);
 
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
     const [selectTime, setSelectTime] = useState(true);
@@ -33,7 +34,7 @@ const ClientRequest = (props) => {
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [fileEventName, setfileEventName] = useState();
-   
+
 
 
     const [eventTypeName, setEventTypeName] = useState()
@@ -122,7 +123,7 @@ const ClientRequest = (props) => {
             ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
             ReqStatus: 'waiting reply',
 
-            ReqEventId: selectedEvent,
+            ReqEventId: EVENTID,
 
             Cost: totalPrice,
             ReqServId: data?.service_id,
@@ -425,7 +426,7 @@ const ClientRequest = (props) => {
     // }
     // const whenEventPress = (eventId, eventTitleId) => {
     //     setSelectedEvent(eventId || '');
-    //     // setEvTiltleId(eventTitleId)
+    //      setEvTiltleId(eventTitleId)
     //     UpdateEventCostState(eventId)
     // }
     // const renderEventInfo = () => {
@@ -620,7 +621,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         width: 120,
         height: 50,
-        //justifyContent: 'center',
         alignSelf: 'center',
         borderWidth: 2,
         borderColor: colors.silver,
@@ -662,19 +662,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 15
     },
-    eventItem: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        width: "100%",
-        marginVertical: 5,
-    },
-    selectEvent: {
-        width: 25,
-        height: 25,
-        borderWidth: 2,
-        borderColor: 'white'
-    },
+
     myEvents: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -688,21 +676,6 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
 
-    IconView: {
-        width: 50,
-        height: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'lightgray',
-        borderRadius: 30,
-        marginLeft: 10
-    },
-
-    modaltext: {
-        textAlign: 'center',
-        fontSize: 20,
-        color: 'black'
-    },
     text: {
         fontSize: 15,
         marginRight: 10,
@@ -732,7 +705,6 @@ const styles = StyleSheet.create({
         width: 150,
         height: 120,
         borderRadius: 15,
-        // backgroundColor: 'black',
         justifyContent: 'flex-end'
     },
 
@@ -742,7 +714,6 @@ const styles = StyleSheet.create({
     },
     btntext: {
         fontSize: 20,
-        // fontWeight: 'bold',
         color: 'white',
     },
     btnview: {
@@ -766,63 +737,91 @@ const styles = StyleSheet.create({
         elevation: 5,
         opacity: 0.3
     },
-    detailModal: {
-        width: '90%',
-        height: 450,
-        backgroundColor: '#ffffff',
-        borderRadius: 20,
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#00000099',
-    },
-    Motitle: {
-        height: 70,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-    },
+    // eventItem: {
+    //     flexDirection: 'row',
+    //     justifyContent: 'flex-end',
+    //     alignItems: 'center',
+    //     width: "100%",
+    //     marginVertical: 5,
+    // },
+    //    selectEvent : {
+    //         width: 25,
+    //         height: 25,
+    //         borderWidth: 2,
+    //         borderColor: 'white'
+    //     },
+    // IconView: {
+    //     width: 50,
+    //     height: 50,
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     backgroundColor: 'lightgray',
+    //     borderRadius: 30,
+    //     marginLeft: 10
+    // },
 
-    input: {
-        textAlign: 'center',
-        height: 50,
-        width: '100%',
-        borderWidth: 0.6,
-        borderRadius: 10,
-        borderColor: 'gray',
-        fontSize: 15,
-        color: 'black',
-    },
-    btn: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        height: 50,
-        width: '100%',
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        position: 'absolute',
-        bottom: 0
-    },
-    dropdown: {
-        height: 50,
-        width: '100%',
-        alignSelf: 'center',
-        borderRadius: 10,
-        textAlign: 'right',
-        borderWidth: 0.6
-    },
-    dropstyle: {
-        color: 'black',
-        fontSize: 18,
-    },
-    droptext: {
-        fontSize: 18,
-        color: 'black',
-    },
+    // modaltext: {
+    //     textAlign: 'center',
+    //     fontSize: 20,
+    //     color: 'black'
+    // },
+    //    detailModal : {
+    //         width: '90%',
+    //         height: 450,
+    //         backgroundColor: '#ffffff',
+    //         borderRadius: 20,
+    //     },
+    // centeredView: {
+    //     flex: 1,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     backgroundColor: '#00000099',
+    // },
+    // Motitle: {
+    //     height: 70,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     borderTopLeftRadius: 20,
+    //     borderTopRightRadius: 20,
+    // },
+
+    // input: {
+    //     textAlign: 'center',
+    //     height: 50,
+    //     width: '100%',
+    //     borderWidth: 0.6,
+    //     borderRadius: 10,
+    //     borderColor: 'gray',
+    //     fontSize: 15,
+    //     color: 'black',
+    // },
+    // btn: {
+    //     flexDirection: 'row',
+    //     justifyContent: 'space-around',
+    //     alignItems: 'center',
+    //     height: 50,
+    //     width: '100%',
+    //     borderBottomLeftRadius: 20,
+    //     borderBottomRightRadius: 20,
+    //     position: 'absolute',
+    //     bottom: 0
+    // },
+    // dropdown: {
+    //     height: 50,
+    //     width: '100%',
+    //     alignSelf: 'center',
+    //     borderRadius: 10,
+    //     textAlign: 'right',
+    //     borderWidth: 0.6
+    // },
+    // dropstyle: {
+    //     color: 'black',
+    //     fontSize: 18,
+    // },
+    // droptext: {
+    //     fontSize: 18,
+    //     color: 'black',
+    // },
 })
 
 export default ClientRequest;

@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable,Alert, Modal,TextInput,ToastAndroid } from 'react-native'
-import React, {useEffect, useState, useContext} from 'react'
+import { StyleSheet, Text, View, Pressable, Alert, Modal, TextInput, ToastAndroid } from 'react-native'
+import React, { useEffect, useState, useContext } from 'react'
 import Entypo from "react-native-vector-icons/Entypo";
 import { colors } from '../assets/AppColors';
 import SearchContext from '../../store/SearchContext';
@@ -10,8 +10,8 @@ import { SelectList } from 'react-native-dropdown-select-list';
 
 const SetEventForRequest = (props) => {
     const { serviceType } = props
-    const {eventInfo, setEventInfo,requestedDate, eventTypeInfo,
-        eventTotalCost, setEventTotalCost,totalPrice,
+    const { eventInfo, setEventInfo, requestedDate, eventTypeInfo,
+        eventTotalCost, setEventTotalCost, totalPrice,
         setUpdatedEventDate,
         setEVENTID,
         setEvTiltleId } = useContext(SearchContext);
@@ -22,8 +22,8 @@ const SetEventForRequest = (props) => {
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    const [fileEventName, setfileEventName] = useState();
-    const [eventName, setEventName] = useState()
+    const [fileEventName, setfileEventName] = useState(null);
+    const [eventName, setEventName] = useState(null)
     const [eventTypeId, setEventTypeId] = useState()
     const [eventTypeName, setEventTypeName] = useState()
 
@@ -31,7 +31,7 @@ const SetEventForRequest = (props) => {
     // const [EVENTID, setEVENTID] = useState()
     // const [updatedEventDate, setUpdatedEventDate] = useState()
     // const [eventTotalCost, setEventTotalCost] = useState()
-    
+
 
     const serviceTypeList = ["تصوير"]
 
@@ -54,12 +54,13 @@ const SetEventForRequest = (props) => {
         if (eventInfo.message == 'No Event') {
             setIveEvent(false)
         } else {
-            setIveEvent(true)   
+            setIveEvent(true)
         }
     }
 
     useEffect(() => {
         checkIfThereIsEvent()
+        getEventTypeInfo()
     }, [])
 
     const setModal = () => {
@@ -115,7 +116,6 @@ const SetEventForRequest = (props) => {
 
     const onPressModalHandler = () => {
         setShowModal(true);
-        getEventTypeInfo()
     }
 
     const getEventTypeInfo = () => {
@@ -129,17 +129,18 @@ const SetEventForRequest = (props) => {
 
     const getEventTypeID = (val) => {
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
-        const eventTypeId = eventTypeInfo[eventTypeIndex].Id
-        setEventTypeId(eventTypeId)
+        const eventTyId = eventTypeInfo[eventTypeIndex].Id
+        setEventTypeId(eventTyId)
+        creatNewEvent(eventTyId)
     }
     const onModalCancelPress = () => {
         setShowModal(false)
     }
     const onModalSavePress = () => {
-        if (fileEventName !== undefined) {
-            if (eventName !== undefined) {
+        if (fileEventName !== null) {
+            if (eventName !== null) {
                 getEventTypeID(eventName)
-                creatNewEvent()
+
             } else {
                 Alert.alert(
                     'تنبية',
@@ -168,19 +169,21 @@ const SetEventForRequest = (props) => {
         }
 
     }
-    const creatNewEvent = () => {
+    const creatNewEvent = (eventTyId) => {
         const newEventItem = {
             userId: userId,
             eventName: fileEventName,
-            eventTitleId: eventTypeId,
+            eventTitleId: eventTyId,
             eventDate: requestedDate,
             eventCost: eventTotalCost
         }
         createNewEvent(newEventItem).then(res => {
             const evnt = eventInfo || [];
+            evnt.push(newEventItem)
+
             if (res.message === 'Event Created') {
-                evnt.push(newEventItem)
                 setEventInfo([...evnt])
+
                 ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM
@@ -220,12 +223,12 @@ const SetEventForRequest = (props) => {
         todayDate.setMinutes(0);
         todayDate.setSeconds(0);
         todayDate.setMilliseconds(0);
-
-        return eventInfo.filter(item => {
+       
+        return eventInfo?.filter(item => {
+           
             return item.eventDate.find(dateElment => {
                 BookDate = new Date(dateElment)
-                const result = BookDate >= todayDate // || BookDate.length < 1
-
+                const result = BookDate > todayDate // || BookDate.length < 1
                 return result
             })
 
@@ -233,12 +236,11 @@ const SetEventForRequest = (props) => {
     }
     const whenEventPress = (eventId, eventTitleId) => {
         setSelectedEvent(eventId || '');
-         setEvTiltleId(eventTitleId)
-         UpdateEventCostState(eventId)
+        setEvTiltleId(eventTitleId)
+        UpdateEventCostState(eventId)
     }
     const UpdateEventCostState = (eventId) => {
         eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
-
         const evCost = eventInfo[eventItemIndex].eventCost
         const lastTotal = evCost + totalPrice
         setEventTotalCost(lastTotal)
@@ -251,7 +253,7 @@ const SetEventForRequest = (props) => {
                     newExitDate.push(item)
                 }
             });
-           
+
         } else {
             if (!(newExitDate.includes(requestedDate))) {
                 newExitDate.push(requestedDate)
@@ -260,12 +262,14 @@ const SetEventForRequest = (props) => {
 
         setUpdatedEventDate(newExitDate)
         setEVENTID(eventId)
-        
+
     }
 
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
+       
         return eventData.map((item, index) => {
+
             const isSelected = selectedEvent === item.EventId;
             return (
                 <Pressable key={index} style={styles.eventItem}>
@@ -318,7 +322,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'lightgray',
         borderRadius: 30,
-         marginLeft: 10
+        marginLeft: 10
     },
     text: {
         fontSize: 15,

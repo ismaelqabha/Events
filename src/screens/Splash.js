@@ -96,12 +96,12 @@ export default function Splash(props) {
             // console.log("res", res);
             //console.log("res[0].services", res[0].services);
             setUserInfo(res[0].userInfo)
-             //setEventInfo(res[0].userEvents)
+             setEventInfo(res[0].userEvents)
             setuserId(res[0].userInfo.USER_ID)
             setUserName(res[0].userInfo.User_name)
             setFavorites(res[0].favoriteUser)
             setAllServicesFavorites(res[0].services)
-            getEventsFromApi(res[0].userInfo.USER_ID)
+            // getEventsFromApi(res[0].userInfo.USER_ID)
         })
     }
 
