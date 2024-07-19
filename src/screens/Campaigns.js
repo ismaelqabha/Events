@@ -1,19 +1,18 @@
 import { StyleSheet, Text, View, Pressable, Image, ScrollView } from 'react-native'
-import React, { useContext, useEffect,useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
 import { ScreenNames } from '../../route/ScreenNames';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import SearchContext from '../../store/SearchContext';
-import { getServiceBySerId } from '../resources/API';
 import moment from 'moment';
 
 
 const Campaigns = (props) => {
-    const { data ,isFromServiceDesc} = props?.route.params
-    const { ServiceInfoById, setServiceInfoById, ServiceDataInfo } = useContext(SearchContext);
+    const { data, isFromServiceDesc, serviceData } = props?.route.params
+    const { ServiceDataInfo } = useContext(SearchContext);
 
-    
+
     const [date, setDate] = useState(new Date());
     const [currentDate, setcurrentDate] = useState(date.getDate() + 1)
     const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
@@ -23,15 +22,6 @@ const Campaigns = (props) => {
         props.navigation.goBack();
     }
 
-
-
-
-    // const getServiceDataFromApi = () => {
-    //     getServiceBySerId({ service_id: data.serviceId }).then(res => {
-    //         setServiceInfoById(res)
-    //         //console.log("res", res);
-    //     })
-    // }
     // useEffect(() => {
     //     getServiceDataFromApi()
     // }, [])
@@ -43,12 +33,22 @@ const Campaigns = (props) => {
     }
     const getServiceDetail = (id) => {
         const data = filterServiceInfo()
-        const serviceData = data[0].serviceData.additionalServices.filter(element => {
-            return element.subDetailArray.find(itemId => {
-                return itemId.id === id
+        if (isFromServiceDesc) {
+            const service = serviceData.additionalServices.filter(element => {
+                return element.subDetailArray.find(itemId => {
+                    return itemId.id === id
+                })
             })
-        })
-        return serviceData
+            return service
+        } else {
+            const serviceData = data[0].serviceData.additionalServices.filter(element => {
+                return element.subDetailArray.find(itemId => {
+                    return itemId.id === id
+                })
+            })
+            return serviceData
+        }
+
     }
 
     const getSerSubDet = (id) => {
@@ -172,7 +172,7 @@ const Campaigns = (props) => {
             availableDates: firstDate
         }
 
-         props.navigation.navigate(ScreenNames.ServiceDescr, { data: serviceInfoObj, isFromCampaign: true })
+        props.navigation.navigate(ScreenNames.ServiceDescr, { data: serviceInfoObj, isFromCampaign: true })
     }
 
     const renderImg = () => {
@@ -207,14 +207,17 @@ const Campaigns = (props) => {
             <View style={styles.body}>
                 <View style={styles.Offertitle}>
                     <Text style={styles.titletxt}>{data.campTitle}</Text>
-                    <Text style={styles.titletxt}>{"من" +" "+ data.serviceData.title}</Text>
+                    {isFromServiceDesc ?
+                        <Text style={styles.titletxt}>{"من" + " " + serviceData.title}</Text> :
+                        <Text style={styles.titletxt}>{"من" + " " + data.serviceData.title}</Text>}
+
                     {renderPrice()}
                 </View>
                 {seperator()}
                 <Text style={styles.titletxt}>العرض يشمل</Text>
                 <View style={styles.contentView}>
                     {data.contentFromSubDet.map(itemID => {
-                        const titleInfo = getSerSubDet(itemID)
+                         const titleInfo = getSerSubDet(itemID)
                         return (
                             <View style={styles.contentItem}>
                                 <Text style={styles.itemtxt}>{titleInfo[0].detailSubtitle}</Text>
@@ -294,13 +297,10 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 250,
         borderRadius: 8,
-        // marginBottom: 8,
-        // borderWidth:1
     },
     titletxt: {
         fontSize: 20,
         color: colors.puprble,
-        // marginBottom: 10
     },
     itemtxt: {
         fontSize: 18,
@@ -309,13 +309,8 @@ const styles = StyleSheet.create({
     body: {
         backgroundColor: colors.BGScereen,
         alignSelf: 'center',
-        // borderTopLeftRadius: 20,
-        // borderTopRightRadius: 20,
         padding: 10,
-        // position: 'absolute',
         width: '99%',
-        // height: 420,
-        // top: 280
     },
     Offertitle: {
         padding: 10
@@ -340,8 +335,6 @@ const styles = StyleSheet.create({
         height: 80,
         justifyContent: 'center',
         alignItems: 'flex-end',
-        // position: 'absolute',
-        // bottom: 0,
         width: '100%'
     },
     btntext: {
@@ -369,7 +362,6 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
     priceView: {
-        //flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 20,

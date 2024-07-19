@@ -11,7 +11,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import moment from "moment";
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
-import { calculateTotalPrice } from '../resources/Functions';
+import { calculateTotalPrice, showMessage } from '../resources/Functions';
 import Recipt from '../components/ProviderComponents/recipt';
 import { deleteRequestbyId, updateEvent } from '../resources/API';
 import { ScreenNames } from '../../route/ScreenNames';
@@ -23,14 +23,14 @@ const ClientShowRequest = (props) => {
     const { totalPrice, setTotalPrice, setRequestInfoAccUser, eventInfo, setEventInfo, requestInfoAccUser } = useContext(SearchContext);
     const { reqInfo, fromclientDuePayment } = props.route?.params || {}
 
-   
+
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
 
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo?.eventData?.EventId)
 
-    console.log("reqInfo???", reqInfo);
+    //console.log("reqInfo???", reqInfo);
 
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
@@ -63,14 +63,72 @@ const ClientShowRequest = (props) => {
         return subDetInfo
     }
 
+    const checkOtherRequest = () => {
+        //console.log("requestInfoAccUser", requestInfoAccUser);
+        return requestInfoAccUser.filter(element => {
+            return element.serviceRequests?.find(item => {
+                console.log(item.RequestId, reqInfo.RequestId);
+                return item.RequestId === reqInfo.RequestId
+            })
+        });
+    }
+
+    const updateOtherRequest = () => {
+        const otherReq = checkOtherRequest()
+        console.log("otherReq", otherReq);
+        const newReqArray = []
+        if (otherReq) {
+            otherReq.forEach(element => {
+                //console.log("element", element);
+                const serviceOtherRequest = element.serviceRequests?.filter(item => item.RequestId !== reqInfo.RequestId)
+                console.log("element.dates", element.BookDates);
+                console.log("element.payments", element.payments);
+                console.log("element.requestInfo", element.requestInfo);
+                console.log("element.serviceCamp", element.serviceCamp);
+                console.log("element.serviceData", element.serviceData);
+                console.log("element.serviceImage", element.serviceImage);
+
+                const allRequestdata = {
+                    BookDates: element.dates,
+                    payments: element.payments,
+                    requestInfo: payments.requestInfo,
+                    serviceCamp: element.serviceCamp,
+                    serviceData: element.serviceData,
+                    serviceImage: element.serviceImage,
+                    serviceRequests: [serviceOtherRequest]
+                }
+                console.log("allRequestdata", allRequestdata);
+
+                newReqArray.push(allRequestdata)
+                
+            });
+            setRequestInfoAccUser([...newReqArray])
+            console.log("newReqArray", newReqArray);
+        }
+    }
+
+    useEffect(() => {
+        // const otherReq = checkOtherRequest()
+        // console.log("otherReq", otherReq);
+    }, []);
+
     const callDeleteReqFunc = () => {
+
+        const requestInfo = requestInfoAccUser?.filter(item => item.requestInfo.RequestId !== reqInfo.RequestId)
+
         deleteRequestbyId({ RequestId: reqInfo.RequestId }).then(res => {
+            console.log(res.message);
+            if (res.message === 'Delete Sucessfuly') {
+                setRequestInfoAccUser([...requestInfo])
 
-            // setRequestInfoAccUser(res)
+                updateOtherRequest()
+                updateEventData()
+                setShowMoreModal(false)
+                showMessage("Deleted")
+                props.navigation.navigate(ScreenNames.ClientHomeAds)
 
-            updateEventData()
-            setShowMoreModal(false)
-            props.navigation.navigate(ScreenNames.ClientHomeAds)
+            }
+
 
         })
     }
@@ -98,8 +156,6 @@ const ClientShowRequest = (props) => {
         const allRequests = queryRequest()
         if (reqInfo.reservationDetail.length > 1) {
             const multi = reqInfo.reservationDetail.map(item => {
-
-
                 const result = allRequests.filter(allreq => {
 
                     // console.log("all requset", allreq.requestInfo.reservationDetail);
@@ -168,7 +224,13 @@ const ClientShowRequest = (props) => {
             if (eventItemIndex > -1) {
                 ev[eventItemIndex] = editEventItem;
             }
-            setEventInfo([...ev, editEventItem])
+            if (res.message === 'Updated Sucessfuly') {
+                setEventInfo([...ev])
+                showMessage("تم التعديل")
+            } else {
+                showMessage("لم يتم التعديل")
+            }
+
         })
     }
 
@@ -195,7 +257,7 @@ const ClientShowRequest = (props) => {
     //     } else {
     //         dates = reqInfo.reservationDetail.reservationDate
     //     }
-       
+
     //     calculateTotalPrice(reqInfo.reservationDetail, dates, reqInfo.services[0], setTotalPrice);
     // }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
 
@@ -548,7 +610,7 @@ const ClientShowRequest = (props) => {
         }
     }
     const renderPaymentInfo = () => {
-       
+
         return reqInfo.paymentInfo.map(item => {
             const amount = calculatePersentage(item.pers)
             return (

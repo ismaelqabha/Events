@@ -95,7 +95,6 @@ const MakePayment = (props) => {
   }
 
   const checkSource = () => {
-    // console.log("fromclientDuePayment", fromclientDuePayment);
 
     if (fromclientDuePayment) {
       setReqID(reqInfo[0].requestInfo.RequestId)

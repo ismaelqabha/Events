@@ -12,6 +12,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { calculateTotalPrice, showMessage } from '../resources/Functions'
 import Recipt from '../components/ProviderComponents/recipt';
 import SetEventForRequest from '../components/SetEventForRequest';
+import { logProfileData } from 'react-native-calendars/src/Profiler';
 
 
 
@@ -19,11 +20,11 @@ const ClientRequest = (props) => {
     const { data } = props?.route.params
     const { userId } = useContext(UsersContext);
     const {
-        requestedDate,
+        requestedDate, setRequestInfoAccUser, requestInfoAccUser,
         resDetail,
         eventInfo, setEventInfo,
         eventTypeInfo, totalPrice, setTotalPrice,
-        evTiltleId, EVENTID, updatedEventDate, eventTotalCost
+        evTiltleId, EVENTID, updatedEventDate, eventTotalCost,fileEventName
     } = useContext(SearchContext);
 
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
@@ -33,7 +34,11 @@ const ClientRequest = (props) => {
 
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [fileEventName, setfileEventName] = useState();
+    // const [fileEventName, setfileEventName] = useState()
+
+
+
+    // console.log("data))))))", data.service_id);
 
 
 
@@ -53,6 +58,7 @@ const ClientRequest = (props) => {
     const [selectedEvent, setSelectedEvent] = useState('');
 
     let eventItemIndex
+   
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -65,6 +71,11 @@ const ClientRequest = (props) => {
             setIveEvent(true)
         }
     }
+
+  
+
+
+
 
     const handleScrollToPosition = () => {
         if (targetComponentRef.current) {
@@ -114,33 +125,86 @@ const ClientRequest = (props) => {
         return true;
     };
 
+    const updateRequestInfoState = (requestBody) => {
+
+        const serviceBookingDates = data.dates
+        const servicePhotos = data.images
+        const serviceCampiagns = data.relatedCamp
+        const serviceOtherRequest = data.serviceRequests
+        const requestPayments = []
+        const serviceInfo = {
+            service_id: data.service_id ,
+            userID: data.userID,
+            servType: data.servType,
+            title: data.title,
+            subTitle: data.subTitle,
+            desc: data.desc,
+            region: data.region,
+            address: data.address,
+            serviceLocation: data.serviceLocation,
+            servicePrice: data.servicePrice,
+            workingRegion: data.workingRegion,
+            maxCapasity: data.maxCapasity,
+            hallType: data.hallType,
+            additionalServices: data.additionalServices,
+            socialMedia: data.socialMedia,
+            eventWorkWith: data.eventWorkWith,
+            servicePhone: data.servicePhone,
+            serviceEmail: data.serviceEmail,
+            clients: data.clients,
+            serviceStutes: data.serviceStutes,
+            paymentPolicy: data.paymentPolicy,
+            maxNumberOFRequest: data.maxNumberOFRequest
+        }
+       
+
+        const RequestsArray = []
+        requestInfoAccUser.forEach(element => {
+            RequestsArray.push(element)
+        });
+
+        const allRequestdata = {
+            BookDates : serviceBookingDates,
+            payments :  requestPayments,
+            requestInfo : requestBody,
+            serviceCamp : serviceCampiagns,
+            serviceData : [serviceInfo],
+            serviceImage : servicePhotos,
+            serviceRequests : serviceOtherRequest
+        }
+
+        RequestsArray.push(allRequestdata)
+        setRequestInfoAccUser([...RequestsArray])
+
+    }
+
     const onServiceRequest = () => {
         if (!checkAllDetails()) {
             return
         }
         delete resDetail["campaigns"]
+
         const requestBody = {
             ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
             ReqStatus: 'waiting reply',
-
             ReqEventId: EVENTID,
-
             Cost: totalPrice,
             ReqServId: data?.service_id,
             ReqUserId: userId,
-
             ReqEventTypeId: evTiltleId,
-
             reservationDetail: resDetail,
+            paymentInfo : []
         }
 
         addNewRequest(requestBody).then((res) => {
             if (res.message === 'Request Created') {
+                updateRequestInfoState(requestBody)
                 showMessage("Request Created successfully")
                 UpdateEventInfo()
             } else {
                 showMessage("failed to create request")
             }
+
         }).catch((E) => {
             console.error("error creating request E:", E);
         })
@@ -373,14 +437,19 @@ const ClientRequest = (props) => {
     // }
     const UpdateEventInfo = () => {
 
+        eventItemIndex = eventInfo?.findIndex(item => item.EventId === EVENTID && item.userId === userId)
+
         const newEventItem = {
             EventId: EVENTID,
+            eventName: fileEventName,
             eventCost: eventTotalCost,
             eventDate: updatedEventDate,
-            eventTitleId: evTiltleId
+            eventTitleId: evTiltleId,
+            userId : userId
         }
         //console.log("newEventItem", newEventItem);
         updateEvent(newEventItem).then(res => {
+
             const ev = eventInfo || [];
             if (eventItemIndex > -1) {
                 ev[eventItemIndex] = newEventItem;

@@ -46,6 +46,7 @@ const SearchProvider = props => {
   const [EVENTID, setEVENTID] = useState()
   const [updatedEventDate, setUpdatedEventDate] = useState()
   const [eventTotalCost, setEventTotalCost] = useState()
+  const [fileEventName, setfileEventName] = useState();
 
 
 
@@ -116,6 +117,8 @@ const SearchProvider = props => {
         setUpdatedEventDate,
         eventTotalCost, 
         setEventTotalCost,
+        fileEventName, 
+        setfileEventName,
         // ImgOfServeice,
         // setImgOfServeice,
         userPayment,

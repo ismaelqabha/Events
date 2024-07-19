@@ -23,7 +23,7 @@ const ServiceDescr = (props) => {
     const servicePhone = props.route.params?.data?.servicePhone;
     const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
 
-    //console.log("data", data);
+    //console.log("data>>>", data);
     const [showModal, setShowModal] = useState(false);
     const [changeDateshowModal, setChangeDateshowModal] = useState(false);
     const [changeDateIsLocal, setchangeDateIsLocal] = useState(false);
@@ -39,7 +39,7 @@ const ServiceDescr = (props) => {
     const [requestData, setRequestData] = useState(data.serviceRequests);
 
 
-    
+
 
 
     // const getRequestfromApi = () => {
@@ -404,7 +404,9 @@ const ServiceDescr = (props) => {
                         <View style={styles.subDetailItem}>
                             <Text style={styles.SupDetTxt}>{subItem.detailSubtitle}</Text>
                         </View>
-                        <View style={styles.SubDImg}><Image style={styles.SubPhoto} source={{ uri: subItem.subDetailPhoto.uri }} /></View>
+                        <View style={styles.SubDImg}>
+                            <Image style={styles.SubPhoto} source={{ uri: subItem.subDetailPhoto.uri }} />
+                            </View>
 
                     </View>
                 )
@@ -660,8 +662,16 @@ const ServiceDescr = (props) => {
     }
     const renderCampeigns = () => {
         const campArray = data.relatedCamp?.map(offer => {
+
+            const serviceData = {
+                title: data?.title,
+                additionalServices: data?.additionalServices,
+            }
+
             return <View style={styles.HallView}>
-                < CampaignCard  {...offer} isFromServiceDesc={isFromServiceDesc} />
+                < CampaignCard  {...offer}
+                    serviceData={serviceData}
+                    isFromServiceDesc={isFromServiceDesc} />
             </View>
         });
         //console.log("campArray", campArray);
@@ -1162,14 +1172,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5
     },
     SubDImg: {
-        width: 80,
-        height: 80,
+        width: "25%",
+        height: "100%",
         borderRadius: 30,
         marginLeft: 10,
     },
     SubPhoto: {
-        width: 80,
-        height: 80,
+        width: "100%",
+        height: "100%",
         borderRadius: 30,
     },
     changeDateView: {

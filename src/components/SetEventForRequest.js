@@ -13,7 +13,7 @@ const SetEventForRequest = (props) => {
     const { eventInfo, setEventInfo, requestedDate, eventTypeInfo,
         eventTotalCost, setEventTotalCost, totalPrice,
         setUpdatedEventDate,
-        setEVENTID,
+        setEVENTID,fileEventName, setfileEventName,
         setEvTiltleId } = useContext(SearchContext);
     const { userId } = useContext(UsersContext);
 
@@ -22,11 +22,12 @@ const SetEventForRequest = (props) => {
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    const [fileEventName, setfileEventName] = useState(null);
+    
     const [eventName, setEventName] = useState(null)
     const [eventTypeId, setEventTypeId] = useState()
     const [eventTypeName, setEventTypeName] = useState()
 
+    // const [fileEventName, setfileEventName] = useState(null);
     // const [evTiltleId, setEvTiltleId] = useState()
     // const [EVENTID, setEVENTID] = useState()
     // const [updatedEventDate, setUpdatedEventDate] = useState()
@@ -223,17 +224,21 @@ const SetEventForRequest = (props) => {
         todayDate.setMinutes(0);
         todayDate.setSeconds(0);
         todayDate.setMilliseconds(0);
-       
-        return eventInfo?.filter(item => {
-           
-            return item.eventDate.find(dateElment => {
-                BookDate = new Date(dateElment)
-                const result = BookDate > todayDate // || BookDate.length < 1
-                return result
-            })
 
+        return eventInfo?.filter(item => {
+            if (item.eventDate.length < 1) {
+                  return true
+            } else {
+                return item.eventDate.find(dateElment => {
+                    BookDate = new Date(dateElment)
+                    const result = BookDate > todayDate
+                    return result
+                })
+            }
+           
         })
     }
+
     const whenEventPress = (eventId, eventTitleId) => {
         setSelectedEvent(eventId || '');
         setEvTiltleId(eventTitleId)
@@ -267,7 +272,7 @@ const SetEventForRequest = (props) => {
 
     const renderEventInfo = () => {
         const eventData = filtereventInfo()
-       
+        // console.log("eventData", eventData);
         return eventData.map((item, index) => {
 
             const isSelected = selectedEvent === item.EventId;

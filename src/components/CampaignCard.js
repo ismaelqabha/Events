@@ -6,12 +6,12 @@ import { colors } from '../assets/AppColors';
 
 
 const CampaignCard = (props) => {
-    const { campImag, campTitle, isFromServiceDesc } = props;
+    const { campImag, campTitle, isFromServiceDesc,serviceData } = props;
     const navigation = useNavigation();
 
 
     const onCaardPress = () => {
-        navigation.navigate(ScreenNames.Campaigns, { data: { ...props }, isFromServiceDesc })
+        navigation.navigate(ScreenNames.Campaigns, { data: { ...props }, isFromServiceDesc ,serviceData})
     }
 
     const renderCampaighn = () => {
