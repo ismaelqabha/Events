@@ -198,7 +198,7 @@ const ClientRequest = (props) => {
 
         addNewRequest(requestBody).then((res) => {
             if (res.message === 'Request Created') {
-                updateRequestInfoState(requestBody)
+                updateRequestInfoState(res?.request)
                 showMessage("Request Created successfully")
                 UpdateEventInfo()
             } else {

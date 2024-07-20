@@ -121,7 +121,7 @@ const ClientShowRequest = (props) => {
             if (res.message === 'Delete Sucessfuly') {
                 setRequestInfoAccUser([...requestInfo])
 
-                updateOtherRequest()
+                //updateOtherRequest()
                 updateEventData()
                 setShowMoreModal(false)
                 showMessage("Deleted")

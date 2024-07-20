@@ -21,7 +21,13 @@ const SetUserStatus = (props) => {
     createUserRegion,
     userSpecialDate,
     setUserSpecialDate,
-    userId
+    userId,
+    setUserCity, 
+    setCreateUserRegion,
+    setUserPhone,
+    setUserBD,
+    setUserGender, 
+    setUserStatus
   } = useContext(UsersContext);
   const isFromGoogle = props?.route?.params?.isFromGoogleUser || false;
 
@@ -48,23 +54,22 @@ const SetUserStatus = (props) => {
       UserbirthDate: userBD,
       Userstatus: userStatus,
       SpecialDates: userSpecialDate,
-      Userstatus: userStatus,
     };
-
     try {
       const response = await updateUserData(body);
       if (response?.message === "Updated Successfully") {
         if (response && response.user) {
-          console.log("Navigating to Splash screen...");
+          resetStates()
+          // console.log("Navigating to Splash screen...");
           showMessage("set up finished successfuly")
           setUserInfo(response.user);
           props.navigation.replace("Drawr");
         } else {
-          console.log("User data not found in response");
+          // console.log("User data not found in response");
           showMessage("there has been an error")
         }
       } else {
-        console.log("Response message is not 'Updated Successfully'");
+        // console.log("Response message is not 'Updated Successfully'");
         showMessage("there has been an error")
       }
     } catch (e) {
@@ -72,6 +77,16 @@ const SetUserStatus = (props) => {
       showMessage("there has been an error ")
     }
   };
+
+  const resetStates = () =>{
+    setUserCity("")
+    setCreateUserRegion("")
+    setUserSpecialDate([])
+    setUserPhone("")
+    setUserStatus(null)
+    setUserBD("")
+    setUserGender(null)
+  }
 
   const checkStrings = (val) => {
     if (!val) {

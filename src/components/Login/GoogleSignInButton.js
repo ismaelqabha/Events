@@ -10,14 +10,14 @@ import { LoginGoogleUser } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
 const GoogleSignInButton = (props) => {
-    const { setUserInfo } = useContext(UsersContext)
+    const { setUserInfo, setuserId } = useContext(UsersContext)
 
     const handleSignIn = async () => {
         try {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
             await LoginGoogleUser({ idToken: userInfo.idToken }).then((res) => {
-                console.log("res ", res);
+                // console.log("res ", res);
                 if (res) {
                     if (res.message === "User created") {
                         showMessage('تم انشاء الحساب بنجاح');
@@ -37,9 +37,10 @@ const GoogleSignInButton = (props) => {
     };
 
     const NavigateToSplash = async (userInfo) => {
-        console.log("userInfo", userInfo);
+        // console.log("userInfo", userInfo);
         await asyncFunctions.setItem('userInfo', JSON.stringify(userInfo));
         setUserInfo(userInfo)
+        setuserId(userInfo.USER_ID)
         props.nav.navigate(ScreenNames.Splash, { signIn: true });
     }
 

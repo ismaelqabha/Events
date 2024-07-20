@@ -175,13 +175,13 @@ const SetEventForRequest = (props) => {
             userId: userId,
             eventName: fileEventName,
             eventTitleId: eventTyId,
-            eventDate: requestedDate,
+            eventDate: Array.isArray(requestedDate) ? requestedDate : [requestedDate],
             eventCost: eventTotalCost
         }
         createNewEvent(newEventItem).then(res => {
             const evnt = eventInfo || [];
             evnt.push(newEventItem)
-
+            console.log("new events ", evnt);
             if (res.message === 'Event Created') {
                 setEventInfo([...evnt])
 
@@ -224,7 +224,7 @@ const SetEventForRequest = (props) => {
         todayDate.setMinutes(0);
         todayDate.setSeconds(0);
         todayDate.setMilliseconds(0);
-
+        console.log("events info ", eventInfo);
         return eventInfo?.filter(item => {
             if (item.eventDate.length < 1) {
                   return true
@@ -366,12 +366,12 @@ const styles = StyleSheet.create({
     body: {
         backgroundColor: 'white',
         width: '95%',
-        height: 100,
+        height: "80%",
         marginBottom: 5,
         paddingHorizontal: 5,
         alignSelf: 'center',
         borderRadius: 15,
-        justifyContent: 'center'
+        justifyContent: 'flex-start'
     },
     input: {
         textAlign: 'center',
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 10,
         textAlign: 'right',
-        borderWidth: 0.6
+        borderWidth: 0.6,
     },
     dropstyle: {
         color: 'black',

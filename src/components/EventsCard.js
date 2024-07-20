@@ -414,7 +414,6 @@ const EventsCard = (props) => {
 
         )
     }
-
     const renderPublicCard = () => {
         return (
             <Pressable style={styles.card2} onPress={onCaardPress}>
