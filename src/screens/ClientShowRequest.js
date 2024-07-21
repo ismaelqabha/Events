@@ -30,7 +30,21 @@ const ClientShowRequest = (props) => {
 
     const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo?.eventData?.EventId)
 
-    //console.log("reqInfo???", reqInfo);
+    const serviceRequest = reqInfo.serviceRequest[0]
+    const requestPayment = reqInfo.requestPayment[0]
+    const services = reqInfo.services[0]
+    const images = reqInfo.images[0]
+    const relatedCamp = reqInfo.relatedCamp
+    const BookDates = reqInfo.BookDates[0]
+
+    const requestCost = serviceRequest.Cost
+    const ReqDate = serviceRequest.ReqDate
+    const paymentInfo = serviceRequest.paymentInfo
+    const ReqStatus = serviceRequest.ReqStatus
+    const reservationDetail = serviceRequest.reservationDetail
+    
+
+    // console.log("reqInfo???", relatedCamp);
 
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
@@ -72,7 +86,6 @@ const ClientShowRequest = (props) => {
             })
         });
     }
-
     const updateOtherRequest = () => {
         const otherReq = checkOtherRequest()
         console.log("otherReq", otherReq);
@@ -208,7 +221,7 @@ const ClientShowRequest = (props) => {
     }
     const updateEventData = () => {
 
-        checkEventDateHasMoreThanOneReq()
+        //checkEventDateHasMoreThanOneReq()
 
         const lastTotal = reqInfo.eventData.eventCost - reqInfo.Cost
 
@@ -236,8 +249,7 @@ const ClientShowRequest = (props) => {
 
 
     const filterSelectedCampign = (id) => {
-        const data = reqInfo.relatedCamp
-        return data?.filter(item => {
+        return relatedCamp?.filter(item => {
             return item.CampId === id;
         });
     }
@@ -252,14 +264,14 @@ const ClientShowRequest = (props) => {
 
     // useEffect(() => {
     //     var dates
-    //     if (Array.isArray(reqInfo.reservationDetail)) {
-    //         dates = reqInfo.reservationDetail?.map(val => val.reservationDate)
+    //     if (Array.isArray(reservationDetail)) {
+    //         dates = reservationDetail?.map(val => val.reservationDate)
     //     } else {
-    //         dates = reqInfo.reservationDetail.reservationDate
+    //         dates = reservationDetail.reservationDate
     //     }
 
-    //     calculateTotalPrice(reqInfo.reservationDetail, dates, reqInfo.services[0], setTotalPrice);
-    // }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
+    //     calculateTotalPrice(reservationDetail, dates, services, setTotalPrice);
+    // }, [reservationDetail.reservationDate, reservationDetail]);
 
 
     const showOfferDetail = (contentFromSubDet, campContents) => {
@@ -345,7 +357,7 @@ const ClientShowRequest = (props) => {
         )
     }
     const moreOperation = () => {
-        if (reqInfo.ReqStatus === 'waiting reply') {
+        if (ReqStatus === 'waiting reply') {
             return (
                 <View style={styles.moreChoice}>
                     <Pressable style={styles.moreItem} onPress={deleteReqPress}>
@@ -366,7 +378,7 @@ const ClientShowRequest = (props) => {
                 </View>
             )
         }
-        if (reqInfo.ReqStatus === 'waiting pay') {
+        if (ReqStatus === 'waiting pay') {
             return (
                 <View style={styles.moreChoice}>
                     <Pressable style={styles.moreItem}>
@@ -386,7 +398,7 @@ const ClientShowRequest = (props) => {
                 </View>
             )
         }
-        if (reqInfo.ReqStatus === 'paid') {
+        if (ReqStatus === 'paid') {
             return (
                 <View>
                     <Pressable style={styles.moreItem}>
@@ -431,7 +443,7 @@ const ClientShowRequest = (props) => {
             <View style={styles.ContentView}>
                 <View style={styles.dateview}>
                     <View style={{ alignItems: 'flex-end' }}>
-                        <Text style={styles.dateTxt}>{reqInfo.ReqDate}</Text>
+                        <Text style={styles.dateTxt}>{ReqDate}</Text>
                         <Text style={styles.labelDateTxt}>تاريخ طلب الحجز</Text>
                     </View>
                     <View style={styles.IconView}>
@@ -473,7 +485,7 @@ const ClientShowRequest = (props) => {
                     </Pressable>
                     <View style={styles.dateview}>
                         <View style={{ alignItems: 'flex-end' }}>
-                            <Text style={styles.dateTxt}>{reqInfo.Cost}</Text>
+                            <Text style={styles.dateTxt}>{requestCost}</Text>
                             <Text style={styles.labelDateTxt}>السعر</Text>
                         </View>
                         <View style={styles.IconView}>
@@ -513,7 +525,7 @@ const ClientShowRequest = (props) => {
     }
     const isHall = (item) => {
         return (<View>
-            {reqInfo.services[0].servType === 'قاعات' && renderInviters(item)}
+            {services.servType === 'قاعات' && renderInviters(item)}
         </View>
         )
     }
@@ -544,7 +556,7 @@ const ClientShowRequest = (props) => {
         }
     }
     const renderServiceDetail = (data) => {
-        return reqInfo.services[0].additionalServices.map(item => {
+        return services.additionalServices.map(item => {
 
             return data.subDetailId.map(subItem => {
 
@@ -602,7 +614,7 @@ const ClientShowRequest = (props) => {
         })
     }
     const isRequestWaitingPayForPaymentInfo = () => {
-        if (reqInfo.paymentInfo.length > 0) {
+        if (paymentInfo.length > 0) {
             return (<View>
                 <Text style={styles.labelText}>تفاصيل الدفعات</Text>
                 <View style={styles.ContentView}>{renderPaymentInfo()}</View>
@@ -611,7 +623,7 @@ const ClientShowRequest = (props) => {
     }
     const renderPaymentInfo = () => {
 
-        return reqInfo.paymentInfo.map(item => {
+        return paymentInfo.map(item => {
             const amount = calculatePersentage(item.pers)
             return (
                 <View >
@@ -633,9 +645,7 @@ const ClientShowRequest = (props) => {
     }
 
     const calculatePersentage = (persentage) => {
-
-        const ReqPrice = reqInfo.Cost
-        const fact = ReqPrice * persentage
+        const fact = requestCost * persentage
         const realAmount = fact / 100
 
         return realAmount
@@ -643,7 +653,7 @@ const ClientShowRequest = (props) => {
 
 
     const renderMultibleDatesRequest = () => {
-        return reqInfo.reservationDetail.map(item => {
+        return reservationDetail.map(item => {
             return (<View style={styles.ContentView}>
                 {renderReqDate(item)}
                 {renderReqTime(item)}
@@ -656,19 +666,19 @@ const ClientShowRequest = (props) => {
 
     const renderSingleDateRequest = () => {
         return (<View style={styles.ContentView}>
-            {renderReqDate(reqInfo.reservationDetail[0])}
-            {renderReqTime(reqInfo.reservationDetail[0])}
-            {isHall(reqInfo.reservationDetail[0])}
-            {isSelectedFromDetail(reqInfo.reservationDetail[0])}
-            {isSelectedFromCampign(reqInfo.reservationDetail[0])}
+            {renderReqDate(reservationDetail[0])}
+            {renderReqTime(reservationDetail[0])}
+            {isHall(reservationDetail[0])}
+            {isSelectedFromDetail(reservationDetail[0])}
+            {isSelectedFromCampign(reservationDetail[0])}
         </View>)
     }
 
 
 
     // useEffect(() => {
-    //  calculateTotalPrice(reqInfo.reservationDetail, reqInfo.reservationDetail.reservationDate, reqInfo.services, setTotalPrice);
-    // }, [reqInfo.reservationDetail.reservationDate, reqInfo.reservationDetail]);
+    //  calculateTotalPrice(reservationDetail, reservationDetail.reservationDate, services, setTotalPrice);
+    // }, [reservationDetail.reservationDate, reservationDetail]);
 
     return (
         <View style={styles.container}>
@@ -676,16 +686,16 @@ const ClientShowRequest = (props) => {
             <ScrollView>
                 {renderSendingReqDate()}
 
-                {reqInfo.reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
+                {reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
-                {/* {renderfinalCost()} */}
+                {renderfinalCost()}
                 <Recipt
                     totalPrice={totalPrice}
-                    requestedDate={reqInfo.reservationDetail.reservationDate}
-                    resDetail={reqInfo.reservationDetail}
+                    requestedDate={reservationDetail.reservationDate}
+                    resDetail={reservationDetail}
                     showDetailRecipt={showDetailRecipt}
                     setShowDetailRecipt={setShowDetailRecipt}
-                    data={reqInfo.services}
+                    data={services}
                 />
 
                 {isRequestWaitingPayForPaymentInfo()}

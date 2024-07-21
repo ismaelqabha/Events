@@ -19,10 +19,24 @@ const BookingCard = (props) => {
 
     const [clientSide, setClientSide] = useState(true)
 
-    //console.log("><<>><",reqInfo);
-    const requestCost = reqInfo.Cost
-    const paymentDetail = reqInfo.reqPayments
-    const serviceName = reqInfo.services
+    
+    
+    const serviceRequest = reqInfo.serviceRequest[0]
+    const requestPayment = reqInfo.requestPayment[0]
+    const services = reqInfo.services
+    const images = reqInfo.images[0]
+    const relatedCamp = reqInfo.relatedCamp[0]
+    const BookDates = reqInfo.BookDates[0]
+
+   // console.log("><<requestInfo>><",serviceRequest.reqPayments);
+
+
+    const requestCost = serviceRequest.Cost
+    const ReqDate = serviceRequest.ReqDate
+    const ReqStatus = serviceRequest.ReqStatus
+    const RequestId = serviceRequest.RequestId
+    const reservationDetail = serviceRequest.reservationDetail
+    
 
     const today = moment(new Date(), "YYYY-MM-DD")
     const day = today.format('D')
@@ -31,31 +45,29 @@ const BookingCard = (props) => {
     const todayDate = year + '-' + month + '-' + day
 
     const renderLogo = () => {
-        const index = props.images[0].logoArray?.findIndex((val) => val === true)
-        const img = props.images[0]?.serviceImages[index]
+        const index = images.logoArray?.findIndex((val) => val === true)
+        const img = images?.serviceImages[index]
         return <Image
             source={{ uri: img }}
             style={styles.img}
         />
     }
     const renderDueScreenLogo = () => {
-        const index = props.images[0].logoArray?.findIndex((val) => val === true)
-        const img = props.images[0]?.serviceImages[index]
+        const index = images.logoArray?.findIndex((val) => val === true)
+        const img = images?.serviceImages[index]
         return <Image
             source={{ uri: img }}
             style={styles.DueImg}
         />
     }
-
     const renderServTitle = () => {
-        const serData = props.services;
         const obj = {
             ...data,
-            ...serData[0]
+            ...services[0]
         }
         delete obj.services
 
-        const cardsArray = serData?.map(card => {
+        const cardsArray = services?.map(card => {
             return <Pressable style={styles.cardHeader}
                 onPress={() => navigation.navigate(ScreenNames.ServiceDescr, { data: obj, isFromClientRequest: true })}
             >
@@ -75,7 +87,6 @@ const BookingCard = (props) => {
             </View>
         )
     }
-
     const renderBookingDate = (item) => {
         return (
             <View style={styles.itemView}>
@@ -110,8 +121,8 @@ const BookingCard = (props) => {
                             <Text style={styles.itemTxt}>{stutesType}</Text>
                         </View>
                         <View>
-                            {renderBookingDate(props.reservationDetail[0].reservationDate)}
-                            {renderPrice(props.Cost)}
+                            {renderBookingDate(reservationDetail[0].reservationDate)}
+                            {renderPrice(requestCost)}
                         </View>
                     </Pressable>
 
@@ -129,7 +140,7 @@ const BookingCard = (props) => {
     }
     /// Multible Requests
     const renderMultiRequests = (stutesType) => {
-        return props.reservationDetail.map(item => {
+        return reservationDetail.map(item => {
             return (
                 <View style={styles.card}>
                     <View style={styles.imgView}>
@@ -166,11 +177,11 @@ const BookingCard = (props) => {
 
     const renderDuePaySingleReq = () => {
         return (
-            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { serviceName, requestCost, paymentDetail })}>
+            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { services, requestCost, requestPayment })}>
                 <Text style={styles.itemTxt}>1000</Text>
                 <View style={{ alignItems: 'center' }}>
                     {renderServTitle()}
-                    <Text style={styles.itemTxt}>{props.reservationDetail[0].reservationDate}</Text>
+                    <Text style={styles.itemTxt}>{reservationDetail[0].reservationDate}</Text>
                 </View>
 
                 {renderDueScreenLogo()}
@@ -178,7 +189,7 @@ const BookingCard = (props) => {
         )
     }
     const renderDuePayMultiReq = () => {
-        const reservationLength = props.reservationDetail.length
+        const reservationLength = reservationDetail.length
         var label = ''
         if (reservationLength === 2) {
             label = 'حجز ليومين'
@@ -187,7 +198,9 @@ const BookingCard = (props) => {
             label = { 'أيام': reservationLength }
         }
         return (
-            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { requestCost, paymentDetail })}>
+            <Pressable style={styles.dueCard} 
+            //onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { requestCost, paymentDetail })}
+            >
                 <Text style={styles.itemTxt}>1000</Text>
                 <View style={{ alignItems: 'center' }}>
                     {renderServTitle()}
@@ -200,35 +213,35 @@ const BookingCard = (props) => {
 
     const renderReqInfo = () => {
         let stutesType = ''
-        if (props.reservationDetail.length > 1) {
+        if (reservationDetail.length > 1) {
 
-            if (fromclientDuePayment) {
-                var resDaysCount = 0
-                return props.reservationDetail.map(item => {
-                    if (props.ReqStatus === 'partially paid' && item.reservationDate < todayDate) {
-                        resDaysCount++
-                    }
-                    if (props.reservationDetail.length === resDaysCount) {
-                        return (
-                            <View>
-                                {renderDuePayMultiReq()}
-                            </View>
-                        )
-                    }
-                })
+            // if (fromclientDuePayment) {
+            //     var resDaysCount = 0
+            //     return props.reservationDetail.map(item => {
+            //         if (props.ReqStatus === 'partially paid' && item.reservationDate < todayDate) {
+            //             resDaysCount++
+            //         }
+            //         if (props.reservationDetail.length === resDaysCount) {
+            //             return (
+            //                 <View>
+            //                     {renderDuePayMultiReq()}
+            //                 </View>
+            //             )
+            //         }
+            //     })
 
-            } else {
-                if (props.ReqStatus === 'partially paid') {
-                    stutesType = 'محجوز'
-                    return (
-                        <View >
-                            {renderMultiRequests(stutesType)}
-                        </View>
-                    )
-                }
-            }
+            // } else {
+            //     if (props.ReqStatus === 'partially paid') {
+            //         stutesType = 'محجوز'
+            //         return (
+            //             <View >
+            //                 {renderMultiRequests(stutesType)}
+            //             </View>
+            //         )
+            //     }
+            // }
 
-            if (props.ReqStatus === 'partially paid') {
+            if (ReqStatus === 'partially paid') {
                 stutesType = 'محجوز مدفوع جزئي'
                 return (
                     <View >
@@ -236,7 +249,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'waiting reply') {
+            if (ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
                 return (
                     <View>
@@ -245,7 +258,7 @@ const BookingCard = (props) => {
                 )
             }
 
-            if (props.ReqStatus === 'waiting pay') {
+            if (ReqStatus === 'waiting pay') {
                 stutesType = 'يمكنك الدفع'
                 return (
                     <View>
@@ -253,7 +266,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'refuse') {
+            if (ReqStatus === 'refuse') {
                 stutesType = 'غير متاح'
                 return (
                     <View>
@@ -261,7 +274,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'paid all') {
+            if (ReqStatus === 'paid all') {
                 stutesType = 'محجوز'
                 return (
                     <View>
@@ -272,26 +285,26 @@ const BookingCard = (props) => {
 
 
         } else {
-            if (fromclientDuePayment) {
-                if (props.ReqStatus === 'partally paid' && props.reservationDetail[0].reservationDate < todayDate) {
-                    return (
-                        <View>
-                            {renderDuePaySingleReq()}
-                        </View>
-                    )
-                }
-            } else {
-                if (props.ReqStatus === 'partally paid') {
-                    stutesType = 'محجوز'
-                    return (
-                        <View >
-                            {renderSingleRequest(stutesType)}
-                        </View>
-                    )
-                }
-            }
+            // if (fromclientDuePayment) {
+            //     if (props.ReqStatus === 'partally paid' && props.reservationDetail[0].reservationDate < todayDate) {
+            //         return (
+            //             <View>
+            //                 {renderDuePaySingleReq()}
+            //             </View>
+            //         )
+            //     }
+            // } else {
+            //     if (props.ReqStatus === 'partally paid') {
+            //         stutesType = 'محجوز'
+            //         return (
+            //             <View >
+            //                 {renderSingleRequest(stutesType)}
+            //             </View>
+            //         )
+            //     }
+            // }
 
-            if (props.ReqStatus === 'partially paid') {
+            if (ReqStatus === 'partially paid') {
                 stutesType = 'محجوز مدفوع جزئي'
                 return (
                     <View >
@@ -299,7 +312,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'waiting reply') {
+            if (ReqStatus === 'waiting reply') {
                 stutesType = 'بأنتظار الرد'
                 return (
                     <View>
@@ -307,7 +320,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'waiting pay') {
+            if (ReqStatus === 'waiting pay') {
                 stutesType = 'يمكنك الدفع'
                 return (
                     <View >
@@ -315,7 +328,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'refuse') {
+            if (ReqStatus === 'refuse') {
                 stutesType = 'غير متاح'
                 return (
                     <View>
@@ -323,7 +336,7 @@ const BookingCard = (props) => {
                     </View>
                 )
             }
-            if (props.ReqStatus === 'paid all') {
+            if (ReqStatus === 'paid all') {
                 stutesType = 'محجوز'
                 return (
                     <View>

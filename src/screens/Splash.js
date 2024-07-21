@@ -129,7 +129,7 @@ export default function Splash(props) {
     const getRequestfromApi = () => {
         getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
             setRequestInfoAccUser(res)
-            // console.log("res request" , res);
+           // console.log("res request" , res);
         })
     }
 

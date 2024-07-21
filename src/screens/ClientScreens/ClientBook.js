@@ -15,6 +15,8 @@ const ClientBook = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
+
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
             // console.log("requestInfoAccUser", requestInfoAccUser[1].requestInfo.paymentInfo);
@@ -27,18 +29,44 @@ const ClientBook = (props) => {
         }
     }
 
+    const queryRequest1 = () => {
+        if (requestInfoAccUser.message !== "no Request") {
+
+            const clientReq = requestInfoAccUser.filter(item => {
+                return item.requestInfo.find(element => {
+                    //  console.log("<><>", element.serviceRequest[0].ReqEventId , data.EventId)
+                    return element.serviceRequest[0].ReqEventId === data.EventId
+                })
+            })
+            return clientReq
+        } else {
+            return []
+        }
+    }
+
+    useEffect(() => {
+    //    const x = queryRequest1()
+    //    console.log("=====",x);
+    }, [])
+
     const renderRequestData = () => {
-        const reqData = queryRequest()
+        const reqData = queryRequest1()
         //console.log(reqData);
         return reqData.map(item => {
-            return <BookingCard {...item.requestInfo}
-                services={item?.serviceData}
-                images={item?.serviceImage}
-                relatedCamp={item?.serviceCamp}
-                realPayments={item?.payments}
-                BookDates={item?.BookDates}
-                serviceRequests={item?.serviceRequests}
-                eventData={data} />
+            return item.requestInfo.map(element => {
+    
+                return <BookingCard 
+                    serviceRequest={element.serviceRequest}
+                    requestPayment={element.requestPayment}
+                    services={item?.serviceData}
+                    images={item?.serviceImage}
+                    relatedCamp={item?.serviceCamp}
+                    BookDates={item?.BookDates}
+                    // serviceRequests={item?.serviceRequests}
+                    // realPayments={item?.payments}
+                    eventData={data} />
+            })
+            
         })
     }
 
