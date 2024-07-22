@@ -1,19 +1,15 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, Alert, Modal, ToastAndroid } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView} from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
 import moment from 'moment';
-import Entypo from "react-native-vector-icons/Entypo";
-import { addNewRequest, createNewEvent, getEventList, getEventsInfo, updateEvent } from '../resources/API';
+import { addNewRequest, updateEvent } from '../resources/API';
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
-import { SelectList } from 'react-native-dropdown-select-list';
 import { calculateTotalPrice, showMessage } from '../resources/Functions'
 import Recipt from '../components/ProviderComponents/recipt';
 import SetEventForRequest from '../components/SetEventForRequest';
-import { logProfileData } from 'react-native-calendars/src/Profiler';
-
 
 
 const ClientRequest = (props) => {
@@ -24,41 +20,20 @@ const ClientRequest = (props) => {
         resDetail,
         eventInfo, setEventInfo,
         eventTypeInfo, totalPrice, setTotalPrice,
-        evTiltleId, EVENTID, updatedEventDate, eventTotalCost,fileEventName
+        evTiltleId, EVENTID, updatedEventDate, eventTotalCost, fileEventName
     } = useContext(SearchContext);
 
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
     const [selectTime, setSelectTime] = useState(true);
     const [date, setDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState()
-
+    const [pressed, setPressed] = useState([])
     const [IveEvent, setIveEvent] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    // const [fileEventName, setfileEventName] = useState()
-
-
-
-    // console.log("data))))))", data.service_id);
-
-
-
-    const [eventTypeName, setEventTypeName] = useState()
-    const [eventName, setEventName] = useState()
-    const [eventTypeId, setEventTypeId] = useState()
-    // const [eventTotalCost, setEventTotalCost] = useState()
-    // const [evTiltleId, setEvTiltleId] = useState()
-    // const [EVENTID, setEVENTID] = useState()
-    // const [updatedEventDate, setUpdatedEventDate] = useState()
-
 
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
-
-    const [pressed, setPressed] = useState([])
-    const [selectedEvent, setSelectedEvent] = useState('');
-
     let eventItemIndex
-   
+
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -72,11 +47,6 @@ const ClientRequest = (props) => {
         }
     }
 
-  
-
-
-
-
     const handleScrollToPosition = () => {
         if (targetComponentRef.current) {
             targetComponentRef.current.measureLayout(
@@ -88,7 +58,6 @@ const ClientRequest = (props) => {
             );
         }
     };
-
 
     const checkAllDetails = () => {
         if (typeof totalPrice !== 'number' || totalPrice <= 0) {
@@ -127,13 +96,20 @@ const ClientRequest = (props) => {
 
     const updateRequestInfoState = (requestBody) => {
 
+        const searchReq = requestInfoAccUser.filter(item => {
+            return item.serviceData.find(element => {
+                return element.service_id === data.service_id
+            })
+        })
+        //console.log("searchReq", searchReq);
+
+        const RequestsArray = []
+        const requestsinfo = []
         const serviceBookingDates = data.dates
         const servicePhotos = data.images
         const serviceCampiagns = data.relatedCamp
-        const serviceOtherRequest = data.serviceRequests
-        const requestPayments = []
         const serviceInfo = {
-            service_id: data.service_id ,
+            service_id: data.service_id,
             userID: data.userID,
             servType: data.servType,
             title: data.title,
@@ -156,25 +132,86 @@ const ClientRequest = (props) => {
             paymentPolicy: data.paymentPolicy,
             maxNumberOFRequest: data.maxNumberOFRequest
         }
+
+
+        if (searchReq.length > 0) {
+            const requestInfo = searchReq[0].requestInfo
+            const requestStateIndex = requestInfoAccUser?.findIndex(item => item.serviceData[0].service_id === data.service_id)
+            if (requestInfo.length > 0) {
+                requestInfo.forEach(element => {
+                    requestsinfo.push(element)
+                });
+            }
+
+            const serRequests = {
+                serviceRequest: [requestBody],
+                requestPayment: []
+            }
+            requestsinfo.push(serRequests)
+
+            const req = requestInfoAccUser || [];
+            if (requestStateIndex > -1) {
+                req[requestStateIndex].requestInfo = requestsinfo;
+            }
+            //console.log("req", req);
+            setRequestInfoAccUser([...req])
+
+        } else {
+           // const requestInfo = []
+            const serRequests = {
+                serviceRequest: [requestBody],
+                requestPayment: []
+            }
+            requestsinfo.push(serRequests)
+
+            const allRequestdata = {
+                requestInfo: requestsinfo,
+                BookDates: serviceBookingDates,
+                serviceCamp: serviceCampiagns,
+                serviceData: [serviceInfo],
+                serviceImage: servicePhotos,
+            }
+            if (requestInfoAccUser.length > 0) {
+                requestInfoAccUser.forEach(element => {
+                    RequestsArray.push(element)
+                });
+            }
+            RequestsArray.push(allRequestdata)
+             setRequestInfoAccUser([...RequestsArray])
+        }
        
 
-        const RequestsArray = []
-        requestInfoAccUser.forEach(element => {
-            RequestsArray.push(element)
-        });
+    }
+    const UpdateEventInfo = () => {
 
-        const allRequestdata = {
-            BookDates : serviceBookingDates,
-            payments :  requestPayments,
-            requestInfo : requestBody,
-            serviceCamp : serviceCampiagns,
-            serviceData : [serviceInfo],
-            serviceImage : servicePhotos,
-            serviceRequests : serviceOtherRequest
+        eventItemIndex = eventInfo?.findIndex(item => item.EventId === EVENTID && item.userId === userId)
+
+        const newEventItem = {
+            EventId: EVENTID,
+            eventName: fileEventName,
+            eventCost: eventTotalCost,
+            eventDate: updatedEventDate,
+            eventTitleId: evTiltleId,
+            userId: userId
         }
+        //console.log("newEventItem", newEventItem);
+        updateEvent(newEventItem).then(res => {
 
-        RequestsArray.push(allRequestdata)
-        setRequestInfoAccUser([...RequestsArray])
+            const ev = eventInfo || [];
+            if (eventItemIndex > -1) {
+                ev[eventItemIndex] = newEventItem;
+            }
+
+            if (res.message === 'Updated Sucessfuly') {
+                setEventInfo([...ev])
+                showMessage("تم التعديل")
+            } else {
+                showMessage("لم يتم التعديل")
+            }
+
+        }).catch((E) => {
+            console.error("error creating request E:", E);
+        })
 
     }
 
@@ -193,12 +230,12 @@ const ClientRequest = (props) => {
             ReqUserId: userId,
             ReqEventTypeId: evTiltleId,
             reservationDetail: resDetail,
-            paymentInfo : []
+            paymentInfo: []
         }
 
         addNewRequest(requestBody).then((res) => {
             if (res.message === 'Request Created') {
-                //updateRequestInfoState(res?.request)
+                updateRequestInfoState(res?.request)
                 showMessage("Request Created successfully")
                 UpdateEventInfo()
             } else {
@@ -208,7 +245,6 @@ const ClientRequest = (props) => {
         }).catch((E) => {
             console.error("error creating request E:", E);
         })
-        // setrequestedDate([])
         // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
 
@@ -308,275 +344,12 @@ const ClientRequest = (props) => {
         }
     }
 
-
     /// request information and reservation detail
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
             <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} handleScrollToPosition={handleScrollToPosition} pressed={pressed} setPressed={setPressed} />
         </View>
     }
-
-
-
-
-    // Event Section
-
-    // const getEventTypeInfo = () => {
-    //     const eventList = []
-    //     eventTypeInfo.forEach(element => {
-    //         eventList.push(element?.eventTitle)
-    //     })
-    //     eventList.sort()
-    //     setEventTypeName(eventList)
-    // }
-    // const getEventTypeID = (val) => {
-    //     const eventTypeIndex = eventTypeInfo.findIndex(item => item.eventTitle === val)
-    //     const eventTypeId = eventTypeInfo[eventTypeIndex].Id
-    //     setEventTypeId(eventTypeId)
-    // }
-    // const onModalCancelPress = () => {
-    //     setShowModal(false)
-    // }
-    // const onModalSavePress = () => {
-    //     if (fileEventName !== undefined) {
-    //         if (eventName !== undefined) {
-    //             getEventTypeID(eventName)
-    //             creatNewEvent()
-    //         } else {
-    //             Alert.alert(
-    //                 'تنبية',
-    //                 'الرجاء اختيار نوع المناسبة',
-    //                 [
-    //                     {
-    //                         text: 'Ok',
-    //                         // style: 'cancel',
-    //                     },
-    //                 ],
-    //                 { cancelable: false } // Prevent closing the alert by tapping outside
-    //             );
-    //         }
-    //     } else {
-    //         Alert.alert(
-    //             'تنبية',
-    //             'الرجاء اختيار اسم المناسبة',
-    //             [
-    //                 {
-    //                     text: 'Ok',
-    //                     // style: 'cancel',
-    //                 },
-    //             ],
-    //             { cancelable: false } // Prevent closing the alert by tapping outside
-    //         );
-    //     }
-
-    // }
-    // const creatNewEvent = () => {
-    //     const newEventItem = {
-    //         userId: userId,
-    //         eventName: fileEventName,
-    //         eventTitleId: eventTypeId,
-    //         eventDate: requestedDate,
-    //         eventCost: eventTotalCost
-    //     }
-    //     createNewEvent(newEventItem).then(res => {
-    //         const evnt = eventInfo || [];
-    //         if (res.message === 'Event Created') {
-    //             evnt.push(newEventItem)
-    //             setEventInfo([...evnt])
-    //             ToastAndroid.showWithGravity('تم اٍنشاء مناسبة بنجاح',
-    //                 ToastAndroid.SHORT,
-    //                 ToastAndroid.BOTTOM
-    //             )
-    //             setShowModal(false)
-    //         }
-    //     })
-    // }
-    // const onPressModalHandler = () => {
-    //     setShowModal(true);
-    //     getEventTypeInfo()
-    // }
-
-    // const renderEvents = () => {
-    //     return (
-    //         <View style={styles.eventView}>
-    //             <Text style={styles.text}>اِختر او قم باٍنشاء مناسبة</Text>
-    //             {IveEvent &&
-    //                 renderEventInfo()
-    //             }
-    //             <Pressable style={styles.eventItem} onPress={onPressModalHandler}>
-    //                 <Text style={styles.text}>اِنشاء مناسبة جديدة</Text>
-    //                 <View style={styles.IconView}>
-    //                     <Entypo
-    //                         style={{ alignSelf: 'center' }}
-    //                         name={"plus"}
-    //                         color={colors.puprble}
-    //                         size={30} />
-    //                 </View>
-    //             </Pressable>
-    //         </View>
-    //     )
-    // }
-    // const filtereventInfo = () => {
-    //     var BookDate
-    //     var todayDate = new Date();
-
-    //     todayDate.setHours(0);
-    //     todayDate.setMinutes(0);
-    //     todayDate.setSeconds(0);
-    //     todayDate.setMilliseconds(0);
-
-    //     return eventInfo.filter(item => {
-    //         return item.eventDate.find(dateElment => {
-    //             BookDate = new Date(dateElment)
-    //             const result = BookDate >= todayDate // || BookDate.length < 1
-
-    //             return result
-    //         })
-
-    //     })
-    // }
-    const UpdateEventInfo = () => {
-
-        eventItemIndex = eventInfo?.findIndex(item => item.EventId === EVENTID && item.userId === userId)
-
-        const newEventItem = {
-            EventId: EVENTID,
-            eventName: fileEventName,
-            eventCost: eventTotalCost,
-            eventDate: updatedEventDate,
-            eventTitleId: evTiltleId,
-            userId : userId
-        }
-        //console.log("newEventItem", newEventItem);
-        updateEvent(newEventItem).then(res => {
-
-            const ev = eventInfo || [];
-            if (eventItemIndex > -1) {
-                ev[eventItemIndex] = newEventItem;
-            }
-
-            if (res.message === 'Updated Sucessfuly') {
-                setEventInfo([...ev])
-                showMessage("تم التعديل")
-            } else {
-                showMessage("لم يتم التعديل")
-            }
-
-        }).catch((E) => {
-            console.error("error creating request E:", E);
-        })
-
-    }
-    // const UpdateEventCostState = (eventId) => {
-    //     eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
-
-    //     const evCost = eventInfo[eventItemIndex].eventCost
-    //     const lastTotal = evCost + totalPrice
-    //     setEventTotalCost(lastTotal)
-
-    //     const newExitDate = eventInfo[eventItemIndex].eventDate
-
-    //     if (Array.isArray(requestedDate)) {
-    //         requestedDate.forEach((item) => {
-    //             if (!(newExitDate.includes(item))) {
-    //                 newExitDate.push(item)
-    //             }
-    //         });
-
-    //     } else {
-    //         if (!(newExitDate.includes(requestedDate))) {
-    //             newExitDate.push(requestedDate)
-    //         }
-    //     }
-
-    //     setUpdatedEventDate(newExitDate)
-    //     setEVENTID(eventId)
-
-    // }
-    // const whenEventPress = (eventId, eventTitleId) => {
-    //     setSelectedEvent(eventId || '');
-    //      setEvTiltleId(eventTitleId)
-    //     UpdateEventCostState(eventId)
-    // }
-    // const renderEventInfo = () => {
-    //     const eventData = filtereventInfo()
-    //     return eventData.map((item, index) => {
-    //         const isSelected = selectedEvent === item.EventId;
-    //         return (
-    //             <Pressable key={index} style={styles.eventItem}>
-    //                 <View >
-    //                     <Text style={styles.text}>{item.eventName}</Text>
-    //                 </View>
-    //                 <View style={styles.IconView}>
-    //                     <Pressable style={styles.selectEvent}
-    //                         onPress={() => whenEventPress(item.EventId, item.eventTitleId)}
-    //                     >
-    //                         {isSelected && (
-    //                             <Entypo
-    //                                 style={{ alignSelf: 'center' }}
-    //                                 name={"check"}
-    //                                 color={colors.puprble}
-    //                                 size={20}
-    //                             />
-    //                         )}
-    //                     </Pressable>
-    //                 </View>
-
-    //             </Pressable>
-    //         )
-    //     })
-
-    // }
-    // const setModal = () => {
-    //     return (
-    //         <Modal
-    //             transparent
-    //             visible={showModal}
-    //             animationType='fade'
-    //             onRequestClose={() =>
-    //                 setShowModal(false)
-    //             }
-    //         >
-    //             <View style={styles.centeredView}>
-    //                 <View style={styles.detailModal}>
-    //                     <View style={styles.Motitle}>
-    //                         <Text style={styles.modaltext}>انشاء مناسبة</Text>
-    //                     </View>
-    //                     <View style={styles.body}>
-    //                         <TextInput
-    //                             style={styles.input}
-    //                             keyboardType='default'
-    //                             placeholder='ادخل اسم المناسبة '
-    //                             onChangeText={setfileEventName}
-    //                         />
-    //                         <View style={{ width: '100%', marginVertical: 20 }}>
-    //                             <SelectList
-    //                                 data={eventTypeName}
-    //                                 setSelected={val => {
-    //                                     setEventName(val);
-    //                                 }}
-    //                                 placeholder={"أختر نوع المناسبة"}
-    //                                 boxStyles={styles.dropdown}
-    //                                 inputStyles={styles.droptext}
-    //                                 dropdownTextStyles={styles.dropstyle}
-    //                             />
-    //                         </View>
-    //                     </View>
-    //                     <View style={styles.btn}>
-    //                         <Pressable onPress={() => onModalCancelPress()} >
-    //                             <Text style={styles.modaltext}>الغاء الامر</Text>
-    //                         </Pressable>
-    //                         <Pressable onPress={() => onModalSavePress()} >
-    //                             <Text style={styles.modaltext}>حفظ</Text>
-    //                         </Pressable>
-    //                     </View>
-    //                 </View>
-    //             </View>
-
-    //         </Modal>
-    //     )
-    // }
-
 
 
     // Call the function to calculate the initial total price
@@ -605,8 +378,6 @@ const ClientRequest = (props) => {
                     <SetEventForRequest serviceType={data?.servType} />
                 </View>
 
-                {/* {renderEvents()} */}
-
                 <Recipt
                     totalPrice={totalPrice}
                     requestedDate={requestedDate}
@@ -620,7 +391,6 @@ const ClientRequest = (props) => {
                 </View>
                 {renderFoter()}
             </ScrollView>
-            {/* {setModal()} */}
         </View>
     );
 }
@@ -806,91 +576,6 @@ const styles = StyleSheet.create({
         elevation: 5,
         opacity: 0.3
     },
-    // eventItem: {
-    //     flexDirection: 'row',
-    //     justifyContent: 'flex-end',
-    //     alignItems: 'center',
-    //     width: "100%",
-    //     marginVertical: 5,
-    // },
-    //    selectEvent : {
-    //         width: 25,
-    //         height: 25,
-    //         borderWidth: 2,
-    //         borderColor: 'white'
-    //     },
-    // IconView: {
-    //     width: 50,
-    //     height: 50,
-    //     alignItems: 'center',
-    //     justifyContent: 'center',
-    //     backgroundColor: 'lightgray',
-    //     borderRadius: 30,
-    //     marginLeft: 10
-    // },
-
-    // modaltext: {
-    //     textAlign: 'center',
-    //     fontSize: 20,
-    //     color: 'black'
-    // },
-    //    detailModal : {
-    //         width: '90%',
-    //         height: 450,
-    //         backgroundColor: '#ffffff',
-    //         borderRadius: 20,
-    //     },
-    // centeredView: {
-    //     flex: 1,
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    //     backgroundColor: '#00000099',
-    // },
-    // Motitle: {
-    //     height: 70,
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    //     borderTopLeftRadius: 20,
-    //     borderTopRightRadius: 20,
-    // },
-
-    // input: {
-    //     textAlign: 'center',
-    //     height: 50,
-    //     width: '100%',
-    //     borderWidth: 0.6,
-    //     borderRadius: 10,
-    //     borderColor: 'gray',
-    //     fontSize: 15,
-    //     color: 'black',
-    // },
-    // btn: {
-    //     flexDirection: 'row',
-    //     justifyContent: 'space-around',
-    //     alignItems: 'center',
-    //     height: 50,
-    //     width: '100%',
-    //     borderBottomLeftRadius: 20,
-    //     borderBottomRightRadius: 20,
-    //     position: 'absolute',
-    //     bottom: 0
-    // },
-    // dropdown: {
-    //     height: 50,
-    //     width: '100%',
-    //     alignSelf: 'center',
-    //     borderRadius: 10,
-    //     textAlign: 'right',
-    //     borderWidth: 0.6
-    // },
-    // dropstyle: {
-    //     color: 'black',
-    //     fontSize: 18,
-    // },
-    // droptext: {
-    //     fontSize: 18,
-    //     color: 'black',
-    // },
 })
 
 export default ClientRequest;

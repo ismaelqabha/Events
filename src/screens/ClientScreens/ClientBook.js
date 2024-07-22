@@ -34,7 +34,6 @@ const ClientBook = (props) => {
 
             const clientReq = requestInfoAccUser.filter(item => {
                 return item.requestInfo.find(element => {
-                    //  console.log("<><>", element.serviceRequest[0].ReqEventId , data.EventId)
                     return element.serviceRequest[0].ReqEventId === data.EventId
                 })
             })

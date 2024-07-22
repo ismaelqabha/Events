@@ -181,7 +181,7 @@ const SetEventForRequest = (props) => {
         createNewEvent(newEventItem).then(res => {
             const evnt = eventInfo || [];
             evnt.push(newEventItem)
-            console.log("new events ", evnt);
+            // console.log("new events ", evnt);
             if (res.message === 'Event Created') {
                 setEventInfo([...evnt])
 
@@ -224,7 +224,7 @@ const SetEventForRequest = (props) => {
         todayDate.setMinutes(0);
         todayDate.setSeconds(0);
         todayDate.setMilliseconds(0);
-        console.log("events info ", eventInfo);
+        // console.log("events info ", eventInfo);
         return eventInfo?.filter(item => {
             if (item.eventDate.length < 1) {
                   return true

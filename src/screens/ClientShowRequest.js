@@ -33,16 +33,15 @@ const ClientShowRequest = (props) => {
     const serviceRequest = reqInfo.serviceRequest[0]
     const requestPayment = reqInfo.requestPayment[0]
     const services = reqInfo.services[0]
-    const images = reqInfo.images[0]
     const relatedCamp = reqInfo.relatedCamp
-    const BookDates = reqInfo.BookDates[0]
 
+    const RequestId = serviceRequest.RequestId
     const requestCost = serviceRequest.Cost
     const ReqDate = serviceRequest.ReqDate
     const paymentInfo = serviceRequest.paymentInfo
     const ReqStatus = serviceRequest.ReqStatus
     const reservationDetail = serviceRequest.reservationDetail
-    
+
 
     // console.log("reqInfo???", relatedCamp);
 
@@ -113,7 +112,7 @@ const ClientShowRequest = (props) => {
                 console.log("allRequestdata", allRequestdata);
 
                 newReqArray.push(allRequestdata)
-                
+
             });
             setRequestInfoAccUser([...newReqArray])
             console.log("newReqArray", newReqArray);
@@ -125,26 +124,6 @@ const ClientShowRequest = (props) => {
         // console.log("otherReq", otherReq);
     }, []);
 
-    const callDeleteReqFunc = () => {
-
-        const requestInfo = requestInfoAccUser?.filter(item => item.requestInfo.RequestId !== reqInfo.RequestId)
-
-        deleteRequestbyId({ RequestId: reqInfo.RequestId }).then(res => {
-            console.log(res.message);
-            if (res.message === 'Delete Sucessfuly') {
-                setRequestInfoAccUser([...requestInfo])
-
-                //updateOtherRequest()
-                updateEventData()
-                setShowMoreModal(false)
-                showMessage("Deleted")
-                props.navigation.navigate(ScreenNames.ClientHomeAds)
-
-            }
-
-
-        })
-    }
     const deleteReqPress = () => {
         Alert.alert(
             'تأكيد',
@@ -164,6 +143,29 @@ const ClientShowRequest = (props) => {
             { cancelable: false } // Prevent closing the alert by tapping outside
         );
 
+    }
+    const callDeleteReqFunc = () => {
+
+        const requests = requestInfoAccUser?.filter(item => {
+            return item.requestInfo.find(element => {
+                return element.serviceRequest[0].RequestId !== RequestId
+            })
+        })
+
+        console.log(requests);
+        deleteRequestbyId({ RequestId: RequestId }).then(res => {
+            console.log(res.message);
+            if (res.message === 'Delete Sucessfuly') {
+                setRequestInfoAccUser([...requests])
+
+                //updateOtherRequest()
+                // updateEventData()
+                setShowMoreModal(false)
+                showMessage("Deleted")
+                props.navigation.navigate(ScreenNames.ClientHomeAds)
+
+            }
+        })
     }
     const checkEventDateHasMoreThanOneReq = () => {
         const allRequests = queryRequest()

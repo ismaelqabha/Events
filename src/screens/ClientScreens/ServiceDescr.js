@@ -813,8 +813,8 @@ const ServiceDescr = (props) => {
             <View style={styles.body}>
                 <View style={styles.logo}>{renderLogo()}</View>
                 {renderTitle()}
-                {seperator()}
-                {changeDateComponent()}
+                {!isFromClientRequest &&seperator()}
+                {!isFromClientRequest && changeDateComponent()}
                 {getDatesInfoSource()}
 
                 {seperator()}
