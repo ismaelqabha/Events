@@ -42,7 +42,9 @@ const ClientShowRequest = (props) => {
     const ReqStatus = serviceRequest.ReqStatus
     const reservationDetail = serviceRequest.reservationDetail
 
-
+    useEffect(() => {
+        setTotalPrice(requestCost)
+    }, [])
     // console.log("reqInfo???", relatedCamp);
 
     const queryRequest = () => {
@@ -430,7 +432,7 @@ const ClientShowRequest = (props) => {
                         size={25} />
                 </Pressable>
                 {/* <Text style={styles.headerText}>تفاصيل الحجز</Text> */}
-                {!fromclientDuePayment && <Pressable onPress={moreModalPress}
+                {!fromclientDuePayment && <Pressable style={styles.moreModalPress} onPress={moreModalPress}
                 >
                     <Fontisto
                         style={styles.icon}
@@ -690,7 +692,7 @@ const ClientShowRequest = (props) => {
 
                 {reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
-                {renderfinalCost()}
+                {/* {renderfinalCost()} */}
                 <Recipt
                     totalPrice={totalPrice}
                     requestedDate={reservationDetail.reservationDate}
@@ -855,5 +857,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         // borderWidth: 1
+    },
+    moreModalPress: {
+        padding: 15
     }
 })
