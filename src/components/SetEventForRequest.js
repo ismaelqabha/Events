@@ -27,12 +27,6 @@ const SetEventForRequest = (props) => {
     const [eventTypeId, setEventTypeId] = useState()
     const [eventTypeName, setEventTypeName] = useState()
 
-    // const [fileEventName, setfileEventName] = useState(null);
-    // const [evTiltleId, setEvTiltleId] = useState()
-    // const [EVENTID, setEVENTID] = useState()
-    // const [updatedEventDate, setUpdatedEventDate] = useState()
-    // const [eventTotalCost, setEventTotalCost] = useState()
-
 
     const serviceTypeList = ["تصوير"]
 
@@ -239,10 +233,11 @@ const SetEventForRequest = (props) => {
         })
     }
 
-    const whenEventPress = (eventId, eventTitleId) => {
+    const whenEventPress = (eventId, eventTitleId, eventName) => {
         setSelectedEvent(eventId || '');
         setEvTiltleId(eventTitleId)
         UpdateEventCostState(eventId)
+        setfileEventName(eventName)
     }
     const UpdateEventCostState = (eventId) => {
         eventItemIndex = eventInfo?.findIndex(item => item.EventId === eventId && item.userId === userId)
@@ -283,7 +278,7 @@ const SetEventForRequest = (props) => {
                     </View>
                     <View style={styles.IconView}>
                         <Pressable style={styles.selectEvent}
-                            onPress={() => whenEventPress(item.EventId, item.eventTitleId)}
+                            onPress={() => whenEventPress(item.EventId, item.eventTitleId, item.eventName)}
                         >
                             {isSelected && (
                                 <Entypo

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { View, StyleSheet, Text, Image, Pressable, ScrollView} from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
 import moment from 'moment';
@@ -94,13 +94,22 @@ const ClientRequest = (props) => {
         return true;
     };
 
+    const filterRequest = () => {
+        if (requestInfoAccUser.message !== "no Request") {
+            const searchReq = requestInfoAccUser.filter(item => {
+                return item.serviceData.find(element => {
+                    return element.service_id === data.service_id
+                })
+            })
+            return searchReq
+        } else {
+            return []
+        }
+    }
+
     const updateRequestInfoState = (requestBody) => {
 
-        const searchReq = requestInfoAccUser.filter(item => {
-            return item.serviceData.find(element => {
-                return element.service_id === data.service_id
-            })
-        })
+        const searchReq = filterRequest()
         //console.log("searchReq", searchReq);
 
         const RequestsArray = []
@@ -157,7 +166,7 @@ const ClientRequest = (props) => {
             setRequestInfoAccUser([...req])
 
         } else {
-           // const requestInfo = []
+            // const requestInfo = []
             const serRequests = {
                 serviceRequest: [requestBody],
                 requestPayment: []
@@ -177,15 +186,17 @@ const ClientRequest = (props) => {
                 });
             }
             RequestsArray.push(allRequestdata)
-             setRequestInfoAccUser([...RequestsArray])
+            //console.log("RequestsArray", RequestsArray);
+            setRequestInfoAccUser([...RequestsArray])
         }
-       
+
 
     }
     const UpdateEventInfo = () => {
 
         eventItemIndex = eventInfo?.findIndex(item => item.EventId === EVENTID && item.userId === userId)
 
+        console.log(EVENTID, userId);
         const newEventItem = {
             EventId: EVENTID,
             eventName: fileEventName,
@@ -194,6 +205,7 @@ const ClientRequest = (props) => {
             eventTitleId: evTiltleId,
             userId: userId
         }
+
         //console.log("newEventItem", newEventItem);
         updateEvent(newEventItem).then(res => {
 
@@ -233,7 +245,9 @@ const ClientRequest = (props) => {
             paymentInfo: []
         }
 
+
         addNewRequest(requestBody).then((res) => {
+
             if (res.message === 'Request Created') {
                 updateRequestInfoState(res?.request)
                 showMessage("Request Created successfully")
@@ -243,7 +257,7 @@ const ClientRequest = (props) => {
             }
 
         }).catch((E) => {
-            console.error("error creating request E:", E);
+            console.error("error creating request B:", E);
         })
         // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
     }
@@ -311,7 +325,6 @@ const ClientRequest = (props) => {
 
 
     // render reservation Dates
-
     const handleDatePress = (item) => {
         setSelectedDate(item)
     }
@@ -351,14 +364,11 @@ const ClientRequest = (props) => {
         </View>
     }
 
-
     // Call the function to calculate the initial total price
 
     useEffect(() => {
         calculateTotalPrice(resDetail, requestedDate, data, setTotalPrice);
     }, [requestedDate, resDetail]);
-
-
 
 
     return (

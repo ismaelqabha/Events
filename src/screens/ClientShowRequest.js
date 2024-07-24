@@ -28,7 +28,7 @@ const ClientShowRequest = (props) => {
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
 
-    const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo?.eventData?.EventId)
+    
 
     const serviceRequest = reqInfo.serviceRequest[0]
     const requestPayment = reqInfo.requestPayment[0]
@@ -41,26 +41,15 @@ const ClientShowRequest = (props) => {
     const paymentInfo = serviceRequest.paymentInfo
     const ReqStatus = serviceRequest.ReqStatus
     const reservationDetail = serviceRequest.reservationDetail
+    const EventId = reqInfo.eventData.EventId
+    const eventDatesArr = reqInfo?.eventData?.eventDate
+
 
 
     // console.log("reqInfo???", relatedCamp);
 
-    const queryRequest = () => {
-        if (requestInfoAccUser.message !== "no Request") {
-            const clientReq = requestInfoAccUser.filter(item => {
-                return item.requestInfo.ReqEventId == reqInfo.eventData.EventId;
-            })
-            return clientReq
-        } else {
-            return []
-        }
-    }
-
-    const eventDatesArr = reqInfo?.eventData?.eventDate
-
-
     const getSerDetail = (id) => {
-        const serviceData = reqInfo.services[0].additionalServices.filter(element => {
+        const serviceData = services.additionalServices.filter(element => {
             return element.subDetailArray.find(itemId => {
                 return itemId.id === id
             })
@@ -75,54 +64,7 @@ const ClientShowRequest = (props) => {
         })
         return subDetInfo
     }
-
-    const checkOtherRequest = () => {
-        //console.log("requestInfoAccUser", requestInfoAccUser);
-        return requestInfoAccUser.filter(element => {
-            return element.serviceRequests?.find(item => {
-                console.log(item.RequestId, reqInfo.RequestId);
-                return item.RequestId === reqInfo.RequestId
-            })
-        });
-    }
-    const updateOtherRequest = () => {
-        const otherReq = checkOtherRequest()
-        console.log("otherReq", otherReq);
-        const newReqArray = []
-        if (otherReq) {
-            otherReq.forEach(element => {
-                //console.log("element", element);
-                const serviceOtherRequest = element.serviceRequests?.filter(item => item.RequestId !== reqInfo.RequestId)
-                console.log("element.dates", element.BookDates);
-                console.log("element.payments", element.payments);
-                console.log("element.requestInfo", element.requestInfo);
-                console.log("element.serviceCamp", element.serviceCamp);
-                console.log("element.serviceData", element.serviceData);
-                console.log("element.serviceImage", element.serviceImage);
-
-                const allRequestdata = {
-                    BookDates: element.dates,
-                    payments: element.payments,
-                    requestInfo: payments.requestInfo,
-                    serviceCamp: element.serviceCamp,
-                    serviceData: element.serviceData,
-                    serviceImage: element.serviceImage,
-                    serviceRequests: [serviceOtherRequest]
-                }
-                console.log("allRequestdata", allRequestdata);
-
-                newReqArray.push(allRequestdata)
-
-            });
-            setRequestInfoAccUser([...newReqArray])
-            console.log("newReqArray", newReqArray);
-        }
-    }
-
-    useEffect(() => {
-        // const otherReq = checkOtherRequest()
-        // console.log("otherReq", otherReq);
-    }, []);
+  
 
     const deleteReqPress = () => {
         Alert.alert(
@@ -144,88 +86,59 @@ const ClientShowRequest = (props) => {
         );
 
     }
-    const callDeleteReqFunc = () => {
+    const updateRequestInfoState = () => {
 
-        const requests = requestInfoAccUser?.filter(item => {
+        const requestInfoIndex = requestInfoAccUser?.findIndex(item => {
             return item.requestInfo.find(element => {
-                return element.serviceRequest[0].RequestId !== RequestId
+                return element.serviceRequest[0].RequestId === RequestId
             })
         })
 
-        console.log(requests);
-        deleteRequestbyId({ RequestId: RequestId }).then(res => {
-            console.log(res.message);
-            if (res.message === 'Delete Sucessfuly') {
-                setRequestInfoAccUser([...requests])
+        const req = requestInfoAccUser || []
+        const reqInfo = req[requestInfoIndex].requestInfo
 
-                //updateOtherRequest()
-                // updateEventData()
+        if (reqInfo.length > 1) {
+            const newReqInfo = reqInfo?.filter(item => item.serviceRequest[0].RequestId === RequestId)
+
+            if (requestInfoIndex > -1) {
+                req[requestInfoIndex].requestInfo = newReqInfo;
+            }
+            setRequestInfoAccUser([...req])
+
+        } else {
+            const newReqInfo = requestInfoAccUser?.filter(item => {
+                return item.requestInfo.find(element => {
+                    return element.serviceRequest[0].RequestId !== RequestId
+                })
+            })
+
+            setRequestInfoAccUser([...newReqInfo])
+        }
+
+
+    }
+    const callDeleteReqFunc = () => {
+        deleteRequestbyId({ RequestId: RequestId }).then(res => {
+
+            if (res.message === 'Delete Sucessfuly') {
+                updateRequestInfoState()
+                updateEventData()
                 setShowMoreModal(false)
                 showMessage("Deleted")
                 props.navigation.navigate(ScreenNames.ClientHomeAds)
-
             }
         })
     }
     const checkEventDateHasMoreThanOneReq = () => {
-        const allRequests = queryRequest()
-        if (reqInfo.reservationDetail.length > 1) {
-            const multi = reqInfo.reservationDetail.map(item => {
-                const result = allRequests.filter(allreq => {
 
-                    // console.log("all requset", allreq.requestInfo.reservationDetail);
-                    // console.log(">>>current req>>>>", reqInfo.reservationDetail);
-
-                    if (allreq.requestInfo.reservationDetail.length > 1) {
-                        return allreq.requestInfo.reservationDetail.find(morethanOne => {
-                            // console.log(morethanOne.reservationDate, item.reservationDate, morethanOne.reservationDate.includes(item.reservationDate));
-                            return morethanOne.reservationDate.includes(item.reservationDate)
-                        })
-                    } else {
-                        // console.log(allreq.requestInfo.reservationDetail[0].reservationDate, item.reservationDate, allreq.requestInfo.reservationDetail[0].reservationDate.includes(item.reservationDate));
-                        return allreq.requestInfo.reservationDetail[0].reservationDate.includes(item.reservationDate)
-                    }
-                })
-
-                if (result.length === 1) {
-                    eventDatesArr.pop(item.reservationDate)
-                }
-                // console.log("result", result, result.length);
-
-                return result
-            })
-            return multi
-
-        } else {
-            const single = allRequests.filter(item => {
-
-
-                if (item.requestInfo.reservationDetail.length > 1) {
-                    return item.requestInfo.reservationDetail.find(multiDate => {
-                        // console.log(multiDate.reservationDate, reqInfo.reservationDetail[0].reservationDate, multiDate.reservationDate.includes(reqInfo.reservationDetail[0].reservationDate));
-                        return multiDate.reservationDate.includes(reqInfo.reservationDetail[0].reservationDate)
-                    })
-
-                } else {
-                    // console.log(item.requestInfo.reservationDetail[0].reservationDate, reqInfo.reservationDetail[0].reservationDate, item.requestInfo.reservationDetail[0].reservationDate.includes(reqInfo.reservationDetail[0].reservationDate));
-
-                    return item.requestInfo.reservationDetail[0].reservationDate.includes(reqInfo.reservationDetail[0].reservationDate)
-                }
-            })
-
-            if (single.length === 1) {
-                eventDatesArr.pop(reqInfo.reservationDetail[0].reservationDate)
-            }
-            // console.log("single", single, single.length);
-            return single
-        }
-
+        reservationDetail.forEach(element => {
+            eventDatesArr.pop(element.reservationDate)
+        });
     }
     const updateEventData = () => {
-
-        //checkEventDateHasMoreThanOneReq()
-
-        const lastTotal = reqInfo.eventData.eventCost - reqInfo.Cost
+        const eventItemIndex = eventInfo?.findIndex(item => item.EventId === reqInfo?.eventData?.EventId)
+        const lastTotal = reqInfo.eventData.eventCost - requestCost
+        checkEventDateHasMoreThanOneReq()
 
         const editEventItem = {
             EventId: reqInfo.eventData.EventId,
@@ -245,7 +158,6 @@ const ClientShowRequest = (props) => {
             } else {
                 showMessage("لم يتم التعديل")
             }
-
         })
     }
 
