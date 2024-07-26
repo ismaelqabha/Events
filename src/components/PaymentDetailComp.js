@@ -85,8 +85,9 @@ const PaymentDetailComp = (props) => {
 
     const checkSumPersentage = () => {
         var sumPers = 0
+        console.log("paymentDataArray", paymentDataArray);
         paymentDataArray.forEach(element => {
-            sumPers += element.persentage
+            sumPers += element.pers
         });
         return sumPers
     }
@@ -136,7 +137,7 @@ const PaymentDetailComp = (props) => {
 
         const calculateAmountFromPersentage = (pers) => {
             const ReqPrice = reqInfo.requestInfo.Cost
-            console.log(">>", pers);
+           // console.log(">>", pers);
             if (pers < 100) {
 
                 const fact = ReqPrice * pers
@@ -240,8 +241,9 @@ const PaymentDetailComp = (props) => {
                         keyboardType={'numeric'}
                         placeholder={'الدفعة'}
                         value={amount}
-                        onChangeText={(val) => setAmount(val)}
-                        onEndEditing={(val) => calculatePersentageFromAmount(val.nativeEvent.text)}
+                        onChangeText={setAmount}
+                        // onChangeText={(val) => setAmount(val)}
+                        // onEndEditing={(val) => calculatePersentageFromAmount(val.nativeEvent.text)}
                     />
 
                     <View style={styles.inputPersentageView}>
@@ -249,11 +251,12 @@ const PaymentDetailComp = (props) => {
                             keyboardType={'numeric'}
                             placeholder={'النسبة'}
                             value={persentage}
+                            //onChangeText={setPersentage}
 
-                            onChangeText={(val) => setPersentage(val)}
+                             onChangeText={(val) => setPersentage(parseInt(val))}
 
                             onEndEditing={(val) => {
-                                calculateAmountFromPersentage(val.nativeEvent.text)
+                                //  calculateAmountFromPersentage(val.nativeEvent.text)
                                 const data = {
                                     id: payId,
                                     PayDate: paymentDate,

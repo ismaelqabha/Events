@@ -36,7 +36,7 @@ const BookingCard = (props) => {
     const ReqStatus = serviceRequest.ReqStatus
     const RequestId = serviceRequest.RequestId
     const reservationDetail = serviceRequest.reservationDetail
-    
+    console.log("serviceRequest", serviceRequest);
 
     const today = moment(new Date(), "YYYY-MM-DD")
     const day = today.format('D')
@@ -213,6 +213,7 @@ const BookingCard = (props) => {
 
     const renderReqInfo = () => {
         let stutesType = ''
+        console.log("reservationDetail", reservationDetail.length);
         if (reservationDetail.length > 1) {
 
             // if (fromclientDuePayment) {

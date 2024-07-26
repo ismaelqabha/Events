@@ -17,7 +17,7 @@ const MakePayment = (props) => {
   const { userId } = useContext(UsersContext);
   const { setRequestInfoAccUser, requestInfoAccUser } = useContext(SearchContext);
 
-  //console.log("reqInfo", reqInfo[0].serviceRequests);
+  console.log("reqInfo", reqInfo.serviceRequest[0].ReqDate);
   var countAllDates = 0
 
   const [paymentMethod, setpaymentMethod] = useState('Credit Card')
@@ -28,7 +28,7 @@ const MakePayment = (props) => {
   const [cardHolderCVV, setCardHolderCVV] = useState()
   const [paymentDate, setPaymentDate] = useState(new Date())
 
-  const [paymentInfo, setPaymentInfo] = useState([])
+
   const [reqPayments, setReqPayments] = useState([])
 
 
@@ -37,13 +37,44 @@ const MakePayment = (props) => {
   const [reqDetail, setReqDetail] = useState()
   const [maxAllowedRequest, setMaxAllowedRequest] = useState()
   const [reqPayment, setReqPayment] = useState()
-  const [realPayments, setRealPayments] = useState()
+
+  const [requestPayment, setRequestPayment] = useState()
+  const [serviceRequest, setServiceRequest] = useState()
+  const [requestCost, setRequestCost] = useState()
   const [bookingDates, setBookingDates] = useState()
+  
+  const [services, setServices] = useState()
+  const [BookDates, setBookDates] = useState()
+  
+
+  const [realPayments, setRealPayments] = useState()
+
+  
+
   const [serviceAllRequests, setServiceAllRequests] = useState()
 
   const [creditCard, setCreditCard] = useState(false)
   const [cash, setCash] = useState(false)
   const [checks, setChecks] = useState(false)
+
+
+
+  // const serviceRequest = reqInfo.serviceRequest[0]
+  // const requestPayment = reqInfo.requestPayment
+  // const services = reqInfo.services[0]
+  // const BookDates = reqInfo.BookDates[0]
+
+
+  // const dates = BookDates.dates
+  // const requestCost = serviceRequest.Cost
+  // const ReqDate = serviceRequest.ReqDate
+  // const ReqStatus = serviceRequest.ReqStatus
+  // const RequestId = serviceRequest.RequestId
+  // const reservationDetail = serviceRequest.reservationDetail
+  // const paymentInfor = serviceRequest.paymentInfo
+
+  // const service_id = services.service_id
+  // const maxNumberOFRequest = services.maxNumberOFRequest
 
   var requestInfoAccUserIndex = ''
 
@@ -96,40 +127,45 @@ const MakePayment = (props) => {
 
   const checkSource = () => {
 
-    if (fromclientDuePayment) {
-      setReqID(reqInfo[0].requestInfo.RequestId)
-      setReqPayment(reqInfo[0].requestInfo.paymentInfo)
-      setRealPayments(reqInfo[0].payments)
-      setReqPayments(reqInfo[0].requestInfo.paymentInfo)
-      setBookingDates(reqInfo[0].BookDates[0].dates)
-      setMaxAllowedRequest(reqInfo[0].serviceData[0].maxNumberOFRequest)
-      setReqDetail(reqInfo[0].requestInfo.reservationDetail)
-      setServiceAllRequests(reqInfo[0].serviceRequests)
-      setServiceID(reqInfo[0].serviceData[0].service_id)
-    }
-    if (clientSide) {
-      setReqID(reqInfo.RequestId)
-      setReqPayment(reqInfo.paymentInfo)
-      setRealPayments(reqInfo.realPayments)
-      setReqPayments(reqInfo.paymentInfo)
+    // if (fromclientDuePayment) {
+    //   setServiceRequest(reqInfo.serviceRequest)
+    //   setReqID(RequestId)
+    //   setReqPayment(paymentInfor)
+    //   setRequestPayment(reqInfo.requestPayment)
+    //   setRequestCost(serviceRequest.Cost)
+    //   // setReqPayments(paymentInfor)
+    //   setBookingDates(dates)
+    //   setMaxAllowedRequest(maxNumberOFRequest)
+    //   setReqDetail(reservationDetail)
+    //   //setServiceAllRequests(reqInfo[0].serviceRequests)
+    //   setServiceID(service_id)
+    // }
+
+    if (clientSide && fromclientDuePayment) {
+      setServiceRequest(reqInfo.serviceRequest[0])
+      setReqID(reqInfo.serviceRequest[0].RequestId)
+      setReqPayment(reqInfo.serviceRequest[0])
+      setRequestPayment(reqInfo.serviceRequest.paymentInfo)
+      setRequestCost(reqInfo.serviceRequest[0].Cost)
       setBookingDates(reqInfo.BookDates[0].dates)
       setMaxAllowedRequest(reqInfo.services[0].maxNumberOFRequest)
-      setReqDetail(reqInfo.reservationDetail)
-      setServiceAllRequests(reqInfo.serviceRequests)
+      setReqDetail(reqInfo.serviceRequest[0].reservationDetail)
       setServiceID(reqInfo.services[0].service_id)
     }
+
+
     if (fromProviderDuePay) {
       setReqID(reqInfo[0].requestInfo.RequestId)
       setReqPayment(reqInfo[0].requestInfo.paymentInfo)
       setRealPayments(reqInfo[0].userPayments)
-      setReqPayments(reqInfo[0].requestInfo.paymentInfo)
+      // setReqPayments(reqInfo[0].requestInfo.paymentInfo)
 
     }
     if (providerSide) {
       setReqID(reqInfo.requestInfo.RequestId)
       setReqPayment(reqInfo.requestInfo.paymentInfo)
       setRealPayments(reqInfo.userPayments)
-      setReqPayments(reqInfo.requestInfo.paymentInfo)
+      // setReqPayments(reqInfo.requestInfo.paymentInfo)
 
     }
   }
@@ -264,6 +300,7 @@ const MakePayment = (props) => {
     makePayment(paymentMethod)
   }
 
+//// when make payment Press functions
   const onPaymentPress = () => {
     Alert.alert(
       'تأكيد',
@@ -283,37 +320,46 @@ const MakePayment = (props) => {
     );
   }
   const makePayment = (method) => {
+    const reqPayIndex = reqPayment.findIndex(elme => elme.id === ID)
+    const reqPay = reqPayment
 
-    const reqPayIndex = reqPayments.findIndex(elme => elme.id === ID)
-    const reqPay = reqPayments
     if (reqPayIndex > -1) {
       reqPay[reqPayIndex].paymentStutes = 'paid'
     }
-    setReqPayments(reqPay[reqPayIndex]);
+    setReqPayment(reqPay[reqPayIndex]);
 
-    if (realPayments.length === 0) { /// there is now any payments for this request
+    if (requestPayment.length === 0) { /// there is now any payments for this request
       const newRequestData = {
         RequestId: reqID,
         ReqStatus: 'partially paid',
-        paymentInfo: reqPayments
+        paymentInfo: reqPayment,
+        Cost: requestCost,
+        reservationDetail: reqDetail
       }
+
       createPayment(newRequestData, method)
-      checkIfReachedMaxNumOfReq()
+      // checkIfReachedMaxNumOfReq()
     }
 
-    if (realPayments.length >= 1) {  /// if the client pay one time at the least for this request
+    if (requestPayment.length >= 1) {  /// if the client pay one time at the least for this request
 
-      if (realPayments.length + 1 === reqPayment.length) {  /// if the client pay the last payment for this request
+      if (requestPayment.length + 1 === reqPayment.length) {  /// if the client pay the last payment for this request
         const newRequestData = {
           RequestId: reqID,
           ReqStatus: 'paid all',
-          paymentInfo: reqPayments
+          paymentInfo: reqPayment,
+          Cost: requestCost,
+          reservationDetail: reqDetail
         }
         createPayment(newRequestData, method)
+
       } else {
         const newRequestData = {
           RequestId: reqID,
-          paymentInfo: reqPayments
+          ReqStatus: 'partially paid',
+          paymentInfo: reqPayment,
+          Cost: requestCost,
+          reservationDetail: reqDetail
         }
         createPayment(newRequestData, method)
       }
@@ -337,19 +383,23 @@ const MakePayment = (props) => {
     }
 
     createNewPayment(addNewPayment).then(res => {
-      let fund = paymentInfo || [];
-      setPaymentInfo([...fund])
+
+      let fund = requestPayment || [];
 
       if (res.message === 'Payment Created') {
+
         fund.push(addNewPayment);
+        setRequestPayment([...fund])
+
         ToastAndroid.showWithGravity(
           'تم الدفع بنجاح',
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         );
-        updateRequestInfo(newRequestData)
 
+        updateRequestInfo(newRequestData, requestPayment)
         // props.navigation.navigate(ScreenNames.ProviderProfile);
+
       } else {
         ToastAndroid.showWithGravity(
           'there has been an error' + res.message,
@@ -359,22 +409,31 @@ const MakePayment = (props) => {
       }
     })
   }
-
   /// update request info 
-  const updateRequestInfo = (newwData) => {
-    const requestInfoAccUserIndex = requestInfoAccUser?.findIndex(item => item.requestInfo.RequestId === reqID)
-    const lastPayments = requestInfoAccUser[requestInfoAccUserIndex].payments
+  const updateRequestInfo = (newwData, requestPayment) => {
+
+    const requestInfoIndex = requestInfoAccUser?.findIndex(item => {
+      return item.requestInfo.find(element => {
+        return element.serviceRequest[0].RequestId === reqID
+      })
+    })
+
+    const req = requestInfoAccUser || []
+    const reqInfo = req[requestInfoIndex].requestInfo
+    const reqInfoIndex = reqInfo?.findIndex(item => item.serviceRequest[0].RequestId === reqID)
 
     updateRequest(newwData).then(res => {
+    
       if (res.message == 'Updated Sucessfuly') {
 
-        const data = requestInfoAccUser || [];
-        if (requestInfoAccUserIndex > -1) {
-          data[requestInfoAccUserIndex].payments = { ...lastPayments, ...paymentInfo }
-
-          data[requestInfoAccUserIndex] = { ...data[requestInfoAccUserIndex], ...newwData };
+        const requestData = {
+          serviceRequest: [newwData],
+          requestPayment: requestPayment
         }
-        setRequestInfoAccUser([...data])
+        if (reqInfoIndex > -1) {
+          reqInfo[reqInfoIndex] = requestData
+        }
+        setRequestInfoAccUser([...req])
 
         ToastAndroid.showWithGravity(
           'تم التعديل بنجاح',
@@ -386,6 +445,8 @@ const MakePayment = (props) => {
 
   }
 
+
+
   ////// for updating booking recived dates
   const countAllRequestDates = () => {
     return serviceAllRequests.map(item => {
@@ -396,7 +457,6 @@ const MakePayment = (props) => {
       });
     })
   }
-
   const checkIfReachedMaxNumOfReq = () => {
     const numOfReq = countAllRequestDates()
     const reqReserDate = reqDetail[0].reservationDate
@@ -417,9 +477,6 @@ const MakePayment = (props) => {
       editingBookingDates(addNewDate)
     }
   }
-
-
-
   const editingBookingDates = (addNewDate) => {
     const newRecord = bookingDates || [];
 
@@ -467,7 +524,6 @@ const MakePayment = (props) => {
       )
     }
   }
-  
   const renderPaymentMethod = () => {
     if (paymentMethod === "Credit Card") {
       return (
@@ -493,8 +549,6 @@ const MakePayment = (props) => {
 
   }
 
-
-
   return (
     <View style={styles.container}>
       {header()}
@@ -503,7 +557,6 @@ const MakePayment = (props) => {
         {selectWhoisMakePayment()}
 
         {renderPayButton()}
-        {/* <Pressable onPress={result2}><Text>CHECK</Text></Pressable> */}
 
       </ScrollView>
     </View>

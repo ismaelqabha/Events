@@ -28,7 +28,7 @@ const ClientShowRequest = (props) => {
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
 
-    
+    const [clientSide, setClientSide] = useState(true)
 
     const serviceRequest = reqInfo.serviceRequest[0]
     const requestPayment = reqInfo.requestPayment[0]
@@ -178,16 +178,6 @@ const ClientShowRequest = (props) => {
         setShowModal(true)
     }
 
-    // useEffect(() => {
-    //     var dates
-    //     if (Array.isArray(reservationDetail)) {
-    //         dates = reservationDetail?.map(val => val.reservationDate)
-    //     } else {
-    //         dates = reservationDetail.reservationDate
-    //     }
-
-    //     calculateTotalPrice(reservationDetail, dates, services, setTotalPrice);
-    // }, [reservationDetail.reservationDate, reservationDetail]);
 
 
     const showOfferDetail = (contentFromSubDet, campContents) => {
@@ -297,7 +287,7 @@ const ClientShowRequest = (props) => {
         if (ReqStatus === 'waiting pay') {
             return (
                 <View style={styles.moreChoice}>
-                    <Pressable style={styles.moreItem}>
+                    <Pressable style={styles.moreItem} onPress={() => props.navigation.navigate(ScreenNames.RequestDuePaymentsShow, { reqInfo, clientSide })}>
                         <MaterialIcons
                             name={"payment"}
                             color={"black"}
@@ -559,7 +549,6 @@ const ClientShowRequest = (props) => {
             )
         })
     }
-
     const calculatePersentage = (persentage) => {
         const fact = requestCost * persentage
         const realAmount = fact / 100
@@ -590,12 +579,6 @@ const ClientShowRequest = (props) => {
         </View>)
     }
 
-
-
-    // useEffect(() => {
-    //  calculateTotalPrice(reservationDetail, reservationDetail.reservationDate, services, setTotalPrice);
-    // }, [reservationDetail.reservationDate, reservationDetail]);
-
     return (
         <View style={styles.container}>
             {header()}
@@ -604,7 +587,6 @@ const ClientShowRequest = (props) => {
 
                 {reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
-                {/* {renderfinalCost()} */}
                 <Recipt
                     totalPrice={totalPrice}
                     requestedDate={reservationDetail.reservationDate}

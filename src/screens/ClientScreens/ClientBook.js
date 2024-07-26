@@ -44,8 +44,8 @@ const ClientBook = (props) => {
     }
 
     useEffect(() => {
-    //    const x = queryRequest1()
-    //    console.log("=====",x);
+        //    const x = queryRequest1()
+        //    console.log("=====",x);
     }, [])
 
     const renderRequestData = () => {
@@ -53,8 +53,9 @@ const ClientBook = (props) => {
         //console.log(reqData);
         return reqData.map(item => {
             return item.requestInfo.map(element => {
-    
-                return <BookingCard 
+                // console.log(">>>", item.requestInfo);
+                // console.log(")))", element.serviceRequest);
+                return <BookingCard
                     serviceRequest={element.serviceRequest}
                     requestPayment={element.requestPayment}
                     services={item?.serviceData}
@@ -65,7 +66,7 @@ const ClientBook = (props) => {
                     // realPayments={item?.payments}
                     eventData={data} />
             })
-            
+
         })
     }
 
@@ -90,7 +91,7 @@ const ClientBook = (props) => {
             </View>
             <ScrollView contentContainerStyle={styles.home}>
                 {renderRequestData()}
-                <View style={{marginVertical : 20}}>
+                <View style={{ marginVertical: 20 }}>
                     <Text style={styles.title}>خدمات قد تهمك</Text>
                     <SuggestionsServicesComp />
                 </View>

@@ -58,7 +58,6 @@ const ClientRequest = (props) => {
             );
         }
     };
-
     const checkAllDetails = () => {
         if (typeof totalPrice !== 'number' || totalPrice <= 0) {
             showMessage("Please choose proper services.");
@@ -106,7 +105,6 @@ const ClientRequest = (props) => {
             return []
         }
     }
-
     const updateRequestInfoState = (requestBody) => {
 
         const searchReq = filterRequest()
@@ -226,7 +224,6 @@ const ClientRequest = (props) => {
         })
 
     }
-
     const onServiceRequest = () => {
         if (!checkAllDetails()) {
             return
@@ -259,7 +256,7 @@ const ClientRequest = (props) => {
         }).catch((E) => {
             console.error("error creating request B:", E);
         })
-        // props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
+         props.navigation.navigate(ScreenNames.ClientEvents)
     }
 
 

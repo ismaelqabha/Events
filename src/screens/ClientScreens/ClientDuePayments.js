@@ -15,6 +15,7 @@ const ClientDuePayments = (props) => {
     var paymentDate
     var todayDate = new Date();
     todayDate.setHours(0, 0, 0, 0);
+
     const onBackHandler = () => {
         props.navigation.goBack();
     }
@@ -37,8 +38,10 @@ const ClientDuePayments = (props) => {
 
     const queryRequest = () => {
         if (requestInfoAccUser.message !== "no Request") {
-            const clientReq = requestInfoAccUser.filter(item => {
-                return item.requestInfo.ReqStatus === 'partially paid'
+            const clientReq = requestInfoAccUser?.filter(item => {
+                return item.requestInfo.find(element => {
+                    return element.serviceRequest[0].ReqStatus === 'partially paid'
+                })
             })
             return clientReq
 
@@ -47,39 +50,64 @@ const ClientDuePayments = (props) => {
         }
     }
 
+    useEffect(() => {
+        // const reqData = queryRequest()
+        // //console.log("reqData", reqData);
+
+
+        // const req = filterRequestAccordingPayment()
+        // console.log("req", req);
+
+    }, [])
+
     const filterRequestAccordingPayment = () => {
         const reqData = queryRequest()
+
+
         const filteredData = []
 
         for (let index = 0; index < reqData.length; index++) {
-            const element = reqData[index];
-            const allowed = []
-            var newpaymentInfo = [...element.requestInfo.paymentInfo]
+            const request = reqData[index].requestInfo
+            for (let i = 0; i < request.length; i++) {
+                const element = request[i]
+                const serviceData = reqData[index].serviceData
+                const serviceCamp = reqData[index].serviceCamp
+                const allowed = []
 
-            newpaymentInfo?.forEach((payment, index) => {
-                paymentDate = new Date(payment.PayDate)
-                paymentDate.setHours(0, 0, 0, 0)
+                var newpaymentInfo = [...element.serviceRequest[0].paymentInfo]
 
-                if (payment.paymentStutes === 'not paid' && paymentDate <= todayDate) {
-                    allowed.push(payment)
-                }
+                newpaymentInfo?.forEach((payment, index) => {
+                    paymentDate = new Date(payment.payDate)
+                    paymentDate.setHours(0, 0, 0, 0)
 
-                if (index == element.requestInfo.paymentInfo?.length - 1) {
-                    const fakeElement = {
-                        payments: [...element.payments],
-                        serviceData: [...element.serviceData],
-                        serviceCamp: [...element.serviceCamp],
-                        requestInfo: {
-                            RequestId: element.requestInfo.RequestId,
-                            Cost: element.requestInfo.Cost,
-                            ReqDate: element.requestInfo.ReqDate,
-                            paymentInfo: allowed,
-                            reservationDetail: [...element.requestInfo.reservationDetail]
-                        }
+                    if (payment.paymentStutes === 'not paid' && paymentDate <= todayDate) {
+                        allowed.push(payment)
                     }
-                    filteredData.push(fakeElement)
-                }
-            })
+
+                    if (index == element.serviceRequest[0].paymentInfo?.length - 1) {
+
+                        const fakeElement = {
+                            serviceData: serviceData,
+                            serviceCamp: serviceCamp,
+                            requestInfo: [
+                                {
+                                    serviceRequest: [
+                                        {
+                                            RequestId: element.serviceRequest[0].RequestId,
+                                            Cost: element.serviceRequest[0].Cost,
+                                            ReqDate: element.serviceRequest[0].ReqDate,
+                                            paymentInfo: allowed,
+                                            reservationDetail: [...element.serviceRequest[0].reservationDetail]
+                                        }
+                                    ],
+                                    requestPayment: [element.requestPayment]
+                                }
+                            ]
+                        }
+                        filteredData.push(fakeElement)
+                    }
+                })
+            }
         }
 
         return filteredData
@@ -95,18 +123,48 @@ const ClientDuePayments = (props) => {
 
     const selectedRequestDataAccselectedPayment = (reqId) => {
         const reqData = queryRequest()
+
         return reqData.filter(item => {
-            return item.requestInfo.RequestId === reqId
+            return item.requestInfo.find(element => {
+                return element.serviceRequest[0].RequestId === reqId
+            })
         })
+    }
+
+    const manageReqData = (reqId) => {
+        const data = selectedRequestDataAccselectedPayment(reqId)
+        var reqInfo = {}
+
+        for (let i = 0; i < data.length; i++) {
+            const req = data[i]
+
+            const requestsinfo = req.requestInfo
+            
+            requestsinfo.forEach(element => {
+                if (element.serviceRequest[0].RequestId === reqId) {
+                     reqInfo = {
+                        serviceRequest: element.serviceRequest,
+                        requestPayment: element.requestPayment,
+                        services: req.serviceData,
+                        serviceImage: req.serviceImage,
+                        serviceCamp: req.serviceCamp,
+                        BookDates: req.BookDates
+                    }
+                }
+                
+            });
+        }
+        return reqInfo
     }
 
     const renderPayments = () => {
         const reqData = filterRequestAccordingPayment()
+
         return reqData?.map(item => {
-            const selectedRequest = selectedRequestDataAccselectedPayment(item.requestInfo.RequestId)
+            const selectedRequest = manageReqData(item.requestInfo[0].serviceRequest[0].RequestId)
            // console.log("selectedRequest", selectedRequest);
-            return item.requestInfo.paymentInfo.map(elem => {
-                const amount = calculatePersentage(item.requestInfo.Cost, elem.pers)
+            return item.requestInfo[0].serviceRequest[0].paymentInfo.map(elem => {
+                const amount = calculatePersentage(item.requestInfo[0].serviceRequest[0].Cost, elem.pers)
                 const ID = elem.id
 
                 return (
@@ -117,12 +175,12 @@ const ClientDuePayments = (props) => {
 
                         <View style={styles.item}>
                             <View>
-                                {item.requestInfo.reservationDetail.map(resDate => {
+                                {item.requestInfo[0].serviceRequest[0].reservationDetail.map(resDate => {
                                     return (
                                         <Text style={styles.txtValue}>{resDate.reservationDate}</Text>
                                     )
                                 })}
-                                {item.requestInfo.reservationDetail.length > 1 ? <Text>تواريخ الحجز</Text> : <Text>تاريخ الحجز</Text>}
+                                {item.requestInfo[0].serviceRequest[0].reservationDetail.length > 1 ? <Text>تواريخ الحجز</Text> : <Text>تاريخ الحجز</Text>}
                             </View>
                             <View style={styles.IconView}>
                                 <MaterialIcons
@@ -149,7 +207,7 @@ const ClientDuePayments = (props) => {
                         </View>
                         <View style={styles.item}>
                             <View>
-                                <Text style={styles.txtValue}>{elem.PayDate}</Text>
+                                <Text style={styles.txtValue}>{elem.payDate}</Text>
                                 <Text>تاريخ الدفعة</Text>
                             </View>
                             <View style={styles.IconView}>
@@ -162,7 +220,7 @@ const ClientDuePayments = (props) => {
                             </View>
                         </View>
 
-                        <View style={{flexDirection:'row',justifyContent: 'space-around', position: 'absolute', bottom: 10, width: '100%' }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', position: 'absolute', bottom: 10, width: '100%' }}>
                             <Pressable style={styles.payButton} //onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo: { requestInfo: {...selectedRequest.requestInfo}, relatedCamp: { ...selectedRequest.serviceCamp }, services: { ...selectedRequest.serviceData } }, fromclientDuePayment: fromclientDuePayment })}
                             >
                                 <Text style={styles.pressTxt}>تفاصيل الحجز</Text>

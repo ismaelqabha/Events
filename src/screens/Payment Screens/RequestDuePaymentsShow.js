@@ -16,6 +16,13 @@ const RequestDuePaymentsShow = (props) => {
     const [paymentOwner, setPaymentOwner] = useState([])
     const [payments, setPayments] = useState([])
 
+    const serviceRequest = reqInfo.serviceRequest[0]
+    const requestPayment = reqInfo.requestPayment
+    const services = reqInfo.services[0]
+    const requestCost = serviceRequest.Cost
+
+    //console.log("reqInfo", serviceRequest.paymentInfo);
+
     const filterPaymentInfo = () => {
         return ReqPaymentInfo?.filter(item => {
             return item.paymentStutes === 'not paid'
@@ -23,21 +30,22 @@ const RequestDuePaymentsShow = (props) => {
     }
 
     const paymentNotPaid = filterPaymentInfo()
+    //console.log("paymentNotPaid",paymentNotPaid);
 
     useEffect(() => {
         checkSourse()
-      }, [])
+    }, [])
 
     const checkSourse = () => {
         if (clientSide) {
-            setReqPrice (reqInfo.Cost)
-            setReqPaymentInfo(reqInfo.paymentInfo)
-            setPaymentOwner(reqInfo.services[0].title)
-            setPayments(reqInfo.realPayments)
+            setReqPrice(requestCost)
+            setReqPaymentInfo(serviceRequest.paymentInfo)
+            setPaymentOwner(services.title)
+            setPayments(requestPayment)
         }
-       
-        if(providerSide){
-            setReqPrice (reqInfo.requestInfo.Cost)
+
+        if (providerSide) {
+            setReqPrice(reqInfo.requestInfo.Cost)
             setReqPaymentInfo(reqInfo.requestInfo.paymentInfo)
             setPaymentOwner(reqInfo.userInfo)
             setPayments(reqInfo.userPayments)
@@ -66,7 +74,7 @@ const RequestDuePaymentsShow = (props) => {
         )
     }
 
-   
+
 
     const renderPaymentInfo = () => {
         return paymentNotPaid.map(item => {
@@ -127,7 +135,7 @@ const RequestDuePaymentsShow = (props) => {
             {header()}
 
             <ScrollView>
-                {paymentNotPaid.length > 0 &&<View style={{ height: 300 }}>
+                {paymentNotPaid.length > 0 && <View style={{ height: 300 }}>
                     <Text style={styles.paymentTxt}>الدفعات الغير مدفوعة</Text>
                     {renderPaymentInfo()}
                 </View>}
