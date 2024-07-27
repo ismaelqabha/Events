@@ -10,6 +10,7 @@ import RequestDetail from '../components/RequestDetail';
 import { calculateTotalPrice, showMessage } from '../resources/Functions'
 import Recipt from '../components/ProviderComponents/recipt';
 import SetEventForRequest from '../components/SetEventForRequest';
+import { ScreenNames } from '../../route/ScreenNames';
 
 
 const ClientRequest = (props) => {
@@ -93,7 +94,7 @@ const ClientRequest = (props) => {
         return true;
     };
 
-    const filterRequest = () => {
+    const filterRequestAccService = () => {
         if (requestInfoAccUser.message !== "no Request") {
             const searchReq = requestInfoAccUser.filter(item => {
                 return item.serviceData.find(element => {
@@ -105,9 +106,10 @@ const ClientRequest = (props) => {
             return []
         }
     }
+
     const updateRequestInfoState = (requestBody) => {
 
-        const searchReq = filterRequest()
+        const searchReq = filterRequestAccService()
         //console.log("searchReq", searchReq);
 
         const RequestsArray = []

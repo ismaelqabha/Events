@@ -94,7 +94,7 @@ const ServiceDescr = (props) => {
     }
 
     const onRequestPressHandler = () => {
-        if (!checkRequestBeforSending()) {
+        if (true) {
             props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
         } else {
             Alert.alert(

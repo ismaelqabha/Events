@@ -32,8 +32,9 @@ const ClientShowRequest = (props) => {
 
     const serviceRequest = reqInfo.serviceRequest[0]
     const requestPayment = reqInfo.requestPayment[0]
+
     const services = reqInfo.services[0]
-    const relatedCamp = reqInfo.relatedCamp
+    var  serviceCamp = []
 
     const RequestId = serviceRequest.RequestId
     const requestCost = serviceRequest.Cost
@@ -41,14 +42,22 @@ const ClientShowRequest = (props) => {
     const paymentInfo = serviceRequest.paymentInfo
     const ReqStatus = serviceRequest.ReqStatus
     const reservationDetail = serviceRequest.reservationDetail
-    const EventId = reqInfo.eventData.EventId
     const eventDatesArr = reqInfo?.eventData?.eventDate
 
+    const checkSource = () => {
+        if (fromclientDuePayment) {
+            serviceCamp = reqInfo.relatedCamp
+        } else {
+            relatedCamp = reqInfo.relatedCamp
+        }
+    }
 
     useEffect(() => {
         setTotalPrice(requestCost)
+        checkSource()
     }, [])
-    // console.log("reqInfo???", relatedCamp);
+
+   // console.log("reqInfo???", reqInfo);
 
     const getSerDetail = (id) => {
         const serviceData = services.additionalServices.filter(element => {
@@ -66,7 +75,7 @@ const ClientShowRequest = (props) => {
         })
         return subDetInfo
     }
-  
+
 
     const deleteReqPress = () => {
         Alert.alert(

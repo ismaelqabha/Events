@@ -94,14 +94,15 @@ export default function Splash(props) {
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
             // console.log("res", res);
-            //console.log("res[0].services", res[0].services);
+            console.log(res[0].userInfo.USER_ID);
             setUserInfo(res[0].userInfo)
              setEventInfo(res[0].userEvents)
             setuserId(res[0].userInfo.USER_ID)
             setUserName(res[0].userInfo.User_name)
             setFavorites(res[0].favoriteUser)
             setAllServicesFavorites(res[0].services)
-            // getEventsFromApi(res[0].userInfo.USER_ID)
+            getRequestfromApi(res[0].userInfo.USER_ID)
+        
         })
     }
 
@@ -126,10 +127,10 @@ export default function Splash(props) {
             }
         })
     }
-    const getRequestfromApi = () => {
-        getRequestInfoWithservice({ ReqUserId: userId }).then(res => {
+    const getRequestfromApi = (userID) => {
+        getRequestInfoWithservice({ ReqUserId: userID }).then(res => {
             setRequestInfoAccUser(res)
-           // console.log("res request" , res);
+            //console.log("res request" , res[0].requestInfo);
         })
     }
 
@@ -139,9 +140,6 @@ export default function Splash(props) {
     useEffect(() => {
         getDataFromApi()
         getEventListfromApi()
-        getRequestfromApi()
-      
-
     }, [servType])
 
 

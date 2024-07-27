@@ -139,10 +139,10 @@ const ClientDuePayments = (props) => {
             const req = data[i]
 
             const requestsinfo = req.requestInfo
-            
+
             requestsinfo.forEach(element => {
                 if (element.serviceRequest[0].RequestId === reqId) {
-                     reqInfo = {
+                    reqInfo = {
                         serviceRequest: element.serviceRequest,
                         requestPayment: element.requestPayment,
                         services: req.serviceData,
@@ -151,7 +151,7 @@ const ClientDuePayments = (props) => {
                         BookDates: req.BookDates
                     }
                 }
-                
+
             });
         }
         return reqInfo
@@ -162,7 +162,7 @@ const ClientDuePayments = (props) => {
 
         return reqData?.map(item => {
             const selectedRequest = manageReqData(item.requestInfo[0].serviceRequest[0].RequestId)
-           // console.log("selectedRequest", selectedRequest);
+            // console.log("selectedRequest", selectedRequest);
             return item.requestInfo[0].serviceRequest[0].paymentInfo.map(elem => {
                 const amount = calculatePersentage(item.requestInfo[0].serviceRequest[0].Cost, elem.pers)
                 const ID = elem.id
@@ -220,8 +220,8 @@ const ClientDuePayments = (props) => {
                             </View>
                         </View>
 
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', position: 'absolute', bottom: 10, width: '100%' }}>
-                            <Pressable style={styles.payButton} //onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo: { requestInfo: {...selectedRequest.requestInfo}, relatedCamp: { ...selectedRequest.serviceCamp }, services: { ...selectedRequest.serviceData } }, fromclientDuePayment: fromclientDuePayment })}
+                        <View style={styles.bottomView}>
+                            <Pressable style={styles.payButton} onPress={() => props.navigation.navigate(ScreenNames.ClientShowRequest, { reqInfo: selectedRequest, fromclientDuePayment: fromclientDuePayment })}
                             >
                                 <Text style={styles.pressTxt}>تفاصيل الحجز</Text>
                             </Pressable>
@@ -321,6 +321,13 @@ const styles = StyleSheet.create({
     pressTxt: {
         fontSize: 18,
         color: colors.darkGold
+    },
+    bottomView: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        position: 'absolute',
+        bottom: 10,
+        width: '100%'
     }
 
 })

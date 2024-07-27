@@ -17,19 +17,15 @@ const MakePayment = (props) => {
   const { userId } = useContext(UsersContext);
   const { setRequestInfoAccUser, requestInfoAccUser } = useContext(SearchContext);
 
-  console.log("reqInfo", reqInfo.serviceRequest[0].ReqDate);
+  //console.log("reqInfo", reqInfo);
   var countAllDates = 0
 
   const [paymentMethod, setpaymentMethod] = useState('Credit Card')
-
   const [cardHolderName, setCardHolderName] = useState()
   const [cardHolderID, setCardHolderID] = useState()
   const [cardHolderNumber, setCardHolderNumber] = useState()
   const [cardHolderCVV, setCardHolderCVV] = useState()
   const [paymentDate, setPaymentDate] = useState(new Date())
-
-
-  const [reqPayments, setReqPayments] = useState([])
 
 
   const [reqID, setReqID] = useState()
@@ -39,46 +35,19 @@ const MakePayment = (props) => {
   const [reqPayment, setReqPayment] = useState()
 
   const [requestPayment, setRequestPayment] = useState()
-  const [serviceRequest, setServiceRequest] = useState()
   const [requestCost, setRequestCost] = useState()
   const [bookingDates, setBookingDates] = useState()
-  
+  const [serviceRequest, setServiceRequest] = useState()
+
   const [services, setServices] = useState()
   const [BookDates, setBookDates] = useState()
-  
-
   const [realPayments, setRealPayments] = useState()
-
-  
-
   const [serviceAllRequests, setServiceAllRequests] = useState()
+  const [reqPayments, setReqPayments] = useState([])
 
   const [creditCard, setCreditCard] = useState(false)
   const [cash, setCash] = useState(false)
   const [checks, setChecks] = useState(false)
-
-
-
-  // const serviceRequest = reqInfo.serviceRequest[0]
-  // const requestPayment = reqInfo.requestPayment
-  // const services = reqInfo.services[0]
-  // const BookDates = reqInfo.BookDates[0]
-
-
-  // const dates = BookDates.dates
-  // const requestCost = serviceRequest.Cost
-  // const ReqDate = serviceRequest.ReqDate
-  // const ReqStatus = serviceRequest.ReqStatus
-  // const RequestId = serviceRequest.RequestId
-  // const reservationDetail = serviceRequest.reservationDetail
-  // const paymentInfor = serviceRequest.paymentInfo
-
-  // const service_id = services.service_id
-  // const maxNumberOFRequest = services.maxNumberOFRequest
-
-  var requestInfoAccUserIndex = ''
-
-
 
   const onBackHandler = () => {
     props.navigation.goBack();
@@ -127,20 +96,6 @@ const MakePayment = (props) => {
 
   const checkSource = () => {
 
-    // if (fromclientDuePayment) {
-    //   setServiceRequest(reqInfo.serviceRequest)
-    //   setReqID(RequestId)
-    //   setReqPayment(paymentInfor)
-    //   setRequestPayment(reqInfo.requestPayment)
-    //   setRequestCost(serviceRequest.Cost)
-    //   // setReqPayments(paymentInfor)
-    //   setBookingDates(dates)
-    //   setMaxAllowedRequest(maxNumberOFRequest)
-    //   setReqDetail(reservationDetail)
-    //   //setServiceAllRequests(reqInfo[0].serviceRequests)
-    //   setServiceID(service_id)
-    // }
-
     if (clientSide && fromclientDuePayment) {
       setServiceRequest(reqInfo.serviceRequest[0])
       setReqID(reqInfo.serviceRequest[0].RequestId)
@@ -157,14 +112,14 @@ const MakePayment = (props) => {
     if (fromProviderDuePay) {
       setReqID(reqInfo[0].requestInfo.RequestId)
       setReqPayment(reqInfo[0].requestInfo.paymentInfo)
-      setRealPayments(reqInfo[0].userPayments)
+      // setRealPayments(reqInfo[0].userPayments)
       // setReqPayments(reqInfo[0].requestInfo.paymentInfo)
 
     }
     if (providerSide) {
       setReqID(reqInfo.requestInfo.RequestId)
       setReqPayment(reqInfo.requestInfo.paymentInfo)
-      setRealPayments(reqInfo.userPayments)
+      // setRealPayments(reqInfo.userPayments)
       // setReqPayments(reqInfo.requestInfo.paymentInfo)
 
     }

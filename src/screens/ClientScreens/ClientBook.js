@@ -29,6 +29,7 @@ const ClientBook = (props) => {
         }
     }
 
+    console.log(data.EventId);
     const queryRequest1 = () => {
         if (requestInfoAccUser.message !== "no Request") {
 
@@ -37,6 +38,7 @@ const ClientBook = (props) => {
                     return element.serviceRequest[0].ReqEventId === data.EventId
                 })
             })
+            console.log("clientReq", clientReq);
             return clientReq
         } else {
             return []
