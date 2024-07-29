@@ -293,6 +293,7 @@ const ClientEvents = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+       // borderWidth: 1
     },
     header: {
         flexDirection: 'row',

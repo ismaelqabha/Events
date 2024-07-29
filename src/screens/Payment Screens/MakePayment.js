@@ -1,11 +1,8 @@
 import { StyleSheet, Text, View, Alert, Pressable, ToastAndroid, TextInput, ScrollView } from 'react-native'
 import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign"
-import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import moment from "moment";
 import { colors } from "../../assets/AppColors.js"
-import { ScreenNames } from "../../../route/ScreenNames.js"
-import { BorderRightOutlined } from '@ant-design/icons';
 import UsersContext from '../../../store/UsersContext.js';
 import { createNewPayment, updateRequest, updatebookingDate } from '../../resources/API.js';
 import SearchContext from '../../../store/SearchContext.js';

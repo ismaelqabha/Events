@@ -188,7 +188,7 @@ const ClientProfile = (props) => {
                     {renderOldEvents()}
                     {renderFeedBack()}
                 </View>
-                {userData.SpecialDates && <View>
+                {userData.SpecialDates.length > 0 && <View>
                     <Text style={styles.txt}>مناسبات خاصة</Text>
                     <View style={styles.viewSet}>
                         {renderSpecialEvents()}
