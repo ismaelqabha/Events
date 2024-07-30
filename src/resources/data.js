@@ -114,7 +114,6 @@ export const hallData = [
     { key: '1', hallType: 'مطعم', img: (require('../assets/photos/restaurant.png')) },
     { key: '2', hallType: 'قاعة داخلية', img: (require('../assets/photos/externalHall.png')) },
     { key: '3', hallType: 'قاعة خارجية', img: (require('../assets/photos/hallIcon.png')) },
-
 ];
 
 export const regionData = [
@@ -155,6 +154,8 @@ export const invitation = [
             invitationBackgraund: '',
             location : '',
             eventDate : '',
+            welcomePharse :'',
+            explanatoryPhrase:'',
             time: '',
             callerNames: ["", ""],
             eventStar: ['','']
@@ -271,21 +272,6 @@ export const Payment = [
     },
 
 ];
-
-// export const fileFavorites = [
-//     {
-//         fileId: 1,
-//         fileName: 'اقتراحاتي للحجز',
-//         fileImg: (require('../../src/assets/sedawi.png')),
-//         fileFavoUserId: 1,
-//     },
-//     {
-//         fileId: 2,
-//         fileName: 'اقتراحاتي',
-//         fileImg: (require('../../src/assets/abofaneh.png')),
-//         fileFavoUserId: 1,
-//     },
-// ];
 
 export const favoritesList = [
     {

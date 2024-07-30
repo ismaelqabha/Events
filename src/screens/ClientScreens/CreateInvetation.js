@@ -1,24 +1,16 @@
-import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput, ImageBackground, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../../assets/AppColors';
+import { images } from '../../assets/photos/images';
+import InvetationCard from '../../components/InvetationCard'
 
 const CreateInvetation = (props) => {
-     const { eventTitle } = props.route?.params || {}
+    const { eventTitle } = props.route?.params || {}
 
     //  const eventTitle = 'تخرج'
 
-    const weddingCaller = 'أسم الداعي الاول'
-    const regulerEventCaller = 'أسم الداعي'
-    const weddingStar = 'أسم العريس'
-    const eventStar = 'أسم نجم المناسبة'
-
-    const [firstCallName, setFirstCallName] = useState()
-    const [secondCallName, setSecondCallName] = useState()
-    const [firstStName, setFirstStName] = useState()
-    const [secondStName, setSecondStName] = useState()
-
-
+   
     const onPressBack = () => {
         props.navigation.goBack();
     }
@@ -36,7 +28,6 @@ const CreateInvetation = (props) => {
             </View>
         )
     }
-
     const renderEventType = () => {
         return (
             <View style={styles.eventTypeView}>
@@ -45,73 +36,28 @@ const CreateInvetation = (props) => {
         )
     }
 
-    const firstCallerName = () => {
+    const renderInvetationCard = () => {
         return (
-            <View>
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                     placeholder={eventTitle == 'زواج' ? weddingCaller : regulerEventCaller}
-                    onChangeText={setFirstCallName}
-                />
+            <View style={{  }}>
+                <InvetationCard eventTitle={eventTitle} />
             </View>
-        )
-    }
-    const secondCallerName = () => {
-        return (
-            <View>
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                     placeholder={'اسم الداعي الثاني'}
-                    onChangeText={setSecondCallName} />
-            </View>
-        )
-    }
-    const firstStarName = () => {
-        return (
-            <View>
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                     placeholder={eventTitle == 'زواج' ? weddingStar : eventStar}
-                    onChangeText={setFirstStName} />
-            </View>
-        )
-    }
-    const secondStarName = () => {
-        return (
-            <View>
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                     placeholder={'أسم العروس'}
-                    onChangeText={setSecondStName} />
-            </View>
-        )
-    }
 
-    const renderCallers = () => {
-        return (
-            <View>
-                <View style={styles.callerView}>
-                    {firstCallerName()}
-                    {eventTitle == 'زواج' && secondCallerName()}
-                </View>
-                <View style={styles.callerView}>
-                    {firstStarName()}
-                    {eventTitle == 'زواج' && secondStarName()}
-                </View>
-            </View>
         )
     }
 
     return (
+
         <View style={styles.container}>
+            {/* <ScrollView style={{height: 500, }}> */}
             {renderHeader()}
             {renderEventType()}
-            {renderCallers()}
+
+            <ImageBackground style={styles.card} source={images.invetationCard()}>
+                {renderInvetationCard()}
+            </ImageBackground>
+            {/* </ScrollView> */}
         </View>
+
     )
 }
 
@@ -119,7 +65,16 @@ export default CreateInvetation
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        // marginTop: 50
+    },
+    card: {
+        marginTop: 50,
+        width: '95%',
+        height: 600,
+        alignSelf: 'center',
+        borderWidth: 3,
+        borderColor: colors.darkGold,
     },
     header: {
         flexDirection: 'row',
@@ -150,27 +105,5 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: colors.puprble
     },
-    input: {
-        textAlign: 'center',
-        height: 50,
-        width: '90%',
-        alignSelf: 'center',
-        borderWidth: 0.6,
-        borderRadius: 10,
-        borderColor: 'gray',
-        fontSize: 15,
-        color: 'black',
-        marginVertical: 10
-    },
-    callerView: {
-        // borderWidth: 1,
-        width: '95%',
-        borderColor: colors.silver,
-        alignSelf: 'center',
-        marginVertical: 20,
-        paddingVertical: 5,
-        backgroundColor: 'white',
-        elevation: 5,
-        borderRadius: 5
-    }
+  
 })
