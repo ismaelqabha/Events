@@ -1,5 +1,3 @@
-
-
 import { StyleSheet, Text, View, Pressable, Modal, ScrollView, Image, Alert } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -16,9 +14,6 @@ import Recipt from '../components/ProviderComponents/recipt';
 import { deleteRequestbyId, updateEvent } from '../resources/API';
 import { ScreenNames } from '../../route/ScreenNames';
 
-
-
-
 const ClientShowRequest = (props) => {
     const { totalPrice, setTotalPrice, setRequestInfoAccUser, eventInfo, setEventInfo, requestInfoAccUser } = useContext(SearchContext);
     const { reqInfo, fromclientDuePayment } = props.route?.params || {}
@@ -34,7 +29,7 @@ const ClientShowRequest = (props) => {
     const requestPayment = reqInfo.requestPayment[0]
 
     const services = reqInfo.services[0]
-    var  serviceCamp = []
+    const [relatedCamp, setRelatedCamp] = useState([])
 
     const RequestId = serviceRequest.RequestId
     const requestCost = serviceRequest.Cost
@@ -46,9 +41,9 @@ const ClientShowRequest = (props) => {
 
     const checkSource = () => {
         if (fromclientDuePayment) {
-            serviceCamp = reqInfo.relatedCamp
+            setRelatedCamp([...reqInfo.relatedCamp])
         } else {
-            relatedCamp = reqInfo.relatedCamp
+            setRelatedCamp([...reqInfo.relatedCamp])
         }
     }
 
@@ -57,7 +52,7 @@ const ClientShowRequest = (props) => {
         checkSource()
     }, [])
 
-   // console.log("reqInfo???", reqInfo);
+    // console.log("reqInfo???", reqInfo);
 
     const getSerDetail = (id) => {
         const serviceData = services.additionalServices.filter(element => {
@@ -271,6 +266,9 @@ const ClientShowRequest = (props) => {
             </Modal>
         )
     }
+    const editPress = () => {
+        props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...services, ...serviceRequest, ...reqInfo }, isfromClientShowRequest: true })
+    }
     const moreOperation = () => {
         if (ReqStatus === 'waiting reply') {
             return (
@@ -283,7 +281,7 @@ const ClientShowRequest = (props) => {
                         <Text style={styles.moreTxt}>اِلغاء الحجز</Text>
                     </Pressable>
 
-                    <Pressable style={styles.moreItem}>
+                    <Pressable onPress={editPress} style={styles.moreItem}>
                         <Feather
                             name={"edit"}
                             color={"black"}
@@ -511,6 +509,10 @@ const ClientShowRequest = (props) => {
     const renderCampigns = (item) => {
         return item.offerId.map(Offid => {
             const data = filterSelectedCampign(Offid)
+            const isArray = Array.isArray(data)
+            if (!data || !isArray || (isArray && data.length < 1)) {
+                return
+            }
             return (<View>
                 <Pressable style={styles.dateview}
                     onPress={() => onOfferPress()}
