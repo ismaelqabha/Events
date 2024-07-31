@@ -4,7 +4,7 @@ import { View, StyleSheet, Text, Image, Pressable, ScrollView } from 'react-nati
 import SearchContext from '../../store/SearchContext';
 import UsersContext from '../../store/UsersContext';
 import moment from 'moment';
-import { addNewRequest, updateEvent } from '../resources/API';
+import { addNewRequest, updateEvent, updateRequest } from '../resources/API';
 import { colors } from '../assets/AppColors';
 import RequestDetail from '../components/RequestDetail';
 import { calculateTotalPrice, showMessage } from '../resources/Functions'
@@ -14,27 +14,31 @@ import { ScreenNames } from '../../route/ScreenNames';
 
 
 const ClientRequest = (props) => {
-    const { data } = props?.route.params
+    const { data, isfromClientShowRequest } = props?.route.params
     const { userId } = useContext(UsersContext);
     const {
-        requestedDate, setRequestInfoAccUser, requestInfoAccUser,
+        requestedDate, setrequestedDate, setRequestInfoAccUser, requestInfoAccUser,
         resDetail,
         eventInfo, setEventInfo,
         eventTypeInfo, totalPrice, setTotalPrice,
-        evTiltleId, EVENTID, updatedEventDate, eventTotalCost, fileEventName
+        evTiltleId, EVENTID, updatedEventDate, eventTotalCost, fileEventName, setResDetail
     } = useContext(SearchContext);
-
     const [showDetailRecipt, setShowDetailRecipt] = useState(false)
     const [selectTime, setSelectTime] = useState(true);
     const [date, setDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState()
     const [pressed, setPressed] = useState([])
     const [IveEvent, setIveEvent] = useState(false);
-
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
     let eventItemIndex
-
+    useEffect(() => {
+        if (isfromClientShowRequest) {
+            const dates = data.reservationDetail.map((res) => res.reservationDate)
+            setrequestedDate([...dates])
+            setResDetail([...data.reservationDetail])
+        }
+    }, [])
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -228,9 +232,9 @@ const ClientRequest = (props) => {
     }
     const onServiceRequest = () => {
         if (!checkAllDetails()) {
-            return
+            return;
         }
-        delete resDetail["campaigns"]
+        delete resDetail["campaigns"];
 
         const requestBody = {
             ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
@@ -242,24 +246,42 @@ const ClientRequest = (props) => {
             ReqEventTypeId: evTiltleId,
             reservationDetail: resDetail,
             paymentInfo: []
+        };
+
+        if (isfromClientShowRequest) {
+            console.log("data.requestId", data.RequestId);
+            requestBody.RequestId = data.RequestId
+            updateRequest(requestBody).then((res) => {
+                if (res.message === 'Updated Sucessfuly') {
+                    updateRequestInfoState(res?.request);
+                    showMessage("Request updated successfully");
+                    UpdateEventInfo();
+                } else {
+                    showMessage("Failed to update request");
+                    return;
+                }
+            }).catch((E) => {
+                console.error("Error updating request:", E);
+                return;
+            });
+        } else {
+            addNewRequest(requestBody).then((res) => {
+                if (res.message === 'Request Created') {
+                    updateRequestInfoState(res?.request);
+                    showMessage("Request created successfully");
+                    UpdateEventInfo();
+                } else {
+                    showMessage("Failed to create request");
+                    return;
+                }
+            }).catch((E) => {
+                console.error("Error creating request:", E);
+                return;
+            });
         }
 
-
-        addNewRequest(requestBody).then((res) => {
-
-            if (res.message === 'Request Created') {
-                updateRequestInfoState(res?.request)
-                showMessage("Request Created successfully")
-                UpdateEventInfo()
-            } else {
-                showMessage("failed to create request")
-            }
-
-        }).catch((E) => {
-            console.error("error creating request B:", E);
-        })
-         props.navigation.navigate(ScreenNames.ClientEvents)
-    }
+        props.navigation.navigate(ScreenNames.ClientEvents);
+    };
 
 
     useEffect(() => {
@@ -288,13 +310,15 @@ const ClientRequest = (props) => {
         )
     }
     const renderFoter = () => {
+        var buttonText = isfromClientShowRequest ? "تحديث الطلب" : "ارسال طلب"
+
         return (
             <View style={styles.foter}>
                 <Pressable onPress={() => onServiceRequest()}
                     disabled={selectTime ? false : true}
                     style={[styles.btnview, selectTime ? styles.btnview : styles.btnRequestApproved]}
                 >
-                    <Text style={styles.btntext}>ارسال طلب</Text>
+                    <Text style={styles.btntext}>{buttonText}</Text>
                 </Pressable>
             </View>
         )
@@ -359,7 +383,7 @@ const ClientRequest = (props) => {
     /// request information and reservation detail
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
-            <RequestDetail {...data} selectedDate={selectedDate} setSelectedDate={setSelectedDate} handleScrollToPosition={handleScrollToPosition} pressed={pressed} setPressed={setPressed} />
+            <RequestDetail {...data} isfromClientShowRequest={isfromClientShowRequest} selectedDate={selectedDate} setSelectedDate={setSelectedDate} handleScrollToPosition={handleScrollToPosition} pressed={pressed} setPressed={setPressed} />
         </View>
     }
 

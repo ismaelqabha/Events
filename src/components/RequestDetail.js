@@ -17,7 +17,7 @@ const RequestDetail = (props) => {
         return date
     }) : [requestedDate]
 
-   
+
     const [invitersValueError, setInvitersValueError] = useState(false);
     const [selectedSupDet, setSelectedSupDet] = useState([]);
     const [detailViewPressed, setDetailViewPressed] = useState(false);
@@ -43,6 +43,9 @@ const RequestDetail = (props) => {
 
     useEffect(() => {
         setIsCampaign(relatedCamp && relatedCamp.length > 0);
+        if (props?.isfromClientShowRequest) {
+            setSelectedDate(requestedDate?.[0])
+        }
     }, []);
 
     useEffect(() => {
@@ -349,7 +352,7 @@ const RequestDetail = (props) => {
         }
     };
 
-   
+
 
     //// set start and end time
     const checkStartTime = () => {
@@ -633,7 +636,7 @@ const RequestDetail = (props) => {
         return subDetInfo
     }
 
-///// descripe the the service campighns
+    ///// descripe the the service campighns
 
     const onCampPress = (campId) => {
         updateReservationDet(campId, 'offerId');
@@ -725,7 +728,7 @@ const RequestDetail = (props) => {
         )
     }
 
-   
+
     const renderModal = () => {
         return (
             <Modal
