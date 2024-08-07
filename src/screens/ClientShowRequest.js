@@ -311,10 +311,10 @@ const ClientShowRequest = (props) => {
                 </View>
             )
         }
-        if (ReqStatus === 'paid') {
+        if (ReqStatus === 'partially paid') {
             return (
                 <View>
-                    <Pressable style={styles.moreItem}>
+                    <Pressable style={styles.moreItem} onPress={() => props.navigation.navigate(ScreenNames.RequestDuePaymentsShow, { reqInfo, clientSide })}>
                         <MaterialIcons
                             name={"payment"}
                             color={"black"}
@@ -383,30 +383,6 @@ const ClientShowRequest = (props) => {
                             name={"date"}
                             color={colors.puprble}
                             size={20} />
-                    </View>
-                </View>
-            </View>
-        )
-    }
-    const renderfinalCost = () => {
-        return (
-            <View style={styles.ContentView}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Pressable //onPress={showDetaiPress} 
-                    >
-                        <Image style={styles.iconImg} source={require('../assets/photos/invoice.png')} />
-                    </Pressable>
-                    <View style={styles.dateview}>
-                        <View style={{ alignItems: 'flex-end' }}>
-                            <Text style={styles.dateTxt}>{requestCost}</Text>
-                            <Text style={styles.labelDateTxt}>السعر</Text>
-                        </View>
-                        <View style={styles.IconView}>
-                            <Entypo
-                                name={"price-tag"}
-                                color={colors.puprble}
-                                size={20} />
-                        </View>
                     </View>
                 </View>
             </View>
@@ -750,13 +726,13 @@ const styles = StyleSheet.create({
     moreTxt: {
         fontSize: 18
     },
-    iconImg: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 10,
-        width: 30,
-        height: 30
-    },
+    // iconImg: {
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     marginLeft: 10,
+    //     width: 30,
+    //     height: 30
+    // },
     moreChoice: {
         flexDirection: 'row',
         justifyContent: 'space-around',

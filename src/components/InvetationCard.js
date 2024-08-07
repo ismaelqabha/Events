@@ -7,6 +7,7 @@ import { colors } from '../assets/AppColors';
 
 const InvetationCard = (props) => {
     const { eventTitle } = props
+    
     const weddingCaller = 'أسم الداعي الاول'
     const regulerEventCaller = 'أسم الداعي'
     const weddingStar = 'أسم العريس'

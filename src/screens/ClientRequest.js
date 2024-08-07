@@ -200,7 +200,7 @@ const ClientRequest = (props) => {
 
         eventItemIndex = eventInfo?.findIndex(item => item.EventId === EVENTID && item.userId === userId)
 
-        console.log(EVENTID, userId);
+       // console.log(EVENTID, userId);
         const newEventItem = {
             EventId: EVENTID,
             eventName: fileEventName,
@@ -249,7 +249,7 @@ const ClientRequest = (props) => {
         };
 
         if (isfromClientShowRequest) {
-            console.log("data.requestId", data.RequestId);
+           // console.log("data.requestId", data.RequestId);
             requestBody.RequestId = data.RequestId
             updateRequest(requestBody).then((res) => {
                 if (res.message === 'Updated Sucessfuly') {

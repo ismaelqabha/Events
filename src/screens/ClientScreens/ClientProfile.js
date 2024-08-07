@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Pressable, ScrollView, Image } from 'react-nati
 import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo"
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import UsersContext from '../../../store/UsersContext';
@@ -17,7 +18,10 @@ const ClientProfile = (props) => {
     const [relations, setRelations] = useState([])
     const [loading, setLoading] = useState(true)
     const [displayCount, setDisplayCount] = useState(5);
+  
+    
     const clientReview = true
+   
 
 
     const backPress = () => {
@@ -155,18 +159,41 @@ const ClientProfile = (props) => {
             </Pressable>
         </View>)
     }
-    const renderInvitations = () => {
+    const onInvitationsInboxHandler = () => {
+       
+        props.navigation.navigate(ScreenNames.MyInvetationsCards, {fromInvetationInbox : true, fromInvetationOutbox : false })
+    }
+    const onInvitationsOutboxHandler = () => {
+    
+        props.navigation.navigate(ScreenNames.MyInvetationsCards, {fromInvetationInbox : false, fromInvetationOutbox : true })
+    }
+    const renderInvitationsInbox = () => {
         return (<View>
-            <Pressable style={styles.item} //onPress={() =>props.navigation.navigate(ScreenNames.ClientDuePayments)}
-            >
+            <Pressable style={styles.item} onPress={onInvitationsInboxHandler} >
                 <View>
                     <Text style={styles.basicInfo}>بطاقات الدعوة الواردة</Text>
                 </View>
                 <View style={styles.IconView}>
-                    <Entypo
-                        name={"mail"}
+                    <MaterialCommunityIcons
+                        name={"inbox-arrow-down"}
                         color={colors.puprble}
-                        size={25} />
+                        size={30} />
+                </View>
+            </Pressable>
+        </View>)
+    }
+    const renderMyInvitationsOutbox = () => {
+        return (<View>
+            <Pressable style={styles.item} onPress={onInvitationsOutboxHandler}
+            >
+                <View>
+                    <Text style={styles.basicInfo}>بطاقات الدعوة الصادرة</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <MaterialCommunityIcons
+                        name={"inbox-arrow-up"}
+                        color={colors.puprble}
+                        size={30} />
                 </View>
             </Pressable>
         </View>)
@@ -182,7 +209,8 @@ const ClientProfile = (props) => {
 
                 <Text style={styles.txt}>العمليات</Text>
                 <View style={styles.viewSet}>
-                    {renderInvitations()}
+                    {renderInvitationsInbox()}
+                    {renderMyInvitationsOutbox()}
                     {renderDuePayment()}
                     {renderRelations()}
                     {renderOldEvents()}

@@ -21,7 +21,7 @@ import { showMessage } from '../../resources/Functions';
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
     const servicePhone = props.route.params?.data?.servicePhone;
-    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
+    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender, ProviderRequests } = useContext(SearchContext);
 
     //console.log("data>>>", data);
     const [showModal, setShowModal] = useState(false);
@@ -36,6 +36,7 @@ const ServiceDescr = (props) => {
 
     const [isFromServiceDesc, setIsFromServiceDesc] = useState(true);
     const [subDetArray, setSubDetArray] = useState([]);
+
     const [requestData, setRequestData] = useState(data.serviceRequests);
 
 
@@ -72,31 +73,26 @@ const ServiceDescr = (props) => {
 
     const checkRequestBeforSending = () => {
 
-        const result = requestData.find(item => {
-            if (item.reservationDetail.length > 1) {
+        const reqResult = ProviderRequests.filter(item => {
+            return item.reservationDetail.find(element => {
 
-                const x = item.reservationDetail.find(resDate => {
-                    if (Array.isArray(requestedDate)) {
-
-                        return requestedDate.find(elemDate => {
-                            return elemDate == resDate.reservationDate
-                        })
-                    } else {
-                        return resDate.reservationDate == requestedDate
-                    }
-                })
-                return x
-            } else {
-                return item.reservationDetail[0].reservationDate == requestedDate
-            }
+                if (Array.isArray(requestedDate)) {
+                    return requestedDate.find(elemDate => {
+                        console.log(">>>", element.reservationDate, elemDate, element.reservationDate == elemDate);
+                        return elemDate == element.reservationDate
+                    })
+                } else {
+                    console.log(element.reservationDate, requestedDate, element.reservationDate == requestedDate);
+                    return element.reservationDate == requestedDate
+                }
+            })
         })
-        return !!result
+        return reqResult
     }
 
     const onRequestPressHandler = () => {
-        if (true) {
-            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
-        } else {
+        const result = checkRequestBeforSending()
+        if (result.length > 0) {
             Alert.alert(
                 'تنبية',
                 '  الرجاء اختيار تفاصيل حجز اخرى التفاصيل الحالية محجوزة مسبقا لديك',
@@ -108,6 +104,10 @@ const ServiceDescr = (props) => {
                 ],
                 { cancelable: false } // Prevent closing the alert by tapping outside
             );
+
+        } else {
+            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
+
         }
 
     }
@@ -406,7 +406,7 @@ const ServiceDescr = (props) => {
                         </View>
                         <View style={styles.SubDImg}>
                             <Image style={styles.SubPhoto} source={{ uri: subItem.subDetailPhoto.uri }} />
-                            </View>
+                        </View>
 
                     </View>
                 )
@@ -803,7 +803,7 @@ const ServiceDescr = (props) => {
             }
             );
         } else {
-            console.log("Service phone number is not available");
+           // console.log("Service phone number is not available");
             showMessage("Service phone number is not available")
         }
     };
@@ -813,7 +813,7 @@ const ServiceDescr = (props) => {
             <View style={styles.body}>
                 <View style={styles.logo}>{renderLogo()}</View>
                 {renderTitle()}
-                {!isFromClientRequest &&seperator()}
+                {!isFromClientRequest && seperator()}
                 {!isFromClientRequest && changeDateComponent()}
                 {getDatesInfoSource()}
 

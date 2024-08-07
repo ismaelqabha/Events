@@ -117,7 +117,7 @@ export const hallData = [
 ];
 
 export const regionData = [
-    { key: "الجليل الأعلى", value: ["ترشيحا", "حرفيش", "معليا", "البقيعة", "بيت جن", "فسوطة", "المغار","كسرى",  "الرامة" ,"ساجور", "نحف" ," دير الأسد-البعنة" ," وادي سلامة" , "طوبا" , "الزنغرية"] },
+    { key: "الجليل الأعلى", value: ["ترشيحا", "حرفيش", "معليا", "البقيعة", "بيت جن", "فسوطة", "المغار", "كسرى", "الرامة", "ساجور", "نحف", " دير الأسد-البعنة", " وادي سلامة", "طوبا", "الزنغرية"] },
     { key: '1', value: 'النقب ' },
     { key: '2', value: 'الساحل' },
     { key: '3', value: 'المثلث الشمالي' },
@@ -143,29 +143,58 @@ export const hallDetailOptions = [
     { key: '3', value: 'أخرى' }
 ];
 
-export const invitation = [
+export const invitationCard = [
     {
         invitId: '0005',
-        invitationDate: '',
-        event_id: '',
-        invitStatus: '',
-        inviteesList: ["1","2","3"],
-        invitationDetail: {
-            invitationBackgraund: '',
-            location : '',
-            eventDate : '',
-            welcomePharse :'',
-            explanatoryPhrase:'',
-            time: '',
-            callerNames: ["", ""],
-            eventStar: ['','']
-        }
+        invitationBackgraund: '',
+        location: '',
+        eventDate: '',
+        welcomePharse: '',
+        explanatoryPhrase: '',
+        time: '',
+        callerNames: ["", ""],
+        eventStar: ['', '']
     }
 ]
 
-export const requst =[
+export const sendInvitation = [
     {
-        requestID:'',
+        user_Id: '',
+        userName: '',
+        invitationSentDate: '',
+        eventLogoId: '',
+        eventTitle: '',
+        invitCardId: '',
+        invitStatus: ['sent', 'unsend'],
+        inviteesList: [
+            {
+                recived_Id: '001',
+                recivedName: 'Ahmed',
+            },
+            {
+                recived_Id: '002',
+                recivedName: 'Ali',
+            },
+
+        ],
+    }
+]
+export const recivedInvitation = [
+    {
+        sender_Id: '',
+        senderName: '',
+        invitationSentDate: '',
+        eventTitle: '',
+        invitCardId: '',
+        invitStatus: ['open', 'close'],
+        recived_Id: '',
+        recivedName: '',
+    }
+]
+
+export const requst = [
+    {
+        requestID: '',
         ReqEventId: 1,
         ReqServId: 1,
         ReqUserId: 1,
