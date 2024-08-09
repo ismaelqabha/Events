@@ -393,7 +393,6 @@ const ClientRequest = (props) => {
         calculateTotalPrice(resDetail, requestedDate, data, setTotalPrice);
     }, [requestedDate, resDetail]);
 
-
     return (
         <View style={styles.container}>
             {renderHeader()}
@@ -408,7 +407,7 @@ const ClientRequest = (props) => {
                 {renderRequestInfo()}
 
                 <View style={styles.eventView}>
-                    <SetEventForRequest serviceType={data?.servType} />
+                    <SetEventForRequest serviceType={data?.servType} isfromClientShowRequest selectedEvent={data.eventData} />
                 </View>
 
                 <Recipt

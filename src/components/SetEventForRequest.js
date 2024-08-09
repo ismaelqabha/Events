@@ -13,7 +13,7 @@ const SetEventForRequest = (props) => {
     const { eventInfo, setEventInfo, requestedDate, eventTypeInfo,
         eventTotalCost, setEventTotalCost, totalPrice,
         setUpdatedEventDate,
-        setEVENTID,fileEventName, setfileEventName,
+        setEVENTID, fileEventName, setfileEventName,
         setEvTiltleId } = useContext(SearchContext);
     const { userId } = useContext(UsersContext);
 
@@ -22,7 +22,7 @@ const SetEventForRequest = (props) => {
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    
+
     const [eventName, setEventName] = useState(null)
     const [eventTypeId, setEventTypeId] = useState()
     const [eventTypeName, setEventTypeName] = useState()
@@ -56,6 +56,11 @@ const SetEventForRequest = (props) => {
     useEffect(() => {
         checkIfThereIsEvent()
         getEventTypeInfo()
+        if (props.isfromClientShowRequest) {
+            console.log("props ", props.selectedEvent);
+            const event = props?.selectedEvent
+            whenEventPress(event?.EventId, "", event?.eventName)
+        }
     }, [])
 
     const setModal = () => {
@@ -221,7 +226,7 @@ const SetEventForRequest = (props) => {
         // console.log("events info ", eventInfo);
         return eventInfo?.filter(item => {
             if (item.eventDate.length < 1) {
-                  return true
+                return true
             } else {
                 return item.eventDate.find(dateElment => {
                     BookDate = new Date(dateElment)
@@ -229,7 +234,7 @@ const SetEventForRequest = (props) => {
                     return result
                 })
             }
-           
+
         })
     }
 
@@ -269,6 +274,7 @@ const SetEventForRequest = (props) => {
         const eventData = filtereventInfo()
         // console.log("eventData", eventData);
         return eventData.map((item, index) => {
+            index == 0 && console.log("item ", item);
 
             const isSelected = selectedEvent === item.EventId;
             return (
