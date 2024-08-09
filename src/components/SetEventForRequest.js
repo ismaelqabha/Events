@@ -57,9 +57,10 @@ const SetEventForRequest = (props) => {
         checkIfThereIsEvent()
         getEventTypeInfo()
         if (props.isfromClientShowRequest) {
-            console.log("props ", props.selectedEvent);
-            const event = props?.selectedEvent
-            whenEventPress(event?.EventId, "", event?.eventName)
+            const eventData = filtereventInfo()
+            const selEv = props?.selectedEvent
+            const event = eventData?.find(item => item.EventId === selEv.eventId)
+            whenEventPress(event.EventId, event.eventTitleId, event.eventName)
         }
     }, [])
 
@@ -274,7 +275,6 @@ const SetEventForRequest = (props) => {
         const eventData = filtereventInfo()
         // console.log("eventData", eventData);
         return eventData.map((item, index) => {
-            index == 0 && console.log("item ", item);
 
             const isSelected = selectedEvent === item.EventId;
             return (
