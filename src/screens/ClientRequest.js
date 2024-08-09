@@ -36,6 +36,7 @@ const ClientRequest = (props) => {
         if (isfromClientShowRequest) {
             const dates = data.reservationDetail.map((res) => res.reservationDate)
             setrequestedDate([...dates])
+            setSelectedDate(requestedDate[0])
             setResDetail([...data.reservationDetail])
         }
     }, [])
