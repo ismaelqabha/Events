@@ -32,6 +32,7 @@ export const ScreenNames = {
     ClientIncomingRelation: 'ClientIncomingRelation',
     CreateInvetation: 'CreateInvetation',
     MyInvetationsCards: "MyInvetationsCards",
+    InvetationShow:'InvetationShow',
 
     // Create User
     CreateUpersonalInfo: 'CreateUpersonalInfo',

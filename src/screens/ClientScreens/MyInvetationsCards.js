@@ -4,6 +4,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
 import InvetationOutboxComp from '../../components/InvetationOutboxComp';
 import InvetationInboxComp from '../../components/InvetationInboxComp';
+import { invitation } from '../../resources/data';
 
 const MyInvetationsCards = (props) => {
 
@@ -32,14 +33,19 @@ const MyInvetationsCards = (props) => {
         )
     }
     const renderInvetOutboxCard = () => {
-        return (
-            <InvetationOutboxComp />
-        )
+        return invitation.map(item => {
+            return (
+                <InvetationOutboxComp {...item} />
+            )
+        })
     }
     const renderInvetInboxCard = () => {
-        return (
-            <InvetationInboxComp />
-        )
+        return invitation.map(item => {
+            return (
+                <InvetationInboxComp {...item} />
+            )
+        })
+
     }
     return (
         <View style={styles.container}>

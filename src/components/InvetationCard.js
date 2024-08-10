@@ -7,7 +7,7 @@ import { colors } from '../assets/AppColors';
 
 const InvetationCard = (props) => {
     const { eventTitle } = props
-    
+
     const weddingCaller = 'أسم الداعي الاول'
     const regulerEventCaller = 'أسم الداعي'
     const weddingStar = 'أسم العريس'
@@ -69,7 +69,7 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={styles.inputPharze}
                     keyboardType='default'
                     placeholder={'عبارة ترحيبية'}
                     onChangeText={setSecondStName} />
@@ -80,7 +80,7 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={styles.inputPharze}
                     keyboardType='default'
                     placeholder={'عبارة توضيحية'}
                     onChangeText={setSecondStName} />
@@ -89,7 +89,7 @@ const InvetationCard = (props) => {
     }
     const renderDataTimeLocation = () => {
         return (
-            <View style={{ width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', alignSelf: 'center' }}>
+            <View style={styles.dateTime}>
                 <View style={{ alignItems: 'center' }}>
                     <Ionicons
                         name={"location-sharp"}
@@ -140,7 +140,7 @@ const InvetationCard = (props) => {
                     {eventTitle == 'زواج' && secondCallerName()}
                 </View>
                 {welcomingPhrase()}
-                <View style={styles.starsView}>
+                <View style={[styles.starsView, eventTitle == 'زواج' ? styles.starsView : styles.otherstarsView]}>
 
                     {eventTitle == 'زواج' && secondStarName()}
                     {firstStarName()}
@@ -161,12 +161,56 @@ export default InvetationCard
 
 const styles = StyleSheet.create({
     card: {
-       // flex: 1,
-      
+        height: '100%'
+
     },
     input: {
         textAlign: 'center',
         height: 50,
+        alignSelf: 'center',
+        borderWidth: 0.6,
+        borderRadius: 10,
+        fontSize: 15,
+        color: 'black',
+    },
+    callerView: {
+        width: '80%',
+        borderColor: colors.silver,
+        alignSelf: 'center',
+        marginTop: 50,
+        paddingVertical: 5,
+        borderRadius: 5
+    },
+    starsView: {
+        
+        width: '80%',
+        alignSelf: 'center',
+        marginVertical: 20,
+        paddingVertical: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+       
+    },
+    otherstarsView: {
+        width: '80%',
+        alignSelf: 'center',
+        marginVertical: 20,
+        paddingVertical: 5,
+        flexDirection: 'row',
+        justifyContent: 'center'
+       
+    },
+    dateTime: {
+        width: '80%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        alignSelf: 'center',
+        marginVertical: 30
+    },
+    inputPharze: {
+        textAlign: 'center',
+        height: 100,
         width: '80%',
         alignSelf: 'center',
         borderWidth: 0.6,
@@ -176,28 +220,4 @@ const styles = StyleSheet.create({
         color: 'black',
         // marginVertical: 10
     },
-    callerView: {
-        // borderWidth: 1,
-        width: '80%',
-        borderColor: colors.silver,
-        alignSelf: 'center',
-        marginTop: 50,
-        paddingVertical: 5,
-        // backgroundColor: 'white',
-        // elevation: 5,
-        borderRadius: 5
-    },
-    starsView: {
-        borderWidth: 1,
-        //  borderColor: colors.silver,
-        width: '80%',
-        alignSelf: 'center',
-        marginVertical: 20,
-        paddingVertical: 5,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-        // backgroundColor: 'white',
-        // elevation: 5,
-        //  borderRadius: 5
-    }
 })

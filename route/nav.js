@@ -69,6 +69,8 @@ import ClientIncomingRelation from "../src/screens/ClientScreens/ClientIncomingR
 import Favorites from "../src/screens/ClientScreens/Favorites";
 import CreateInvetation from "../src/screens/ClientScreens/CreateInvetation";
 import MyInvetationsCards from "../src/screens/ClientScreens/MyInvetationsCards";
+import InvetationShow from "../src/screens/ClientScreens/InvetationShow";
+
 
 
 
@@ -142,6 +144,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.MakePayment} component={MakePayment} />
                 <Stack.Screen name={ScreenNames.CreateInvetation} component={CreateInvetation} />
                 <Stack.Screen name={ScreenNames.MyInvetationsCards} component={MyInvetationsCards} />
+                <Stack.Screen name={ScreenNames.InvetationShow} component={InvetationShow} />
                 
                
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />

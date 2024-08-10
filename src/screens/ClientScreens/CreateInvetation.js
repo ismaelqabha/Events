@@ -48,14 +48,15 @@ const CreateInvetation = (props) => {
     return (
 
         <View style={styles.container}>
-            {/* <ScrollView style={{height: 500, }}> */}
+           
             {renderHeader()}
+            <ScrollView style={{height: '100%', }}>
             {renderEventType()}
 
             <ImageBackground style={styles.card} source={images.invetationCard()}>
                 {renderInvetationCard()}
             </ImageBackground>
-            {/* </ScrollView> */}
+            </ScrollView>
         </View>
 
     )
@@ -69,9 +70,9 @@ const styles = StyleSheet.create({
         // marginTop: 50
     },
     card: {
-        marginTop: 50,
+        marginTop: 20,
         width: '95%',
-        height: 600,
+        height: 700,
         alignSelf: 'center',
         borderWidth: 3,
         borderColor: colors.darkGold,

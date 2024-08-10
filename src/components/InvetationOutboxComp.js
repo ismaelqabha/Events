@@ -5,6 +5,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Entypo from "react-native-vector-icons/Entypo";
 
 const InvetationOutboxComp = (props) => {
+    const {eventTitle}= props
     return (
         <View style={styles.card}>
             <View style={styles.stutes}>
@@ -25,7 +26,7 @@ const InvetationOutboxComp = (props) => {
             </View>
 
             <View style={styles.title}>
-                <Text style={styles.text}>حفلة خطوبتنا</Text>
+                <Text style={styles.text}>{eventTitle}</Text>
             </View>
 
             <View style={styles.logo}>

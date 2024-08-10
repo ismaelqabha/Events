@@ -50,7 +50,7 @@ const Results = (props) => {
     const [guestNum, setGuestNum] = useState(0)
     const [selectHallType, setSelectHallType] = useState('')
 
-   
+
 
     const [sliding, setSliding] = useState('Inactive');
 
@@ -135,14 +135,18 @@ const Results = (props) => {
             reservationDetail: [{ reservationDate: dataforReservation }]
         }
         getProviderRequests(queryInfo).then(res => {
-           // console.log(res);
+            // console.log(res);
             if (res.message !== 'No Request') {
                 setProviderRequests(res)
             }
         })
 
     }
+
+
     const countAllRequestDates = (servicId, dataforReservation) => {
+
+
         getProividerRequestsForDate(servicId, dataforReservation)
         const countAllReq = ProviderRequests.length
 
@@ -151,17 +155,20 @@ const Results = (props) => {
     const checkDate = (dataforReservation, source, servicId, maxNumOfReq) => {
         const countAllDates = countAllRequestDates(servicId, dataforReservation)
         const servicedate = source
-        console.log("countAllDates",countAllDates);
-        if (countAllDates < maxNumOfReq) {
+        console.log("servicedate", servicedate[0].dates);
+        console.log(countAllDates, maxNumOfReq);
+
+        if (countAllDates <= maxNumOfReq) {
 
             const DateFiltered = servicedate[0].dates?.find(dat => {
-                if (servicedate[0].dates.length > 1) {
+                if (servicedate[0].dates.length > 0) {
+                    console.log(dat.time, dataforReservation, dat.status);
                     return dat.time === dataforReservation && (dat.status === 'full' || dat.status === 'holiday')
                 } else {
                     return dataforReservation
                 }
             });
-
+            console.log(!!DateFiltered, DateFiltered);
             return !!DateFiltered
 
         } else {
@@ -181,30 +188,26 @@ const Results = (props) => {
         let completeDate = ''
 
         if (currentDate > daysInMonth) {
+
             if ((currentMonth + 1) > 12) {
                 daysInMonth = moment((currentYear + 1) + '-' + (currentMonth - 11)).daysInMonth()
-                for (var day = 1; day <= daysInMonth; day++) {
-                    completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
-
-                    if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
-                        break
-                    }
-                }
             } else {
-
                 daysInMonth = moment(currentYear + '-' + (currentMonth + 1)).daysInMonth()
-                for (var day = 1; day <= daysInMonth; day++) {
-                    completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
+            }
 
-                    if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
-                        break
-                    }
+            for (var day = 1; day <= daysInMonth; day++) {
+               
+                completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
+
+                if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
+                    break
                 }
             }
+
         } else {
             for (var day = currentDate; day <= daysInMonth; day++) {
                 completeDate = currentYear + '-' + currentMonth + '-' + day
-
+                console.log(day);
                 if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
                     break
                 }
@@ -227,8 +230,9 @@ const Results = (props) => {
         const dateswithinPeriod = []
         let day = startingDay
         let period = (periodDatesforSearch * 2) + 1
-
+        
         if (periodDatesforSearch < 1) {
+            
             if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
                 return completeDate
             }

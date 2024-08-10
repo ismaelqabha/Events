@@ -1,4 +1,5 @@
 import { ScreenNames } from '../../route/ScreenNames';
+import { images } from '../assets/photos/images';
 
 export const servicesCategory = [
     {
@@ -143,29 +144,29 @@ export const hallDetailOptions = [
     { key: '3', value: 'أخرى' }
 ];
 
-export const invitationCard = [
-    {
-        invitId: '0005',
-        invitationBackgraund: '',
-        location: '',
-        eventDate: '',
-        welcomePharse: '',
-        explanatoryPhrase: '',
-        time: '',
-        callerNames: ["", ""],
-        eventStar: ['', '']
-    }
-]
 
-export const sendInvitation = [
+
+export const invitation = [
     {
-        user_Id: '',
-        userName: '',
+        user_Id: '65ad914764fcb68f0ed422a1',
+        userName: 'اسماعيل كبها',
         invitationSentDate: '',
-        eventLogoId: '',
-        eventTitle: '',
-        invitCardId: '',
-        invitStatus: ['sent', 'unsend'],
+        eventLogoId: '65bfea90ed6965ed8854aec2',
+        eventTitle: 'حفل زفاف احمد',
+        
+        invitStatus: ['sent', 'unsend', 'open', 'close'],
+
+        invitationCard: {
+            invitId: '0005',
+            invitationBackgraund: images.invetationCard(),
+            location: 'My Location',
+            eventDate: '2024-9-15',
+            welcomePharse: 'نتشرف بدعوة حضرتكم لحضور حفل زفاف أبننا الغالي',
+            explanatoryPhrase: 'كما ندعوكم لحضور سهرة الحناء مساء الجمعة الموافق 2040/9/13 في بيت والد العريس يحي السهرة المطرب احمد كبها',
+            time: '20:00',
+            callerNames: ["عبد الله احمد عباس", "خالد فتحي حسين"],
+            eventStar: ['أحمد', 'سمر']
+        },
         inviteesList: [
             {
                 recived_Id: '001',
@@ -179,18 +180,7 @@ export const sendInvitation = [
         ],
     }
 ]
-export const recivedInvitation = [
-    {
-        sender_Id: '',
-        senderName: '',
-        invitationSentDate: '',
-        eventTitle: '',
-        invitCardId: '',
-        invitStatus: ['open', 'close'],
-        recived_Id: '',
-        recivedName: '',
-    }
-]
+
 
 export const requst = [
     {

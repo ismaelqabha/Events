@@ -3,8 +3,13 @@ import React from 'react'
 import { colors } from '../assets/AppColors'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { ScreenNames } from '../../route/ScreenNames';
+import { useNavigation } from '@react-navigation/native';
 
 const InvetationInboxComp = (props) => {
+
+    const navigation = useNavigation();
+
     return (
         <View style={styles.card}>
             <View style={styles.stutes}>
@@ -24,9 +29,9 @@ const InvetationInboxComp = (props) => {
                     </Pressable>}
             </View>
 
-            <View style={styles.title}>
-                <Text style={styles.text}>من احمد كبها</Text>
-            </View>
+            <Pressable style={styles.title} onPress={() => navigation.navigate(ScreenNames.InvetationShow, {...props}) }>
+                <Text style={styles.text}>{'من'+ ' ' + props.userName }</Text>
+            </Pressable>
 
             <View style={styles.logo}>
                 <Image style={styles.img} source={require('../assets/photos/user.png')}/>
