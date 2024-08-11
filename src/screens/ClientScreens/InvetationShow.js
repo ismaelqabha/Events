@@ -38,7 +38,7 @@ const InvetationShow = (props) => {
 
                 {renderWelcomePharse()}
 
-                <View style={styles.starView}>
+                <View style={[styles.starView,invitationCard.eventStar.length == 1 ? styles.singleStarView : styles.starView]}>
                     {invitationCard.eventStar.length > 1 && renderSecondStarName()}
                     {renderFirstStarName()}
                 </View>
@@ -190,6 +190,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        alignSelf: 'center',
+        position: 'absolute',
+        bottom: 400
+    },
+    singleStarView: {
+        width: '80%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
         alignSelf: 'center',
         position: 'absolute',
         bottom: 400

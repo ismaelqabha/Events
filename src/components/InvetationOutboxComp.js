@@ -9,7 +9,7 @@ const InvetationOutboxComp = (props) => {
     return (
         <View style={styles.card}>
             <View style={styles.stutes}>
-                {true ? <Pressable //onPress={onPressHandler}
+                {props.invitStatus.sentStatus == 'unsend' ? <Pressable //onPress={onPressHandler}
                 >
                     <FontAwesome
                         name={"send"}

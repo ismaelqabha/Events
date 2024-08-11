@@ -13,7 +13,7 @@ const InvetationInboxComp = (props) => {
     return (
         <View style={styles.card}>
             <View style={styles.stutes}>
-                {false ? <Pressable //onPress={onPressHandler}
+                {props.invitStatus.recivedStatus == 'open' ? <Pressable //onPress={onPressHandler}
                 >
                     <FontAwesome
                         name={"envelope-open"}

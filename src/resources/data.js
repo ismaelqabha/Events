@@ -153,8 +153,11 @@ export const invitation = [
         invitationSentDate: '',
         eventLogoId: '65bfea90ed6965ed8854aec2',
         eventTitle: 'حفل زفاف احمد',
-        
-        invitStatus: ['sent', 'unsend', 'open', 'close'],
+
+        invitStatus: {
+            sentStatus: 'unsend',
+            recivedStatus: 'close'
+        },
 
         invitationCard: {
             invitId: '0005',
@@ -169,11 +172,47 @@ export const invitation = [
         },
         inviteesList: [
             {
-                recived_Id: '001',
+                recived_Id: '65fdd05a0f07c96522542a06',
                 recivedName: 'Ahmed',
             },
             {
-                recived_Id: '002',
+                recived_Id: '669bc369c09d0043b89f03b1',
+                recivedName: 'Ali',
+            },
+
+        ],
+    },
+    {
+        user_Id: '65ad914764fcb68f0ed422a1',
+        userName: 'اسماعيل كبها',
+        invitationSentDate: '',
+        eventLogoId: '65bfea90ed6965ed8854aec2',
+        eventTitle: 'حفل زفاف جواد',
+
+        invitStatus:
+        {
+            sentStatus: 'sent',
+            recivedStatus: 'open'
+        },
+
+        invitationCard: {
+            invitId: '0006',
+            invitationBackgraund: images.invetationCard(),
+            location: 'My Location',
+            eventDate: '2024-10-15',
+            welcomePharse: 'نتشرف بدعوة حضرتكم لحضور حفل زفاف أبننا الغالي',
+            explanatoryPhrase: 'كما ندعوكم لحضور سهرة الحناء مساء الجمعة الموافق 2040/9/13 في بيت والد العريس يحي السهرة المطرب خالد كبها',
+            time: '21:00',
+            callerNames: ["عبد الله احمد عباس", "خالد فتحي حسين"],
+            eventStar: ['جواد']
+        },
+        inviteesList: [
+            {
+                recived_Id: '66a559b90cb14bbc32ec0b69',
+                recivedName: 'Ahmed',
+            },
+            {
+                recived_Id: '669bc369c09d0043b89f03b1',
                 recivedName: 'Ali',
             },
 
