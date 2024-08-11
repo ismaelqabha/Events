@@ -49,14 +49,13 @@ const EventsCard = (props) => {
     //console.log("requestInfoAccUser", requestInfoAccUser[0].requestInfo);
 
     const getEventTitle = () => {
+
         return eventTypeInfo.filter(item => {
             return item.Id === eventTitleId
         })
     }
 
-    const eventTitle = getEventTitle()
-    const eTitle = eventTitle[0].eventTitle
-   
+    const [eventTitle, setEventTitle] = useState(getEventTitle())
 
     const filterReqAccEventFile = () => {
         if (requestInfoAccUser.message !== "no Request") {
@@ -93,7 +92,7 @@ const EventsCard = (props) => {
     }
     const getTitleEventType = (id) => {
         const eventTypeIndex = eventTypeInfo.findIndex(item => item.Id === id)
-        const Typetitle = eventTypeInfo[eventTypeIndex].eventTitle
+        const Typetitle = eventTypeInfo[eventTypeIndex]?.eventTitle
         return Typetitle
     }
 
@@ -204,7 +203,7 @@ const EventsCard = (props) => {
                                 setSelected={val => {
                                     setEventType(val);
                                 }}
-                                placeholder={eventTitle[0].eventTitle}
+                                placeholder={eventTitle[0]?.eventTitle}
                                 boxStyles={styles.dropdown}
                                 inputStyles={styles.droptext}
                                 dropdownTextStyles={styles.dropstyle}
@@ -428,7 +427,7 @@ const EventsCard = (props) => {
                     </View>
 
                     <View style={styles.leftView}>
-                        <Image style={styles.eventLogo} source={{ uri: eventTitle[0].eventImg }} />
+                        <Image style={styles.eventLogo} source={{ uri: eventTitle[0]?.eventImg }} />
                     </View>
                 </View>
 

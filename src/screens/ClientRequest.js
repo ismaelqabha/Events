@@ -36,6 +36,7 @@ const ClientRequest = (props) => {
         if (isfromClientShowRequest) {
             const dates = data.reservationDetail.map((res) => res.reservationDate)
             setrequestedDate([...dates])
+            setSelectedDate(requestedDate[0])
             setResDetail([...data.reservationDetail])
         }
     }, [])
@@ -249,10 +250,9 @@ const ClientRequest = (props) => {
         };
 
         if (isfromClientShowRequest) {
-           // console.log("data.requestId", data.RequestId);
             requestBody.RequestId = data.RequestId
             updateRequest(requestBody).then((res) => {
-                if (res.message === 'Updated Sucessfuly') {
+                if (res.message === 'Updated Successfully') {
                     updateRequestInfoState(res?.request);
                     showMessage("Request updated successfully");
                     UpdateEventInfo();
@@ -393,7 +393,6 @@ const ClientRequest = (props) => {
         calculateTotalPrice(resDetail, requestedDate, data, setTotalPrice);
     }, [requestedDate, resDetail]);
 
-
     return (
         <View style={styles.container}>
             {renderHeader()}
@@ -408,7 +407,7 @@ const ClientRequest = (props) => {
                 {renderRequestInfo()}
 
                 <View style={styles.eventView}>
-                    <SetEventForRequest serviceType={data?.servType} />
+                    <SetEventForRequest serviceType={data?.servType} isfromClientShowRequest selectedEvent={data.eventData} />
                 </View>
 
                 <Recipt

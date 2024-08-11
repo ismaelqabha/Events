@@ -13,7 +13,7 @@ const SetEventForRequest = (props) => {
     const { eventInfo, setEventInfo, requestedDate, eventTypeInfo,
         eventTotalCost, setEventTotalCost, totalPrice,
         setUpdatedEventDate,
-        setEVENTID,fileEventName, setfileEventName,
+        setEVENTID, fileEventName, setfileEventName,
         setEvTiltleId } = useContext(SearchContext);
     const { userId } = useContext(UsersContext);
 
@@ -22,7 +22,7 @@ const SetEventForRequest = (props) => {
     const [IveEvent, setIveEvent] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    
+
     const [eventName, setEventName] = useState(null)
     const [eventTypeId, setEventTypeId] = useState()
     const [eventTypeName, setEventTypeName] = useState()
@@ -56,6 +56,12 @@ const SetEventForRequest = (props) => {
     useEffect(() => {
         checkIfThereIsEvent()
         getEventTypeInfo()
+        if (props.isfromClientShowRequest) {
+            const eventData = filtereventInfo()
+            const selEv = props?.selectedEvent
+            const event = eventData?.find(item => item.EventId === selEv.eventId)
+            whenEventPress(event.EventId, event.eventTitleId, event.eventName)
+        }
     }, [])
 
     const setModal = () => {
@@ -221,7 +227,7 @@ const SetEventForRequest = (props) => {
         // console.log("events info ", eventInfo);
         return eventInfo?.filter(item => {
             if (item.eventDate.length < 1) {
-                  return true
+                return true
             } else {
                 return item.eventDate.find(dateElment => {
                     BookDate = new Date(dateElment)
@@ -229,7 +235,7 @@ const SetEventForRequest = (props) => {
                     return result
                 })
             }
-           
+
         })
     }
 
