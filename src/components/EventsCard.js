@@ -49,7 +49,6 @@ const EventsCard = (props) => {
     //console.log("requestInfoAccUser", requestInfoAccUser[0].requestInfo);
 
     const getEventTitle = () => {
-
         return eventTypeInfo.filter(item => {
             return item.Id === eventTitleId
         })
@@ -317,7 +316,7 @@ const EventsCard = (props) => {
                 },
                 {
                     text: 'نعم',
-                    onPress: () => navigation.navigate(ScreenNames.CreateInvetation, { eventTitle : eTitle }),
+                    onPress: () => navigation.navigate(ScreenNames.CreateInvetation, { eventTitle : eventTitle[0]?.eventTitle }),
                     style: 'destructive', // Use 'destructive' for a red-colored button
                 },
             ],

@@ -3,7 +3,10 @@ import React from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Zocial from "react-native-vector-icons/Zocial";
 import { colors } from '../../assets/AppColors';
+import SIZES from '../../resources/sizes';
 
+const height = SIZES.screenWidth * 1.8;
+const width = SIZES.screenWidth - 18;
 
 const InvetationShow = (props) => {
     const { eventTitle, invitationCard } = props.route.params || []
@@ -169,8 +172,8 @@ const styles = StyleSheet.create({
     },
     card: {
         marginTop: 20,
-        width: '95%',
-        height: 700,
+        width,
+        height,
         alignSelf: 'center',
         borderWidth: 3,
         borderColor: colors.darkGold,

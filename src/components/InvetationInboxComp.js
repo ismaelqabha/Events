@@ -13,7 +13,7 @@ const InvetationInboxComp = (props) => {
     return (
         <View style={styles.card}>
             <View style={styles.stutes}>
-                {props.invitStatus.recivedStatus == 'open' ? <Pressable //onPress={onPressHandler}
+                {props.recivedStatus == 'open' ? <Pressable //onPress={onPressHandler}
                 >
                     <FontAwesome
                         name={"envelope-open"}
@@ -34,7 +34,7 @@ const InvetationInboxComp = (props) => {
             </Pressable>
 
             <View style={styles.logo}>
-                <Image style={styles.img} source={require('../assets/photos/user.png')}/>
+                <Image style={styles.img} source={props.userPhoto}/>
             </View>
         </View>
     )

@@ -1,15 +1,28 @@
-import { StyleSheet, Text, View, Pressable,Image } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Pressable, Image } from 'react-native'
+import React, { useContext, useState } from 'react'
 import { colors } from '../assets/AppColors'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Entypo from "react-native-vector-icons/Entypo";
+import SearchContext from '../../store/SearchContext';
 
 const InvetationOutboxComp = (props) => {
-    const {eventTitle}= props
+    const { eventTypeInfo } = useContext(SearchContext);
+    const { eventTitle, eventLogoId } = props
+
+
+   
+
+    const getEventLogo = () => {
+        return eventTypeInfo.filter(item => {
+            return item.Id === eventLogoId
+        })
+    }
+    const [eventLogo, setEventLogo] = useState(getEventLogo())
+    console.log(">>", eventLogo[0].eventImg);
     return (
         <View style={styles.card}>
             <View style={styles.stutes}>
-                {props.invitStatus.sentStatus == 'unsend' ? <Pressable //onPress={onPressHandler}
+                {props.sentStatus == 'unsend' ? <Pressable //onPress={onPressHandler}
                 >
                     <FontAwesome
                         name={"send"}
@@ -30,7 +43,7 @@ const InvetationOutboxComp = (props) => {
             </View>
 
             <View style={styles.logo}>
-                <Image style={styles.img} source={require('../assets/photos/wedding.png')}/>
+                <Image style={styles.img} source={{uri : eventLogo[0]?.eventImg}} />
             </View>
         </View>
     )
@@ -55,7 +68,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: colors.silver,
-        borderWidth:2,
+        borderWidth: 2,
         borderColor: colors.puprble,
         borderRadius: 40
     },
@@ -77,8 +90,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.silver
     },
-    img:{
+    img: {
         width: '90%',
-        height: '90%',  
+        height: '90%',
     }
 })

@@ -56,10 +56,12 @@ const SetEventForRequest = (props) => {
     useEffect(() => {
         checkIfThereIsEvent()
         getEventTypeInfo()
+
         if (props.isfromClientShowRequest) {
             const eventData = filtereventInfo()
             const selEv = props?.selectedEvent
             const event = eventData?.find(item => item.EventId === selEv.eventId)
+           // console.log(">>", event);
             whenEventPress(event.EventId, event.eventTitleId, event.eventName)
         }
     }, [])
