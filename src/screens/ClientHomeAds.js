@@ -88,7 +88,7 @@ const ClientHomeAds = (props) => {
 
     const renderCampaigns = () => {
         const CampData = getCampaign();
-       // console.log("CampData",CampData);
+        // console.log("CampData",CampData);
         const campArray = CampData?.map(camp => {
             const serCamp = camp.serviceCamp
             const obj = {
@@ -160,7 +160,7 @@ const ClientHomeAds = (props) => {
             </View>
         )
     }
-
+   
 
     return (
         <ImageBackground style={styles.bg} source={require('../assets/photos/backgroundMain.png')}>
@@ -230,6 +230,15 @@ const ClientHomeAds = (props) => {
                 </Animated.View>
             </View>
 
+            {/* <Pressable style={{ alignSelf: 'center', borderWidth: 1 }} onPress={() => {
+                setx(x * 2)
+                console.log(x);
+            }} >
+                <Text style={{ fontSize: 60 }}>Add 1</Text>
+            </Pressable>
+
+            <Text style={{ fontSize: 60 }}>{x}</Text> */}
+
             {/* <Interactable.View
                 verticalOnly={true}
                 snapPoints={[{ y: 0 }, { y: -150 }]}
@@ -250,7 +259,7 @@ const ClientHomeAds = (props) => {
                         <Text style={styles.titleText}>{'الاكثر طلبا من' + ' ' + cat}</Text>
                     </View>
                     <View
-                    //style={{height: 360, borderWidth: 1}}
+                
                     >
                         {renderTopServices()}
                     </View>

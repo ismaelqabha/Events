@@ -75,70 +75,6 @@ const ClientCalendar = (props) => {
         setDateFromCalender(availableDates);
     };
 
-    const checkDateIsAvailable1 = (selectedDate) => {
-        const SerID = props.service_id || ''
-        const serviceDates = props.dates || [];
-        const maxNumOfReq = props.maxNumberOFRequest || 0;
-
-        const requestedDate = moment(selectedDate, "YYYY-MM-DD")
-
-        let startingDay = requestedDate.format('D')
-        let month = requestedDate.format('M')
-        let year = requestedDate.format('YYYY')
-        let daysInMonth = 0
-
-        let completeDate = year + '-' + month + '-' + startingDay
-        let startingDate = ''
-        const dateswithinPeriod = []
-        let day = startingDay
-        let period = (periodDatesforSearch * 2) + 1
-
-        if (periodDatesforSearch < 1) {
-            if (!checkDate(completeDate, serviceDates, SerID, maxNumOfReq)) {
-                return completeDate
-            }
-        } else {
-            for (var index = 0; index < periodDatesforSearch; index++) {
-                if (day == 0) {
-                    month--
-                    if (month < 1) {
-                        year--
-                        month = 12
-                    }
-                    daysInMonth = moment(year + '-' + month).daysInMonth()
-                    day = daysInMonth
-                }
-                startingDate = year + '-' + month + '-' + day
-                day--
-            }
-
-            let Day = day
-            let Month = month
-            let Year = year
-            for (var index = 0; index < period; index++) {
-                daysInMonth = moment(Year + '-' + Month).daysInMonth()
-                if (Day > daysInMonth) {
-                    Month++
-                    if (Month >= 12) {
-                        Year++
-                        Month = 1
-                    }
-                    daysInMonth = moment(Year + '-' + Month).daysInMonth()
-                    Day = 1
-                }
-                completeDate = Year + '-' + Month + '-' + Day
-                reqDate = new Date(completeDate)
-                if (!checkDate(completeDate, serviceDates, SerID, maxNumOfReq)) {
-                    if (reqDate > todayDate) {
-                        dateswithinPeriod.push(completeDate)
-                    }
-                }
-                Day++
-            }
-
-            return dateswithinPeriod
-        }
-    }
 
     const checkDateIsAvailable = (selectedDate) => {
        // const allRequests = props.serviceRequests || [];
@@ -189,7 +125,7 @@ const ClientCalendar = (props) => {
         getProviderRequests(queryInfo).then(res => {
            // console.log(res);
             if (res.message !== 'No Request') {
-                setProviderRequests(res)
+               // setProviderRequests(res)
             }
         })
 

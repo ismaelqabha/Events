@@ -16,12 +16,13 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import CampaignCard from '../../components/CampaignCard';
 import ClientCalender from '../../components/ClientCalender';
 import { showMessage } from '../../resources/Functions';
+import { getProviderRequests } from '../../resources/API';
 
 
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
     const servicePhone = props.route.params?.data?.servicePhone;
-    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender, ProviderRequests } = useContext(SearchContext);
+    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
 
     //console.log("data>>>", data);
     const [showModal, setShowModal] = useState(false);
@@ -37,21 +38,8 @@ const ServiceDescr = (props) => {
     const [isFromServiceDesc, setIsFromServiceDesc] = useState(true);
     const [subDetArray, setSubDetArray] = useState([]);
 
-    const [requestData, setRequestData] = useState(data.serviceRequests);
+    const [ProviderRequests, setProviderRequests] = useState(data.serviceRequests);
 
-
-
-
-
-    // const getRequestfromApi = () => {
-    //     getRequestbyUserId({ ReqUserId: userId }).then(res => {
-    //         if (res.message == 'no Request') {
-    //             setRequestData([])
-    //         } else {
-    //             setRequestData(res)
-    //         }
-    //     })
-    // }
 
 
     useEffect(() => {
@@ -72,23 +60,27 @@ const ServiceDescr = (props) => {
 
 
     const checkRequestBeforSending = () => {
+        if (ProviderRequests !== undefined) {
+            const reqResult = ProviderRequests.filter(item => {
+                return item.reservationDetail.find(element => {
 
-        const reqResult = ProviderRequests.filter(item => {
-            return item.reservationDetail.find(element => {
-
-                if (Array.isArray(requestedDate)) {
-                    return requestedDate.find(elemDate => {
-                        console.log(">>>", element.reservationDate, elemDate, element.reservationDate == elemDate);
-                        return elemDate == element.reservationDate
-                    })
-                } else {
-                    console.log(element.reservationDate, requestedDate, element.reservationDate == requestedDate);
-                    return element.reservationDate == requestedDate
-                }
+                    if (Array.isArray(requestedDate)) {
+                        return requestedDate.find(elemDate => {
+                            // console.log(">>>", element.reservationDate, elemDate, element.reservationDate == elemDate);
+                            return elemDate == element.reservationDate
+                        })
+                    } else {
+                        // console.log(element.reservationDate, requestedDate, element.reservationDate == requestedDate);
+                        return element.reservationDate == requestedDate
+                    }
+                })
             })
-        })
-        return reqResult
+            return reqResult
+        }else{
+            return 0
+        }
     }
+
 
     const onRequestPressHandler = () => {
         const result = checkRequestBeforSending()
@@ -803,7 +795,7 @@ const ServiceDescr = (props) => {
             }
             );
         } else {
-           // console.log("Service phone number is not available");
+            // console.log("Service phone number is not available");
             showMessage("Service phone number is not available")
         }
     };
