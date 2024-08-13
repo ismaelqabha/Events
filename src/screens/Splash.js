@@ -66,7 +66,7 @@ export default function Splash(props) {
 
     const LoginUser = () => {
         if (signInFlag || isGoogle) {
-            console.log("signing in!");
+            // console.log("signing in!");
             props.navigation.replace('Drawr')
             return
         }
@@ -94,7 +94,6 @@ export default function Splash(props) {
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
             // console.log("res", res);
-            console.log(res[0].userInfo.USER_ID);
             setUserInfo(res[0].userInfo)
              setEventInfo(res[0].userEvents)
             setuserId(res[0].userInfo.USER_ID)

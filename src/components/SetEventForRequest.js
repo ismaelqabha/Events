@@ -56,6 +56,7 @@ const SetEventForRequest = (props) => {
     useEffect(() => {
         checkIfThereIsEvent()
         getEventTypeInfo()
+
         if (props.isfromClientShowRequest) {
             const eventData = filtereventInfo()
             const selEv = props?.selectedEvent

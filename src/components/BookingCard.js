@@ -52,14 +52,6 @@ const BookingCard = (props) => {
             style={styles.img}
         />
     }
-    const renderDueScreenLogo = () => {
-        const index = images.logoArray?.findIndex((val) => val === true)
-        const img = images?.serviceImages[index]
-        return <Image
-            source={{ uri: img }}
-            style={styles.DueImg}
-        />
-    }
     const renderServTitle = () => {
         const obj = {
             ...data,
@@ -173,74 +165,10 @@ const BookingCard = (props) => {
             )
         })
     }
-
-
-    const renderDuePaySingleReq = () => {
-        return (
-            <Pressable style={styles.dueCard} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { services, requestCost, requestPayment })}>
-                <Text style={styles.itemTxt}>1000</Text>
-                <View style={{ alignItems: 'center' }}>
-                    {renderServTitle()}
-                    <Text style={styles.itemTxt}>{reservationDetail[0].reservationDate}</Text>
-                </View>
-
-                {renderDueScreenLogo()}
-            </Pressable>
-        )
-    }
-    const renderDuePayMultiReq = () => {
-        const reservationLength = reservationDetail.length
-        var label = ''
-        if (reservationLength === 2) {
-            label = 'حجز ليومين'
-        }
-        if (reservationLength > 2) {
-            label = { 'أيام': reservationLength }
-        }
-        return (
-            <Pressable style={styles.dueCard} 
-            //onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { requestCost, paymentDetail })}
-            >
-                <Text style={styles.itemTxt}>1000</Text>
-                <View style={{ alignItems: 'center' }}>
-                    {renderServTitle()}
-                    <Text style={styles.itemTxt}>{label}</Text>
-                </View>
-                {renderDueScreenLogo()}
-            </Pressable>
-        )
-    }
-
     const renderReqInfo = () => {
         let stutesType = ''
        // console.log("reservationDetail", reservationDetail.length);
         if (reservationDetail.length > 1) {
-
-            // if (fromclientDuePayment) {
-            //     var resDaysCount = 0
-            //     return props.reservationDetail.map(item => {
-            //         if (props.ReqStatus === 'partially paid' && item.reservationDate < todayDate) {
-            //             resDaysCount++
-            //         }
-            //         if (props.reservationDetail.length === resDaysCount) {
-            //             return (
-            //                 <View>
-            //                     {renderDuePayMultiReq()}
-            //                 </View>
-            //             )
-            //         }
-            //     })
-
-            // } else {
-            //     if (props.ReqStatus === 'partially paid') {
-            //         stutesType = 'محجوز'
-            //         return (
-            //             <View >
-            //                 {renderMultiRequests(stutesType)}
-            //             </View>
-            //         )
-            //     }
-            // }
 
             if (ReqStatus === 'partially paid') {
                 stutesType = 'محجوز مدفوع جزئي'
@@ -286,25 +214,7 @@ const BookingCard = (props) => {
 
 
         } else {
-            // if (fromclientDuePayment) {
-            //     if (props.ReqStatus === 'partally paid' && props.reservationDetail[0].reservationDate < todayDate) {
-            //         return (
-            //             <View>
-            //                 {renderDuePaySingleReq()}
-            //             </View>
-            //         )
-            //     }
-            // } else {
-            //     if (props.ReqStatus === 'partally paid') {
-            //         stutesType = 'محجوز'
-            //         return (
-            //             <View >
-            //                 {renderSingleRequest(stutesType)}
-            //             </View>
-            //         )
-            //     }
-            // }
-
+          
             if (ReqStatus === 'partially paid') {
                 stutesType = 'محجوز مدفوع جزئي'
                 return (

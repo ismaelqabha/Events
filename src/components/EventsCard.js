@@ -1,19 +1,17 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Image, Pressable, Modal, Alert, ToastAndroid, TextInput } from 'react-native';
-import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from "../../route/ScreenNames";
 import SearchContext from '../../store/SearchContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { SelectList } from 'react-native-dropdown-select-list';
-import 'react-native-get-random-values'
-import { v4 as uuidv4 } from 'uuid';
 import { deleteEventInfo, updateEvent } from '../resources/API';
 import moment from 'moment';
 import 'moment/locale/ar-dz'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Feather from 'react-native-vector-icons/Feather'
 import Entypo from "react-native-vector-icons/Entypo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { colors } from '../assets/AppColors';
 import UsersContext from '../../store/UsersContext';
 
@@ -51,7 +49,6 @@ const EventsCard = (props) => {
     //console.log("requestInfoAccUser", requestInfoAccUser[0].requestInfo);
 
     const getEventTitle = () => {
-
         return eventTypeInfo.filter(item => {
             return item.Id === eventTitleId
         })
@@ -61,9 +58,12 @@ const EventsCard = (props) => {
 
     const filterReqAccEventFile = () => {
         if (requestInfoAccUser.message !== "no Request") {
-            return requestInfoAccUser?.filter(item => {
-                return item.requestInfo.ReqEventId === EventId
+            const searchReq = requestInfoAccUser.filter(item => {
+                return item.requestInfo.find(element => {
+                    return element.serviceRequest[0].ReqEventId === EventId
+                })
             })
+            return searchReq
         } else {
             return []
         }
@@ -199,7 +199,6 @@ const EventsCard = (props) => {
                         <View style={{ width: '100%', marginTop: 20 }}>
                             <SelectList
                                 data={eventTypeName}
-
                                 setSelected={val => {
                                     setEventType(val);
                                 }}
@@ -305,6 +304,26 @@ const EventsCard = (props) => {
         })
     }
 
+    // create invetation
+    const createInvitationPress = () => {
+        Alert.alert(
+            'تأكيد',
+            'هل ترغب في اِنشاء بطاقة دعوة لعلاقاتك ؟ ',
+            [
+                {
+                    text: 'لا',
+                    style: 'cancel',
+                },
+                {
+                    text: 'نعم',
+                    onPress: () => navigation.navigate(ScreenNames.CreateInvetation, { eventTitle : eventTitle[0]?.eventTitle }),
+                    style: 'destructive', // Use 'destructive' for a red-colored button
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    }
+
     /// deleting event info section
 
     const deletingEventPress = () => {
@@ -327,6 +346,7 @@ const EventsCard = (props) => {
     }
     const removingEvent = () => {
         deleteEventInfo({ EventId: EventId }).then(res => {
+            console.log(res.message);
             if (res.message === "Deleted Sucessfuly") {
                 const delData = eventInfo
                 const newData = delData?.filter(item => item?.EventId !== EventId)
@@ -366,10 +386,14 @@ const EventsCard = (props) => {
             <Pressable style={styles.card} onPress={onCaardPress} onLongPress={whenPressLong}>
 
                 <View style={styles.titlee}>
+
+                    <Pressable style={styles.invitView} onPress={createInvitationPress}>
+                        <MaterialIcons name='insert-invitation' size={30} color={colors.puprble} />
+                    </Pressable>
+
                     <Text style={styles.eventTxt}>{eventName}</Text>
 
-                    <View style={{ flexDirection: 'row', position: 'absolute', right: 0 }}>
-
+                    <View style={styles.updateView}>
                         {deleteEvent &&
                             <Pressable style={{ margin: 10 }} onPress={deletingEventPress}>
                                 <AntDesign name='delete' size={20} color={colors.silver} />
@@ -382,10 +406,9 @@ const EventsCard = (props) => {
                     </View>
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: "50%" }}>
+                <View style={styles.body}>
 
                     <View style={styles.rightView}>
-
                         {eventDate.length === 0 ? <Text style={styles.text}>الموعد غير محدد</Text> :
                             <View>
                                 {eventDate.length > 1 ?
@@ -406,6 +429,7 @@ const EventsCard = (props) => {
                         <Image style={styles.eventLogo} source={{ uri: eventTitle[0]?.eventImg }} />
                     </View>
                 </View>
+
                 <View style={styles.footer}>
                     <Text style={styles.text}>
                         {eventCost ? ("₪" + eventCost) : 0}
@@ -442,8 +466,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         elevation: 5,
         width: '90%',
-        height: 200,
-        margin: 5
+        height: '90%',
+        marginVertical: 10
     },
     card2: {
         borderRadius: 20,
@@ -456,9 +480,22 @@ const styles = StyleSheet.create({
     titlee: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         width: '100%',
         height: "25%",
+        // borderWidth: 1
+    },
+    updateView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: '100%',
+    },
+    invitView: {
+        width: "15%",
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+       
     },
     eventNameView: {
         width: '100%',
@@ -598,7 +635,16 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: 'black',
         marginTop: 20
+    },
+
+    body: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        height: "50%",
+        alignItems: 'center',
+        // borderWidth: 1
     }
+
 })
 
 export default EventsCard;

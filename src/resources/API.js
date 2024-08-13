@@ -91,27 +91,6 @@ export const createNewPayment = async body => {
 };
 
 
-//Service Detail
-// export const getServiceDetail = async body => {
-//   const url = 'serviceDetail/getServiceDetailByServID';
-//   return await AppFetch(url, 'POST', body);
-// };
-
-
-// //Service sub Detail
-// export const getServiceSubDetail = async body => {
-//   const url = 'subDetail/getSubDetail';
-//   return await AppFetch(url, 'POST', body);
-// };
-// export const getOrderSubdetailInfo = async body => {
-//   const url = 'OrderServiceDetail/getOrderDetailById';
-//   return await AppFetch(url, 'POST', body);
-// };
-// export const addNewOrderDetail = async body => {
-//   const url = 'OrderServiceDetail/addOrderDetail';
-//   return await AppFetch(url, 'POST', body);
-// };
-
 
 //Event
 export const getEventsInfo = async body => {
@@ -147,6 +126,10 @@ export const getRequestsAndUsersByServiceId = async (body) => {
 }
 export const getRequestInfoWithservice = async (body) => {
   const url = 'Request/getRequestService'
+  return await AppFetch(url, 'POST', body)
+}
+export const getProviderRequests = async (body) => {
+  const url = 'Request/getAllRequestsForService'
   return await AppFetch(url, 'POST', body)
 }
 export const addNewRequest = async (body) => {

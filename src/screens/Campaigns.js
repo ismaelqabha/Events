@@ -6,11 +6,12 @@ import { ScreenNames } from '../../route/ScreenNames';
 import AntDesign from "react-native-vector-icons/AntDesign";
 import SearchContext from '../../store/SearchContext';
 import moment from 'moment';
+import { getProviderRequests } from '../resources/API';
 
 
 const Campaigns = (props) => {
     const { data, isFromServiceDesc, serviceData } = props?.route.params
-    const { ServiceDataInfo } = useContext(SearchContext);
+    const { ServiceDataInfo, ProviderRequests, setProviderRequests } = useContext(SearchContext);
 
 
     const [date, setDate] = useState(new Date());
@@ -73,22 +74,30 @@ const Campaigns = (props) => {
             </View>
         )
     }
-    const countAllRequestDates = (allRequests, dataforReservation) => {
-        var countAllDates = 0
-        allRequests.forEach(item => {
-            item.reservationDetail.forEach(element => {
-                if (element.reservationDate == dataforReservation) {
-                    countAllDates += 1
-                }
-            });
+
+    const getProividerRequestsForDate = (servicId, dataforReservation) => {
+
+        const queryInfo = {
+            ReqServId: servicId,
+            reservationDetail: [{ reservationDate: dataforReservation }]
+        }
+        getProviderRequests(queryInfo).then(res => {
+            //console.log(res);
+            if (res.message !== 'No Request') {
+                setProviderRequests(res)
+            }
         })
-        return countAllDates
+
     }
-    const checkDate = (dataforReservation, source, allRequests, maxNumOfReq) => {
-        //console.log("allRequests", allRequests);
-        const countAllDates = countAllRequestDates(allRequests, dataforReservation)
+    const countAllRequestDates = (servicId, dataforReservation) => {
+        getProividerRequestsForDate(servicId, dataforReservation)
+        const countAllReq = ProviderRequests.length
+
+        return countAllReq
+    } 
+    const checkDate = (dataforReservation, source, serviceId, maxNumOfReq) => {
+        const countAllDates = countAllRequestDates(serviceId, dataforReservation)
         const servicedate = source
-        console.log(countAllDates, maxNumOfReq);
         if (countAllDates < maxNumOfReq) {
 
             const DateFiltered = servicedate[0].dates?.find(dat => {
@@ -105,7 +114,7 @@ const Campaigns = (props) => {
             return true
         }
     }
-    const findFirstDateAvailable = (serviceDates, allRequests, maxNumOfReq) => {
+    const findFirstDateAvailable = (serviceDates, serviceId, maxNumOfReq) => {
 
         var daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
         let completeDate = ''
@@ -115,7 +124,7 @@ const Campaigns = (props) => {
                 daysInMonth = moment((currentYear + 1) + '-' + (currentMonth - 11)).daysInMonth()
                 for (var day = 1; day <= daysInMonth; day++) {
                     completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
-                    if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                    if (!checkDate(completeDate, serviceDates, serviceId, maxNumOfReq)) {
                         break
                     }
                 }
@@ -124,7 +133,7 @@ const Campaigns = (props) => {
                 daysInMonth = moment(currentYear + '-' + (currentMonth + 1)).daysInMonth()
                 for (var day = 1; day <= daysInMonth; day++) {
                     completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
-                    if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                    if (!checkDate(completeDate, serviceDates, serviceId, maxNumOfReq)) {
                         break
                     }
                 }
@@ -132,7 +141,7 @@ const Campaigns = (props) => {
         } else {
             for (var day = currentDate; day <= daysInMonth; day++) {
                 completeDate = currentYear + '-' + currentMonth + '-' + day
-                if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                if (!checkDate(completeDate, serviceDates, serviceId, maxNumOfReq)) {
                     break
                 }
             }
@@ -141,7 +150,7 @@ const Campaigns = (props) => {
         return completeDate
     };
     const onCheckAvailablePress = () => {
-        const firstDate = findFirstDateAvailable(data.serviceDates, data.serviceRequests, data.serviceData.maxNumberOFRequest)
+        const firstDate = findFirstDateAvailable(data.serviceDates, data.serviceData.service_id, data.serviceData.maxNumberOFRequest)
         relatedCamp = {
             CampId: data.CampId,
             campCatType: data.campCatType,
@@ -157,6 +166,7 @@ const Campaigns = (props) => {
             serviceId: data.serviceId
         }
         const serviceInfoObj = {
+            service_id: data.serviceData.service_id,
             additionalServices: data.serviceData.additionalServices,
             socialMedia: data.serviceData.socialMedia,
             title: data.serviceData.title,

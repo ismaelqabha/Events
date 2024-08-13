@@ -15,6 +15,7 @@ import { hallData } from '../../resources/data';
 import { colors } from '../../assets/AppColors';
 import HomeCards from '../../components/HomeCards';
 import ClientCalender from '../../components/ClientCalender';
+import { getProviderRequests } from '../../resources/API';
 
 
 
@@ -28,6 +29,7 @@ const Results = (props) => {
         yearforSearch,
         periodDatesforSearch, setperiodDatesforSearch,
         regionData, setRequestInfo,
+        ProviderRequests, setProviderRequests
     } = useContext(SearchContext);
 
     const { hallType } = useContext(ServiceProviderContext)
@@ -47,6 +49,7 @@ const Results = (props) => {
     const [selectRigon, setSelectRigon] = useState("");
     const [guestNum, setGuestNum] = useState(0)
     const [selectHallType, setSelectHallType] = useState('')
+
 
 
     const [sliding, setSliding] = useState('Inactive');
@@ -80,7 +83,7 @@ const Results = (props) => {
 
     useEffect(() => {
         fillCities(regionData)
-        // getRequestfromApi()
+        // getProividerRequestsForDate("661059d64cc4ba7664305a1a","2024-8-10")
     }, [])
 
     const fillCities = (regions) => {
@@ -125,93 +128,109 @@ const Results = (props) => {
 
     // check available date part 
 
-    const checkMonthAvailableDate = (serviceDates) => {
-        const requestedMonth = objectResult.selectMonthforSearch;
-        const daysInMonth = moment(yearforSearch + '-' + requestedMonth).daysInMonth()
-        let completeDate = ''
-        const datesOfSelectedMonth = []
-        for (var day = 1; day <= daysInMonth; day++) {
-            completeDate = yearforSearch + '-' + requestedMonth + '-' + day
-            if (!checkDate(completeDate, serviceDates)) {
-                datesOfSelectedMonth.push(completeDate)
-            }
+    const getProividerRequestsForDate = (servicId, dataforReservation) => {
+
+        const queryInfo = {
+            ReqServId: servicId,
+            reservationDetail: [{ reservationDate: dataforReservation }]
         }
-        return datesOfSelectedMonth
-    }
-    const countAllRequestDates = (allRequests, dataforReservation) => {
-        var countAllDates = 0
-        allRequests.forEach(item => {
-            item.reservationDetail.forEach(element => {
-                if (element.reservationDate == dataforReservation) {
-                    countAllDates += 1
-                }
-            });
+        getProviderRequests(queryInfo).then(res => {
+            //console.log("res", res);
+            if (res.message !== 'No Request') {
+                //setProviderRequests(res)
+            }
+            return res
         })
-        return countAllDates
+
     }
-    const checkDate = (dataforReservation, source, allRequests, maxNumOfReq) => {
-        //console.log("allRequests", allRequests);
-        const countAllDates = countAllRequestDates(allRequests, dataforReservation)
+    var serviceRequestsArray = []
+
+    const countAllRequestDates = (servicId, dataforReservation) => {
+        //const result = getProividerRequestsForDate(servicId, dataforReservation)
+        var countAllReq = 0
+        serviceRequestsArray = []
+
+        const queryInfo = {
+            ReqServId: servicId,
+            reservationDetail: [{ reservationDate: dataforReservation }]
+        }
+        getProviderRequests(queryInfo).then(res => {
+
+            if (res.message !== 'No Request') {
+
+            }
+
+            countAllReq = res.length
+           
+            serviceRequestsArray.push(res)
+            console.log(countAllReq);
+            console.log("00000",serviceRequestsArray[1]);
+        })
+
+        return countAllReq
+    }
+
+
+    const checkDate = (dataforReservation, source, servicId, maxNumOfReq) => {
+        const countAllDates = countAllRequestDates(servicId, dataforReservation)
         const servicedate = source
+
         if (countAllDates < maxNumOfReq) {
 
             const DateFiltered = servicedate[0].dates?.find(dat => {
-                if (servicedate[0].dates.length > 1) {
+                if (servicedate[0].dates.length > 0) {
                     return dat.time === dataforReservation && (dat.status === 'full' || dat.status === 'holiday')
                 } else {
                     return dataforReservation
                 }
             });
-
             return !!DateFiltered
 
         } else {
             return true
         }
     }
-    const comparingDates = (dateAviable, source, allRequests, maxNumOfReq) => {
+    const comparingDates = (dateAviable, source, servicId, maxNumOfReq) => {
         if ((!!objectResult.selectDateforSearch)) {
             return dateAviable
         } else {
-            return findFirstDateAvailable(source, allRequests, maxNumOfReq)
+            return findFirstDateAvailable(source, servicId, maxNumOfReq)
         }
     }
-    const findFirstDateAvailable = (serviceDates, allRequests, maxNumOfReq) => {
+    const findFirstDateAvailable = (serviceDates, servicId, maxNumOfReq) => {
 
         var daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
-         let completeDate = ''
+        let completeDate = ''
 
         if (currentDate > daysInMonth) {
+
             if ((currentMonth + 1) > 12) {
                 daysInMonth = moment((currentYear + 1) + '-' + (currentMonth - 11)).daysInMonth()
-                for (var day = 1; day <= daysInMonth; day++) {
-                    completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
-                    if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
-                        break
-                    }
-                }
             } else {
-
                 daysInMonth = moment(currentYear + '-' + (currentMonth + 1)).daysInMonth()
-                for (var day = 1; day <= daysInMonth; day++) {
-                    completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
-                    if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
-                        break
-                    }
+            }
+
+            for (var day = 1; day <= daysInMonth; day++) {
+
+                completeDate = currentYear + '-' + (currentMonth + 1) + '-' + day
+
+                if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
+                    break
                 }
             }
+
         } else {
             for (var day = currentDate; day <= daysInMonth; day++) {
                 completeDate = currentYear + '-' + currentMonth + '-' + day
-                if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
                     break
                 }
             }
         }
-        
+
         return completeDate
     };
-    const checkDateIsAvilable = (serviceDates, allRequests, maxNumOfReq) => {
+    const checkDateIsAvilable = (serviceDates, servicId, maxNumOfReq) => {
         const requestedDate = moment(objectResult.selectDateforSearch, "YYYY-MM-DD")
 
         let startingDay = requestedDate.format('D')
@@ -226,7 +245,8 @@ const Results = (props) => {
         let period = (periodDatesforSearch * 2) + 1
 
         if (periodDatesforSearch < 1) {
-            if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+
+            if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
                 return completeDate
             }
         } else {
@@ -260,7 +280,7 @@ const Results = (props) => {
                 }
                 completeDate = Year + '-' + Month + '-' + Day
                 requestDate = new Date(completeDate)
-                if (!checkDate(completeDate, serviceDates, allRequests, maxNumOfReq)) {
+                if (!checkDate(completeDate, serviceDates, servicId, maxNumOfReq)) {
                     if (requestDate > todayDate) {
                         dateswithinPeriod.push(completeDate)
                     }
@@ -271,13 +291,13 @@ const Results = (props) => {
             return dateswithinPeriod
         }
     }
-    const dataSearchResult = () => {
-        const data = query();
-        const filtered = data?.filter(item => {
 
-            const avaiablespecificDate = checkDateIsAvilable(item.serviceDates, item.serviceRequests, item.serviceData.maxNumberOFRequest);
+    const dataSearchResult = () => {
+        const data = query()
+        const filtered = data?.filter(item => {
+            const avaiablespecificDate = checkDateIsAvilable(item.serviceDates, item.serviceData.service_id, item.serviceData.maxNumberOFRequest);
             // const AvilableDaysInMonth = checkMonthAvailableDate(item.serviceDates);
-            const result = comparingDates(avaiablespecificDate, item.serviceDates, item.serviceRequests, item.serviceData.maxNumberOFRequest)
+            const result = comparingDates(avaiablespecificDate, item.serviceDates, item.serviceData.service_id, item.serviceData.maxNumberOFRequest)
 
             const isCitySelect = objectResult.cityselected === '' ? true : item.serviceData.address == objectResult.cityselected
             const isRiogenSelect = objectResult.regionselect === '' ? true : item.serviceData.region == objectResult.regionselect
@@ -292,13 +312,13 @@ const Results = (props) => {
     }
     const renderCard = () => {
         const data = dataSearchResult();
-        // console.log("data ", data);
-        const cardsArray = data?.map(card => {
+        const cardsArray = data?.map((card, index) => {
+            console.log(">>>>",index, serviceRequestsArray[index]);
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
                 relatedCamp={card?.serviceCamp}
-                serviceRequests={card?.serviceRequests}
+                serviceRequests={serviceRequestsArray[index]}
                 availableDates={card?.readyDates}
             />;
         });
@@ -414,7 +434,6 @@ const Results = (props) => {
     const addressComp = () => {
         return (
             <View style={{ flex: 1 }}>
-                {/* <Text style={styles.bodyText}>في أي مدينة او منطقة تبحث</Text> */}
                 <View style={styles.insideView}>
                     <View style={styles.selectView}>
                         <SelectList
@@ -434,7 +453,6 @@ const Results = (props) => {
                             }
                             data={renderRegion}
                             save="value"
-                            // onSelect={() => console.log(select)}
                             label="المناطق المختارة"
                             placeholder='اختر المنطقة'
                             boxStyles={styles.dropdown}

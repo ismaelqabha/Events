@@ -47,6 +47,7 @@ const SearchProvider = props => {
   const [updatedEventDate, setUpdatedEventDate] = useState()
   const [eventTotalCost, setEventTotalCost] = useState()
   const [fileEventName, setfileEventName] = useState();
+  const [ProviderRequests, setProviderRequests] = useState([]);
 
 
 
@@ -175,7 +176,8 @@ const SearchProvider = props => {
         setCampiegnsAccordingServiceId,
         regionData, setRegionData,
         totalPrice, setTotalPrice,
-        bookingDates, setBookingDates
+        bookingDates, setBookingDates,
+        ProviderRequests, setProviderRequests
 
       }}>
       {props.children}

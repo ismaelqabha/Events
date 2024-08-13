@@ -201,7 +201,7 @@ const ClientRequest = (props) => {
 
         eventItemIndex = eventInfo?.findIndex(item => item.EventId === EVENTID && item.userId === userId)
 
-        console.log(EVENTID, userId);
+       // console.log(EVENTID, userId);
         const newEventItem = {
             EventId: EVENTID,
             eventName: fileEventName,
