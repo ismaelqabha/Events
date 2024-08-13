@@ -1,4 +1,4 @@
- const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = 'https://ev-server.onrender.com/';
 //const baseUrl = "http://localhost:7000/"
 
 
@@ -54,6 +54,10 @@ export const searchUsersAPI = async (body) => {
 }
 export const addFriend = async (body) => {
   const url = 'Users/addFriend';
+  return await AppFetch(url, 'POST', body);
+}
+export const updateRelation = async (body) => {
+  const url = 'Users/updateFriend';
   return await AppFetch(url, 'POST', body);
 }
 

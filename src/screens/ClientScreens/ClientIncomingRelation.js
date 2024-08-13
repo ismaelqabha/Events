@@ -4,15 +4,18 @@ import { View, StyleSheet, Text, ScrollView, Pressable, Image } from 'react-nati
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { images } from '../../assets/photos/images';
 import { colors } from '../../assets/AppColors';
+import { updateRelation } from '../../resources/API';
+import { showMessage } from '../../resources/Functions';
+import { formatDistanceToNow } from 'date-fns';
 
 
 
 const ClientIncomingRelation = (props) => {
-
+    const [pendingRelations, setPendingRelations] = useState(props.route.params.pendingRelations || []);
+    const { setRelations } = props.route.params || {};
     const onPressHandler = () => {
         props.navigation.goBack();
     }
-
     const renderHeader = () => {
         return (
             <View style={styles.headerImg}>
@@ -32,55 +35,96 @@ const ClientIncomingRelation = (props) => {
         )
     }
 
-    const renderRequestCard = () => {
+    /**
+     * Handles the user action for accepting or refusing a relationship request.
+     * @param {'accept' | 'refuse'} action - The action to be performed. Can be either "accept" or "refuse".
+     * @param {string} relationId - The ID of the relationship to be updated.
+     */
+    const handleAction = (action, relationId) => {
+        const status = action === 'accept' ? 'accepted' : 'rejected';
+
+        // Call API to update the relationship status
+        updateRelation({ friendshipId: relationId, status })
+            .then((res) => {
+                console.log("response ", res);
+                showMessage(res?.message || "error updating");
+
+                if (res?.message && res.user) {
+                    // Update pendingRelations by filtering out the handled relation
+                    setPendingRelations(prevRelations =>
+                        prevRelations.filter(relation => relation.friendshipDetails.friendshipId !== relationId)
+                    );
+
+                    // Update relations state
+                    setRelations(prevRelations => {
+                        // Find index of the relation to be updated
+                        const index = prevRelations.findIndex(relation => relation.friendshipDetails.friendshipId === relationId);
+
+                        // If the relation is found, update it with new data
+                        if (index !== -1) {
+                            const updatedRelation = {
+                                ...prevRelations[index],
+                                friendshipDetails: {
+                                    ...prevRelations[index].friendshipDetails,
+                                    status: res.user.status || "pending",
+                                    // Add any other fields you want to update
+                                    createdAt: res.user.createdAt,
+                                    updatedAt: res.user.updatedAt
+                                },
+                                userInfo: {
+                                    ...prevRelations[index].userInfo,
+                                    ...res.user.userInfo
+                                }
+                            };
+
+                            // Replace the old relation with the updated one
+                            const newRelations = [...prevRelations];
+                            newRelations[index] = updatedRelation;
+                            return newRelations;
+                        }
+
+                        return prevRelations;
+                    });
+                }
+            })
+            .catch((e) => {
+                console.error(e);
+                showMessage("error updating, please try again");
+            });
+    };
+
+
+    const renderRequestCard = (relation) => {
+        const { User_name, UserPhoto } = relation.userInfo;
+        const { friendshipId, createdAt } = relation.friendshipDetails
+        const timeAgo = createdAt ? formatDistanceToNow(new Date(createdAt), { addSuffix: true }) : 'Unknown time';
         return (
-            <View style={styles.card}>
+            <View style={styles.card} key={relation.userInfo.USER_ID}>
                 <View style={styles.cardInfo}>
-                    <View style={{marginVertical: 10}}>
-                        <Text style={styles.infoTxt}>أحمد كبها</Text>
-                        <Text style={styles.timeTxt}>منذ 3 ساعات</Text>
+                    <View style={{ marginVertical: 10 }}>
+                        <Text style={styles.infoTxt}>{User_name}</Text>
+                        <Text style={styles.timeTxt}>{timeAgo}</Text>
                     </View>
                     <View style={styles.buttonView}>
-                        <Pressable style={styles.refusPressView}>
+                        <Pressable style={styles.refusPressView} onPress={() => handleAction("refuse", friendshipId)}>
                             <Text style={styles.infoTxt}>رفض</Text>
                         </Pressable>
-                        <Pressable style={styles.acceptPressView}>
+                        <Pressable style={styles.acceptPressView} onPress={() => handleAction("accept", friendshipId)}>
                             <Text style={styles.infoTxt}>موافقة</Text>
                         </Pressable>
                     </View>
                 </View>
-                <Image source={images.profileMalePicture} style={{ width: 80, height: 80, borderRadius: 50 }} />
+                <Image source={{ uri: UserPhoto }} style={{ width: 80, height: 80, borderRadius: 50 }} />
             </View>
-        )
-    }
-    const renderRequestCard2 = () => {
-        return (
-            <View style={styles.card}>
-                <View style={styles.cardInfo}>
-                    <View style={{marginVertical: 10}}>
-                        <Text style={styles.infoTxt}>خالد عبد الوهاب علي</Text>
-                        <Text style={styles.timeTxt}>منذ 3 ايام</Text>
-                    </View>
-                    <View style={styles.buttonView}>
-                        <Pressable style={styles.refusPressView}>
-                            <Text style={styles.infoTxt}>رفض</Text>
-                        </Pressable>
-                        <Pressable style={styles.acceptPressView}>
-                            <Text style={styles.infoTxt}>موافقة</Text>
-                        </Pressable>
-                    </View>
-                </View>
-                <Image source={images.profileMalePicture} style={{ width: 80, height: 80, borderRadius: 50 }} />
-            </View>
-        )
-    }
+        );
+    };
+
     return (
         <View style={styles.container}>
             {renderHeader()}
             <View style={styles.body}>
                 <ScrollView contentContainerStyle={styles.contentContainerStyle}>
-                    {renderRequestCard()}
-                    {renderRequestCard2()}
+                    {pendingRelations?.map((relation) => renderRequestCard(relation)) || null}
                 </ScrollView>
             </View>
         </View>

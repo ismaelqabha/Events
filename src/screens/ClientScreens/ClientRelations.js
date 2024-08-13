@@ -14,8 +14,8 @@ const ClientRelations = (props) => {
   const [searched, setSearched] = useState('')
   const [searchResults, setSearchResults] = useState([]);
   const slideInAnimation = useRef(new Animated.Value(0)).current;
-  const { relations, loading } = props.route.params || []
-
+  const { relations: reciRelations, loading } = props.route.params || []
+  const [relations, setRelations] = useState(reciRelations)
 
   const searchUsers = async (query) => {
     try {
@@ -63,11 +63,12 @@ const ClientRelations = (props) => {
   }
 
   const searchBar = () => {
+    const pendingRelations = relations?.filter(relation => relation?.friendshipDetails?.status === "pending")
     return (
       <View style={styles.searchView}>
-        <Pressable style={styles.addRelaView} onPress={() =>props.navigation.navigate(ScreenNames.ClientIncomingRelation)}>
+        <Pressable style={styles.addRelaView} onPress={() => props.navigation.navigate(ScreenNames.ClientIncomingRelation, { pendingRelations, setRelations })}>
           <Ionicons name={"person-add"} color={colors.puprble} size={30} />
-          <Text style={styles.addRelaText}>2</Text>
+          <Text style={styles.addRelaText}>{pendingRelations?.length || 0}</Text>
         </Pressable>
 
         <View style={styles.searchbar}>
@@ -98,12 +99,13 @@ const ClientRelations = (props) => {
         useNativeDriver: true,
       }).start();
     }, []);
-
     return (
       <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
         <Pressable onPress={() => goToProfile(user?.userInfo)}>
           <Text style={styles.basicInfo}>{user?.userInfo?.User_name}</Text>
-          <Text style={styles.basicInfoTitle}>{user?.userInfo?.relationshipType}</Text>
+          {user?.friendshipDetails?.status === "pending" ? <Text style={styles.basicInfoTitle}>{user?.friendshipDetails?.status}</Text>
+            : <Text style={styles.basicInfoTitle}>{user?.friendshipDetails?.relationshipType}</Text>
+          }
         </Pressable>
         <Image source={{ uri: user.userInfo?.UserPhoto }} style={styles.ImageView} />
       </Animated.View>
@@ -143,7 +145,7 @@ const ClientRelations = (props) => {
               <View style={styles.relationLabelView}>
                 <Text style={styles.relationLabelText}>علاقات جديدة</Text>
               </View>
-              {friends(searchResults)}
+              {friends(searchResults, true)}
             </View>
           )
           }
