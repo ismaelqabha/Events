@@ -59,8 +59,13 @@ const SetEventForRequest = (props) => {
         if (props.isfromClientShowRequest) {
             const eventData = filtereventInfo()
             const selEv = props?.selectedEvent
-            const event = eventData?.find(item => item.EventId === selEv.eventId)
-            whenEventPress(event.EventId, event.eventTitleId, event.eventName)
+            const event = eventData?.find(item => item.EventId === selEv.EventId)
+            console.log("selEv ", selEv);
+            console.log("event ", event);
+
+            if (event) {
+                whenEventPress(event.EventId, event.eventTitleId, event.eventName)
+            }
         }
     }, [])
 
