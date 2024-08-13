@@ -24,7 +24,7 @@ const ClientCalendar = (props) => {
     const todayDate = new Date().setHours(0, 0, 0, 0);
 
     var reqDate
-    
+
 
     useEffect(() => {
         onScreenLoad();
@@ -77,8 +77,8 @@ const ClientCalendar = (props) => {
 
 
     const checkDateIsAvailable = (selectedDate) => {
-       // const allRequests = props.serviceRequests || [];
-       const SerID = props.service_id || ''
+        // const allRequests = props.serviceRequests || [];
+        const SerID = props.service_id || ''
         const serviceDates = props.dates || [];
         const maxNumOfReq = props.maxNumberOFRequest || 0;
         const requestedDate = moment(selectedDate, "YYYY-MM-DD");
@@ -89,29 +89,30 @@ const ClientCalendar = (props) => {
         let completeDate = year + '-' + month + '-' + day
 
         if (periodDatesforSearch < 1) {
-            if (checkDate(completeDate, serviceDates,SerID, maxNumOfReq)) {
+            if (checkDate(completeDate, serviceDates, SerID, maxNumOfReq)) {
                 return completeDate
             }
         } else {
-            const datesWithinPeriod = getDatesWithinPeriod(requestedDate, serviceDates,SerID, maxNumOfReq);
+            const datesWithinPeriod = getDatesWithinPeriod(requestedDate, serviceDates, SerID, maxNumOfReq);
             if (datesWithinPeriod.length > 0) {
                 return datesWithinPeriod
             }
         }
     };
-    const getDatesWithinPeriod = (requestedDate, serviceDates,SerID, maxNumOfReq) => {
+    const getDatesWithinPeriod = (requestedDate, serviceDates, SerID, maxNumOfReq) => {
         const datesWithinPeriod = [];
         let period = (periodDatesforSearch * 2) + 1;
         let day = requestedDate.date();
         let month = requestedDate.month() + 1;
         let year = requestedDate.year();
 
-        for (let i = 0; i < period; i++) {
-            const completeDate = `${year}-${month}-${day}`;
-            if (checkDate(completeDate, serviceDates,SerID, maxNumOfReq) && new Date(completeDate) > todayDate) {
-                datesWithinPeriod.push(completeDate);
+        for (let i = -periodDatesforSearch; i <= periodDatesforSearch; i++) {
+            const currentDate = new Date(year, month - 1, day + i);
+            const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+
+            if (checkDate(formattedDate, serviceDates, SerID, maxNumOfReq) && new Date(formattedDate) > todayDate) {
+                datesWithinPeriod.push(formattedDate);
             }
-            day++;
         }
         return datesWithinPeriod;
     };
@@ -123,15 +124,15 @@ const ClientCalendar = (props) => {
             reservationDetail: [{ reservationDate: dataforReservation }]
         }
         getProviderRequests(queryInfo).then(res => {
-           // console.log(res);
+            // console.log(res);
             if (res.message !== 'No Request') {
-               // setProviderRequests(res)
+                // setProviderRequests(res)
             }
         })
 
     }
-    const countAllRequestDates = (SerID,date) => {
-       
+    const countAllRequestDates = (SerID, date) => {
+
         getProividerRequestsForDate(SerID, date)
         const countAllReq = ProviderRequests.length
         return countAllReq
@@ -142,8 +143,8 @@ const ClientCalendar = (props) => {
             count + request.reservationDetail.filter(detail => detail.reservationDate === date).length, 0);
     };
 
-    const checkDate = (date, serviceDates,SerID, maxNumOfReq) => {
-        const countAllDates = countAllRequestDates(SerID,date);
+    const checkDate = (date, serviceDates, SerID, maxNumOfReq) => {
+        const countAllDates = countAllRequestDates(SerID, date);
         if (countAllDates < maxNumOfReq) {
             const dateFiltered = serviceDates[0]?.dates.find(dat =>
                 dat.time === date && (dat.status === 'full' || dat.status === 'holiday'));
