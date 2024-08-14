@@ -6,7 +6,9 @@ import { colors } from '../assets/AppColors';
 
 
 const InvetationCard = (props) => {
-    const { eventTitle } = props
+    const { eventType, isFromInvetShow, eventTitle, invitationCard, eventLogoId } = props
+
+    console.log(isFromInvetShow);
 
     const weddingCaller = 'أسم الداعي الاول'
     const regulerEventCaller = 'أسم الداعي'
@@ -23,10 +25,11 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
-                    placeholder={eventTitle == 'زواج' ? weddingCaller : regulerEventCaller}
+                    placeholder={eventType == 'زواج' ? weddingCaller : regulerEventCaller}
                     onChangeText={setFirstCallName}
+                    value={isFromInvetShow && invitationCard.callerNames[0]}
                 />
             </View>
         )
@@ -35,10 +38,11 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
                     placeholder={'اسم الداعي الثاني'}
-                    onChangeText={setSecondCallName} />
+                    onChangeText={setSecondCallName}
+                    value={isFromInvetShow && invitationCard.callerNames[1]} />
             </View>
         )
     }
@@ -46,10 +50,11 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
-                    placeholder={eventTitle == 'زواج' ? weddingStar : eventStar}
-                    onChangeText={setFirstStName} />
+                    placeholder={eventType == 'زواج' ? weddingStar : eventStar}
+                    onChangeText={setFirstStName}
+                    value={isFromInvetShow && invitationCard.eventStar[0]} />
             </View>
         )
     }
@@ -57,10 +62,11 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
                     placeholder={'أسم العروس'}
-                    onChangeText={setSecondStName} />
+                    onChangeText={setSecondStName}
+                    value={isFromInvetShow && invitationCard.eventStar[1]} />
             </View>
         )
     }
@@ -69,10 +75,12 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.inputPharze}
+                    style={[styles.inputPharzeEditing, isFromInvetShow ? styles.inputPharzeEditing : styles.inputPharze]}
                     keyboardType='default'
                     placeholder={'عبارة ترحيبية'}
-                    onChangeText={setSecondStName} />
+                    onChangeText={setSecondStName}
+                    multiline={true}
+                    value={isFromInvetShow && invitationCard.welcomePharse} />
             </View>
         )
     }
@@ -80,10 +88,12 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.inputPharze}
+                    style={[styles.inputPharzeEditing, isFromInvetShow ? styles.inputPharzeEditing : styles.inputPharze]}
                     keyboardType='default'
                     placeholder={'عبارة توضيحية'}
-                    onChangeText={setSecondStName} />
+                    onChangeText={setSecondStName}
+                    multiline={true}
+                    value={isFromInvetShow && invitationCard.explanatoryPhrase} />
             </View>
         )
     }
@@ -96,10 +106,11 @@ const InvetationCard = (props) => {
                         color={"black"}
                         size={25} />
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                         keyboardType='default'
                         placeholder={'الموقع'}
-                        onChangeText={setSecondStName} />
+                        onChangeText={setSecondStName}
+                        value={isFromInvetShow && invitationCard.location} />
 
                 </View>
 
@@ -109,10 +120,11 @@ const InvetationCard = (props) => {
                         color={"black"}
                         size={25} />
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                         keyboardType='default'
                         placeholder={'الوقت'}
-                        onChangeText={setSecondStName} />
+                        onChangeText={setSecondStName}
+                        value={isFromInvetShow && invitationCard.time} />
 
                 </View>
                 <View style={{ alignItems: 'center' }}>
@@ -121,10 +133,11 @@ const InvetationCard = (props) => {
                         color={"black"}
                         size={25} />
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                         keyboardType='default'
                         placeholder={'التاريخ'}
-                        onChangeText={setSecondStName} />
+                        onChangeText={setSecondStName}
+                        value={isFromInvetShow && invitationCard.eventDate} />
 
                 </View>
 
@@ -137,12 +150,12 @@ const InvetationCard = (props) => {
             <View>
                 <View style={styles.callerView}>
                     {firstCallerName()}
-                    {eventTitle == 'زواج' && secondCallerName()}
+                    {eventType == 'زواج' && secondCallerName()}
                 </View>
                 {welcomingPhrase()}
-                <View style={[styles.starsView, eventTitle == 'زواج' ? styles.starsView : styles.otherstarsView]}>
+                <View style={[styles.starsView, eventType == 'زواج' ? styles.starsView : styles.otherstarsView]}>
 
-                    {eventTitle == 'زواج' && secondStarName()}
+                    {eventType == 'زواج' && secondStarName()}
                     {firstStarName()}
                 </View>
             </View>
@@ -164,7 +177,7 @@ const styles = StyleSheet.create({
         height: '100%'
 
     },
-    input: {
+    editingInput: {
         textAlign: 'center',
         height: 50,
         alignSelf: 'center',
@@ -172,6 +185,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         fontSize: 15,
         color: 'black',
+    },
+    input: {
+        textAlign: 'center',
+        alignSelf: 'center',
+        fontSize: 18,
     },
     callerView: {
         width: '80%',
@@ -182,14 +200,14 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     starsView: {
-        
+
         width: '80%',
         alignSelf: 'center',
         marginVertical: 20,
         paddingVertical: 5,
         flexDirection: 'row',
         justifyContent: 'space-between'
-       
+
     },
     otherstarsView: {
         width: '80%',
@@ -198,10 +216,10 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         flexDirection: 'row',
         justifyContent: 'center'
-       
+
     },
     dateTime: {
-        width: '80%',
+        width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -215,9 +233,15 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderWidth: 0.6,
         borderRadius: 10,
-        //borderColor: 'gray',
-        fontSize: 15,
+        fontSize: 18,
         color: 'black',
-        // marginVertical: 10
+    },
+    inputPharzeEditing: {
+        textAlign: 'center',
+         height: 100,
+        width: '80%',
+        alignSelf: 'center',
+        fontSize: 15,
+
     },
 })

@@ -153,9 +153,19 @@ const ClientProfile = (props) => {
     }
     const renderSpecialEvents = () => {
         return (<View>
-            {specialDatesItem()}
-            <Pressable style={styles.more} onPress={() => props.navigation.navigate(ScreenNames.ClientSpecialDates)}>
-                <Text style={styles.moreTxt}>المزيد...</Text>
+            {/* {specialDatesItem()} */}
+
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ClientSpecialDates)}>
+                <View style={styles.relationLabel}>
+                    {/* <Text style={styles.basicInfo}>{relations?.length > 0 && "(" + relations?.length + ")"}</Text> */}
+                    <Text style={styles.basicInfo}>تواريخ خاصة</Text>
+                </View>
+                <View style={styles.IconView}>
+                    <Fontisto
+                        name={"date"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
             </Pressable>
         </View>)
     }
@@ -207,21 +217,33 @@ const ClientProfile = (props) => {
                 {renderUserNameImag()}
                 {seprator()}
 
-                <Text style={styles.txt}>العمليات</Text>
+                {/* <Text style={styles.txt}>العمليات</Text> */}
+
+
                 <View style={styles.viewSet}>
                     {renderInvitationsInbox()}
                     {renderMyInvitationsOutbox()}
+
+                </View>
+                <View style={styles.viewSet}>
+                   
                     {renderDuePayment()}
                     {renderRelations()}
+                    
+                </View>
+                <View style={styles.viewSet}>
                     {renderOldEvents()}
                     {renderFeedBack()}
+                    {renderSpecialEvents()}
                 </View>
-                {userData.SpecialDates.length > 0 && <View>
+
+
+                {/* {userData.SpecialDates.length > 0 && <View>
                     <Text style={styles.txt}>مناسبات خاصة</Text>
                     <View style={styles.viewSet}>
                         {renderSpecialEvents()}
                     </View>
-                </View>}
+                </View>} */}
                 <View style={{ height: 110 }}></View>
             </ScrollView>
         </View>
@@ -283,15 +305,16 @@ const styles = StyleSheet.create({
         width: '90%',
         alignSelf: 'center',
         borderRadius: 10,
-        padding: 10
+        padding: 10,
+        marginVertical: 5
     },
-    txt: {
-        fontSize: 20,
-        color: colors.puprble,
-        fontWeight: 'bold',
-        marginVertical: 10,
-        marginRight: 20
-    },
+    // txt: {
+    //     fontSize: 20,
+    //     color: colors.puprble,
+    //     fontWeight: 'bold',
+    //     marginVertical: 10,
+    //     marginRight: 20
+    // },
     basicInfo: {
         fontSize: 18,
         color: colors.puprble,
@@ -316,11 +339,11 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         marginTop: 10
     },
-    more: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0
-    },
+    // more: {
+        // position: 'absolute',
+        // bottom: 0,
+        // left: 0
+    // },
     moreTxt: {
         fontSize: 15
     },
@@ -328,7 +351,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: 90
+        //width: 90
     }
 
 })

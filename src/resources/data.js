@@ -173,13 +173,15 @@ export const invitation = [
             {
                 recived_Id: '65fdd05a0f07c96522542a06',
                 recivedName: 'Ahmed',
-                recivedConfirmation : '',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation:  'تم الدعوة',
                 invitationSentDate: '',
             },
             {
                 recived_Id: '669bc369c09d0043b89f03b1',
                 recivedName: 'Ali',
-                recivedConfirmation : '',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: 'ارسل',
                 invitationSentDate: '',
             },
 
@@ -189,9 +191,9 @@ export const invitation = [
         user_Id: '65ad914764fcb68f0ed422a1',
         userName: 'اسماعيل',
         userPhoto: require('../assets/photos/user.png'),
-       
+
         eventLogoId: '65bfeaf2ed6965ed8854aec8',
-        eventTitle: 'حفل زفاف جواد',
+        eventTitle: 'حفل تخرج جواد',
 
         sentStatus: 'sent',
         recivedStatus: 'open',
@@ -211,13 +213,15 @@ export const invitation = [
             {
                 recived_Id: '66a559b90cb14bbc32ec0b69',
                 recivedName: 'Ahmed',
-                recivedConfirmation : '',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: 'تم الدعوة',
                 invitationSentDate: '',
             },
             {
                 recived_Id: '669bc369c09d0043b89f03b1',
                 recivedName: 'Ali',
-                recivedConfirmation : '',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: 'أرسل',
                 invitationSentDate: '',
             },
 

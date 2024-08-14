@@ -15,7 +15,7 @@ const inveteesHeightView = SIZES.screenWidth * 0.5;
 const CreateInvetation = (props) => {
 
     const [showModal, setShowModal] = useState(false);
-    const { eventTitle } = props.route?.params || {}
+    const { eventType } = props.route?.params || {}
 
     //   const eventTitle = 'تخرج'
 
@@ -40,7 +40,7 @@ const CreateInvetation = (props) => {
     const renderEventType = () => {
         return (
             <View style={styles.eventTypeView}>
-                <Text style={styles.text}>{'بطاقة دعوة لمناسبة' + ' ' + eventTitle}</Text>
+                <Text style={styles.text}>{'بطاقة دعوة لمناسبة' + ' ' + eventType}</Text>
             </View>
         )
     }
@@ -48,7 +48,7 @@ const CreateInvetation = (props) => {
     const renderInvetationCard = () => {
         return (
             <View style={{}}>
-                <InvetationCard eventTitle={eventTitle} />
+                <InvetationCard eventType={eventType} />
             </View>
 
         )
