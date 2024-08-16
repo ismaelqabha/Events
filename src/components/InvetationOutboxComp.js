@@ -9,7 +9,7 @@ import { ScreenNames } from '../../route/ScreenNames';
 
 const InvetationOutboxComp = (props) => {
     const { eventTypeInfo } = useContext(SearchContext);
-    const { eventTitle, eventLogoId } = props
+    const { eventTitle, eventLogoId,relations, loading } = props
 
 
     const navigation = useNavigation();
@@ -40,7 +40,7 @@ const InvetationOutboxComp = (props) => {
                     </Pressable>}
             </View>
 
-            <Pressable style={styles.title} onPress={() => navigation.navigate(ScreenNames.InvetationOutboxShow, {...props})}>
+            <Pressable style={styles.title} onPress={() => navigation.navigate(ScreenNames.InvetationOutboxShow, {...props}, relations, loading)}>
                 <Text style={styles.text}>{eventTitle}</Text>
             </Pressable>
 

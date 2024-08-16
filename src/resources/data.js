@@ -143,7 +143,14 @@ export const hallDetailOptions = [
     { key: '2', value: 'ضيافة' },
     { key: '3', value: 'أخرى' }
 ];
-
+export const invetationBackground = [
+    { key: '0', value : images.invetationCard() },
+    { key: '1', value : require('../assets/photos/invetationImg1.png') },
+    { key: '2', value :require('../assets/photos/invetationImg2.png') },
+    { key: '3', value :require('../assets/photos/invetationImg3.png') },
+    { key: '4', value :require('../assets/photos/invetationImg4.png') },
+    { key: '5', value :require('../assets/photos/invetationImg5.png') },
+]
 
 
 export const invitation = [
@@ -174,14 +181,14 @@ export const invitation = [
                 recived_Id: '65fdd05a0f07c96522542a06',
                 recivedName: 'Ahmed',
                 recivedPhoto: require('../assets/photos/user.png'),
-                recivedConfirmation:  'تم الدعوة',
+                recivedConfirmation:  '',
                 invitationSentDate: '',
             },
             {
                 recived_Id: '669bc369c09d0043b89f03b1',
                 recivedName: 'Ali',
                 recivedPhoto: require('../assets/photos/user.png'),
-                recivedConfirmation: 'ارسل',
+                recivedConfirmation: '',
                 invitationSentDate: '',
             },
 
@@ -214,14 +221,14 @@ export const invitation = [
                 recived_Id: '66a559b90cb14bbc32ec0b69',
                 recivedName: 'Ahmed',
                 recivedPhoto: require('../assets/photos/user.png'),
-                recivedConfirmation: 'تم الدعوة',
+                recivedConfirmation: '',
                 invitationSentDate: '',
             },
             {
                 recived_Id: '669bc369c09d0043b89f03b1',
                 recivedName: 'Ali',
                 recivedPhoto: require('../assets/photos/user.png'),
-                recivedConfirmation: 'أرسل',
+                recivedConfirmation: '',
                 invitationSentDate: '',
             },
 

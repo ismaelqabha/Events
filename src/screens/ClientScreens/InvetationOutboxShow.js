@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Pressable, ImageBackground, ScrollView, Modal }
 import React, { useContext, useState } from 'react'
 import { colors } from '../../assets/AppColors';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Entypo from "react-native-vector-icons/Entypo";
 import InvetationCard from '../../components/InvetationCard';
 import SearchContext from '../../../store/SearchContext';
 import SIZES from '../../resources/sizes';
@@ -12,7 +13,7 @@ const width = SIZES.screenWidth - 18;
 
 const InvetationOutboxShow = (props) => {
     const { eventTypeInfo } = useContext(SearchContext);
-    const { eventTitle, invitationCard, eventLogoId ,inviteesList} = props.route.params || []
+    const { relations, loading, eventTitle, invitationCard, eventLogoId, inviteesList } = props.route.params || []
 
     const [showInveteesModal, setShowInveteesModal] = useState(false)
 
@@ -55,7 +56,9 @@ const InvetationOutboxShow = (props) => {
     const RnderInvtees = () => {
         return (
             <View>
-                <InveteesComp inviteesList={inviteesList} />
+                <InveteesComp inviteesList={inviteesList}
+                    relations={relations}
+                    loading={loading} />
             </View>
 
         )
@@ -87,7 +90,13 @@ const InvetationOutboxShow = (props) => {
     const renderInvetees = () => {
         return (
             <Pressable style={styles.inviteesView} onPress={openInveteesModal}>
-                <Text>قائمة المدعوين</Text>
+                <Text style={styles.text}>قائمة المدعوين</Text>
+                <View style={styles.IconView}>
+                    <Entypo
+                        name={"users"}
+                        color={colors.darkGold}
+                        size={25} />
+                </View>
             </Pressable>
         )
     }
@@ -137,14 +146,15 @@ const styles = StyleSheet.create({
         borderColor: colors.darkGold,
     },
     inviteesView: {
-        //    alignItems: 'center',
-        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
         alignSelf: 'center',
         width: "95%",
-        height: 50,
+        height: 60,
         marginVertical: 10,
         borderColor: colors.darkGold,
-        borderWidth: 1
+        borderWidth: 3
     },
     moreModal: {
         width: '95%',
@@ -171,4 +181,17 @@ const styles = StyleSheet.create({
     modalbody: {
         paddingHorizontal: 5
     },
+    IconView: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginHorizontal: 20
+    },
+    text: {
+        fontSize: 18,
+        color: colors.puprble
+    }
 })

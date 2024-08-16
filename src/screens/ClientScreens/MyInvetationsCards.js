@@ -7,8 +7,8 @@ import InvetationInboxComp from '../../components/InvetationInboxComp';
 import { invitation } from '../../resources/data';
 
 const MyInvetationsCards = (props) => {
-
-    const { fromInvetationInbox, fromInvetationOutbox } = props?.route.params
+    
+    const { fromInvetationInbox, fromInvetationOutbox, relations, loading  } = props?.route.params
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -35,7 +35,9 @@ const MyInvetationsCards = (props) => {
     const renderInvetOutboxCard = () => {
         return invitation.map(item => {
             return (
-                <InvetationOutboxComp {...item} />
+                <InvetationOutboxComp {...item}
+                relations={relations}
+                loading={loading} />
             )
         })
     }

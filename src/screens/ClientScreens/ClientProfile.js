@@ -175,7 +175,7 @@ const ClientProfile = (props) => {
     }
     const onInvitationsOutboxHandler = () => {
     
-        props.navigation.navigate(ScreenNames.MyInvetationsCards, {fromInvetationInbox : false, fromInvetationOutbox : true })
+        props.navigation.navigate(ScreenNames.MyInvetationsCards, {fromInvetationInbox : false, fromInvetationOutbox : true,  relations, loading })
     }
     const renderInvitationsInbox = () => {
         return (<View>

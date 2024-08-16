@@ -2,11 +2,10 @@ import { StyleSheet, Text, View, TextInput, Image } from 'react-native'
 import React from 'react'
 import { colors } from '../assets/AppColors'
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { images } from '../assets/photos/images';
-import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
+
 
 const InveteesComp = (props) => {
-const {inviteesList} = props
+    const { inviteesList } = props
 
     const RnderSearchBar = () => {
         return (
@@ -22,14 +21,14 @@ const {inviteesList} = props
                 />
             </View>
         )
-    } 
+    }
 
     const RnderInveteesItem = () => {
         return inviteesList.map(item => {
             return (
                 <View style={styles.ItemView}>
                     <View style={styles.Invetation}>
-                        <Text style={styles.txt}> {item.recivedConfirmation}</Text>
+                        <Text style={styles.txt}>تم الدعوة</Text>
                     </View>
                     <View style={styles.NameView}>
                         <Text style={styles.txt}>{item.recivedName}</Text>
@@ -38,8 +37,19 @@ const {inviteesList} = props
                 </View>
             )
         })
-        
-
+    }
+    const rnderOtherRelatio = () => {
+        return (
+            <View style={styles.ItemView}>
+                <View style={styles.Invetation}>
+                    <Text style={styles.txt}>اختيار</Text>
+                </View>
+                <View style={styles.NameView}>
+                    <Text style={styles.txt}>خالد</Text>
+                    <Image style={styles.img} source={require('../assets/photos/user.png')} />
+                </View>
+            </View>
+        )
 
     }
 
@@ -47,6 +57,7 @@ const {inviteesList} = props
         <View>
             {RnderSearchBar()}
             {RnderInveteesItem()}
+            {rnderOtherRelatio()}
         </View>
     )
 }
@@ -73,14 +84,18 @@ const styles = StyleSheet.create({
     ItemView: {
         alignItems: "center",
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: 'space-between',
         paddingHorizontal: 10,
         marginVertical: 20,
+        width: '90%',
+        alignSelf: 'center',
+
     },
     NameView: {
         flexDirection: "row",
         justifyContent: "flex-end",
         alignItems: "center",
+
     },
     img: {
         height: 50,
@@ -89,7 +104,7 @@ const styles = StyleSheet.create({
         marginLeft: 20,
     },
     txt: {
-        fontSize: 18,
+        fontSize: 15,
         color: colors.puprble,
     },
 
