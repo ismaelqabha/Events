@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderWidth: 3,
         borderColor: colors.darkGold,
+        
     },
     inviteesView: {
         flexDirection: 'row',

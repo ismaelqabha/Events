@@ -207,7 +207,7 @@ export const invitation = [
 
         invitationCard: {
             invitId: '0006',
-            invitationBackgraund: images.invetationCard(),
+            invitationBackgraund: require('../assets/photos/invetationImg5.png'),
             location: 'My Location',
             eventDate: '2024-10-15',
             welcomePharse: 'نتشرف بدعوة حضرتكم لحضور حفل زفاف أبننا الغالي',
