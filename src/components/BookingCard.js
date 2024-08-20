@@ -5,10 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Fontisto from "react-native-vector-icons/Fontisto"
-
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5"
 import moment from "moment";
 import { ScreenNames } from '../../route/ScreenNames';
+import SIZES from '../resources/sizes';
 
+const height = SIZES.screenWidth * 0.9;
+const width = SIZES.screenWidth - 40;
 
 const BookingCard = (props) => {
     const reqInfo = { ...props }
@@ -19,8 +22,8 @@ const BookingCard = (props) => {
 
     const [clientSide, setClientSide] = useState(true)
 
-    
-    
+
+
     const serviceRequest = reqInfo.serviceRequest[0]
     const requestPayment = reqInfo.requestPayment[0]
     const services = reqInfo.services
@@ -28,7 +31,7 @@ const BookingCard = (props) => {
     const relatedCamp = reqInfo.relatedCamp[0]
     const BookDates = reqInfo.BookDates[0]
 
-   // console.log("><<requestInfo>><",serviceRequest.reqPayments);
+    // console.log("><<requestInfo>><",serviceRequest.reqPayments);
 
 
     const requestCost = serviceRequest.Cost
@@ -122,7 +125,10 @@ const BookingCard = (props) => {
                         <View>
                             {stutesType !== 'غير متاح' &&
                                 <Pressable style={styles.paymentButton} onPress={() => navigation.navigate(ScreenNames.RequestDuePaymentsShow, { reqInfo, clientSide })}>
-                                    <Text style={styles.itemTxt}>تفاصيل الدفعات</Text>
+                                    <FontAwesome5
+                                        name={"money-check"}
+                                        color={colors.puprble}
+                                        size={30} />
                                 </Pressable>}
                         </View>}
 
@@ -154,12 +160,15 @@ const BookingCard = (props) => {
                             </Pressable>
                         </View>
                         {stutesType !== 'بأنتظار الرد' &&
-                        <View>
-                            {stutesType !== 'غير متاح' &&
-                                <Pressable style={styles.paymentButton}>
-                                    <Text style={styles.itemTxt}>تفاصيل الدفعات</Text>
-                                </Pressable>}
-                        </View>}
+                            <View>
+                                {stutesType !== 'غير متاح' &&
+                                    <Pressable style={styles.paymentButton}>
+                                        <FontAwesome5
+                                            name={"money-check"}
+                                            color={colors.puprble}
+                                            size={30} />
+                                    </Pressable>}
+                            </View>}
                     </View>
                 </View>
             )
@@ -167,7 +176,7 @@ const BookingCard = (props) => {
     }
     const renderReqInfo = () => {
         let stutesType = ''
-       // console.log("reservationDetail", reservationDetail.length);
+        // console.log("reservationDetail", reservationDetail.length);
         if (reservationDetail.length > 1) {
 
             if (ReqStatus === 'partially paid') {
@@ -214,7 +223,7 @@ const BookingCard = (props) => {
 
 
         } else {
-          
+
             if (ReqStatus === 'partially paid') {
                 stutesType = 'محجوز مدفوع جزئي'
                 return (
@@ -271,33 +280,32 @@ const BookingCard = (props) => {
 }
 
 const styles = StyleSheet.create({
-    DueImg: {
-        width: 100,
-        height: 100,
-        borderRadius: 50
-    },
+
     img: {
         width: '100%',
-        height: 170,
+        height: '100%',
     },
 
     card: {
         alignSelf: 'center',
-        width: '80%',
-        height: 300,
+        width,
+        height,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        marginVertical: 25,
+        marginVertical: 10,
     },
     infoView: {
         width: '100%',
-        height: 160,
+        height: '45%',
         backgroundColor: 'white',
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        // position: 'absolute',
-        // bottom: 0,
         elevation: 5,
+    },
+    imgView: {
+        borderWidth: 1,
+        width: '100%',
+        height: '55%',
     },
     titleText: {
         fontSize: 18,
@@ -366,14 +374,15 @@ const styles = StyleSheet.create({
 
     },
     paymentButton: {
-        width: '40%',
-        height: 30,
-        borderWidth: 0.5,
-        marginLeft: 5,
-        alignSelf: 'flex-start',
+        // width: '40%',
+        // height: 30,
+        // borderWidth: 0.5,
+        // marginLeft: 5,
+        //marginRight: 10,
+        alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderColor:colors.puprble,
+        borderColor: colors.puprble,
         borderRadius: 5
     }
 })

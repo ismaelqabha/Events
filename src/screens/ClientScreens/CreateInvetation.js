@@ -48,15 +48,6 @@ const CreateInvetation = (props) => {
             </View>
         )
     }
-
-    const renderInvetationCard = () => {
-        return (
-            <View style={{}}>
-                <InvetationCard eventType={eventType} />
-            </View>
-
-        )
-    }
     const renderBGCard = () => {
         return (
             <View style={{}}>
@@ -65,6 +56,28 @@ const CreateInvetation = (props) => {
 
         )
     }
+    const renderInvetationCard = () => {
+        return (
+            <View style={{}}>
+                <InvetationCard eventType={eventType} />
+            </View>
+
+        )
+    }
+    const renderFooter = () => {
+        return (
+            <View style={styles.buttonView}>
+                <Pressable onPress={onSaveInvetPress}>
+                    <Text style={styles.text}>لاحقا</Text>
+                </Pressable>
+                <Pressable onPress={onSendPress}>
+                    <Text style={styles.text}>ارسال الدعوة</Text>
+                </Pressable>
+
+            </View>
+        )
+    }
+   
     const changeBGCardPress = () => {
         setShowBGModal(true)
     }
@@ -111,21 +124,6 @@ const CreateInvetation = (props) => {
     const onSaveInvetPress = () => {
 
     }
-
-    const renderFooter = () => {
-        return (
-            <View style={styles.buttonView}>
-                <Pressable onPress={onSaveInvetPress}>
-                    <Text style={styles.text}>لاحقا</Text>
-                </Pressable>
-                <Pressable onPress={onSendPress}>
-                    <Text style={styles.text}>ارسال الدعوة</Text>
-                </Pressable>
-
-            </View>
-        )
-    }
-
     const onModalSendPress = () => {
 
     }

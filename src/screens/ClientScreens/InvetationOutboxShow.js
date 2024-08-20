@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Pressable, ImageBackground, ScrollView, Modal }
 import React, { useContext, useState } from 'react'
 import { colors } from '../../assets/AppColors';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Feather from "react-native-vector-icons/Feather";
 import Entypo from "react-native-vector-icons/Entypo";
 import InvetationCard from '../../components/InvetationCard';
 import SearchContext from '../../../store/SearchContext';
@@ -12,10 +13,11 @@ const height = SIZES.screenWidth * 1.8;
 const width = SIZES.screenWidth - 18;
 
 const InvetationOutboxShow = (props) => {
-    const { eventTypeInfo } = useContext(SearchContext);
+    const { eventTypeInfo, enableInvetEditing, setEnableInvetEditing } = useContext(SearchContext);
     const { relations, loading, eventTitle, invitationCard, eventLogoId, inviteesList } = props.route.params || []
 
     const [showInveteesModal, setShowInveteesModal] = useState(false)
+   
 
     const getEventType = () => {
         return eventTypeInfo.filter(item => {
@@ -49,8 +51,22 @@ const InvetationOutboxShow = (props) => {
             </View>
         )
     }
+
+    const renderEditInvetationCard = () => {
+        return (
+            <View style={{}}>
+                <InvetationCard {...props.route.params}
+                    eventType={eventType[0].eventTitle}
+                    isFromInvetShow={false} />
+            </View>
+        )
+    }
     const openInveteesModal = () => {
         setShowInveteesModal(true)
+    }
+
+    const editCardPress = () => {
+        setEnableInvetEditing(true)
     }
 
     const RnderInvtees = () => {
@@ -101,14 +117,29 @@ const InvetationOutboxShow = (props) => {
         )
     }
 
+    const editInvetationCard = () => {
+        return (
+            <Pressable style={styles.inviteesView} onPress={editCardPress}>
+                <Text style={styles.text}>تعديل البطاقة</Text>
+                <View style={styles.IconView}>
+                    <Feather
+                        name={"edit"}
+                        color={colors.darkGold}
+                        size={25} />
+                </View>
+            </Pressable>
+        )
+    }
+
     return (
         <View style={styles.container}>
             {renderHeader()}
             <ScrollView>
                 <ImageBackground style={styles.card} source={invitationCard.invitationBackgraund}>
-                    {renderInvetationCard()}
+                    {enableInvetEditing ? renderEditInvetationCard() : renderInvetationCard()}
                 </ImageBackground>
                 {renderInvetees()}
+                {editInvetationCard()}
             </ScrollView >
             {inveteesModal()}
         </View>
@@ -144,7 +175,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderWidth: 3,
         borderColor: colors.darkGold,
-        
+
     },
     inviteesView: {
         flexDirection: 'row',
@@ -187,7 +218,6 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'lightgray',
         borderRadius: 30,
         marginHorizontal: 20
     },
