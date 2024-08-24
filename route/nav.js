@@ -70,6 +70,7 @@ import Favorites from "../src/screens/ClientScreens/Favorites";
 import CreateInvetation from "../src/screens/ClientScreens/CreateInvetation";
 import MyInvetationsCards from "../src/screens/ClientScreens/MyInvetationsCards";
 import InvetationShow from "../src/screens/ClientScreens/InvetationShow";
+import InvetationOutboxShow from "../src/screens/ClientScreens/InvetationOutboxShow";
 
 
 
@@ -145,6 +146,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.CreateInvetation} component={CreateInvetation} />
                 <Stack.Screen name={ScreenNames.MyInvetationsCards} component={MyInvetationsCards} />
                 <Stack.Screen name={ScreenNames.InvetationShow} component={InvetationShow} />
+                <Stack.Screen name={ScreenNames.InvetationOutboxShow} component={InvetationOutboxShow} />
                 
                
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />

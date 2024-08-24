@@ -1,12 +1,17 @@
-import { StyleSheet, Text, View, Pressable, TextInput, } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput,Modal } from 'react-native'
 import Zocial from "react-native-vector-icons/Zocial";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import React, { useState } from 'react'
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import React, { useState, useContext } from 'react'
 import { colors } from '../assets/AppColors';
+import SearchContext from '../../store/SearchContext';
+import BackgroundInvetCard from './BackgroundInvetCard';
 
 
 const InvetationCard = (props) => {
-    const { eventTitle } = props
+    const { eventType, isFromInvetShow, eventTitle, invitationCard, eventLogoId } = props
+    const { enableInvetEditing, setEnableInvetEditing } = useContext(SearchContext);
+    const [showBGModal, setShowBGModal] = useState(false);
 
     const weddingCaller = 'أسم الداعي الاول'
     const regulerEventCaller = 'أسم الداعي'
@@ -23,10 +28,11 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
-                    placeholder={eventTitle == 'زواج' ? weddingCaller : regulerEventCaller}
+                    placeholder={eventType == 'زواج' ? weddingCaller : regulerEventCaller}
                     onChangeText={setFirstCallName}
+                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.callerNames[0] : isFromInvetShow && invitationCard.callerNames[0]}
                 />
             </View>
         )
@@ -35,10 +41,11 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
                     placeholder={'اسم الداعي الثاني'}
-                    onChangeText={setSecondCallName} />
+                    onChangeText={setSecondCallName}
+                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.callerNames[1] : isFromInvetShow && invitationCard.callerNames[1]} />
             </View>
         )
     }
@@ -46,10 +53,11 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
-                    placeholder={eventTitle == 'زواج' ? weddingStar : eventStar}
-                    onChangeText={setFirstStName} />
+                    placeholder={eventType == 'زواج' ? weddingStar : eventStar}
+                    onChangeText={setFirstStName}
+                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.callerNames[0] : isFromInvetShow && invitationCard.callerNames[0]} />
             </View>
         )
     }
@@ -57,10 +65,11 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
                     placeholder={'أسم العروس'}
-                    onChangeText={setSecondStName} />
+                    onChangeText={setSecondStName}
+                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.callerNames[1] : isFromInvetShow && invitationCard.callerNames[1]} />
             </View>
         )
     }
@@ -69,10 +78,13 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.inputPharze}
+                    style={[styles.inputPharzeEditing, isFromInvetShow ? styles.inputPharzeEditing : styles.inputPharze]}
                     keyboardType='default'
                     placeholder={'عبارة ترحيبية'}
-                    onChangeText={setSecondStName} />
+                    onChangeText={setSecondStName}
+                    multiline={true}
+                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.welcomePharse : isFromInvetShow && invitationCard.welcomePharse}
+                />
             </View>
         )
     }
@@ -80,10 +92,13 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={styles.inputPharze}
+                    style={[styles.inputPharzeEditing, isFromInvetShow ? styles.inputPharzeEditing : styles.inputPharze]}
                     keyboardType='default'
                     placeholder={'عبارة توضيحية'}
-                    onChangeText={setSecondStName} />
+                    onChangeText={setSecondStName}
+                    multiline={true}
+                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.explanatoryPhrase : isFromInvetShow && invitationCard.explanatoryPhrase}
+                />
             </View>
         )
     }
@@ -96,10 +111,12 @@ const InvetationCard = (props) => {
                         color={"black"}
                         size={25} />
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                         keyboardType='default'
                         placeholder={'الموقع'}
-                        onChangeText={setSecondStName} />
+                        onChangeText={setSecondStName}
+                        value={enableInvetEditing ? !isFromInvetShow && invitationCard.location : isFromInvetShow && invitationCard.location}
+                    />
 
                 </View>
 
@@ -109,10 +126,12 @@ const InvetationCard = (props) => {
                         color={"black"}
                         size={25} />
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                         keyboardType='default'
                         placeholder={'الوقت'}
-                        onChangeText={setSecondStName} />
+                        onChangeText={setSecondStName}
+                        value={enableInvetEditing ? !isFromInvetShow && invitationCard.time : isFromInvetShow && invitationCard.time}
+                    />
 
                 </View>
                 <View style={{ alignItems: 'center' }}>
@@ -121,13 +140,50 @@ const InvetationCard = (props) => {
                         color={"black"}
                         size={25} />
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                         keyboardType='default'
                         placeholder={'التاريخ'}
-                        onChangeText={setSecondStName} />
+                        onChangeText={setSecondStName}
+                        value={enableInvetEditing ? !isFromInvetShow && invitationCard.eventDate : isFromInvetShow && invitationCard.eventDate}
+                    />
 
                 </View>
 
+            </View>
+        )
+    }
+
+    const saveEditingPress = () => {
+        setEnableInvetEditing(false)
+    }
+
+    const renderBGModal = () => {
+        setShowBGModal(true)
+    }
+
+
+    const renderBGCard = () => {
+        return (
+            <View style={{}}>
+                <BackgroundInvetCard />
+            </View>
+
+        )
+    }
+
+
+    const renderEditingItem = () => {
+        return (
+            <View style={styles.editItemView}>
+                <Pressable onPress={renderBGModal}>
+                    <MaterialCommunityIcons
+                        name={"image-edit"}
+                        color={colors.puprble}
+                        size={30} />
+                </Pressable>
+                <Pressable style={styles.saveView} onPress={saveEditingPress}>
+                    <Text style={styles.saveText}>حفظ</Text>
+                </Pressable>
             </View>
         )
     }
@@ -137,22 +193,48 @@ const InvetationCard = (props) => {
             <View>
                 <View style={styles.callerView}>
                     {firstCallerName()}
-                    {eventTitle == 'زواج' && secondCallerName()}
+                    {eventType == 'زواج' && secondCallerName()}
                 </View>
                 {welcomingPhrase()}
-                <View style={[styles.starsView, eventTitle == 'زواج' ? styles.starsView : styles.otherstarsView]}>
+                <View style={[styles.starsView, eventType == 'زواج' ? styles.starsView : styles.otherstarsView]}>
 
-                    {eventTitle == 'زواج' && secondStarName()}
+                    {eventType == 'زواج' && secondStarName()}
                     {firstStarName()}
                 </View>
             </View>
         )
     }
+
+    const backgroundCardModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={showBGModal}
+                animationType='fade'
+                onRequestClose={() =>
+                    setShowBGModal(false)
+                }
+            >
+                <View style={styles.centeredView1}>
+                    <View style={styles.detailModal1}>
+
+                        <View style={styles.body}>
+                            {renderBGCard()}
+                        </View>
+                        
+                    </View>
+                </View>
+
+            </Modal>
+        )
+    }
     return (
         <View style={styles.card}>
+            {enableInvetEditing && renderEditingItem()}
             {renderCallers()}
             {renderDataTimeLocation()}
             {explanatoryPhrase()}
+            {backgroundCardModal()}
         </View>
     )
 }
@@ -164,7 +246,7 @@ const styles = StyleSheet.create({
         height: '100%'
 
     },
-    input: {
+    editingInput: {
         textAlign: 'center',
         height: 50,
         alignSelf: 'center',
@@ -173,23 +255,28 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: 'black',
     },
+    input: {
+        textAlign: 'center',
+        alignSelf: 'center',
+        fontSize: 18,
+    },
     callerView: {
         width: '80%',
         borderColor: colors.silver,
         alignSelf: 'center',
-        marginTop: 50,
+        marginTop: 30,
         paddingVertical: 5,
         borderRadius: 5
     },
     starsView: {
-        
+
         width: '80%',
         alignSelf: 'center',
         marginVertical: 20,
         paddingVertical: 5,
         flexDirection: 'row',
         justifyContent: 'space-between'
-       
+
     },
     otherstarsView: {
         width: '80%',
@@ -198,10 +285,10 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         flexDirection: 'row',
         justifyContent: 'center'
-       
+
     },
     dateTime: {
-        width: '80%',
+        width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -215,9 +302,49 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderWidth: 0.6,
         borderRadius: 10,
-        //borderColor: 'gray',
-        fontSize: 15,
+        fontSize: 18,
         color: 'black',
-        // marginVertical: 10
+    },
+    inputPharzeEditing: {
+        textAlign: 'center',
+        height: 100,
+        width: '80%',
+        alignSelf: 'center',
+        fontSize: 15,
+
+    },
+    editItemView: {
+        width: '90%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        alignSelf: 'center',
+        marginTop: 10,
+
+    },
+    saveView: {
+        width: '20%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+        borderColor: colors.puprble,
+        borderWidth: 2
+    },
+    saveText: {
+        fontSize: 20,
+        color: colors.puprble
+    },
+    detailModal1: {
+        width: '95%',
+        height: '50%',
+        backgroundColor: '#ffffff',
+        //borderRadius: 20,
+    },
+    centeredView1: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
     },
 })

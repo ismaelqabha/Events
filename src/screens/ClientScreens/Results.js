@@ -58,6 +58,7 @@ const Results = (props) => {
 
     const [chozenfilter, setchozenfilter] = useState({ ...objectFilter })
     var readyDates = ''
+    var SerReq = ''
     const maxPrice = 10000
     const objectFilter = {
         selectRigon,
@@ -143,13 +144,11 @@ const Results = (props) => {
         })
 
     }
-    var serviceRequestsArray = []
+
+    const serviceRequestsArray = []
 
     const countAllRequestDates = (servicId, dataforReservation) => {
-        //const result = getProividerRequestsForDate(servicId, dataforReservation)
-        var countAllReq = 0
-        serviceRequestsArray = []
-
+       
         const queryInfo = {
             ReqServId: servicId,
             reservationDetail: [{ reservationDate: dataforReservation }]
@@ -158,24 +157,36 @@ const Results = (props) => {
 
             if (res.message !== 'No Request') {
 
+                serviceRequestsArray.push({
+                    serID: servicId,
+                    serDate: dataforReservation,
+                    data: res
+                })
+
+            } else {
+
+                serviceRequestsArray.push({
+                    serID: servicId,
+                    serDate: dataforReservation,
+                    data: []
+                })
+
             }
 
-            countAllReq = res.length
-           
-            serviceRequestsArray.push(res)
-            console.log(countAllReq);
-            console.log("00000",serviceRequestsArray[1]);
         })
 
-        return countAllReq
+        console.log("========", serviceRequestsArray);
     }
 
 
-    const checkDate = (dataforReservation, source, servicId, maxNumOfReq) => {
-        const countAllDates = countAllRequestDates(servicId, dataforReservation)
-        const servicedate = source
 
-        if (countAllDates < maxNumOfReq) {
+    const checkDate = (dataforReservation, source, servicId, maxNumOfReq) => {
+
+        const countAllDates = 0
+        countAllRequestDates(servicId, dataforReservation)
+        const servicedate = source
+        //console.log("00000", serviceRequestsArray);
+        if (countAllDates <= maxNumOfReq) {
 
             const DateFiltered = servicedate[0].dates?.find(dat => {
                 if (servicedate[0].dates.length > 0) {
@@ -305,6 +316,20 @@ const Results = (props) => {
             const availableService = isCitySelect && isRiogenSelect && result
 
             item.readyDates = result
+
+            if (Array.isArray(result)) {
+                var serviceRequestsArray = []
+                var reqDateItem = {}
+                result.forEach(element => {
+                   // reqDateItem = retriveRequestAccDate(item.serviceData.service_id, element)
+                    serviceRequestsArray.push(reqDateItem)
+                });
+                item.SerReq = serviceRequestsArray
+            } else {
+                //item.SerReq = retriveRequestAccDate(item.serviceData.service_id, result)
+            }
+
+            // console.log("item.SerReq", item.SerReq);
             return availableService;
         })
         return filtered
@@ -313,12 +338,11 @@ const Results = (props) => {
     const renderCard = () => {
         const data = dataSearchResult();
         const cardsArray = data?.map((card, index) => {
-            console.log(">>>>",index, serviceRequestsArray[index]);
             return <HomeCards  {...card.serviceData}
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
                 relatedCamp={card?.serviceCamp}
-                serviceRequests={serviceRequestsArray[index]}
+                serviceRequests={card?.SerReq}
                 availableDates={card?.readyDates}
             />;
         });

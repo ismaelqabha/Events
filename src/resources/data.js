@@ -143,7 +143,14 @@ export const hallDetailOptions = [
     { key: '2', value: 'ضيافة' },
     { key: '3', value: 'أخرى' }
 ];
-
+export const invetationBackground = [
+    { key: '0', value : images.invetationCard() },
+    { key: '1', value : require('../assets/photos/invetationImg1.png') },
+    { key: '2', value :require('../assets/photos/invetationImg2.png') },
+    { key: '3', value :require('../assets/photos/invetationImg3.png') },
+    { key: '4', value :require('../assets/photos/invetationImg4.png') },
+    { key: '5', value :require('../assets/photos/invetationImg5.png') },
+]
 
 
 export const invitation = [
@@ -173,13 +180,15 @@ export const invitation = [
             {
                 recived_Id: '65fdd05a0f07c96522542a06',
                 recivedName: 'Ahmed',
-                recivedConfirmation : '',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation:  '',
                 invitationSentDate: '',
             },
             {
                 recived_Id: '669bc369c09d0043b89f03b1',
                 recivedName: 'Ali',
-                recivedConfirmation : '',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: '',
                 invitationSentDate: '',
             },
 
@@ -189,16 +198,16 @@ export const invitation = [
         user_Id: '65ad914764fcb68f0ed422a1',
         userName: 'اسماعيل',
         userPhoto: require('../assets/photos/user.png'),
-       
+
         eventLogoId: '65bfeaf2ed6965ed8854aec8',
-        eventTitle: 'حفل زفاف جواد',
+        eventTitle: 'حفل تخرج جواد',
 
         sentStatus: 'sent',
         recivedStatus: 'open',
 
         invitationCard: {
             invitId: '0006',
-            invitationBackgraund: images.invetationCard(),
+            invitationBackgraund: require('../assets/photos/invetationImg5.png'),
             location: 'My Location',
             eventDate: '2024-10-15',
             welcomePharse: 'نتشرف بدعوة حضرتكم لحضور حفل زفاف أبننا الغالي',
@@ -211,13 +220,15 @@ export const invitation = [
             {
                 recived_Id: '66a559b90cb14bbc32ec0b69',
                 recivedName: 'Ahmed',
-                recivedConfirmation : '',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: '',
                 invitationSentDate: '',
             },
             {
                 recived_Id: '669bc369c09d0043b89f03b1',
                 recivedName: 'Ali',
-                recivedConfirmation : '',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: '',
                 invitationSentDate: '',
             },
 

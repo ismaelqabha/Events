@@ -5,7 +5,10 @@ import { colors } from '../../assets/AppColors';
 import { images } from '../../assets/photos/images';
 import InvetationCard from '../../components/InvetationCard'
 import SIZES from '../../resources/sizes';
-import InveteesListComp from '../../components/InveteesListComp';
+import InveteesComp from '../../components/InveteesComp';
+import { invitation } from '../../resources/data';
+import Entypo from "react-native-vector-icons/Entypo"
+import BackgroundInvetCard from '../../components/BackgroundInvetCard';
 
 const height = SIZES.screenWidth * 1.8;
 const width = SIZES.screenWidth - 18;
@@ -15,7 +18,8 @@ const inveteesHeightView = SIZES.screenWidth * 0.5;
 const CreateInvetation = (props) => {
 
     const [showModal, setShowModal] = useState(false);
-    const { eventTitle } = props.route?.params || {}
+    const [showBGModal, setShowBGModal] = useState(false);
+    const { eventType } = props.route?.params || {}
 
     //   const eventTitle = 'تخرج'
 
@@ -40,17 +44,77 @@ const CreateInvetation = (props) => {
     const renderEventType = () => {
         return (
             <View style={styles.eventTypeView}>
-                <Text style={styles.text}>{'بطاقة دعوة لمناسبة' + ' ' + eventTitle}</Text>
+                <Text style={styles.text}>{'بطاقة دعوة لمناسبة' + ' ' + eventType}</Text>
             </View>
         )
     }
+    const renderBGCard = () => {
+        return (
+            <View style={{}}>
+                <BackgroundInvetCard />
+            </View>
 
+        )
+    }
     const renderInvetationCard = () => {
         return (
             <View style={{}}>
-                <InvetationCard eventTitle={eventTitle} />
+                <InvetationCard eventType={eventType} />
             </View>
 
+        )
+    }
+    const renderFooter = () => {
+        return (
+            <View style={styles.buttonView}>
+                <Pressable onPress={onSaveInvetPress}>
+                    <Text style={styles.text}>لاحقا</Text>
+                </Pressable>
+                <Pressable onPress={onSendPress}>
+                    <Text style={styles.text}>ارسال الدعوة</Text>
+                </Pressable>
+
+            </View>
+        )
+    }
+   
+    const changeBGCardPress = () => {
+        setShowBGModal(true)
+    }
+    const backgroundCardModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={showBGModal}
+                animationType='fade'
+                onRequestClose={() =>
+                    setShowBGModal(false)
+                }
+            >
+                <View style={styles.centeredView1}>
+                    <View style={styles.detailModal1}>
+
+                        <View style={styles.body}>
+                            {renderBGCard()}
+                        </View>
+                        
+                    </View>
+                </View>
+
+            </Modal>
+        )
+    }
+    const renderSetBackgroundCard = () => {
+        return (
+            <Pressable style={styles.BGCard} onPress={changeBGCardPress}>
+                <Text style={styles.text}>تغيير خلفية البطاقة</Text>
+                <View style={styles.IconView}>
+                    <Entypo
+                        name={"images"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </Pressable>
         )
     }
 
@@ -60,27 +124,18 @@ const CreateInvetation = (props) => {
     const onSaveInvetPress = () => {
 
     }
-
-    const renderFooter = () => {
-        return (
-            <View style={styles.buttonView}>
-                <Pressable onPress={onSaveInvetPress}>
-                    <Text style={styles.text}>ليس الان</Text>
-                </Pressable>
-                <Pressable onPress={onSendPress}>
-                    <Text style={styles.text}>ارسال</Text>
-                </Pressable>
-
-            </View>
-        )
-    }
-
     const onModalSendPress = () => {
 
     }
     const onModalCancelPress = () => {
         setShowModal(false)
     }
+    const getInvetationInfo = () => {
+        return (
+            <InveteesComp inviteesList={invitation[0].inviteesList} />
+        )
+    }
+
     const inviteesListModal = () => {
         return (
             <Modal
@@ -95,10 +150,10 @@ const CreateInvetation = (props) => {
                     <View style={styles.detailModal}>
 
                         <View style={styles.body}>
-                            <InveteesListComp />
+                            {getInvetationInfo()}
                         </View>
                         <View style={styles.btn}>
-                            <Pressable  onPress={onModalCancelPress} >
+                            <Pressable onPress={onModalCancelPress} >
                                 <Text style={styles.modaltext}>الغاء الامر</Text>
                             </Pressable>
                             <Pressable onPress={onModalSendPress} >
@@ -119,7 +174,7 @@ const CreateInvetation = (props) => {
             {renderHeader()}
             <ScrollView style={{}}>
                 {renderEventType()}
-
+                {renderSetBackgroundCard()}
                 <ImageBackground style={styles.card} source={images.invetationCard()}>
                     {renderInvetationCard()}
                 </ImageBackground>
@@ -127,6 +182,7 @@ const CreateInvetation = (props) => {
                 {renderFooter()}
             </ScrollView>
             {inviteesListModal()}
+            {backgroundCardModal()}
         </View>
 
     )
@@ -190,9 +246,9 @@ const styles = StyleSheet.create({
     },
     detailModal: {
         width: '95%',
-        height: '95%',
+        height: '100%',
         backgroundColor: '#ffffff',
-        borderRadius: 20,
+        //borderRadius: 20,
     },
     centeredView: {
         flex: 1,
@@ -200,11 +256,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#00000099',
     },
-    body: {
-        width: '90%',
-        alignSelf: 'center',
+    detailModal1: {
+        width: '95%',
+        height: '50%',
+        backgroundColor: '#ffffff',
+        //borderRadius: 20,
+    },
+    centeredView1: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    body: {
+        marginTop: 30,
     },
     btn: {
         flexDirection: 'row',
@@ -220,6 +285,26 @@ const styles = StyleSheet.create({
     modaltext: {
         fontSize: 18,
         color: colors.puprble
-    }
+    },
+    BGCard:{
+        width: '95%',
+        height: 50,
+        alignSelf: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        paddingHorizontal: 20,
+        borderColor: colors.darkGold,
+        borderWidth: 2
+    },
+    IconView: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 30,
+      
+    },
 
 })
