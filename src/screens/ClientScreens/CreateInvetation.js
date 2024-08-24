@@ -1,14 +1,17 @@
 import { StyleSheet, Text, View, Pressable, Modal, ImageBackground, ScrollView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../../assets/AppColors';
 import { images } from '../../assets/photos/images';
 import InvetationCard from '../../components/InvetationCard'
 import SIZES from '../../resources/sizes';
 import InveteesComp from '../../components/InveteesComp';
-import { invitation } from '../../resources/data';
+import { invetationBackground, invitation } from '../../resources/data';
 import Entypo from "react-native-vector-icons/Entypo"
 import BackgroundInvetCard from '../../components/BackgroundInvetCard';
+import { showMessage } from '../../resources/Functions';
+import { useFocusEffect } from '@react-navigation/native';
+import { getItem, setItem } from '../../resources/common/asyncStorageFunctions';
 
 const height = SIZES.screenWidth * 1.8;
 const width = SIZES.screenWidth - 18;
@@ -19,10 +22,76 @@ const CreateInvetation = (props) => {
 
     const [showModal, setShowModal] = useState(false);
     const [showBGModal, setShowBGModal] = useState(false);
+    const [BG, setBG] = useState(images.invetationCard());
     const { eventType } = props.route?.params || {}
+
+    const [eventTime, setEventTime] = useState('');
+    const [welcom, setWelcom] = useState('');
+    const [eventDate, setEventDate] = useState('');
+    const [location, setLocation] = useState('');
+    const [hostName, setHostName] = useState('');
+    const [hostName2, setHostName2] = useState('');
+    const [starName, setStarName] = useState('');
+    const [starName2, setStarName2] = useState('');
+    const [additionalInfo, setAdditionalInfo] = useState('');
 
     //   const eventTitle = 'تخرج'
 
+    useEffect(() => {
+        const loadDraft = async () => {
+            try {
+                const savedData = await getItem('invitationDraft');
+
+                if (savedData) {
+                    const draft = JSON.parse(savedData);
+
+                    setEventTime(draft.eventTime || '');
+                    setEventDate(draft.eventDate || '');
+                    setLocation(draft.location || '');
+                    setHostName(draft.hostName || '');
+                    setWelcom(draft.welcom || '');
+                    setAdditionalInfo(draft.additionalInfo || '');
+                    setBG(draft.BG || images.invetationCard())
+                    setHostName2(draft.hostName2 || '')
+                    setStarName(draft.starName || '')
+                    setStarName2(draft.starName2 || '')
+                }
+            } catch (error) {
+                console.error('Failed to load draft:', error);
+            }
+        };
+
+        loadDraft();
+    }, []);
+
+    // Save draft data to AsyncStorage when the screen loses focus
+    useFocusEffect(
+        React.useCallback(() => {
+            const saveDraft = async () => {
+                try {
+                    const draft = {
+                        eventTime: eventTime,
+                        eventDate: eventDate,
+                        location: location,
+                        hostName: hostName,
+                        welcom: welcom,
+                        additionalInfo: additionalInfo,
+                        BG,
+                        hostName2,
+                        starName,
+                        starName2,
+                    };
+
+                    await setItem('invitationDraft', JSON.stringify(draft));
+
+                } catch (error) {
+                    console.error('Failed to save draft:', error);
+                }
+            };
+
+            saveDraft();
+        }, [eventTime, welcom, eventDate, location, hostName, hostName2, starName, starName2, additionalInfo, BG])
+    );
 
     const onPressBack = () => {
         props.navigation.goBack();
@@ -51,7 +120,7 @@ const CreateInvetation = (props) => {
     const renderBGCard = () => {
         return (
             <View style={{}}>
-                <BackgroundInvetCard />
+                <BackgroundInvetCard setBG={setBG} setShowBGModal={setShowBGModal} />
             </View>
 
         )
@@ -59,7 +128,26 @@ const CreateInvetation = (props) => {
     const renderInvetationCard = () => {
         return (
             <View style={{}}>
-                <InvetationCard eventType={eventType} />
+                <InvetationCard eventType={eventType}
+                    eventTime={eventTime}
+                    setEventTime={setEventTime}
+                    eventDate={eventDate}
+                    setEventDate={setEventDate}
+                    location={location}
+                    setLocation={setLocation}
+                    hostName={hostName}
+                    setHostName={setHostName}
+                    welcom={welcom}
+                    setWelcom={setWelcom}
+                    additionalInfo={additionalInfo}
+                    setAdditionalInfo={setAdditionalInfo}
+                    hostName2={hostName2}
+                    setHostName2={setHostName2}
+                    starName={starName}
+                    setStarName={setStarName}
+                    starName2={starName2}
+                    setStarName2={setStarName2}
+                />
             </View>
 
         )
@@ -77,7 +165,7 @@ const CreateInvetation = (props) => {
             </View>
         )
     }
-   
+
     const changeBGCardPress = () => {
         setShowBGModal(true)
     }
@@ -97,7 +185,7 @@ const CreateInvetation = (props) => {
                         <View style={styles.body}>
                             {renderBGCard()}
                         </View>
-                        
+
                     </View>
                 </View>
 
@@ -117,10 +205,52 @@ const CreateInvetation = (props) => {
             </Pressable>
         )
     }
+    const validateFields = () => {
 
+        if (!eventTime.trim()) {
+            return "Event time is required.";
+        }
+
+        if (!welcom.trim()) {
+            return "Welcome message is required.";
+        }
+
+        const date = new Date(eventDate);
+        if (isNaN(date.getTime())) {
+            return "Invalid event date.";
+        }
+
+        if (!location.trim()) {
+            return "Location is required.";
+        }
+
+        if (!hostName.trim()) {
+            return "Host name is required.";
+        }
+
+        if (!hostName2.trim()) {
+            return "Second host name is required.";
+        }
+
+        if (!starName.trim()) {
+            return "Star name is required.";
+        }
+
+        if (!starName2.trim()) {
+            return "Second star name is required.";
+        }
+
+        return null;
+    };
     const onSendPress = () => {
-        setShowModal(true)
-    }
+        const validationError = validateFields();
+
+        if (validationError) {
+            showMessage(validationError)
+        } else {
+            setShowModal(true);
+        }
+    };
     const onSaveInvetPress = () => {
 
     }
@@ -175,7 +305,7 @@ const CreateInvetation = (props) => {
             <ScrollView style={{}}>
                 {renderEventType()}
                 {renderSetBackgroundCard()}
-                <ImageBackground style={styles.card} source={images.invetationCard()}>
+                <ImageBackground style={styles.card} source={BG}>
                     {renderInvetationCard()}
                 </ImageBackground>
 
@@ -286,7 +416,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.puprble
     },
-    BGCard:{
+    BGCard: {
         width: '95%',
         height: 50,
         alignSelf: 'center',
@@ -304,7 +434,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 30,
-      
+
     },
 
 })

@@ -61,8 +61,31 @@ export const updateRelation = async (body) => {
   return await AppFetch(url, 'POST', body);
 }
 
-
-// Service Data
+// Invitation
+export const createInvitation = async (invitationData) => {
+  const url = 'invitation/';
+  return await AppFetch(url, 'POST', invitationData);
+};
+export const updateInviteeStatus = async (inviteeData) => {
+  const url = 'invitation/invitee/status';
+  return await AppFetch(url, 'PATCH', inviteeData);
+};
+export const getInvitationStatus = async (invitationId) => {
+  const url = `invitation/${invitationId}`;
+  return await AppFetch(url, 'POST', invitationId);
+};
+export const updateInvitationDetails = async (invitationId, updateData) => {
+  const url = `invitation/${invitationId}`;
+  return await AppFetch(url, 'PATCH', updateData);
+};
+export const removeInvitee = async (invitationId, userId) => {
+  const url = `invitation/${invitationId}/invitee/${userId}`;
+  return await AppFetch(url, 'DELETE');
+};
+export const addInvitee = async (invitationId, inviteeData) => {
+  const url = `invitation/${invitationId}/invitee`;
+  return await AppFetch(url, 'POST', inviteeData);
+};
 export const getHomePageData = async body => {
   const url = 'servicesData/getServiceAccordingCategory';
   return await AppFetch(url, 'POST', body);

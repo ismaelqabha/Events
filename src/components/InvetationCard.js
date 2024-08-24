@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, TextInput,Modal } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput, Modal } from 'react-native'
 import Zocial from "react-native-vector-icons/Zocial";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -10,6 +10,9 @@ import BackgroundInvetCard from './BackgroundInvetCard';
 
 const InvetationCard = (props) => {
     const { eventType, isFromInvetShow, eventTitle, invitationCard, eventLogoId } = props
+    const { eventTime, setEventTime, eventDate, setEventDate, location, setLocation, hostName, setHostName, welcom, setWelcom, additionalInfo, setAdditionalInfo, hostName2, setHostName2,
+        starName, setStarName,
+        starName2, setStarName2 } = props
     const { enableInvetEditing, setEnableInvetEditing } = useContext(SearchContext);
     const [showBGModal, setShowBGModal] = useState(false);
 
@@ -17,11 +20,6 @@ const InvetationCard = (props) => {
     const regulerEventCaller = 'أسم الداعي'
     const weddingStar = 'أسم العريس'
     const eventStar = 'أسم نجم المناسبة'
-
-    const [firstCallName, setFirstCallName] = useState()
-    const [secondCallName, setSecondCallName] = useState()
-    const [firstStName, setFirstStName] = useState()
-    const [secondStName, setSecondStName] = useState()
 
 
     const firstCallerName = () => {
@@ -31,8 +29,8 @@ const InvetationCard = (props) => {
                     style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
                     placeholder={eventType == 'زواج' ? weddingCaller : regulerEventCaller}
-                    onChangeText={setFirstCallName}
-                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.callerNames[0] : isFromInvetShow && invitationCard.callerNames[0]}
+                    onChangeText={setHostName}
+                    value={hostName}
                 />
             </View>
         )
@@ -44,8 +42,9 @@ const InvetationCard = (props) => {
                     style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
                     placeholder={'اسم الداعي الثاني'}
-                    onChangeText={setSecondCallName}
-                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.callerNames[1] : isFromInvetShow && invitationCard.callerNames[1]} />
+                    onChangeText={setHostName2}
+                    value={hostName2}
+                />
             </View>
         )
     }
@@ -56,8 +55,9 @@ const InvetationCard = (props) => {
                     style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
                     placeholder={eventType == 'زواج' ? weddingStar : eventStar}
-                    onChangeText={setFirstStName}
-                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.callerNames[0] : isFromInvetShow && invitationCard.callerNames[0]} />
+                    onChangeText={setStarName}
+                    value={starName}
+                />
             </View>
         )
     }
@@ -68,8 +68,9 @@ const InvetationCard = (props) => {
                     style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
                     keyboardType='default'
                     placeholder={'أسم العروس'}
-                    onChangeText={setSecondStName}
-                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.callerNames[1] : isFromInvetShow && invitationCard.callerNames[1]} />
+                    onChangeText={setStarName2}
+                    value={starName2}
+                />
             </View>
         )
     }
@@ -81,9 +82,9 @@ const InvetationCard = (props) => {
                     style={[styles.inputPharzeEditing, isFromInvetShow ? styles.inputPharzeEditing : styles.inputPharze]}
                     keyboardType='default'
                     placeholder={'عبارة ترحيبية'}
-                    onChangeText={setSecondStName}
+                    onChangeText={setWelcom}
                     multiline={true}
-                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.welcomePharse : isFromInvetShow && invitationCard.welcomePharse}
+                    value={welcom}
                 />
             </View>
         )
@@ -95,63 +96,49 @@ const InvetationCard = (props) => {
                     style={[styles.inputPharzeEditing, isFromInvetShow ? styles.inputPharzeEditing : styles.inputPharze]}
                     keyboardType='default'
                     placeholder={'عبارة توضيحية'}
-                    onChangeText={setSecondStName}
+                    onChangeText={setAdditionalInfo}
                     multiline={true}
-                    value={enableInvetEditing ? !isFromInvetShow && invitationCard.explanatoryPhrase : isFromInvetShow && invitationCard.explanatoryPhrase}
+                    value={additionalInfo}
                 />
             </View>
         )
     }
-    const renderDataTimeLocation = () => {
-        return (
-            <View style={styles.dateTime}>
-                <View style={{ alignItems: 'center' }}>
-                    <Ionicons
-                        name={"location-sharp"}
-                        color={"black"}
-                        size={25} />
-                    <TextInput
-                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
-                        keyboardType='default'
-                        placeholder={'الموقع'}
-                        onChangeText={setSecondStName}
-                        value={enableInvetEditing ? !isFromInvetShow && invitationCard.location : isFromInvetShow && invitationCard.location}
-                    />
-
-                </View>
-
-                <View style={{ alignItems: 'center' }}>
-                    <Ionicons
-                        name={"time"}
-                        color={"black"}
-                        size={25} />
-                    <TextInput
-                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
-                        keyboardType='default'
-                        placeholder={'الوقت'}
-                        onChangeText={setSecondStName}
-                        value={enableInvetEditing ? !isFromInvetShow && invitationCard.time : isFromInvetShow && invitationCard.time}
-                    />
-
-                </View>
-                <View style={{ alignItems: 'center' }}>
-                    <Zocial
-                        name={"cal"}
-                        color={"black"}
-                        size={25} />
-                    <TextInput
-                        style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
-                        keyboardType='default'
-                        placeholder={'التاريخ'}
-                        onChangeText={setSecondStName}
-                        value={enableInvetEditing ? !isFromInvetShow && invitationCard.eventDate : isFromInvetShow && invitationCard.eventDate}
-                    />
-
-                </View>
-
+    const renderDataTimeLocation = () => (
+        <View style={styles.dateTime}>
+            <View style={{ alignItems: 'center' }}>
+                <Ionicons name={"location-sharp"} color={"black"} size={25} />
+                <TextInput
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
+                    keyboardType='default'
+                    placeholder={'الموقع'}
+                    onChangeText={setLocation}
+                    value={location}
+                />
             </View>
-        )
-    }
+
+            <View style={{ alignItems: 'center' }}>
+                <Ionicons name={"time"} color={"black"} size={25} />
+                <TextInput
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
+                    keyboardType='default'
+                    placeholder={'الوقت'}
+                    onChangeText={setEventTime}
+                    value={eventTime}
+                />
+            </View>
+
+            <View style={{ alignItems: 'center' }}>
+                <Zocial name={"cal"} color={"black"} size={25} />
+                <TextInput
+                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
+                    keyboardType='default'
+                    placeholder={'التاريخ'}
+                    onChangeText={setEventDate}
+                    value={eventDate}
+                />
+            </View>
+        </View>
+    );
 
     const saveEditingPress = () => {
         setEnableInvetEditing(false)
@@ -221,7 +208,7 @@ const InvetationCard = (props) => {
                         <View style={styles.body}>
                             {renderBGCard()}
                         </View>
-                        
+
                     </View>
                 </View>
 
