@@ -46,7 +46,7 @@ const ClientIncomingRelation = (props) => {
         // Call API to update the relationship status
         updateRelation({ friendshipId: relationId, status })
             .then((res) => {
-                console.log("response ", res);
+               // console.log("response ", res);
                 showMessage(res?.message || "error updating");
 
                 if (res?.message && res.user) {

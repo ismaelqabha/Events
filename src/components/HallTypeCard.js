@@ -33,11 +33,7 @@ const HallTypeCard = (props) => {
 
     }
     useEffect(() => {
-        // if (hallType !== props.hallType) {
-        //     setHallPress(false)
-        // } else {
-        //     setHallPress(true)
-        // }
+       
     }, [])
 
     const renderHallTypeCard = () => {

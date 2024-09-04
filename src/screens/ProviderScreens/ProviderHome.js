@@ -66,6 +66,7 @@ const ProviderHome = props => {
   const [detailIsperson, setDetailIsperson] = useState();
   const [sub_DetailArr, setSub_DetailArr] = useState();
 
+ 
 
   const getImagesfromApi = () => {
     getServiceImages({ serviceID: isFirst }).then(res => {
@@ -116,6 +117,7 @@ const ProviderHome = props => {
     setEditprice(true)
   }
   const editDescrPress = (item, setEditDescrItem, setShowDescModal) => {
+    
     setDescriptionItem(item)
     setEditDescrItem(true)
     setShowDescModal(false)
@@ -570,6 +572,7 @@ const ProviderHome = props => {
   };
 
   const deleteDescItemPress = (item, setShowDescModal) => {
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
     const lastUpdate = serviceDescr.filter(ser => ser.descItem !== item)
     setServiceDescr(lastUpdate)
 
@@ -661,6 +664,7 @@ const ProviderHome = props => {
     })
     return servicedesc
   };
+  
   const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
     return (
       <Modal
@@ -681,7 +685,7 @@ const ProviderHome = props => {
             </View>
             <View style={{ justifyContent: 'flex-end', height: '100%' }}>
               <View style={styles.modalMenu}>
-                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, editDescrItem, setShowDescModal)}>
+                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal)}>
                   <Feather
                     name={'edit'}
                     color={colors.gray}
@@ -876,8 +880,8 @@ const ProviderHome = props => {
 
   //Social Media
   const deleteSocialMediaItem = (Socialitem, setShowModal) => {
-    // console.log("serviceSocialMedia", serviceSocialMedia);
-    // console.log("Socialitem", Socialitem);
+   
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
     const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
     setServiceSocialMedia(lastUpdate)
 

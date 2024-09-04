@@ -305,7 +305,7 @@ const ProviderProfile = props => {
         </View>
         {seprator()}
         <View style={styles.viewSet}>
-          {renderPayments()}
+          {/* {renderPayments()} */}
           {renderDueRequestPayment()}
           {renderClients()}
           {renderFeedBack()}

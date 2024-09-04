@@ -15,6 +15,7 @@ const SetEventForRequest = (props) => {
         setUpdatedEventDate,
         setEVENTID, fileEventName, setfileEventName,
         setEvTiltleId } = useContext(SearchContext);
+
     const { userId } = useContext(UsersContext);
 
     const [selectedEvent, setSelectedEvent] = useState('');
@@ -57,6 +58,8 @@ const SetEventForRequest = (props) => {
         checkIfThereIsEvent()
         getEventTypeInfo()
 
+       // console.log(props.isfromClientShowRequest);
+  
         if (props.isfromClientShowRequest) {
             const eventData = filtereventInfo()
             const selEv = props?.selectedEvent

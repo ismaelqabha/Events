@@ -32,7 +32,9 @@ const ClientRequest = (props) => {
     const scrollViewRef = useRef();
     const targetComponentRef = useRef();
     let eventItemIndex
+
     useEffect(() => {
+        //console.log(">>>", isfromClientShowRequest);
         if (isfromClientShowRequest) {
             const dates = data.reservationDetail.map((res) => res.reservationDate)
             setrequestedDate([...dates])

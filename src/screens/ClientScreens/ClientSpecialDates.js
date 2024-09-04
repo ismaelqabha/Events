@@ -257,7 +257,6 @@ const ClientSpecialDates = (props) => {
     let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
 
     setEventDate(fDate);
-    // onSetEventDate(eventTitle, fDate)
   }
   const showMode = (currentMode) => {
     setShow(true);
@@ -291,6 +290,7 @@ const ClientSpecialDates = (props) => {
 
     updateUserSDates(newRecord)
   }
+  
   const updateUserSDates = (newRecord) => {
     const newData = {
       USER_ID: userId,
