@@ -32,7 +32,7 @@ const EditServiceInfo = (props) => {
         editNumofRequest, setEditNumofRequest,
         addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
 
-    
+
 
 
     const getServiceInfo = () => {
@@ -56,13 +56,8 @@ const EditServiceInfo = (props) => {
 
     const [serEditedDescrItem, setSerEditedDescrItem] = useState(descriptionItem);
     const [addNewDescrItem, setaddNewDescrItem] = useState();
-
-    setTimeout(() => {
-        setServiceDescr(serviceData[0].desc)
-    }, 2000)
-
     const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
-
+   
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
     const [address, setAddress] = useState(null)
@@ -71,8 +66,10 @@ const EditServiceInfo = (props) => {
     const [socailMediaItem, setSocailMediaItem] = useState()
     const [webViewVisible, setWebViewVisible] = useState(false);
 
-    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
-    
+    setTimeout(() => {
+        setServiceDescr(serviceData[0].desc)
+    }, 2000)
+
     const iconColors = {
         facebook: "blue",
         instagram: 'purple',
@@ -342,6 +339,7 @@ const EditServiceInfo = (props) => {
                             color={colors.BGScereen}
                             size={20} />
                     </Pressable>
+
                     <TextInput
                         style={styles.input}
                         keyboardType='default'
@@ -363,14 +361,15 @@ const EditServiceInfo = (props) => {
 
     // Update functions
     const updateInfo = (infoData, setstate) => {
-        
+        const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
+        const data = serviceInfoAccorUser || [];
+
         updateService(infoData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...infoData };
-            }
 
             if (res.message === 'Updated Sucessfuly') {
+                if (selectedServiceIndex > -1) {
+                    data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...infoData };
+                }
                 setServiceInfoAccorUser([...data])
                 setstate(false)
                 ToastAndroid.showWithGravity(
@@ -474,17 +473,21 @@ const EditServiceInfo = (props) => {
             service_id: serviceID,
             desc: serviceDescr
         }
+       
         updateInfo(newData, setEditDescrItem)
 
     }
 
     const addNewDescItem = () => {
         const addNewDItem = {
-            descItem: addNewDescrItem,
+            descItem: addNewDescrItem
         }
         const newRecord = serviceDescr || []
         newRecord.push(addNewDItem)
-    
+
+        setServiceDescr([...newRecord])
+        // setServiceDescr((prev)=>[...prev,addNewDItem])
+
         const newData = {
             service_id: serviceID,
             desc: [...newRecord]
@@ -501,7 +504,7 @@ const EditServiceInfo = (props) => {
         }
         const newRecord = serviceSocialMedia || []
         newRecord.push(addNewSMedia)
-
+        setServiceSocialMedia([...newRecord])
 
         const newData = {
             service_id: serviceID,
@@ -614,6 +617,7 @@ const styles = StyleSheet.create({
         width: '10%',
         alignItems: 'center',
         justifyContent: 'center',
+
     },
     editTitleView: {
         justifyContent: 'center',

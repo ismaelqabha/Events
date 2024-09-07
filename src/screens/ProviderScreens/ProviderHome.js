@@ -883,18 +883,26 @@ const ProviderHome = props => {
    
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
     const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
+
+    console.log("lastUpdate", lastUpdate);
+
     setServiceSocialMedia(lastUpdate)
 
     const newData = {
       service_id: isFirst,
-      socialMedia: serviceSocialMedia
+      socialMedia: [...lastUpdate]
     }
+
+    console.log("newData", newData);
+    const data = serviceInfoAccorUser || [];
+    if (selectedServiceIndex > -1) {
+      data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+    }
+
     updateService(newData).then(res => {
-      const data = serviceInfoAccorUser || [];
-      if (selectedServiceIndex > -1) {
-        data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-      }
+     
       if (res.message === 'Updated Sucessfuly') {
+        console.log("OK");
         setServiceInfoAccorUser([...data])
         setShowModal(false)
         ToastAndroid.showWithGravity(

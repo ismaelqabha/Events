@@ -15,6 +15,7 @@ const InvetationCard = (props) => {
         starName2, setStarName2 } = props
     const { enableInvetEditing, setEnableInvetEditing } = useContext(SearchContext);
     const [showBGModal, setShowBGModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const weddingCaller = 'أسم الداعي الاول'
     const regulerEventCaller = 'أسم الداعي'
@@ -127,7 +128,7 @@ const InvetationCard = (props) => {
                 />
             </View>
 
-            <View style={{ alignItems: 'center' }}>
+            <Pressable style={{ alignItems: 'center' }} onPress={getEventDate}>
                 <Zocial name={"cal"} color={"black"} size={25} />
                 <TextInput
                     style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
@@ -136,10 +137,44 @@ const InvetationCard = (props) => {
                     onChangeText={setEventDate}
                     value={eventDate}
                 />
-            </View>
+            </Pressable>
         </View>
     );
 
+    const getEventDate = () => {
+        setShowModal(true)
+    }
+    const renderEventDates = () => {
+        return (
+            <View>
+                <Text style={styles.dateText}>2025-5-20</Text>
+                <Text style={styles.dateText}>2025-5-21</Text>
+            </View>
+        )
+    }
+    const EventDateModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={showModal}
+                animationType='fade'
+                onRequestClose={() =>
+                    setShowModal(false)
+                }
+            >
+                <View style={styles.centeredView1}>
+                    <View style={styles.detailModal}>
+
+                        <View style={styles.body}>
+                            {renderEventDates()}
+                        </View>
+
+                    </View>
+                </View>
+
+            </Modal>
+        )
+    }
     const saveEditingPress = () => {
         setEnableInvetEditing(false)
     }
@@ -205,7 +240,7 @@ const InvetationCard = (props) => {
                 <View style={styles.centeredView1}>
                     <View style={styles.detailModal1}>
 
-                        <View style={styles.body}>
+                        <View>
                             {renderBGCard()}
                         </View>
 
@@ -222,6 +257,7 @@ const InvetationCard = (props) => {
             {renderDataTimeLocation()}
             {explanatoryPhrase()}
             {backgroundCardModal()}
+            {EventDateModal()}
         </View>
     )
 }
@@ -326,7 +362,6 @@ const styles = StyleSheet.create({
         width: '95%',
         height: '50%',
         backgroundColor: '#ffffff',
-        //borderRadius: 20,
     },
     centeredView1: {
         flex: 1,
@@ -334,4 +369,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#00000099',
     },
+    detailModal: {
+        width: '80%',
+        height: '20%',
+        borderRadius: 20,
+        backgroundColor: '#ffffff',
+    },
+
+    body: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        width: '70%',
+        alignSelf: 'center',
+        top: '30%',
+        
+    },
+    dateText: {
+        fontSize: 20,
+        color: colors.puprble
+    }
 })

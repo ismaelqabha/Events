@@ -7,11 +7,16 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { addFriend } from '../resources/API';
 import UsersContext from '../../store/UsersContext';
 import { showMessage } from '../resources/Functions';
+import moment from "moment";
 
 const UserProfile = (props) => {
     const { userId } = useContext(UsersContext);
     const { data } = props.route?.params || {}
     
+    const createdPeriod = moment(data.userCreatedDate, "YYYYMMDD").fromNow()
+    
+
+
     const getStatus = (relationStatus) => {
         if (!relationStatus) {
             return 'طلب انشاء علاقة';
@@ -57,7 +62,7 @@ const UserProfile = (props) => {
                     <Text style={styles.nameTxt}>{data?.User_name}</Text>
                 </View>
                 <View style={styles.reviewView}>
-                    <View style={{}}><Text style={styles.txt}>3 شهور في مناسباتي</Text></View>
+                    <View style={{}}><Text style={styles.txt}>{createdPeriod + ' ' + 'في مناسباتي'}</Text></View>
                     <View style={{}}><Text>|</Text></View>
                     <View style={{}}><Text style={styles.txt}>3 مراجعات</Text></View>
                 </View>
