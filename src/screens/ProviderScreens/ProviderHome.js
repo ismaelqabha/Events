@@ -117,7 +117,6 @@ const ProviderHome = props => {
     setEditprice(true)
   }
   const editDescrPress = (item, setEditDescrItem, setShowDescModal) => {
-    
     setDescriptionItem(item)
     setEditDescrItem(true)
     setShowDescModal(false)
@@ -677,7 +676,6 @@ const ProviderHome = props => {
             <View>
               <Pressable onPress={() => closeModalPress(setShowDescModal)} style={styles.modalHeader}>
                 <Feather
-                  style={styles.menuIcon}
                   name={'more-horizontal'}
                   color={colors.puprble}
                   size={25} />
@@ -884,7 +882,7 @@ const ProviderHome = props => {
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
     const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
 
-    console.log("lastUpdate", lastUpdate);
+    //console.log("lastUpdate", lastUpdate);
 
     setServiceSocialMedia(lastUpdate)
 
@@ -893,7 +891,7 @@ const ProviderHome = props => {
       socialMedia: [...lastUpdate]
     }
 
-    console.log("newData", newData);
+    //console.log("newData", newData);
     const data = serviceInfoAccorUser || [];
     if (selectedServiceIndex > -1) {
       data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
@@ -902,7 +900,7 @@ const ProviderHome = props => {
     updateService(newData).then(res => {
      
       if (res.message === 'Updated Sucessfuly') {
-        console.log("OK");
+        //console.log("OK");
         setServiceInfoAccorUser([...data])
         setShowModal(false)
         ToastAndroid.showWithGravity(
@@ -1246,7 +1244,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   modalItem: {
-    // borderWidth: 1,
     alignItems: 'center'
   }
 });

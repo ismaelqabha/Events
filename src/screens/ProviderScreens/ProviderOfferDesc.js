@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput, ToastAndroid, Modal } from 'react-native'
+import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput, ToastAndroid, Modal, Alert } from 'react-native'
 import React, { useContext, useState, useEffect } from 'react'
 import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
@@ -19,16 +19,16 @@ const ProviderOfferDesc = (props) => {
     const { campInfo, setCampInfo, isFirst } = useContext(SearchContext);
     const { Region, serviceInfoAccorUser } = useContext(ServiceProviderContext);
 
-    const [Title, setTitle] = useState();
-    const [expirDate, setExpirDate] = useState();
-    const [offerPrice, setOfferPrice] = useState();
-    const [offerPriceInclude, setOfferPriceInclude] = useState();
-    const [subDetContent, setSubDetContent] = useState([])
-    const [offerRegions, setOfferRegions] = useState([])
+    const [Title, setTitle] = useState(data.campTitle);
+    const [expirDate, setExpirDate] = useState(data.campExpirDate);
+    const [offerPrice, setOfferPrice] = useState(data.campCost);
+    const [offerPriceInclude, setOfferPriceInclude] = useState(data.priceInclude);
+    const [subDetContent, setSubDetContent] = useState(data.contentFromSubDet)
+    const [offerRegions, setOfferRegions] = useState(data.campRigon)
 
     const [otherContent, setOtherContent] = useState(data.campContents)
     const [otherContentItem, setOtherContentItem] = useState()
-    
+
     const [offerImg, setOfferImg] = useState()
 
     const [editTitle, setEditTitle] = useState(false);
@@ -84,7 +84,26 @@ const ProviderOfferDesc = (props) => {
         if (completeDate > data.campExpirDate) {
             setIsRenewDate(true)
         }
+        priceIncludWhenLoad()
     }, []);
+
+    const priceIncludWhenLoad = () => {
+        if (offerPriceInclude === "perRequest") {
+            setPerPackage(true)
+            setPerPerson(false)
+            setPerTable(false)
+        }
+        if (offerPriceInclude === "perPerson") {
+            setPerPackage(false)
+            setPerPerson(true)
+            setPerTable(false)
+        }
+        if (offerPriceInclude === "perTable") {
+            setPerPackage(false)
+            setPerPerson(false)
+            setPerTable(true)
+        }
+    }
 
     const Package = () => {
         setPerPackage(true)
@@ -113,9 +132,9 @@ const ProviderOfferDesc = (props) => {
     const onPressBackHandler = () => {
         props.navigation.goBack();
     };
-    const closeModalPress = () => {
-        setShowContentModal(false)
-    }
+    // const closeModalPress = () => {
+    //     setShowContentModal(false)
+    // }
 
     const titleEditPress = () => {
         setEditTitle(true)
@@ -133,31 +152,55 @@ const ProviderOfferDesc = (props) => {
     const contentItemEditPress = () => {
         setShowContentModal(true)
     }
-    const otherContentEditPress = (setEditOtherContItem) => {
+    const editOthContPress = (item, setShowOthContModal, setEditOtherContItem) => {
+
+        setOtherContentItem(item)
         setEditOtherContItem(true)
+        setShowOthContModal(false)
     }
+
     const regionEditPress = () => {
         setShowRegionModal(true)
     }
-    const editItem = (item, setState, update) => {
-        if (Number.isInteger(item)) {
-            item = item.toString()
+    const checkIsdataFilled = (value, update) => {
+        if (value.length > 2) {
+            update()
+        } else {
+            Alert.alert(
+                'تنبية',
+                '  الرجاء التأكد من تعبئة البيانات',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
         }
+
+    }
+
+    const editItem = (state, setstate, update) => {
+        if (Number.isInteger(state)) {
+            state = state.toString()
+        }
+
         return (
             <View style={styles.itemView}>
                 <View style={styles.editTitleView}>
-                    <Pressable onPress={update} style={styles.itemFooter}>
+                    <Pressable onPress={() => checkIsdataFilled(state, update)} style={styles.itemFooter}>
                         <Feather
                             name={'save'}
                             color={colors.BGScereen}
                             size={20} />
                     </Pressable>
                     <TextInput
-                        style={styles.input}
+                        style={state !== '' ? styles.input : styles.inputNotFilled}
                         keyboardType='default'
-                        //value={item}
-                        placeholder={item || ''}
-                        onChangeText={setState}
+                        value={state}
+                        placeholder={state || ''}
+                        onChangeText={val => setstate(val)}
                     />
                 </View>
             </View>)
@@ -175,9 +218,9 @@ const ProviderOfferDesc = (props) => {
                     <TextInput
                         style={styles.input}
                         keyboardType='default'
-                        //value={item}
-                        placeholder={item || ''}
-                        onChangeText={setOtherContentItem}
+                        value={otherContentItem}
+                        placeholder={otherContentItem || ''}
+                        onChangeText={(text) => setOtherContentItem(text)}
                     />
                 </View>
             </View>)
@@ -212,20 +255,20 @@ const ProviderOfferDesc = (props) => {
             </View>)
     }
 
+
     // Update functions
-    const updateTitle = () => {
-        const newData = {
-            CampId: data.CampId,
-            campTitle: Title
-        }
+    const updateFunction = (newData, setstate) => {
+        const selectedOfferIndex = campInfo?.findIndex(item => item.CampId === data.CampId)
+        const campData = campInfo || [];
+
         uodateCampaignsById(newData).then(res => {
-            const data = campInfo || [];
+
             if (selectedOfferIndex > -1) {
-                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
+                campData[selectedOfferIndex] = { ...campData[selectedOfferIndex], ...newData };
             }
             if (res.message === 'Updated Sucessfuly') {
-                setCampInfo([...data])
-                setEditTitle(false)
+                setCampInfo([...campData])
+                setstate(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -233,48 +276,27 @@ const ProviderOfferDesc = (props) => {
                 );
             }
         })
+    }
+    const updateTitle = () => {
+        const newData = {
+            CampId: data.CampId,
+            campTitle: Title
+        }
+        updateFunction(newData, setEditTitle)
     }
     const updateEpireDate = () => {
         const newData = {
             CampId: data.CampId,
             campExpirDate: expirDate
         }
-        uodateCampaignsById(newData).then(res => {
-            const data = campInfo || [];
-            if (selectedOfferIndex > -1) {
-                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setCampInfo([...data])
-                setEditExDate(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateFunction(newData, setEditExDate)
     }
     const updatePrice = () => {
         const newData = {
             CampId: data.CampId,
             campCost: offerPrice
         }
-        uodateCampaignsById(newData).then(res => {
-            const data = campInfo || [];
-            if (selectedOfferIndex > -1) {
-                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setCampInfo([...data])
-                setEditPrice(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateFunction(newData, setEditPrice)
     }
     const updateImage = () => {
         const newData = {
@@ -301,92 +323,40 @@ const ProviderOfferDesc = (props) => {
             CampId: data.CampId,
             priceInclude: offerPriceInclude
         }
-        uodateCampaignsById(newData).then(res => {
-            const data = campInfo || [];
-            if (selectedOfferIndex > -1) {
-                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setCampInfo([...data])
-                setEditIncludingPrice(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateFunction(newData, setEditIncludingPrice)
     }
     const updateContentItem = () => {
         const newData = {
             CampId: data.CampId,
             contentFromSubDet: subDetContent
         }
-        uodateCampaignsById(newData).then(res => {
-            const data = campInfo || [];
-            if (selectedOfferIndex > -1) {
-                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setCampInfo([...data])
-                setShowContentModal(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateFunction(newData, setShowContentModal)
     }
     const updateOfferWorkRegion = () => {
         const newData = {
             CampId: data.CampId,
             campRigon: offerRegions
         }
-        uodateCampaignsById(newData).then(res => {
-            const data = campInfo || [];
-            if (selectedOfferIndex > -1) {
-                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setCampInfo([...data])
-                setShowRegionModal(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateFunction(newData, setShowRegionModal)
+
     }
     const updateOtherContentItem = (item, setEditOtherContItem) => {
         const itemIndex = otherContent.findIndex(elme => elme === item)
         const content = otherContent
+
         if (itemIndex > -1) {
             content[itemIndex] = otherContentItem
         }
+
         setOtherContent(content[itemIndex]);
 
         const newData = {
             CampId: data.CampId,
             campContents: otherContent
         }
-        uodateCampaignsById(newData).then(res => {
-            const data = campInfo || [];
-            if (selectedOfferIndex > -1) {
-                data[selectedOfferIndex] = { ...data[selectedOfferIndex], ...newData };
-            }
-            if (res.message === 'Updated Sucessfuly') {
-                setCampInfo([...data])
-                setEditOtherContItem(false)
-                ToastAndroid.showWithGravity(
-                    'تم التعديل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
-        })
+        updateFunction(newData, setEditOtherContItem)
     }
+
 
     const header = () => {
         return (
@@ -404,11 +374,10 @@ const ProviderOfferDesc = (props) => {
     }
     const renderOfferTitle = () => {
         return (<View>
-            {editTitle ? editItem(data.campTitle, setTitle, updateTitle) :
+            {editTitle ? editItem(Title, setTitle, updateTitle) :
                 <View style={styles.itemOffer}>
                     <View style={styles.item}>
-                        <Pressable onPress={titleEditPress}
-                        >
+                        <Pressable onPress={titleEditPress}>
                             <Feather
                                 style={styles.menuIcon}
                                 name={'edit'}
@@ -416,7 +385,7 @@ const ProviderOfferDesc = (props) => {
                                 size={25} />
                         </Pressable>
                         <View>
-                            <Text style={styles.Infotxt}>{data.campTitle}</Text>
+                            <Text style={styles.Infotxt}>{Title}</Text>
                             <Text style={styles.basicInfoTitle}>عنوان العرض</Text>
                         </View>
                     </View>
@@ -456,6 +425,8 @@ const ProviderOfferDesc = (props) => {
     const SaveImg = source => {
         if (source) {
             setOfferImg(source);
+            //console.log(source);
+            updateImage()
         } else {
             console.log('error source isnt legable, source is :', source);
         }
@@ -487,7 +458,7 @@ const ProviderOfferDesc = (props) => {
                             size={20} />
                     </Pressable>
                     <View style={styles.editExpireDateView}>
-                        <Text style={styles.Infotxt}>{expirDate}</Text>
+                        <Text style={styles.Infotxt}>{moment(expirDate).format('l')}</Text>
                     </View>
                 </View>
             </View>)
@@ -498,12 +469,12 @@ const ProviderOfferDesc = (props) => {
         setDate(currentDate);
 
         let tempDate = new Date(currentDate);
-        let fDate = tempDate.getFullYear() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getDate();
+        let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
 
         if (completeDate < fDate) {
             setExpirDate(fDate);
         } else {
-            setExpirDate(data.campExpirDate);
+            setExpirDate(expirDate);
         }
     }
     const showMode = (currentMode) => {
@@ -523,7 +494,7 @@ const ProviderOfferDesc = (props) => {
                                     size={25} />}
                         </Pressable>
                         <View>
-                            <Text style={styles.Infotxt}>{data.campExpirDate}</Text>
+                            <Text style={styles.Infotxt}>{moment(expirDate).format('l')}</Text>
                             <Text style={styles.basicInfoTitle}>تاريخ الصلاحية</Text>
                         </View>
                     </View>
@@ -537,7 +508,7 @@ const ProviderOfferDesc = (props) => {
                     testID='dateTimePicker'
                     value={date}
                     mode={mode}
-                    display='calendar'
+                    display='spinner'
                     onChange={onChange}
                 />
             )}
@@ -548,7 +519,7 @@ const ProviderOfferDesc = (props) => {
     // Price 
     const renderOfferPrice = () => {
         return (<View>
-            {editPrice ? editItem(data.campCost, setOfferPrice, updatePrice) :
+            {editPrice ? editItem(offerPrice, setOfferPrice, updatePrice) :
                 <View style={styles.itemOffer}>
                     <View style={styles.item}>
                         <Pressable onPress={priceEditPress}>
@@ -559,7 +530,7 @@ const ProviderOfferDesc = (props) => {
                                 size={25} />
                         </Pressable>
                         <View>
-                            <Text style={styles.Infotxt}>{data.campCost}</Text>
+                            <Text style={styles.Infotxt}>{offerPrice}</Text>
                             <Text style={styles.basicInfoTitle}>السعر</Text>
                         </View>
                     </View>
@@ -572,11 +543,11 @@ const ProviderOfferDesc = (props) => {
     }
     const renderOfferPriceInclude = () => {
         let includeLabel = ''
-        if(data.priceInclude === "perPerson" ){
+        if (offerPriceInclude === "perPerson") {
             includeLabel = "للشخص الواحد"
-        } else if(data.priceInclude === "perTable"){
+        } else if (offerPriceInclude === "perTable") {
             includeLabel = "للطاولة"
-        }else {
+        } else {
             includeLabel = "لكل الحجز"
         }
         return (<View>
@@ -591,7 +562,7 @@ const ProviderOfferDesc = (props) => {
                                 size={25} />
                         </Pressable>
                         <View>
-                            <Text style={styles.Infotxt}>{' السعر يشمل'+ ' ' + includeLabel }</Text>
+                            <Text style={styles.Infotxt}>{' السعر يشمل' + ' ' + includeLabel}</Text>
                         </View>
                     </View>
                     <View style={styles.IconView}>
@@ -601,12 +572,13 @@ const ProviderOfferDesc = (props) => {
         </View >
         )
     }
+
+
     // Content from sub Detail
     const renderOfferContent = () => {
         return (
             <View>
-                <Pressable style={styles.editView} onPress={contentItemEditPress}
-                >
+                <Pressable style={styles.editView} onPress={contentItemEditPress}>
                     <Feather
                         name={'edit'}
                         color={colors.BGScereen}
@@ -618,7 +590,7 @@ const ProviderOfferDesc = (props) => {
         )
     }
     const OfferContentItems = () => {
-        return data.contentFromSubDet.map(itemID => {
+        return subDetContent.map(itemID => {
             const titleInfo = getSerSubDet(itemID)
             return (
                 <View style={styles.contentItem}>
@@ -630,8 +602,12 @@ const ProviderOfferDesc = (props) => {
             )
         })
     }
-    const checkContentPressed = (subTitle, setselectedSubDetail) => {
-        data.contentFromSubDet.includes(subTitle) ? setselectedSubDetail(true) : null
+    const checkContentPressed = (id) => {
+        if (subDetContent.includes(id)) {
+            return true
+        } else {
+            return false
+        }
     }
     const whenSubDetailPress = (subDetail, setselectedSubDetail, selectedSubDetail) => {
         setselectedSubDetail(!selectedSubDetail)
@@ -660,8 +636,7 @@ const ProviderOfferDesc = (props) => {
                         <Text style={styles.headerTxt}>{item.detailTitle}</Text>
                     </View>
                     {item.subDetailArray.map(sub => {
-                        //checkContentPressed(sub.detailSubtitle, setselectedSubDetail)
-                        const [selectedSubDetail, setselectedSubDetail] = useState(false);
+                        const [selectedSubDetail, setselectedSubDetail] = useState(checkContentPressed(sub.id));
                         return (
                             <View style={styles.subDetView}>
                                 <Text style={styles.subTxt}>{sub.detailSubtitle}</Text>
@@ -688,25 +663,26 @@ const ProviderOfferDesc = (props) => {
                 onRequestClose={() => setShowContentModal(false)}>
                 <View style={styles.centeredView}>
                     <View style={styles.detailModal}>
-                        <Pressable onPress={closeModalPress} style={styles.modalHeader}>
-                            <Feather
-                                name={'more-horizontal'}
-                                color={colors.puprble}
-                                size={25} />
-                        </Pressable>
+                        <View style={styles.modalHeader}>
+                            <Pressable style={styles.modalSave} onPress={updateContentItem}>
+                                <Text style={styles.headerTxt}>حفظ</Text>
+                            </Pressable>
+
+                            <Text style={styles.headerTxt}>القائمة</Text>
+                        </View>
                         <ScrollView>
                             {getSerDetailForContent()}
                         </ScrollView>
-                        <Pressable style={styles.modalFooter} onPress={updateContentItem}>
-                            <Text style={styles.headerTxt}>حفظ</Text>
-                        </Pressable>
+
                     </View>
                 </View>
             </Modal>
         )
     }
+
+    /// Other content offer
     const isOtherContent = () => {
-        if (data.campContents !== undefined) {
+        if (otherContent !== undefined) {
             return (<View>
                 <Text style={styles.titletxt}>محتويات العرض الاضافية</Text>
                 <View style={styles.content}>
@@ -716,16 +692,15 @@ const ProviderOfferDesc = (props) => {
             )
         }
     }
-
     const renderOfferOtherContent = () => {
-        return data.campContents.map(item => {
+        return otherContent?.map(item => {
             const [editOtherContItem, setEditOtherContItem] = useState(false);
+            const [showOthContModal, setShowOthContModal] = useState(false);
             return (<View>
                 {editOtherContItem ? editOtherContentItem(item, setEditOtherContItem) :
                     <View style={styles.itemOffer}>
                         <View style={styles.item}>
-                            <Pressable onPress={() => otherContentEditPress(setEditOtherContItem)}
-                            >
+                            <Pressable onPress={() => setShowOthContModal(true)}>
                                 <Feather
                                     style={styles.menuIcon}
                                     name={'more-vertical'}
@@ -733,16 +708,63 @@ const ProviderOfferDesc = (props) => {
                                     size={25} />
                             </Pressable>
                             <View>
-                                <Text style={styles.Infotxt}>{item.contentItem}</Text>
+                                <Text style={styles.Infotxt}>{item}</Text>
                             </View>
                         </View>
                         <View style={styles.IconView}>
                             <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
                         </View>
                     </View>}
+                {renderOtherContentModal(item, setEditOtherContItem, showOthContModal, setShowOthContModal)}
             </View>
             )
         })
+    }
+    const closeModal = (setShowOthContModal) => {
+        setShowOthContModal(false)
+    }
+    const renderOtherContentModal = (item, setEditOtherContItem, showOthContModal, setShowOthContModal) => {
+
+        return (
+            <Modal
+                transparent
+                visible={showOthContModal}
+                animationType='fade'
+                onRequestClose={() => setShowOthContModal(false)}>
+                <View style={styles.centeredView}>
+                    <View style={styles.detailModal}>
+                        <View>
+                            <Pressable onPress={() => closeModal(setShowOthContModal)} style={styles.modalHeader}>
+                                <Feather
+                                    style={styles.menuIcon}
+                                    name={'more-horizontal'}
+                                    color={colors.puprble}
+                                    size={25} />
+                            </Pressable>
+                        </View>
+                        <View style={{ justifyContent: 'flex-end', height: '100%' }}>
+                            <View style={styles.modalMenu}>
+                                <Pressable style={styles.modalItem} onPress={() => editOthContPress(item, setShowOthContModal, setEditOtherContItem)}>
+                                    <Feather
+                                        name={'edit'}
+                                        color={colors.gray}
+                                        size={25} />
+                                    <Text style={styles.modalHeaderTxt}>تعديل</Text>
+                                </Pressable>
+                                <Pressable style={styles.modalItem} //onPress={() => deleteDescItemPress(item, setShowDescModal)}
+                                >
+                                    <AntDesign
+                                        name={'delete'}
+                                        color={colors.gray}
+                                        size={25} />
+                                    <Text style={styles.modalHeaderTxt}>حذف</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        )
     }
 
     // working region Part
@@ -761,7 +783,7 @@ const ProviderOfferDesc = (props) => {
         )
     }
     const OfferRegionItem = () => {
-        return data.campRigon.map(item => {
+        return offerRegions.map(item => {
             return (
                 <View style={styles.contentItem}>
                     <Text style={styles.Infotxt}>{item}</Text>
@@ -772,8 +794,12 @@ const ProviderOfferDesc = (props) => {
             )
         })
     }
-    const checkRegionPressed = (subTitle, setselectedSubDetail) => {
-        data.contentFromSubDet.includes(subTitle) ? setselectedSubDetail(true) : null
+    const checkRegionPressed = (regionName) => {
+        if (offerRegions.includes(regionName)) {
+            return true
+        } else {
+            return false
+        }
     }
     const whenRegionPress = (reg, setselectedRegion, selectedRegion) => {
         setselectedRegion(!selectedRegion)
@@ -795,23 +821,33 @@ const ProviderOfferDesc = (props) => {
     }
     const getRegion = () => {
         return Region.regions.map(item => {
-            //checkRegionPressed(item.regionName, setselectedRegion)
-            const [selectedRegion, setselectedRegion] = useState(false);
+            const [selectedRegion, setselectedRegion] = useState(checkRegionPressed(item.regionName));
             return (
                 <View>
-                    <View style={styles.subDetView}>
-                        <Text style={styles.subTxt}>{item.regionName}</Text>
-                        <Pressable style={styles.checkView} onPress={() => whenRegionPress(item.regionName, setselectedRegion, selectedRegion)}>
-                            {selectedRegion &&
-                                <Entypo
-                                    style={{ alignSelf: 'center' }}
-                                    name={"check"}
-                                    color={colors.puprble}
-                                    size={25} />}
-                        </Pressable>
-                    </View>
+                    <Pressable style={[styles.selectBoxView, selectedRegion ? styles.selectBoxPressed : styles.selectBoxView]}
+                        onPress={() => whenRegionPress(item.regionName, setselectedRegion, selectedRegion)}>
+                        <Text style={styles.regionTxt}>{item.regionName}</Text>
+                    </Pressable>
                 </View>)
         })
+    }
+    const checkIsWorRegFilled = () => {
+        if (offerRegions.length < 1) {
+            Alert.alert(
+                'تنبية',
+                '  الرجاء التأكد من اختيار مناطق ترويج العرض',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        } else {
+            updateOfferWorkRegion()
+        }
+
     }
     const regionModal = () => {
         return (
@@ -822,18 +858,18 @@ const ProviderOfferDesc = (props) => {
                 onRequestClose={() => setShowRegionModal(false)}>
                 <View style={styles.centeredView}>
                     <View style={styles.detailModal}>
-                        <Pressable onPress={closeModalPress} style={styles.modalHeader}>
-                            <Feather
-                                name={'more-horizontal'}
-                                color={colors.puprble}
-                                size={25} />
-                        </Pressable>
+                        <View style={styles.modalHeader}>
+                            <Pressable style={styles.modalSave} onPress={checkIsWorRegFilled}>
+                                <Text style={styles.headerTxt}>حفظ</Text>
+                            </Pressable>
+
+                            <Text style={styles.headerTxt}>المناطق</Text>
+                        </View>
+
                         <ScrollView>
                             {getRegion()}
                         </ScrollView>
-                        <Pressable style={styles.modalFooter} onPress={updateOfferWorkRegion}>
-                            <Text style={styles.headerTxt}>حفظ</Text>
-                        </Pressable>
+
                     </View>
                 </View>
             </Modal>
@@ -900,7 +936,7 @@ const styles = StyleSheet.create({
     headerTxt: {
         fontSize: 18,
         color: colors.puprble,
-        // fontFamily: 'Cairo-VariableFont_slnt,wght',
+        fontWeight: 'bold'
     },
     imagView: {
         width: '100%',
@@ -1006,6 +1042,18 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginVertical: 5
     },
+    inputNotFilled: {
+        textAlign: 'center',
+        height: 50,
+        width: '90%',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderColor: 'white',
+        fontSize: 15,
+        color: 'black',
+        alignSelf: 'center',
+        marginVertical: 5
+    },
     editExpireDateView: {
         height: 50,
         width: '90%',
@@ -1024,59 +1072,92 @@ const styles = StyleSheet.create({
         top: 0,
     },
     detailModal: {
-        width: '100%',
-        height: '70%',
+        width: '90%',
+        height: '90%',
         backgroundColor: '#ffffff',
         borderTopLeftRadius: 20,
-        borderTopRightRadius: 20
+        borderTopRightRadius: 20,
+
     },
     centeredView: {
         flex: 1,
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#00000099',
     },
-    modalHeader: {
+    modalRHeader: {
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
         height: 50,
         //borderWidth: 1,
     },
-    modalFooter: {
+    modalSave: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
-        height: 50,
-        position: 'absolute',
-        bottom: 0,
+        borderWidth: 2,
+        width: '20%',
+        height: 40,
+        borderRadius: 8,
+        borderColor: colors.puprble
     },
     detailView: {
-        width: '100%',
-        height: 30,
+        width: '90%',
+        height: 40,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'lightgray'
+        backgroundColor: colors.silver,
+        alignSelf: 'center',
+        borderRadius: 10
     },
     subDetView: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
         marginVertical: 5,
-        width: '95%',
-        alignSelf: 'center'
+        width: '90%',
+        alignSelf: 'center',
+        paddingHorizontal: 5,
     },
     subTxt: {
         fontSize: 16,
-        color: 'black'
+        color: colors.puprble
+    },
+    regionTxt: {
+        fontSize: 20,
+        color: colors.puprble
     },
     checkView: {
         alignItems: 'center',
-        justifyContent: 'center',
-        width: 25,
-        height: 25,
+        justifyContent: 'flex-end',
+        width: 35,
+        height: 35,
         marginLeft: 10,
-        borderWidth: 2
+        borderWidth: 3,
+        borderColor: colors.silver,
+        borderRadius: 10,
+    },
+    selectBoxView: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '50%',
+        height: 50,
+        marginLeft: 10,
+        borderWidth: 3,
+        borderColor: colors.silver,
+        borderRadius: 10,
+        alignSelf: 'center',
+        marginVertical: 5
+    },
+    selectBoxPressed: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '50%',
+        height: 50,
+        marginLeft: 10,
+        borderWidth: 3,
+        borderColor: colors.puprble,
+        borderRadius: 10,
     },
     itemPersonView: {
         borderWidth: 2,
@@ -1097,5 +1178,45 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 5,
         marginTop: 10
+    },
+    // detailModal: {
+    //     width: '100%',
+    //     height: '15%',
+    //     backgroundColor: '#ffffff',
+    //     borderTopLeftRadius: 20,
+    //     borderTopRightRadius: 20
+    // },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        marginVertical: 10
+        // alignItems: 'center',
+        // justifyContent: 'center',
+        // height: 50,
+        // borderWidth: 1
+        // marginBottom: 30,
+        // position: 'absolute',
+        // top: 0
+    },
+    modalMenu: {
+        // borderWidth: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+    },
+    modalItem: {
+        alignItems: 'center'
+    },
+    modalHeaderTxt: {
+        fontSize: 18
     },
 })

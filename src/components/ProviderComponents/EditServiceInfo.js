@@ -486,7 +486,6 @@ const EditServiceInfo = (props) => {
         newRecord.push(addNewDItem)
 
         setServiceDescr([...newRecord])
-        // setServiceDescr((prev)=>[...prev,addNewDItem])
 
         const newData = {
             service_id: serviceID,
