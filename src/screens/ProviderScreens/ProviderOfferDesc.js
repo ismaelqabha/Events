@@ -31,6 +31,7 @@ const ProviderOfferDesc = (props) => {
 
     const [offerImg, setOfferImg] = useState()
 
+    const [addNewContent, setAddNewContent] = useState(false)
     const [editTitle, setEditTitle] = useState(false);
     const [editImg, setEditImg] = useState(false);
     const [editExDate, setEditExDate] = useState(false);
@@ -50,6 +51,7 @@ const ProviderOfferDesc = (props) => {
 
 
     const selectedOfferIndex = campInfo?.findIndex(item => item.CampId === data.CampId)
+    
     const today = moment(date, "YYYY-MM-DD")
     let day = today.format('D')
     let month = today.format('M')
@@ -132,9 +134,6 @@ const ProviderOfferDesc = (props) => {
     const onPressBackHandler = () => {
         props.navigation.goBack();
     };
-    // const closeModalPress = () => {
-    //     setShowContentModal(false)
-    // }
 
     const titleEditPress = () => {
         setEditTitle(true)
@@ -180,7 +179,6 @@ const ProviderOfferDesc = (props) => {
         }
 
     }
-
     const editItem = (state, setstate, update) => {
         if (Number.isInteger(state)) {
             state = state.toString()
@@ -201,26 +199,6 @@ const ProviderOfferDesc = (props) => {
                         value={state}
                         placeholder={state || ''}
                         onChangeText={val => setstate(val)}
-                    />
-                </View>
-            </View>)
-    }
-    const editOtherContentItem = (item, setEditOtherContItem) => {
-        return (
-            <View style={styles.itemView}>
-                <View style={styles.editTitleView}>
-                    <Pressable onPress={() => updateOtherContentItem(item, setEditOtherContItem)} style={styles.itemFooter}>
-                        <Feather
-                            name={'save'}
-                            color={colors.BGScereen}
-                            size={20} />
-                    </Pressable>
-                    <TextInput
-                        style={styles.input}
-                        keyboardType='default'
-                        value={otherContentItem}
-                        placeholder={otherContentItem || ''}
-                        onChangeText={(text) => setOtherContentItem(text)}
                     />
                 </View>
             </View>)
@@ -355,6 +333,19 @@ const ProviderOfferDesc = (props) => {
             campContents: otherContent
         }
         updateFunction(newData, setEditOtherContItem)
+    }
+    const addOtherContentItem = () => {
+
+        const content = otherContent
+        content.push(otherContentItem)
+
+        setOtherContent([...content]);
+
+        const newData = {
+            CampId: data.CampId,
+            campContents: [...content]
+        }
+        updateFunction(newData, setAddNewContent)
     }
 
 
@@ -681,16 +672,70 @@ const ProviderOfferDesc = (props) => {
     }
 
     /// Other content offer
+    const editOtherContentItem = (item, setEditOtherContItem) => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editTitleView}>
+                    <Pressable onPress={() => updateOtherContentItem(item, setEditOtherContItem)} style={styles.itemFooter}>
+                        <Feather
+                            name={'save'}
+                            color={colors.BGScereen}
+                            size={20} />
+                    </Pressable>
+                    <TextInput
+                        style={styles.input}
+                        keyboardType='default'
+                        value={otherContentItem}
+                        placeholder={otherContentItem || ''}
+                        onChangeText={(text) => setOtherContentItem(text)}
+                    />
+                </View>
+            </View>)
+    }
+    const addNewContentPress = () => {
+        setAddNewContent(true)
+    }
     const isOtherContent = () => {
         if (otherContent !== undefined) {
             return (<View>
                 <Text style={styles.titletxt}>محتويات العرض الاضافية</Text>
                 <View style={styles.content}>
+                    {addNewContent ? addContentForm() : <Pressable style={styles.newContitem} onPress={addNewContentPress}
+                    >
+                        <Text style={styles.Infotxt}>اضافة جديد</Text>
+                        <View style={styles.IconView}>
+                            <Entypo
+                                style={styles.icon}
+                                name={'plus'}
+                                color={colors.puprble}
+                                size={25}
+                            />
+                        </View>
+                    </Pressable>}
                     {renderOfferOtherContent()}
                 </View>
             </View>
             )
         }
+    }
+    const addContentForm = () => {
+        return (
+            <View style={styles.itemView}>
+                <View style={styles.editTitleView}>
+                    <Pressable  style={styles.itemFooter} onPress={addOtherContentItem}>
+                        <Feather
+                            name={'save'}
+                            color={colors.BGScereen}
+                            size={20} />
+                    </Pressable>
+                    <TextInput
+                        style={styles.input}
+                        keyboardType='default'
+                        placeholder={'أضف محتوى جديد للعرض'}
+                        onChangeText={setOtherContentItem}
+                    />
+                </View>
+            </View>)
     }
     const renderOfferOtherContent = () => {
         return otherContent?.map(item => {
@@ -913,7 +958,7 @@ const styles = StyleSheet.create({
     },
     content: {
         padding: 5,
-        backgroundColor: 'lightgray',
+        backgroundColor: colors.silver,
         width: '95%',
         alignSelf: 'center',
         borderRadius: 15,
@@ -922,7 +967,8 @@ const styles = StyleSheet.create({
     },
     titletxt: {
         fontSize: 18,
-        color: 'black',
+        color: colors.puprble,
+        fontWeight: 'bold',
         marginRight: 20,
         marginVertical: 10
     },
@@ -991,6 +1037,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '85%',
+    },
+    newContitem: {
+        // borderWidth: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end'
     },
     // Priceitem: {
     //     flexDirection: 'row',

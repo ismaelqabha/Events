@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, TextInput, Image, ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, Pressable, TextInput, Image, ToastAndroid, Alert } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react'
 import { colors } from '../../assets/AppColors';
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -13,6 +13,7 @@ import { createNewOffer, getCampaignsByServiceId, getRegions } from '../../resou
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { ScreenNames } from '../../../route/ScreenNames';
+import moment from 'moment';
 
 const ProviderCreateOffer = (props) => {
     const { isFirst, serviceCat, Region } = props.route?.params || {}
@@ -29,6 +30,9 @@ const ProviderCreateOffer = (props) => {
     const [OfferTitleError, setOfferTitleError] = useState(false)
     const [OfferPriceError, setOOfferPriceError] = useState(false)
     const [OfferExpireDateError, setOfferExpireDateError] = useState(false)
+    const [OfferPriIncludError, setOfferPriIncludError] = useState(false)
+    const [OfferRegionError, setOfferRegionError] = useState(false)
+    const [OfferContentError, setOfferContentError] = useState(false)
 
     const [OfferTitle, setOfferTitle] = useState(null)
     const [OfferPrice, setOfferPrice] = useState(null)
@@ -48,6 +52,12 @@ const ProviderCreateOffer = (props) => {
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
+    const today = moment(date, "YYYY-MM-DD")
+    let day = today.format('D')
+    let month = today.format('M')
+    let year = today.format('YYYY')
+    let completeDate = year + '-' + month + '-' + day
 
     useEffect(() => {
         getCampignsfromApi()
@@ -79,7 +89,7 @@ const ProviderCreateOffer = (props) => {
     const Package = () => {
         setPerPackage(true)
         setPerPerson(false)
-        setPerTable(true)
+        setPerTable(false)
         setPriceInclude('perRequest')
     }
     const Person = () => {
@@ -161,6 +171,7 @@ const ProviderCreateOffer = (props) => {
     const whenSetWorkingRegion = (regionTitle, setSelectedRegion, selectedRegion) => {
         setSelectedRegion(!selectedRegion)
         updateSetRegion(regionTitle, setSelectedRegion)
+        setOfferRegionError(!checkRegionIsSelected(OfferWorkingRegion))
     }
     const updateSetRegion = (regionTitle, setSelectedRegion) => {
         OfferWorkingRegion.includes(regionTitle) ? removeRegion(regionTitle, setSelectedRegion) : addRegion(regionTitle, setSelectedRegion);
@@ -177,7 +188,6 @@ const ProviderCreateOffer = (props) => {
         setOfferWorkingRegion(list);
     }
     const renderOfferWorkingRegion = () => {
-        console.log("Region.regions", Region.regions);
         const cardsArray = Region.regions.map(item => {
             const [selectedRegion, setSelectedRegion] = useState(false);
             return <View style={styles.regionView}>
@@ -201,6 +211,7 @@ const ProviderCreateOffer = (props) => {
     const whenSubDetailPress = (subDetail, setselectedSubDetail, selectedSubDetail) => {
         setselectedSubDetail(!selectedSubDetail)
         updateSubDetail(subDetail, setselectedSubDetail)
+        setOfferContentError(!checkContentIsSelected(OfferContent, subDetContent))
     }
     const updateSubDetail = (subDetail, setselectedSubDetail) => {
         subDetContent.includes(subDetail) ? removeSubDetail(subDetail, setselectedSubDetail) : addSubDetail(subDetail, setselectedSubDetail);
@@ -228,7 +239,7 @@ const ProviderCreateOffer = (props) => {
                     const [selectedSubDetail, setselectedSubDetail] = useState(false);
                     return (
                         <View style={styles.item}>
-                            <Text style={styles.Addtxt}>{element.detailSubtitle}</Text>
+                            <Text style={styles.subtxt}>{element.detailSubtitle}</Text>
                             <Pressable style={styles.regionPressable}
                                 onPress={() => whenSubDetailPress(element.id, setselectedSubDetail, selectedSubDetail)}>
                                 {selectedSubDetail &&
@@ -236,7 +247,7 @@ const ProviderCreateOffer = (props) => {
                                         style={{ alignSelf: 'center' }}
                                         name={"check"}
                                         color={colors.puprble}
-                                        size={20} />
+                                        size={25} />
                                 }
                             </Pressable>
                         </View>
@@ -251,7 +262,12 @@ const ProviderCreateOffer = (props) => {
     }
     const renderContents = () => {
         const fields = OfferContent?.map((val, index) => {
-            return <ContentComponent val={val} index={index} />
+            return (
+                <View>
+                    <Text style={styles.Addtxt}>محتويات اضافية</Text>
+                    <ContentComponent val={val} index={index} />
+                </View>
+            )
         })
         return fields
     }
@@ -304,11 +320,11 @@ const ProviderCreateOffer = (props) => {
     }
     const renderOfferContent = () => {
         return (
-            <View style={styles.ContentView}>
+            <View style={OfferContentError ? styles.ContentViewnotFilled : styles.ContentView}>
                 <Text style={styles.regiontxt}>تحديد محتويات العرض من خدماتي</Text>
                 {renderSubDetail()}
                 {renderContents()}
-                <Pressable style={styles.item} onPress={addOfferContent}>
+                <Pressable style={styles.addContentView} onPress={addOfferContent}>
                     <Text style={styles.Addtxt}>اضافة محتويات اضافية</Text>
                     <View style={styles.IconView}>
                         <Entypo
@@ -328,8 +344,24 @@ const ProviderCreateOffer = (props) => {
         setDate(currentDate);
 
         let tempDate = new Date(currentDate);
-        let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
-        setOfferExpireDate(fDate);
+        let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
+
+       
+        if (completeDate < fDate) {
+            setOfferExpireDate(fDate);
+        } else {
+            Alert.alert(
+                'تنبية',
+                'الرجاء التأكد من ادخال التاريخ بشكل صحيح',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+        }
     }
     const showMode = (currentMode) => {
         setShow(true);
@@ -339,8 +371,8 @@ const ProviderCreateOffer = (props) => {
         return (
             <View>
                 <Pressable onPress={() => showMode('date')} >
-                    <View style={styles.viewDate}>
-                        <Text style={styles.datetxt}>{OfferExpireDate || "صلاحية العرض"}</Text>
+                    <View style={OfferExpireDateError ? styles.viewDatenotFilled : styles.viewDate}>
+                        <Text style={styles.datetxt}>{ OfferExpireDate ? moment(OfferExpireDate).format('l') : "صلاحية العرض"}</Text>
                         <Entypo
                             name='calendar'
                             style={{ fontSize: 30, color: colors.puprble, paddingRight: 20 }}
@@ -353,13 +385,14 @@ const ProviderCreateOffer = (props) => {
                         value={date}
                         mode={mode}
                         is24Hour={true}
-                        display='calendar'
+                        display='spinner'
                         onChange={onChange}
                     />
                 )}
             </View>
         )
     }
+
 
     const renderheader = () => {
         return (
@@ -398,6 +431,7 @@ const ProviderCreateOffer = (props) => {
             </View>
         )
     }
+
     const renderOfferInfo = () => {
         return (
             <View style={styles.infoView}>
@@ -406,7 +440,7 @@ const ProviderCreateOffer = (props) => {
                         <Text style={styles.textRequired}>*</Text>
                     )}
                     <TextInput
-                        style={styles.input}
+                        style={OfferTitleError ? styles.inputnotFilled : styles.input}
                         keyboardType='default'
                         placeholder='عنوان العرض'
                         onChangeText={setOfferTitle}
@@ -423,7 +457,7 @@ const ProviderCreateOffer = (props) => {
                         <Text style={styles.textRequired}>*</Text>
                     )}
                     <TextInput
-                        style={styles.input}
+                        style={OfferPriceError ? styles.inputnotFilled : styles.input}
                         keyboardType='default'
                         placeholder='السعر المقترح'
                         onChangeText={val => {
@@ -434,12 +468,12 @@ const ProviderCreateOffer = (props) => {
                         }}
                     />
                 </View>
-                {isPriceperPersone &&
-                    <View style={styles.inputView}>
-                        {renderIsPerPerson()}
-                    </View>}
+                {isPriceperPersone && <View style={OfferPriIncludError ? styles.inputViewnotFilled : styles.inputView}>
+                    {renderIsPerPerson()}
+                </View>}
                 {sperator()}
-                <View style={styles.inputView}>
+
+                <View style={OfferRegionError ? styles.inputViewnotFilled : styles.inputView}>
                     <Text style={styles.regiontxt}>تحديد مناطق ترويج العرض</Text>
                     {renderOfferWorkingRegion()}
                 </View>
@@ -458,7 +492,7 @@ const ProviderCreateOffer = (props) => {
         return (
             <Pressable
                 style={styles.createUserNext}
-                onPress={() => onSavePress()}>
+                onPress={checkMissingData}>
                 <Text style={styles.createUserNextTxt}>حفظ</Text>
             </Pressable>
         );
@@ -481,8 +515,9 @@ const ProviderCreateOffer = (props) => {
         createNewOffer(addNewOffer, offerImg).then(res => {
             let OfferArr = campInfo || [];
             setCampInfo([...OfferArr])
+
             if (campInfo[0].campTitle !== OfferTitle) {
-                //console.log("res.message", res.message);
+
                 if (res.message === 'newCampaign Created') {
                     OfferArr.push(addNewOffer);
                     ToastAndroid.showWithGravity(
@@ -509,36 +544,144 @@ const ProviderCreateOffer = (props) => {
         })
     }
 
-    const onSavePress = () => {
-        true ? SaveOffer() : missingData();
-    };
+
 
     const checkStrings = val => {
         if (!val) {
-            return false;
+            return true;
         } else if (val.trim().length <= 0) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
+    };
+    const checkPriceIsNumber = (val) => {
+        if (isNaN(val)) {
+            return true
+        } else {
+            return false
+        }
+    }
+    const checkRegionIsSelected = (val) => {
+        if (val.length > 0) {
+            return true
+        } else {
+            return false
+        }
+    }
+    const checkContentIsSelected = (subCont, OthCont) => {
+        if (subCont.length > 0 || OthCont.length > 0) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    const checkMissingData = () => {
+
+        if (checkStrings(OfferTitle)) {
+            showMissingOfferTitle()
+        } else if (checkStrings(OfferExpireDate)) {
+            showMissingOfferExpire()
+        } else if (checkPriceIsNumber(OfferPrice)) {
+            showMissingOfferPrice()
+        } else if (checkStrings(priceInclude)) {
+            showMissingPriceInclude()
+        } else if (!checkRegionIsSelected(OfferWorkingRegion)) {
+            showMissingRegion()
+        } else if (!checkContentIsSelected(OfferContent, subDetContent)) {
+            showMissingContents()
+        } else {
+            SaveOffer()
+        }
     };
 
-    const missingData = () => {
-        checkStrings(OfferTitle) ? showMissingOfferTitle() : null;
-        checkStrings(OfferPrice) ? showMissingOfferPrice() : null;
-        checkStrings(OfferExpireDate) ? showMissingOfferExpire() : null;
+    const showMissingOfferTitle = () => {
+        Alert.alert(
+            'تنبية',
+            '  الرجاء التأكد من عنوان العرض',
+            [
+                {
+                    text: 'Ok',
+                    style: 'cancel',
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
     };
-
-    const showMissingOfferTitle = () => { };
-
-    const showMissingOfferPrice = () => { };
-
-    const showMissingOfferExpire = () => { };
+    const showMissingOfferPrice = () => {
+        Alert.alert(
+            'تنبية',
+            '  الرجاء التأكد من مدخل السعر',
+            [
+                {
+                    text: 'Ok',
+                    style: 'cancel',
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    };
+    const showMissingOfferExpire = () => {
+        Alert.alert(
+            'تنبية',
+            'الرجاء التأكد من ادخال التاريخ  ',
+            [
+                {
+                    text: 'Ok',
+                    style: 'cancel',
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    };
+    const showMissingPriceInclude = () => {
+        Alert.alert(
+            'تنبية',
+            'الرجاء التاكد من اختيار شمولية السعر',
+            [
+                {
+                    text: 'Ok',
+                    style: 'cancel',
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    };
+    const showMissingRegion = () => {
+        Alert.alert(
+            'تنبية',
+            'الرجاء التاكد من اختيار المناطق ',
+            [
+                {
+                    text: 'Ok',
+                    style: 'cancel',
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    };
+    const showMissingContents = () => {
+        Alert.alert(
+            'تنبية',
+            'الرجاء التاكد من اختيار محتويات العرض ',
+            [
+                {
+                    text: 'Ok',
+                    style: 'cancel',
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    };
 
     useEffect(() => {
-        setOfferTitleError(!checkStrings(OfferTitle));
-        setOOfferPriceError(!checkStrings(OfferPrice));
-        setOfferExpireDateError(!checkStrings(OfferExpireDate));
-    }, [OfferTitle, OfferPrice, OfferExpireDate]);
+        setOfferTitleError(checkStrings(OfferTitle));
+        setOOfferPriceError(checkStrings(OfferPrice));
+        setOfferExpireDateError(checkStrings(OfferExpireDate));
+        setOfferPriIncludError(checkStrings(priceInclude))
+        setOfferRegionError(!checkRegionIsSelected(OfferWorkingRegion))
+        setOfferContentError(!checkContentIsSelected(OfferContent, subDetContent))
+    }, [OfferTitle, OfferPrice, OfferExpireDate, priceInclude, OfferWorkingRegion, OfferContent, subDetContent]);
 
     return (
         <View style={styles.container}>
@@ -604,12 +747,22 @@ const styles = StyleSheet.create({
         height: 50,
         width: '90%',
         borderRadius: 10,
-        borderColor: 'black',
         fontSize: 15,
-        fontWeight: 'bold',
         color: 'black',
-        backgroundColor: 'lightgray',
-        // marginVertical: 10
+        backgroundColor: colors.silver,
+    },
+    inputnotFilled: {
+        alignSelf: 'center',
+        textAlign: 'center',
+        height: 50,
+        width: '90%',
+        borderRadius: 10,
+        borderColor: colors.darkGold,
+        borderWidth: 2,
+        fontSize: 15,
+        color: 'black',
+        backgroundColor: colors.silver,
+
     },
     regionView: {
         marginVertical: 5,
@@ -619,15 +772,23 @@ const styles = StyleSheet.create({
         marginRight: 20
     },
     regionPressable: {
-        width: 25,
-        height: 25,
+        width: 35,
+        height: 35,
         borderWidth: 2,
         borderColor: colors.silver,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        borderRadius: 8
     },
     ContentView: {
-        //borderWidth: 1,
+        marginVertical: 10,
+    },
+    ContentViewnotFilled: {
+        borderWidth: 2,
+        borderColor: colors.darkGold,
+        width: '95%',
+        alignSelf: 'center',
+        borderRadius: 8,
         marginVertical: 10,
     },
     item: {
@@ -636,7 +797,15 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         marginTop: 10,
         marginRight: 20,
-        // borderWidth: 1
+        
+    },
+    addContentView:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+        marginVertical: 20,
+        marginRight: 20,
+
     },
     subSelectView: {
 
@@ -648,20 +817,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'lightgray',
         borderRadius: 30,
-        marginLeft: 15
+        
     },
     detailTitleView: {
         backgroundColor: colors.silver,
-        marginVertical: 10, height: 30,
+        marginVertical: 10, height: 40,
         justifyContent: 'center',
         width: '90%',
         borderRadius: 10,
         alignSelf: 'center'
     },
     Addtxt: {
-        fontSize: 15,
+        fontSize: 18,
         color: colors.puprble,
         marginRight: 20,
+        fontWeight: 'bold'
+    },
+    subtxt: {
+        fontSize: 16,
+        color: colors.puprble,
+        marginRight: 20, 
     },
     seperator: {
         borderWidth: 0.5,
@@ -714,14 +889,35 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         marginVertical: 10,
     },
+    inputViewnotFilled: {
+        alignItems: 'flex-end',
+        borderWidth: 2,
+        borderColor: colors.darkGold,
+        width: '90%',
+        alignSelf: 'center',
+        marginVertical: 10,
+        paddingVertical: 5,
+        borderRadius: 8
+    },
     viewDate: {
         flexDirection: 'row',
         height: 50,
         width: '95%',
         borderRadius: 10,
         alignItems: 'center',
-        backgroundColor: 'lightgray',
+        backgroundColor: colors.silver,
         justifyContent: 'flex-end',
+    },
+    viewDatenotFilled: {
+        flexDirection: 'row',
+        height: 50,
+        width: '95%',
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: colors.silver,
+        justifyContent: 'flex-end',
+        borderWidth: 2,
+        borderColor: colors.darkGold
     },
     datetxt: {
         fontSize: 15,
