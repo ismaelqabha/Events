@@ -144,12 +144,12 @@ export const hallDetailOptions = [
     { key: '3', value: 'أخرى' }
 ];
 export const invetationBackground = [
-    { key: '0', value : images.invetationCard() },
-    { key: '1', value : require('../assets/photos/invetationImg1.png') },
-    { key: '2', value :require('../assets/photos/invetationImg2.png') },
-    { key: '3', value :require('../assets/photos/invetationImg3.png') },
-    { key: '4', value :require('../assets/photos/invetationImg4.png') },
-    { key: '5', value :require('../assets/photos/invetationImg5.png') },
+    { key: '0', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationCard.png" },
+    { key: '1', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg1.png" },
+    { key: '2', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg2.png" },
+    { key: '3', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg3.png" },
+    { key: '4', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg4.png" },
+    { key: '5', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg5.png" },
 ]
 
 
@@ -173,7 +173,7 @@ export const invitation = [
         inviteesList: [
             {
                 recived_Id: '65fdd05a0f07c96522542a06',
-                status:  '',
+                status: '',
                 invitationSentDate: '',
 
             },

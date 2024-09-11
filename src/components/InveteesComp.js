@@ -7,7 +7,7 @@ import { getRelations } from '../resources/API';
 import { ActivityIndicator } from 'react-native-paper';
 
 const InveteesComp = (props) => {
-    const { inviteesList, onSelectionChange }= props;
+    const { inviteesList, onSelectionChange } = props;
     const { relations, setRelations, userId } = useContext(UsersContext);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedItems, setSelectedItems] = useState({});
@@ -33,16 +33,18 @@ const InveteesComp = (props) => {
         }
     }, [relations, userId, setRelations]);
 
+    useEffect(() => {
+        onSelectionChange(selectedItems);
+    }, [selectedItems, onSelectionChange]);
+
     // Check if user is already invited
     const isInvited = (userId) => {
         return inviteesList.some(invitee => invitee.recivedId === userId);
     };
 
-    // Handle selection for items
     const toggleSelection = (userId) => {
         setSelectedItems(prevState => {
             const newState = { ...prevState, [userId]: !prevState[userId] };
-            onSelectionChange(newState);
             return newState;
         });
     };

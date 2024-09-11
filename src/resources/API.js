@@ -89,6 +89,11 @@ export const addInvitee = async (invitationId, inviteeData) => {
   return await AppFetch(url, 'POST', inviteeData);
 };
 
+export const getAllInvitationBackgrounds = async (body) => {
+  const url = 'invitation/backGrounds';
+  return await AppFetch(url, 'POST', body || {});
+};
+
 export const getHomePageData = async body => {
   const url = 'servicesData/getServiceAccordingCategory';
   return await AppFetch(url, 'POST', body);

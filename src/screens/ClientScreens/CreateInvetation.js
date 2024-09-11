@@ -49,8 +49,6 @@ const CreateInvetation = (props) => {
         const fetchOrCreateInvitation = async () => {
             try {
                 const response = await getInvitationStatus({ createdBy: userId, eventLogoId: eventTitleId });
-                console.log("response ", response);
-
                 if (response && response.invitation) {
                     setInvitationId(response.invitation._id);
                     setInvitationData(response.invitation);
@@ -275,6 +273,7 @@ const CreateInvetation = (props) => {
     };
     const onSendPress = () => {
         const validationError = validateFields();
+        console.log("validate error ", validationError);
 
         if (validationError) {
             showMessage(validationError)
@@ -305,28 +304,25 @@ const CreateInvetation = (props) => {
                 return;
             }
 
-            // Prepare the invitation data with the new invitees only
             const invitationData = {
-                eventLogoId: "someEventLogoId",  // Replace with actual eventLogoId
+                eventLogoId: "someEventLogoId",
                 invitees: newInvitees.map(userId => ({ user: userId, status: 'pending', invitationSentDate: new Date() })),  // Only new invitees
                 invitationCard: {
-                    invitId: "someInvitId",  // Replace with actual invitId
-                    invitationBackground: BG,  // Background image
-                    location,  // Location of the event
-                    eventDate: new Date(eventDate),  // Ensure the event date is a valid Date object
-                    welcomePhrase: welcom,  // Welcome message
-                    explanatoryPhrase: additionalInfo,  // Explanatory message
-                    time: eventTime,  // Event time
-                    callerNames: [hostName, hostName2],  // Caller names
-                    eventStars: [starName, starName2]  // Event stars
+                    invitationBackground: BG,
+                    location,
+                    eventDate: new Date(eventDate),
+                    welcomePhrase: welcom,
+                    explanatoryPhrase: additionalInfo,
+                    time: eventTime,
+                    callerNames: [hostName, hostName2],
+                    eventStars: [starName, starName2]
                 }
             };
 
-            // Send the new invitation data to the server
-            const response = await createInvitation(invitationData);  // Send the data to the server
+            const response = await createInvitation(invitationData);
             if (response.message === 'Invitation created successfully!') {
                 showMessage('Invitation sent successfully!');
-                setShowModal(false);  // Close the modal after successful invite
+                setShowModal(false);
             } else {
                 showMessage('Failed to send invitation. Try again.');
             }
@@ -386,7 +382,10 @@ const CreateInvetation = (props) => {
             <ScrollView style={{}}>
                 {renderEventType()}
                 {renderSetBackgroundCard()}
-                <ImageBackground style={styles.card} source={BG}>
+                <ImageBackground
+                    style={styles.card}
+                    source={typeof BG === 'string' ? { uri: BG } : BG}  
+                >
                     {renderInvetationCard()}
                 </ImageBackground>
 
