@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import UsersContext from './UsersContext';
 
 const UsersProvider = (props) => {
@@ -16,10 +16,11 @@ const UsersProvider = (props) => {
     const [password, setPassword] = useState(null);
     const [confirmPassword, setconfirmPassword] = useState(null);
     const [profilePhoto, setProfilePhoto] = useState(null);
+    const [relations, setRelations] = useState(null);
 
-     // location 
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+    // location 
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
 
 
 
@@ -54,11 +55,12 @@ const UsersProvider = (props) => {
                 setconfirmPassword,
                 profilePhoto,
                 setProfilePhoto,
-                latitude, 
+                latitude,
                 setLatitude,
-                longitude, 
+                longitude,
                 setLongitude,
-                
+                relations,
+                setRelations,
             }}>
             {props.children}
         </UsersContext.Provider>

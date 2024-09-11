@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, Modal, ImageBackground, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../../assets/AppColors';
 import { images } from '../../assets/photos/images';
@@ -12,6 +12,8 @@ import BackgroundInvetCard from '../../components/BackgroundInvetCard';
 import { showMessage } from '../../resources/Functions';
 import { useFocusEffect } from '@react-navigation/native';
 import { getItem, setItem } from '../../resources/common/asyncStorageFunctions';
+import { createInvitation, getInvitationStatus, updateInvitationDetails } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
 
 const height = SIZES.screenWidth * 1.8;
 const width = SIZES.screenWidth - 18;
@@ -23,7 +25,7 @@ const CreateInvetation = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [showBGModal, setShowBGModal] = useState(false);
     const [BG, setBG] = useState(images.invetationCard());
-    const { eventType } = props.route?.params || {}
+    const { eventType, eventTitleId } = props.route?.params || {}
 
     const [eventTime, setEventTime] = useState('');
     const [welcom, setWelcom] = useState('');
@@ -35,63 +37,92 @@ const CreateInvetation = (props) => {
     const [starName2, setStarName2] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState('');
 
-    //   const eventTitle = 'تخرج'
+    const [selectedInvitees, setSelectedInvitees] = useState({});
+    const [invitationId, setInvitationId] = useState(null);
+    const [invitationData, setInvitationData] = useState(null);
+    const { userId } = useContext(UsersContext)
+    const handleSelectionChange = (newSelection) => {
+        setSelectedInvitees(newSelection);
+    };
 
     useEffect(() => {
-        const loadDraft = async () => {
+        const fetchOrCreateInvitation = async () => {
             try {
-                const savedData = await getItem('invitationDraft');
+                const response = await getInvitationStatus({ createdBy: userId, eventLogoId: eventTitleId });
+                console.log("response ", response);
 
-                if (savedData) {
-                    const draft = JSON.parse(savedData);
+                if (response && response.invitation) {
+                    setInvitationId(response.invitation._id);
+                    setInvitationData(response.invitation);
+                    setEventTime(response.invitation.invitationCard.time);
+                    setEventDate(response.invitation.invitationCard.eventDate ?
+                        new Date(response.invitation.invitationCard.eventDate).toISOString().split('T')[0] :
+                        '');
+                    setLocation(response.invitation.invitationCard.location);
+                    setHostName(response.invitation.invitationCard.callerNames[0]);
+                    setHostName2(response.invitation.invitationCard.callerNames[1]);
+                    setStarName(response.invitation.invitationCard.eventStars[0]);
+                    setStarName2(response.invitation.invitationCard.eventStars[1]);
+                    setWelcom(response.invitation.invitationCard.welcomePhrase);
+                    setAdditionalInfo(response.invitation.invitationCard.explanatoryPhrase);
+                    setBG(response.invitation.invitationCard.invitationBackground);
+                } else {
+                    const newInvitationData = {
+                        eventLogoId: eventTitleId,
+                        createdBy: userId,
+                        invitees: [],
+                        invitationCard: {
+                            invitationBackground: images.invetationCard(),
+                            location: '',
+                            eventDate: new Date(),
+                            welcomePhrase: '',
+                            explanatoryPhrase: '',
+                            time: '',
+                            callerNames: ['', ''],
+                            eventStars: ['', ''],
+                        }
+                    };
 
-                    setEventTime(draft.eventTime || '');
-                    setEventDate(draft.eventDate || '');
-                    setLocation(draft.location || '');
-                    setHostName(draft.hostName || '');
-                    setWelcom(draft.welcom || '');
-                    setAdditionalInfo(draft.additionalInfo || '');
-                    setBG(draft.BG || images.invetationCard())
-                    setHostName2(draft.hostName2 || '')
-                    setStarName(draft.starName || '')
-                    setStarName2(draft.starName2 || '')
+                    const createResponse = await createInvitation(newInvitationData);
+                    if (createResponse && createResponse.invitation) {
+                        setInvitationId(createResponse.invitation._id);
+                        setInvitationData(createResponse.invitation);
+                    }
                 }
             } catch (error) {
-                console.error('Failed to load draft:', error);
+                console.error('Error fetching or creating invitation:', error);
+                showMessage('Error fetching or creating invitation.');
             }
         };
 
-        loadDraft();
-    }, []);
+        fetchOrCreateInvitation();
+    }, [eventTitleId, userId]);
 
-    // Save draft data to AsyncStorage when the screen loses focus
-    useFocusEffect(
-        React.useCallback(() => {
-            const saveDraft = async () => {
+    useEffect(() => {
+        if (invitationId) {
+            const updateInvitation = async () => {
+                const updatedInvitationData = {
+                    invitationCard: {
+                        invitationBackground: BG,
+                        location,
+                        eventDate: new Date(eventDate),
+                        welcomePhrase: welcom,
+                        explanatoryPhrase: additionalInfo,
+                        time: eventTime,
+                        callerNames: [hostName, hostName2],
+                        eventStars: [starName, starName2]
+                    }
+                };
                 try {
-                    const draft = {
-                        eventTime: eventTime,
-                        eventDate: eventDate,
-                        location: location,
-                        hostName: hostName,
-                        welcom: welcom,
-                        additionalInfo: additionalInfo,
-                        BG,
-                        hostName2,
-                        starName,
-                        starName2,
-                    };
-
-                    await setItem('invitationDraft', JSON.stringify(draft));
-
+                    const response = await updateInvitationDetails(invitationId, updatedInvitationData);
                 } catch (error) {
-                    console.error('Failed to save draft:', error);
+                    console.error('Error updating invitation:', error);
                 }
             };
 
-            saveDraft();
-        }, [eventTime, welcom, eventDate, location, hostName, hostName2, starName, starName2, additionalInfo, BG])
-    );
+            updateInvitation();
+        }
+    }, [eventTime, welcom, eventDate, location, hostName, hostName2, starName, starName2, additionalInfo, BG, invitationId]);
 
     const onPressBack = () => {
         props.navigation.goBack();
@@ -254,17 +285,67 @@ const CreateInvetation = (props) => {
     const onSaveInvetPress = () => {
 
     }
-    const onModalSendPress = () => {
+    const onModalSendPress = async () => {
+        try {
+            // Get only the selected invitees
+            const inviteesList = Object.keys(selectedInvitees).filter(key => selectedInvitees[key]);
 
-    }
+            // Separate new invitees and those who are already invited
+            const alreadyInvited = invitation[0].inviteesList.map(invitee => invitee.recivedId);
+            const newInvitees = inviteesList.filter(userId => !alreadyInvited.includes(userId));
+            const inviteesToRemove = inviteesList.filter(userId => alreadyInvited.includes(userId));
+
+            // Remove already invited users
+            for (const userId of inviteesToRemove) {
+                await removeInvitee(invitation[0]._id, userId); // Assuming invitation[0]._id holds the invitation ID
+            }
+
+            if (newInvitees.length === 0) {
+                showMessage('No new invitees to add.');
+                return;
+            }
+
+            // Prepare the invitation data with the new invitees only
+            const invitationData = {
+                eventLogoId: "someEventLogoId",  // Replace with actual eventLogoId
+                invitees: newInvitees.map(userId => ({ user: userId, status: 'pending', invitationSentDate: new Date() })),  // Only new invitees
+                invitationCard: {
+                    invitId: "someInvitId",  // Replace with actual invitId
+                    invitationBackground: BG,  // Background image
+                    location,  // Location of the event
+                    eventDate: new Date(eventDate),  // Ensure the event date is a valid Date object
+                    welcomePhrase: welcom,  // Welcome message
+                    explanatoryPhrase: additionalInfo,  // Explanatory message
+                    time: eventTime,  // Event time
+                    callerNames: [hostName, hostName2],  // Caller names
+                    eventStars: [starName, starName2]  // Event stars
+                }
+            };
+
+            // Send the new invitation data to the server
+            const response = await createInvitation(invitationData);  // Send the data to the server
+            if (response.message === 'Invitation created successfully!') {
+                showMessage('Invitation sent successfully!');
+                setShowModal(false);  // Close the modal after successful invite
+            } else {
+                showMessage('Failed to send invitation. Try again.');
+            }
+        } catch (error) {
+            console.error('Error sending invitation:', error);
+            showMessage('Error sending invitation.');
+        }
+    };
     const onModalCancelPress = () => {
         setShowModal(false)
     }
     const getInvetationInfo = () => {
         return (
-            <InveteesComp inviteesList={invitation[0].inviteesList} />
-        )
-    }
+            <InveteesComp
+                inviteesList={invitation[0].inviteesList}
+                onSelectionChange={handleSelectionChange}
+            />
+        );
+    };
 
     const inviteesListModal = () => {
         return (

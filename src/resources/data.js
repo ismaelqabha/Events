@@ -156,15 +156,9 @@ export const invetationBackground = [
 export const invitation = [
     {
         user_Id: '65ad914764fcb68f0ed422a1',
-        userName: 'اسماعيل كبها',
-        userPhoto: require('../assets/photos/user.png'),
-
         eventLogoId: '65bfea90ed6965ed8854aec2',
         eventTitle: 'حفل زفاف احمد',
-
         sentStatus: 'unsend',
-        recivedStatus: 'close',
-
         invitationCard: {
             invitId: '0005',
             invitationBackgraund: images.invetationCard(),
@@ -179,10 +173,9 @@ export const invitation = [
         inviteesList: [
             {
                 recived_Id: '65fdd05a0f07c96522542a06',
-                recivedName: 'Ahmed',
-                recivedPhoto: require('../assets/photos/user.png'),
-                recivedConfirmation:  '',
+                status:  '',
                 invitationSentDate: '',
+
             },
             {
                 recived_Id: '669bc369c09d0043b89f03b1',
