@@ -27,6 +27,7 @@ const ProviderCreateOffer = (props) => {
 
     const [isPriceperPersone, setIsPriceperPersone] = useState(false);
 
+    const [OfferImageError, setOfferImageError] = useState(false)
     const [OfferTitleError, setOfferTitleError] = useState(false)
     const [OfferPriceError, setOOfferPriceError] = useState(false)
     const [OfferExpireDateError, setOfferExpireDateError] = useState(false)
@@ -120,7 +121,7 @@ const ProviderCreateOffer = (props) => {
     }
     const renderOfferImg = () => {
         return (
-            <View style={styles.imgView}>
+            <View style={OfferImageError ? styles.imgViewnotFilled : styles.imgView}>
                 {offerImg ? <Image style={styles.offerImg} source={{ uri: offerImg }} />
                     : renderDefualtImg()}
 
@@ -257,6 +258,7 @@ const ProviderCreateOffer = (props) => {
             </View>)
         })
     }
+
     const addOfferContent = () => {
         setOfferContent([...OfferContent, { empty: "empty" }])
     }
@@ -264,7 +266,6 @@ const ProviderCreateOffer = (props) => {
         const fields = OfferContent?.map((val, index) => {
             return (
                 <View>
-                    <Text style={styles.Addtxt}>محتويات اضافية</Text>
                     <ContentComponent val={val} index={index} />
                 </View>
             )
@@ -289,11 +290,12 @@ const ProviderCreateOffer = (props) => {
                     style={styles.contentinput}
                     keyboardType='default'
                     placeholder='محتوى جديد'
-                    value={ContentDescr}
-                    onChangeText={(val) => setContentDescr(val)}
+                     value={ContentDescr}
+                    onChangeText={val => setContentDescr(val)}
                     onEndEditing={(val) => {
+                        const text = val.nativeEvent.text;
                         const data = {
-                            contentItem: ContentDescr
+                            contentItem: text
                         }
                         addContent(data, props.index)
                     }}
@@ -323,7 +325,11 @@ const ProviderCreateOffer = (props) => {
             <View style={OfferContentError ? styles.ContentViewnotFilled : styles.ContentView}>
                 <Text style={styles.regiontxt}>تحديد محتويات العرض من خدماتي</Text>
                 {renderSubDetail()}
-                {renderContents()}
+                <View style={{marginTop: 20}}>
+                    <Text style={styles.Addtxt}>محتويات اضافية</Text>
+                    {renderContents()}
+                </View>
+
                 <Pressable style={styles.addContentView} onPress={addOfferContent}>
                     <Text style={styles.Addtxt}>اضافة محتويات اضافية</Text>
                     <View style={styles.IconView}>
@@ -346,7 +352,7 @@ const ProviderCreateOffer = (props) => {
         let tempDate = new Date(currentDate);
         let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
 
-       
+
         if (completeDate < fDate) {
             setOfferExpireDate(fDate);
         } else {
@@ -372,7 +378,7 @@ const ProviderCreateOffer = (props) => {
             <View>
                 <Pressable onPress={() => showMode('date')} >
                     <View style={OfferExpireDateError ? styles.viewDatenotFilled : styles.viewDate}>
-                        <Text style={styles.datetxt}>{ OfferExpireDate ? moment(OfferExpireDate).format('l') : "صلاحية العرض"}</Text>
+                        <Text style={styles.datetxt}>{OfferExpireDate ? moment(OfferExpireDate).format('l') : "صلاحية العرض"}</Text>
                         <Entypo
                             name='calendar'
                             style={{ fontSize: 30, color: colors.puprble, paddingRight: 20 }}
@@ -514,6 +520,7 @@ const ProviderCreateOffer = (props) => {
 
         createNewOffer(addNewOffer, offerImg).then(res => {
             let OfferArr = campInfo || [];
+            OfferArr.push(addNewOffer)
             setCampInfo([...OfferArr])
 
             if (campInfo[0].campTitle !== OfferTitle) {
@@ -578,7 +585,9 @@ const ProviderCreateOffer = (props) => {
 
     const checkMissingData = () => {
 
-        if (checkStrings(OfferTitle)) {
+        if (checkStrings(offerImg)) {
+            showMissingOfferImage()
+        } else if (checkStrings(OfferTitle)) {
             showMissingOfferTitle()
         } else if (checkStrings(OfferExpireDate)) {
             showMissingOfferExpire()
@@ -595,6 +604,19 @@ const ProviderCreateOffer = (props) => {
         }
     };
 
+    const showMissingOfferImage = () => {
+        Alert.alert(
+            'تنبية',
+            '  الرجاء التأكد من تحميل الصورة ',
+            [
+                {
+                    text: 'Ok',
+                    style: 'cancel',
+                },
+            ],
+            { cancelable: false } // Prevent closing the alert by tapping outside
+        );
+    };
     const showMissingOfferTitle = () => {
         Alert.alert(
             'تنبية',
@@ -675,13 +697,14 @@ const ProviderCreateOffer = (props) => {
     };
 
     useEffect(() => {
+        setOfferImageError(checkStrings(offerImg))
         setOfferTitleError(checkStrings(OfferTitle));
         setOOfferPriceError(checkStrings(OfferPrice));
         setOfferExpireDateError(checkStrings(OfferExpireDate));
         setOfferPriIncludError(checkStrings(priceInclude))
         setOfferRegionError(!checkRegionIsSelected(OfferWorkingRegion))
         setOfferContentError(!checkContentIsSelected(OfferContent, subDetContent))
-    }, [OfferTitle, OfferPrice, OfferExpireDate, priceInclude, OfferWorkingRegion, OfferContent, subDetContent]);
+    }, [offerImg, OfferTitle, OfferPrice, OfferExpireDate, priceInclude, OfferWorkingRegion, OfferContent, subDetContent]);
 
     return (
         <View style={styles.container}>
@@ -709,7 +732,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderWidth: 1,
         borderColor: 'lightgray'
-        // backgroundColor: 'green',
+    },
+    imgViewnotFilled: {
+        width: '100%',
+        height: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: colors.darkGold
     },
     header: {
         height: 50,
@@ -797,9 +827,9 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         marginTop: 10,
         marginRight: 20,
-        
+
     },
-    addContentView:{
+    addContentView: {
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-end',
@@ -817,7 +847,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'lightgray',
         borderRadius: 30,
-        
+
     },
     detailTitleView: {
         backgroundColor: colors.silver,
@@ -831,12 +861,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.puprble,
         marginRight: 20,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+
     },
     subtxt: {
         fontSize: 16,
         color: colors.puprble,
-        marginRight: 20, 
+        marginRight: 20,
     },
     seperator: {
         borderWidth: 0.5,
@@ -860,6 +891,7 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         fontSize: 15,
         color: 'black',
+        paddingRight: 10
     },
     deleteIcon: {
         paddingLeft: 10

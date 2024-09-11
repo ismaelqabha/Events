@@ -324,7 +324,6 @@ const EditServiceInfo = (props) => {
         setServiceDescr(prevArray => {
             const newArray = [...prevArray];
             newArray[newDescitemIndex] = { ...newArray[newDescitemIndex], ...data };
-            console.log("newArray[newDescitemIndex]", newArray);
             return newArray;
         });
 
