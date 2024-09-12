@@ -7,7 +7,7 @@ import { getRelations } from '../resources/API';
 import { ActivityIndicator } from 'react-native-paper';
 
 const InveteesComp = (props) => {
-    const { inviteesList, onSelectionChange } = props;
+    const { onSelectionChange, inviteesList } = props;
     const { relations, setRelations, userId } = useContext(UsersContext);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedItems, setSelectedItems] = useState({});
@@ -37,9 +37,8 @@ const InveteesComp = (props) => {
         onSelectionChange(selectedItems);
     }, [selectedItems, onSelectionChange]);
 
-    // Check if user is already invited
     const isInvited = (userId) => {
-        return inviteesList.some(invitee => invitee.recivedId === userId);
+        return inviteesList.some(invitee => invitee.user._id === userId);
     };
 
     const toggleSelection = (userId) => {
@@ -49,7 +48,6 @@ const InveteesComp = (props) => {
         });
     };
 
-    // Filter relations based on the search query
     const filteredRelations = relations
         ? relations.filter(relation => relation.userInfo.User_name.includes(searchQuery))
         : [];
@@ -72,9 +70,8 @@ const InveteesComp = (props) => {
         );
     };
 
-    // Render invited users
     const RnderInveteesItem = (item) => {
-        const isSelected = selectedItems[item.userInfo._id] || false;  // Ensure a boolean is returned
+        const isSelected = selectedItems[item.userInfo._id] || false;
         return (
             <View style={styles.ItemView} key={item.userInfo._id}>
                 <TouchableOpacity
@@ -91,9 +88,8 @@ const InveteesComp = (props) => {
         );
     };
 
-    // Render non-invited users
     const rnderOtherRelatio = (item) => {
-        const isSelected = selectedItems[item.userInfo._id] || false;  // Ensure a boolean is returned
+        const isSelected = selectedItems[item.userInfo._id] || false;
         return (
             <View style={styles.ItemView} key={item.userInfo._id}>
                 <TouchableOpacity
@@ -113,7 +109,13 @@ const InveteesComp = (props) => {
     const renderRelations = () => {
         if (!relations) return null;
 
-        return filteredRelations.map(item => {
+        const sortedRelations = [...filteredRelations].sort((a, b) => {
+            const aIsInvited = isInvited(a.userInfo._id);
+            const bIsInvited = isInvited(b.userInfo._id);
+            return aIsInvited === bIsInvited ? 0 : aIsInvited ? -1 : 1; 
+        });
+
+        return sortedRelations.map(item => {
             return isInvited(item.userInfo._id) ? RnderInveteesItem(item) : rnderOtherRelatio(item);
         });
     };

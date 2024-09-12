@@ -12,7 +12,7 @@ import BackgroundInvetCard from '../../components/BackgroundInvetCard';
 import { showMessage } from '../../resources/Functions';
 import { useFocusEffect } from '@react-navigation/native';
 import { getItem, setItem } from '../../resources/common/asyncStorageFunctions';
-import { createInvitation, getInvitationStatus, updateInvitationDetails } from '../../resources/API';
+import { addInvitee, createInvitation, getInvitationStatus, removeInvitee, updateInvitationDetails } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
 const height = SIZES.screenWidth * 1.8;
@@ -24,7 +24,7 @@ const CreateInvetation = (props) => {
 
     const [showModal, setShowModal] = useState(false);
     const [showBGModal, setShowBGModal] = useState(false);
-    const [BG, setBG] = useState(images.invetationCard());
+    const [BG, setBG] = useState(invetationBackground[0].value);
     const { eventType, eventTitleId } = props.route?.params || {}
 
     const [eventTime, setEventTime] = useState('');
@@ -70,7 +70,7 @@ const CreateInvetation = (props) => {
                         createdBy: userId,
                         invitees: [],
                         invitationCard: {
-                            invitationBackground: images.invetationCard(),
+                            invitationBackground: BG,
                             location: '',
                             eventDate: new Date(),
                             welcomePhrase: '',
@@ -286,49 +286,42 @@ const CreateInvetation = (props) => {
     }
     const onModalSendPress = async () => {
         try {
-            // Get only the selected invitees
+            // Get the selected invitees
             const inviteesList = Object.keys(selectedInvitees).filter(key => selectedInvitees[key]);
 
-            // Separate new invitees and those who are already invited
-            const alreadyInvited = invitation[0].inviteesList.map(invitee => invitee.recivedId);
-            const newInvitees = inviteesList.filter(userId => !alreadyInvited.includes(userId));
-            const inviteesToRemove = inviteesList.filter(userId => alreadyInvited.includes(userId));
-
-            // Remove already invited users
-            for (const userId of inviteesToRemove) {
-                await removeInvitee(invitation[0]._id, userId); // Assuming invitation[0]._id holds the invitation ID
-            }
-
-            if (newInvitees.length === 0) {
-                showMessage('No new invitees to add.');
+            if (!invitationData || !invitationData.invitees) {
+                showMessage('No invitation data found.');
                 return;
             }
 
-            const invitationData = {
-                eventLogoId: "someEventLogoId",
-                invitees: newInvitees.map(userId => ({ user: userId, status: 'pending', invitationSentDate: new Date() })),  // Only new invitees
-                invitationCard: {
-                    invitationBackground: BG,
-                    location,
-                    eventDate: new Date(eventDate),
-                    welcomePhrase: welcom,
-                    explanatoryPhrase: additionalInfo,
-                    time: eventTime,
-                    callerNames: [hostName, hostName2],
-                    eventStars: [starName, starName2]
-                }
-            };
+            // Get already invited people
+            const alreadyInvited = invitationData.invitees.map(invitee => invitee.user._id);
 
-            const response = await createInvitation(invitationData);
-            if (response.message === 'Invitation created successfully!') {
-                showMessage('Invitation sent successfully!');
-                setShowModal(false);
-            } else {
-                showMessage('Failed to send invitation. Try again.');
+            // Determine new invitees and invitees to be removed
+            const newInvitees = inviteesList.filter(userId => !alreadyInvited.includes(userId));
+            const inviteesToRemove = alreadyInvited.filter(userId => !inviteesList.includes(userId));
+
+            // Remove users who were invited but are no longer selected
+            for (const userId of inviteesToRemove) {
+                await removeInvitee(invitationId, userId);
             }
+
+            // Add the new invitees if any
+            for (const userId of newInvitees) {
+                await addInvitee(invitationId, { userId });
+            }
+
+            // Show a message based on the actions performed
+            if (newInvitees.length === 0 && inviteesToRemove.length === 0) {
+                showMessage('No changes in invitees.');
+            } else {
+                showMessage('Invitation updated successfully!');
+            }
+
+            setShowModal(false); // Close the modal after successfully updating
         } catch (error) {
-            console.error('Error sending invitation:', error);
-            showMessage('Error sending invitation.');
+            console.error('Error updating invitees:', error);
+            showMessage('Error updating invitees.');
         }
     };
     const onModalCancelPress = () => {
@@ -337,7 +330,7 @@ const CreateInvetation = (props) => {
     const getInvetationInfo = () => {
         return (
             <InveteesComp
-                inviteesList={invitation[0].inviteesList}
+                inviteesList={invitationData?.invitees || []}
                 onSelectionChange={handleSelectionChange}
             />
         );
@@ -384,7 +377,7 @@ const CreateInvetation = (props) => {
                 {renderSetBackgroundCard()}
                 <ImageBackground
                     style={styles.card}
-                    source={typeof BG === 'string' ? { uri: BG } : BG}  
+                    source={typeof BG === 'string' ? { uri: BG } : BG}
                 >
                     {renderInvetationCard()}
                 </ImageBackground>
