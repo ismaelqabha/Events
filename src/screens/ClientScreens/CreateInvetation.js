@@ -257,17 +257,17 @@ const CreateInvetation = (props) => {
             return "Host name is required.";
         }
 
-        if (!hostName2.trim()) {
-            return "Second host name is required.";
-        }
+        // if (!hostName2.trim()) {
+        //     return "Second host name is required.";
+        // }
 
         if (!starName.trim()) {
             return "Star name is required.";
         }
 
-        if (!starName2.trim()) {
-            return "Second star name is required.";
-        }
+        // if (!starName2.trim()) {
+        //     return "Second star name is required.";
+        // }
 
         return null;
     };
