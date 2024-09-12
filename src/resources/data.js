@@ -170,6 +170,7 @@ export const invitation = [
             callerNames: ["عبد الله احمد عباس", "خالد فتحي حسين"],
             eventStar: ['أحمد', 'سمر']
         },
+        
         inviteesList: [
             {
                 recived_Id: '65fdd05a0f07c96522542a06',

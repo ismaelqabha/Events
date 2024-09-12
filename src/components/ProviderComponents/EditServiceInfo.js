@@ -32,7 +32,7 @@ const EditServiceInfo = (props) => {
         editNumofRequest, setEditNumofRequest,
         addSocilMedia, setAddSocilMedia } = useContext(ServiceProviderContext);
 
-    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
+
 
 
     const getServiceInfo = () => {
@@ -42,35 +42,33 @@ const EditServiceInfo = (props) => {
     };
     const serviceData = getServiceInfo()
 
-    const [serviceTitle, setServiceTitle] = useState();
-    const [serviceSubTitle, setServiceSubTitle] = useState();
-    const [serviceHallCapasity, setServiceHallCapasity] = useState();
-    const [servicePhone, setServicePhone] = useState();
-    const [serviceEmail, setServiceEmail] = useState();
-    const [servicePrice, setServicePrice] = useState();
-    const [maxRequest, setMaxRequest] = useState();
-    const [serviceRegion, setserviceRegion] = useState();
-    const [serviceAddress, setserviceAddress] = useState();
+    const [serviceTitle, setServiceTitle] = useState(serviceData[0].title);
+    const [serviceSubTitle, setServiceSubTitle] = useState(serviceData[0].subTitle);
+    const [serviceHallCapasity, setServiceHallCapasity] = useState(serviceData[0].maxCapasity);
+    const [servicePhone, setServicePhone] = useState(serviceData[0].servicePhone);
+    const [serviceEmail, setServiceEmail] = useState(serviceData[0].serviceEmail);
+    const [servicePrice, setServicePrice] = useState(serviceData[0].servicePrice);
+    const [maxRequest, setMaxRequest] = useState(serviceData[0].maxNumberOFRequest);
     const [serviceSocialMedia, setServiceSocialMedia] = useState(serviceData[0].socialMedia)
-    const [selectHallType, setSelectHallType] = useState();
+    const [selectHallType, setSelectHallType] = useState(serviceData[0].hallType);
+    const [serviceAddress, setserviceAddress] = useState(serviceData[0].address);
+    const [serviceRegion, setserviceRegion] = useState();
 
-
-    const [serEditedDescrItem, setSerEditedDescrItem] = useState();
+    const [serEditedDescrItem, setSerEditedDescrItem] = useState(descriptionItem);
     const [addNewDescrItem, setaddNewDescrItem] = useState();
-
-    setTimeout(() => {
-        setServiceDescr(serviceData[0].desc)
-    }, 2000)
-
     const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
-
+   
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
     const [address, setAddress] = useState(null)
 
-    const [socialMediaLinkItem, setSocialMediaLinkItem] = useState()
+    const [socialMediaLinkItem, setSocialMediaLinkItem] = useState(socialLink)
     const [socailMediaItem, setSocailMediaItem] = useState()
     const [webViewVisible, setWebViewVisible] = useState(false);
+
+    setTimeout(() => {
+        setServiceDescr(serviceData[0].desc)
+    }, 2000)
 
     const iconColors = {
         facebook: "blue",
@@ -92,7 +90,7 @@ const EditServiceInfo = (props) => {
 
     }, [])
 
-    const editBasicInfoPress = (itemInfo, setState, update) => {
+    const editBasicInfoPress = (itemInfo, state, setState, update) => {
         if (Number.isInteger(itemInfo)) {
             itemInfo = itemInfo.toString()
         }
@@ -109,12 +107,9 @@ const EditServiceInfo = (props) => {
                     <TextInput
                         style={styles.input}
                         keyboardType='default'
-                        //value={itemInfo}
-                        placeholder={itemInfo || ''}
-                        onChangeText={setState}
-                    //(val) => {
-                    // console.log("val", val);
-                    //setState(val)
+                        value={state}
+                        // placeholder={itemInfo || ''}
+                        onChangeText={(text) => setState(text)}
                     />
 
                 </View>
@@ -210,12 +205,16 @@ const EditServiceInfo = (props) => {
 
     // edit social media
     const addNewRecordSM = (data) => {
-        let newSMitemIndex = serviceSocialMedia.length 
+        let newSMitemIndex = serviceSocialMedia.length
+
         setServiceSocialMedia(prevArray => {
             const newArray = [...prevArray];
-            newArray[newSMitemIndex] = { ...newArray[newSMitemIndex],  ...data};
+            newArray[newSMitemIndex] = { ...newArray[newSMitemIndex], ...data };
+            //console.log("newArray", newArray);
             return newArray;
         });
+
+
     };
     const handleWebViewNavigationStateChange = (newNavState) => {
         // Extract relevant data from the web view's navigation state
@@ -262,8 +261,7 @@ const EditServiceInfo = (props) => {
         return (
             <View style={styles.itemView}>
                 <View style={styles.editAddressView}>
-                    <Pressable style={styles.itemFooter} onPress={addNewSocialMediaItem}
-                    >
+                    <Pressable style={styles.itemFooter} onPress={addNewSocialMediaItem}>
                         <Feather
                             name={'save'}
                             color={colors.BGScereen}
@@ -274,11 +272,11 @@ const EditServiceInfo = (props) => {
                             data={socialMediaList}
                             setSelected={val => {
                                 setSocailMediaItem(socialMediaList[val].value)
-                                const data = {
-                                    social: socialMediaList[val].value,
-                                    link: socialMediaLinkItem,
-                                }
-                                addNewRecordSM(data)
+                                // const data = {
+                                //     social: socialMediaList[val].value,
+                                //     link: socialMediaLinkItem,
+                                // }
+                                //  addNewRecordSM(data)
                             }}
 
                             placeholder={'اختر الشبكة الاجتماعية'}
@@ -293,18 +291,18 @@ const EditServiceInfo = (props) => {
                                 keyboardType={'default'}
                                 placeholder={"حمل الرابط"}
                                 value={socialMediaLinkItem}
-                                onChangeText={(val) => setSocialMediaLinkItem(val)}
-                                // onFocus={() => {
-                                //     handleLogin()
-                                // }}
-                                onEndEditing={(event) => {
-                                    const text = event.nativeEvent.text
-                                    const data = {
-                                        social: socailMediaItem,
-                                        link: socialMediaLinkItem,
-                                    }
-                                    addNewRecordSM(data)
-                                }}
+                                onChangeText={setSocialMediaLinkItem}
+                            // onFocus={() => {
+                            //     handleLogin()
+                            // }}
+                            // onEndEditing={(event) => {
+                            //     const text = event.nativeEvent.text
+                            //     const data = {
+                            //         social: socailMediaItem,
+                            //         link: socialMediaLinkItem,
+                            //     }
+                            //     addNewRecordSM(data)
+                            // }}
                             />
                         </View>
                         {webViewVisible && (
@@ -322,12 +320,13 @@ const EditServiceInfo = (props) => {
     // Add description part
     const addNewRecordDesc = (data) => {
         let newDescitemIndex = serviceDescr.length
+
         setServiceDescr(prevArray => {
             const newArray = [...prevArray];
-            newArray[newDescitemIndex] = { ...newArray[newDescitemIndex],  ...data};
-            console.log("newArray[newDescitemIndex]", newArray[newDescitemIndex]);
+            newArray[newDescitemIndex] = { ...newArray[newDescitemIndex], ...data };
             return newArray;
         });
+
     };
     const addNewDescItemPress = () => {
         return (
@@ -339,18 +338,20 @@ const EditServiceInfo = (props) => {
                             color={colors.BGScereen}
                             size={20} />
                     </Pressable>
+
                     <TextInput
                         style={styles.input}
                         keyboardType='default'
-                        //value={itemInfo}
                         placeholder={'اضافة وصف جديد'}
+                        value={addNewDescrItem}
                         onChangeText={setaddNewDescrItem}
-                        onEndEditing={val => {
-                            const data = {
-                                descItem: addNewDescrItem,
-                            }
-                            addNewRecordDesc(data)
-                        }}
+                    // onEndEditing={val => {
+                    //     const text = val.nativeEvent.text
+                    //     const data = {
+                    //         descItem: addNewDescrItem,
+                    //     }
+                    //     addNewRecordDesc(data)
+                    // }}
                     />
 
                 </View>
@@ -359,12 +360,15 @@ const EditServiceInfo = (props) => {
 
     // Update functions
     const updateInfo = (infoData, setstate) => {
+        const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
+        const data = serviceInfoAccorUser || [];
+
         updateService(infoData).then(res => {
-            const data = serviceInfoAccorUser || [];
-            if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...infoData };
-            }
+
             if (res.message === 'Updated Sucessfuly') {
+                if (selectedServiceIndex > -1) {
+                    data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...infoData };
+                }
                 setServiceInfoAccorUser([...data])
                 setstate(false)
                 ToastAndroid.showWithGravity(
@@ -380,14 +384,14 @@ const EditServiceInfo = (props) => {
             service_id: serviceID,
             title: serviceTitle
         }
-        updateInfo(newData,seteditTitle) 
+        updateInfo(newData, seteditTitle)
     }
     const updateSubTitle = () => {
         const newData = {
             service_id: serviceID,
             subTitle: serviceSubTitle
         }
-        updateInfo(newData,seteditSubTitle) 
+        updateInfo(newData, seteditSubTitle)
 
     }
     const updateHallCapasity = () => {
@@ -395,36 +399,36 @@ const EditServiceInfo = (props) => {
             service_id: serviceID,
             maxCapasity: serviceHallCapasity
         }
-        updateInfo(newData,seteditHallcapasity)
+        updateInfo(newData, seteditHallcapasity)
     }
     const updatePhone = () => {
         const newData = {
             service_id: serviceID,
             servicePhone: servicePhone
         }
-        updateInfo(newData,seteditphone)
+        updateInfo(newData, seteditphone)
     }
     const updateEmail = () => {
         const newData = {
             service_id: serviceID,
             serviceEmail: serviceEmail
         }
-        updateInfo(newData,setEditEmail)
+        updateInfo(newData, setEditEmail)
     }
     const updatePrice = () => {
         const newData = {
             service_id: serviceID,
             servicePrice: servicePrice
         }
-        updateInfo(newData,setEditprice)
+        updateInfo(newData, setEditprice)
 
     }
     const updateMaxRequest = () => {
         const newData = {
             service_id: serviceID,
-            numRecivedRequest: maxRequest
+            maxNumberOFRequest: maxRequest
         }
-        updateInfo(newData,setEditNumofRequest)
+        updateInfo(newData, setEditNumofRequest)
     }
     const updateAddress = () => {
         const newData = {
@@ -432,7 +436,7 @@ const EditServiceInfo = (props) => {
             region: serviceRegion,
             address: serviceAddress
         }
-        updateInfo(newData,seteditCity)
+        updateInfo(newData, seteditCity)
 
     }
     const updateSocialMediaItem = () => {
@@ -447,14 +451,14 @@ const EditServiceInfo = (props) => {
             service_id: serviceID,
             socialMedia: serviceSocialMedia
         }
-        updateInfo(newData,setEditSocialMedia)
+        updateInfo(newData, setEditSocialMedia)
     }
     const updateHallTypeItem = () => {
         const newData = {
             service_id: serviceID,
             hallType: selectHallType
         }
-        updateInfo(newData,seteditHallType)
+        updateInfo(newData, seteditHallType)
     }
     const updateServiceDescrItem = () => {
         const itemIndex = serviceDescr.findIndex(elme => elme.descItem === descriptionItem)
@@ -468,54 +472,75 @@ const EditServiceInfo = (props) => {
             service_id: serviceID,
             desc: serviceDescr
         }
-        updateInfo(newData,setEditDescrItem)
+       
+        updateInfo(newData, setEditDescrItem)
 
     }
 
     const addNewDescItem = () => {
+        const addNewDItem = {
+            descItem: addNewDescrItem
+        }
+        const newRecord = serviceDescr || []
+        newRecord.push(addNewDItem)
+
+        setServiceDescr([...newRecord])
+
         const newData = {
             service_id: serviceID,
-            desc: serviceDescr
+            desc: [...newRecord]
         }
-        updateInfo(newData,setAddNewDesc)
+
+        updateInfo(newData, setAddNewDesc)
     }
+
     const addNewSocialMediaItem = () => {
+
+        const addNewSMedia = {
+            social: socailMediaItem,
+            link: socialMediaLinkItem,
+        }
+        const newRecord = serviceSocialMedia || []
+        newRecord.push(addNewSMedia)
+        setServiceSocialMedia([...newRecord])
+
         const newData = {
             service_id: serviceID,
-            socialMedia: serviceSocialMedia
+            socialMedia: [...newRecord]
         }
-        updateInfo(newData,setAddSocilMedia)
+
+        updateInfo(newData, setAddSocilMedia)
     }
 
 
     const editObject = [
         {
             editItem: editTitle,
-            editFunction: editBasicInfoPress(serviceData[0].title, setServiceTitle, updateTitle),
+            editFunction: editBasicInfoPress(serviceData[0].title, serviceTitle, setServiceTitle, updateTitle),
         },
         {
             editItem: editSubTitle,
-            editFunction: editBasicInfoPress(serviceData[0].subTitle, setServiceSubTitle, updateSubTitle),
+            editFunction: editBasicInfoPress(serviceData[0].subTitle, serviceSubTitle, setServiceSubTitle, updateSubTitle),
         },
         {
             editItem: editEmail,
-            editFunction: editBasicInfoPress(serviceData[0].serviceEmail, setServiceEmail, updateEmail),
+            editFunction: editBasicInfoPress(serviceData[0].serviceEmail, serviceEmail, setServiceEmail, updateEmail),
         },
         {
             editItem: editphone,
-            editFunction: editBasicInfoPress(serviceData[0].servicePhone, setServicePhone, updatePhone),
+            editFunction: editBasicInfoPress(serviceData[0].servicePhone, servicePhone, setServicePhone, updatePhone),
         },
         {
             editItem: editprice,
-            editFunction: editBasicInfoPress(serviceData[0].servicePrice, setServicePrice, updatePrice),
+            editFunction: editBasicInfoPress(serviceData[0].servicePrice, servicePrice, setServicePrice, updatePrice),
         },
         {
             editItem: editNumofRequest,
-            editFunction: editBasicInfoPress(serviceData[0].numRecivedRequest, setMaxRequest, updateMaxRequest),
+            editFunction: editBasicInfoPress(serviceData[0].numRecivedRequest, maxRequest, setMaxRequest, updateMaxRequest),
         },
         {
             editItem: editHallcapasity,
-            editFunction: editBasicInfoPress(serviceData[0].maxCapasity, setServiceHallCapasity, updateHallCapasity),
+            editFunction: editBasicInfoPress(serviceData[0].maxCapasity, serviceHallCapasity, setServiceHallCapasity, updateHallCapasity),
         },
         {
             editItem: editCity,
@@ -535,7 +560,7 @@ const EditServiceInfo = (props) => {
         },
         {
             editItem: editDescrItem,
-            editFunction: editBasicInfoPress(descriptionItem, setSerEditedDescrItem, updateServiceDescrItem),
+            editFunction: editBasicInfoPress(descriptionItem, serEditedDescrItem, setSerEditedDescrItem, updateServiceDescrItem),
         },
         {
             editItem: addNewDesc,
@@ -543,6 +568,7 @@ const EditServiceInfo = (props) => {
         },
 
     ]
+
     const renderSelectedEdit = () => {
         return editObject.map(item => {
             if (item.editItem) {
@@ -589,6 +615,7 @@ const styles = StyleSheet.create({
         width: '10%',
         alignItems: 'center',
         justifyContent: 'center',
+
     },
     editTitleView: {
         justifyContent: 'center',

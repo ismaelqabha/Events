@@ -66,6 +66,7 @@ const ProviderHome = props => {
   const [detailIsperson, setDetailIsperson] = useState();
   const [sub_DetailArr, setSub_DetailArr] = useState();
 
+ 
 
   const getImagesfromApi = () => {
     getServiceImages({ serviceID: isFirst }).then(res => {
@@ -570,6 +571,7 @@ const ProviderHome = props => {
   };
 
   const deleteDescItemPress = (item, setShowDescModal) => {
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
     const lastUpdate = serviceDescr.filter(ser => ser.descItem !== item)
     setServiceDescr(lastUpdate)
 
@@ -661,6 +663,7 @@ const ProviderHome = props => {
     })
     return servicedesc
   };
+  
   const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
     return (
       <Modal
@@ -673,7 +676,6 @@ const ProviderHome = props => {
             <View>
               <Pressable onPress={() => closeModalPress(setShowDescModal)} style={styles.modalHeader}>
                 <Feather
-                  style={styles.menuIcon}
                   name={'more-horizontal'}
                   color={colors.puprble}
                   size={25} />
@@ -681,7 +683,7 @@ const ProviderHome = props => {
             </View>
             <View style={{ justifyContent: 'flex-end', height: '100%' }}>
               <View style={styles.modalMenu}>
-                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, editDescrItem, setShowDescModal)}>
+                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal)}>
                   <Feather
                     name={'edit'}
                     color={colors.gray}
@@ -876,21 +878,29 @@ const ProviderHome = props => {
 
   //Social Media
   const deleteSocialMediaItem = (Socialitem, setShowModal) => {
-    // console.log("serviceSocialMedia", serviceSocialMedia);
-    // console.log("Socialitem", Socialitem);
+   
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
     const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
+
+    //console.log("lastUpdate", lastUpdate);
+
     setServiceSocialMedia(lastUpdate)
 
     const newData = {
       service_id: isFirst,
-      socialMedia: serviceSocialMedia
+      socialMedia: [...lastUpdate]
     }
+
+    //console.log("newData", newData);
+    const data = serviceInfoAccorUser || [];
+    if (selectedServiceIndex > -1) {
+      data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+    }
+
     updateService(newData).then(res => {
-      const data = serviceInfoAccorUser || [];
-      if (selectedServiceIndex > -1) {
-        data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-      }
+     
       if (res.message === 'Updated Sucessfuly') {
+        //console.log("OK");
         setServiceInfoAccorUser([...data])
         setShowModal(false)
         ToastAndroid.showWithGravity(
@@ -1234,7 +1244,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   modalItem: {
-    // borderWidth: 1,
     alignItems: 'center'
   }
 });

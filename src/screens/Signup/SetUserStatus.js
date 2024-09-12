@@ -172,7 +172,7 @@ const SetUserStatus = (props) => {
       setDate(currentDate);
 
       let tempDate = new Date(currentDate);
-      let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+      let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
 
       setEventDate(fDate);
 
@@ -200,6 +200,7 @@ const SetUserStatus = (props) => {
           placeholder='أسم المناسبة '
           value={eventTitle}
           onChangeText={(val) => setEventTitle(val)}
+
           onEndEditing={(event) => {
             const text = event.nativeEvent.text;
             const data = {
@@ -208,6 +209,7 @@ const SetUserStatus = (props) => {
             };
             updateSpecialEventArray(data, props?.index);
           }}
+          
         />
         <Pressable onPress={() => showMode('date')}>
           <View style={styles.Bdate}>

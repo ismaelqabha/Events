@@ -5,16 +5,26 @@ import SearchContext from '../../../store/SearchContext';
 import { getCampaignsByServiceId } from '../../resources/API';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { ScreenNames } from '../../../route/ScreenNames';
+import moment from 'moment';
 
 const ProviderShowOffers = (props) => {
     const { isFirst, campInfo, setCampInfo } = useContext(SearchContext);
-    const [OfferId, setOfferId] = useState()
+
+
 
     const getCampignsfromApi = () => {
         getCampaignsByServiceId({ serviceId: isFirst }).then(res => {
             setCampInfo(res);
         });
     };
+    var todayDate = new Date();
+
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
+    todayDate.setMilliseconds(0);
+
+
 
     useEffect(() => {
         // getCampignsfromApi()
@@ -40,6 +50,21 @@ const ProviderShowOffers = (props) => {
             </View>
         )
     }
+    const calculateTime = (time) => {
+        const date1 = moment(todayDate);
+        const date2 = moment(time);
+        const diffInDays = date2.diff(date1, 'day');
+        if (diffInDays < 0) {
+            return (
+                <Text style={styles.offerTitletxt}>انتهى العرض</Text>
+            )
+        } else {
+            return (
+                <Text style={styles.offerTitletxt}>{diffInDays + ' ' + 'يوم'}</Text>
+            ) 
+        }
+       
+    }
 
     const renderOffers = () => {
         return campInfo.map(item => {
@@ -47,9 +72,12 @@ const ProviderShowOffers = (props) => {
                 <Pressable style={styles.offerView}
                     onPress={() => props.navigation.navigate(ScreenNames.ProviderOfferDesc, { data: { ...item } })}
                 >
-                    <Text style={styles.offerTitletxt}>{item.campTitle}</Text>
-                    <View style={styles.imageView}>
-                        <Image style={styles.image} source={{ uri: item.campImag }} />
+                    {calculateTime(item.campExpirDate)}
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        <Text style={styles.offerTitletxt}>{item.campTitle}</Text>
+                        <View style={styles.imageView}>
+                            <Image style={styles.image} source={{ uri: item.campImag }} />
+                        </View>
                     </View>
                 </Pressable>
             )
@@ -87,13 +115,14 @@ const styles = StyleSheet.create({
         width: '95%',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
         marginVertical: 5,
         backgroundColor: 'white',
         alignSelf: 'center',
         elevation: 5,
         paddingVertical: 5,
-        borderRadius: 5
+        borderRadius: 5,
+        paddingLeft: 10
     },
     offerTitletxt: {
         fontSize: 18,

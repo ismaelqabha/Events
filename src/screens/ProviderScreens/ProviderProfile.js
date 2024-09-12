@@ -2,10 +2,10 @@ import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { colors } from '../../assets/AppColors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import strings from '../../assets/res/strings';
 import { ScreenNames } from '../../../route/ScreenNames';
@@ -18,9 +18,11 @@ import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
+
   const { setIsfirst, isFirst, setserviceTitle,
     serviceCat, setServiceCat, campInfo, setCampInfo,
     setRequestInfoByService, setBookingDates } = useContext(SearchContext);
+
   const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
   const { userName } = useContext(UsersContext);
 
@@ -164,25 +166,6 @@ const ProviderProfile = props => {
       </View>
     );
   };
-  const renderPayments = () => {
-    return (
-      <View>
-        <Pressable style={styles.item}>
-          <View>
-            <Text style={styles.basicInfo}>دفعات الزبائن</Text>
-          </View>
-          <View style={styles.IconView}>
-            <MaterialIcons
-              style={styles.icon}
-              name={'payments'}
-              color={colors.puprble}
-              size={25}
-            />
-          </View>
-        </Pressable>
-      </View>
-    );
-  };
   const renderCreateService = () => {
     return (
       <View>
@@ -266,7 +249,6 @@ const ProviderProfile = props => {
       </View>
     );
   };
-
   const renderFeedBack = () => {
     return (
       <View>
@@ -287,12 +269,15 @@ const ProviderProfile = props => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTxt}>بروفايل</Text>
+
         <Pressable
           style={styles.drawer}
           onPress={() => navigation.openDrawer()}>
           <Entypo name={'menu'} color={colors.puprble} size={30} />
         </Pressable>
+
       </View>
+      
       <ScrollView>
         <View style={styles.headView}>
           <Text style={styles.headtext}>
@@ -305,7 +290,7 @@ const ProviderProfile = props => {
         </View>
         {seprator()}
         <View style={styles.viewSet}>
-          {renderPayments()}
+          {/* {renderPayments()} */}
           {renderDueRequestPayment()}
           {renderClients()}
           {renderFeedBack()}
