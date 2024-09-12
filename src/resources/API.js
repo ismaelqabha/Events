@@ -1,5 +1,5 @@
-const baseUrl = 'https://ev-server.onrender.com/';
-// const baseUrl = "http://localhost:7000/"
+// const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -114,7 +114,14 @@ export const updateService = async body => {
   const url = 'servicesData/updateByid';
   return await AppFetch(url, 'PATCH', body);
 };
-
+export const checkServiceTypeById = async body => {
+  const url = 'servicesData/checkServiceTypeById';
+  return await AppFetch(url, 'POST', body);
+};
+export const getServiceLocationById = async body => {
+  const url = 'servicesData/getServiceLocationById';
+  return await AppFetch(url, 'POST', body);
+};
 /// Payment
 export const createNewPayment = async body => {
   const url = 'Payments/makePayment';

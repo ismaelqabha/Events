@@ -316,7 +316,7 @@ const EventsCard = (props) => {
                 },
                 {
                     text: 'نعم',
-                    onPress: () => navigation.navigate(ScreenNames.CreateInvetation, { eventType : eventTitle[0]?.eventTitle , eventTitleId: eventTitleId  }),
+                    onPress: () => navigation.navigate(ScreenNames.CreateInvetation, { eventType: eventTitle[0]?.eventTitle, eventTitleId: eventTitleId, reqData: filterReqAccEventFile }),
                     style: 'destructive', // Use 'destructive' for a red-colored button
                 },
             ],
@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
         height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-       
+
     },
     eventNameView: {
         width: '100%',

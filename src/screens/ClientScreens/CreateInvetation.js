@@ -10,8 +10,6 @@ import { invetationBackground, invitation } from '../../resources/data';
 import Entypo from "react-native-vector-icons/Entypo"
 import BackgroundInvetCard from '../../components/BackgroundInvetCard';
 import { showMessage } from '../../resources/Functions';
-import { useFocusEffect } from '@react-navigation/native';
-import { getItem, setItem } from '../../resources/common/asyncStorageFunctions';
 import { addInvitee, createInvitation, getInvitationStatus, removeInvitee, updateInvitationDetails } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
@@ -25,7 +23,7 @@ const CreateInvetation = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [showBGModal, setShowBGModal] = useState(false);
     const [BG, setBG] = useState(invetationBackground[0].value);
-    const { eventType, eventTitleId } = props.route?.params || {}
+    const { eventType, eventTitleId, reqData } = props.route?.params || {}
 
     const [eventTime, setEventTime] = useState('');
     const [welcom, setWelcom] = useState('');
@@ -176,6 +174,7 @@ const CreateInvetation = (props) => {
                     setStarName={setStarName}
                     starName2={starName2}
                     setStarName2={setStarName2}
+                    reqData={reqData}
                 />
             </View>
 

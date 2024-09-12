@@ -2,26 +2,84 @@ import { StyleSheet, Text, View, Pressable, TextInput, Modal } from 'react-nativ
 import Zocial from "react-native-vector-icons/Zocial";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { colors } from '../assets/AppColors';
 import SearchContext from '../../store/SearchContext';
 import BackgroundInvetCard from './BackgroundInvetCard';
+import { checkServiceTypeById, getServiceBySerId, getServiceLocationById } from '../resources/API';
 
 
 const InvetationCard = (props) => {
-    const { eventType, isFromInvetShow, eventTitle, invitationCard, eventLogoId } = props
+    const { eventType, isFromInvetShow, eventTitle, invitationCard, eventLogoId, reqData } = props
     const { eventTime, setEventTime, eventDate, setEventDate, location, setLocation, hostName, setHostName, welcom, setWelcom, additionalInfo, setAdditionalInfo, hostName2, setHostName2,
         starName, setStarName,
         starName2, setStarName2 } = props
     const { enableInvetEditing, setEnableInvetEditing } = useContext(SearchContext);
     const [showBGModal, setShowBGModal] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [hallDates, setHallDates] = useState([]);
+    const [isEditable, setIsEditable] = useState(true);
 
     const weddingCaller = 'أسم الداعي الاول'
     const regulerEventCaller = 'أسم الداعي'
     const weddingStar = 'أسم العريس'
     const eventStar = 'أسم نجم المناسبة'
 
+    useEffect(() => {
+        const fetchEventDates = async () => {
+            const data = reqData();
+            const hallRequests = await Promise.all(
+                data[0]?.requestInfo?.flatMap(val =>
+                    val.serviceRequest.map(async (service) => {
+                        const result = await checkServiceTypeById({ service_id: service?.ReqServId, service_type: "قاعات" });
+
+                        if (result.match) {
+                            return service?.reservationDetail.map(reservation => ({
+                                date: reservation.reservationDate,
+                                startingTime: reservation.startingTime,
+                                ReqServId: service.ReqServId
+                            }));
+                        }
+                        return [];
+                    })
+                )
+            );
+
+            const validHallDates = hallRequests.flat().filter(Boolean);
+            setHallDates(validHallDates);
+
+            if (validHallDates.length === 1) {
+                const { date, startingTime, ReqServId } = validHallDates[0];
+                setEventDate(date);
+                setEventTime(startingTime);
+
+                const locationData = await getServiceLocationById({ service_id: ReqServId });
+                if (locationData?.location) {
+                    setLocation(locationData.location);
+                }
+
+                setIsEditable(false);
+            } else if (validHallDates.length === 0) {
+                setIsEditable(true);
+            } else {
+                setIsEditable(false);
+            }
+        };
+
+        fetchEventDates();
+    }, [reqData]);
+
+    const onDateSelect = async (selectedDate, ReqServId, startingTime) => {
+        setEventDate(selectedDate);
+        setEventTime(startingTime);
+
+        const locationData = await getServiceLocationById({ service_id: ReqServId });
+        if (locationData?.location) {
+            setLocation(locationData.location);
+        }
+
+        setShowModal(false);
+    };
 
     const firstCallerName = () => {
         return (
@@ -109,33 +167,30 @@ const InvetationCard = (props) => {
             <View style={{ alignItems: 'center' }}>
                 <Ionicons name={"location-sharp"} color={"black"} size={25} />
                 <TextInput
-                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
-                    keyboardType='default'
-                    placeholder={'الموقع'}
-                    onChangeText={setLocation}
+                    style={[styles.input, isEditable ? styles.editingInput : styles.disabledInput]}
                     value={location}
+                    editable={isEditable}
+                    onChangeText={setLocation}
                 />
             </View>
 
             <View style={{ alignItems: 'center' }}>
                 <Ionicons name={"time"} color={"black"} size={25} />
                 <TextInput
-                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
-                    keyboardType='default'
-                    placeholder={'الوقت'}
-                    onChangeText={setEventTime}
+                    style={[styles.input, isEditable ? styles.editingInput : styles.disabledInput]}
                     value={eventTime}
+                    editable={isEditable}
+                    onChangeText={setEventTime}
                 />
             </View>
 
-            <Pressable style={{ alignItems: 'center' }} onPress={getEventDate}>
+            <Pressable style={{ alignItems: 'center' }} onPress={getEventDate} >
                 <Zocial name={"cal"} color={"black"} size={25} />
                 <TextInput
-                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
-                    keyboardType='default'
-                    placeholder={'التاريخ'}
-                    onChangeText={setEventDate}
+                    style={[styles.input, isEditable ? styles.editingInput : styles.disabledInput]}
                     value={eventDate}
+                    editable={isEditable}
+                    onChangeText={setEventDate}
                 />
             </Pressable>
         </View>
@@ -147,11 +202,14 @@ const InvetationCard = (props) => {
     const renderEventDates = () => {
         return (
             <View>
-                <Text style={styles.dateText}>2025-5-20</Text>
-                <Text style={styles.dateText}>2025-5-21</Text>
+                {hallDates.map((hall, index) => (
+                    <Pressable key={index} onPress={() => onDateSelect(hall.date, hall.ReqServId, hall.startingTime)}>
+                        <Text style={styles.dateText}>{hall.date}</Text>
+                    </Pressable>
+                ))}
             </View>
-        )
-    }
+        );
+    };
     const EventDateModal = () => {
         return (
             <Modal
@@ -278,6 +336,16 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: 'black',
     },
+    disabledInput: {
+        textAlign: 'center',
+        height: 50,
+        alignSelf: 'center',
+        borderWidth: 0.6,
+        borderRadius: 10,
+        fontSize: 15,
+        backgroundColor: '#e0e0e0',
+        color: '#666',
+    },
     input: {
         textAlign: 'center',
         alignSelf: 'center',
@@ -383,7 +451,7 @@ const styles = StyleSheet.create({
         width: '70%',
         alignSelf: 'center',
         top: '30%',
-        
+
     },
     dateText: {
         fontSize: 20,
