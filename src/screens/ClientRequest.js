@@ -203,7 +203,7 @@ const ClientRequest = (props) => {
 
         eventItemIndex = eventInfo?.findIndex(item => item.EventId === EVENTID && item.userId === userId)
 
-       // console.log(EVENTID, userId);
+        // console.log(EVENTID, userId);
         const newEventItem = {
             EventId: EVENTID,
             eventName: fileEventName,
@@ -409,7 +409,7 @@ const ClientRequest = (props) => {
                 {renderRequestInfo()}
 
                 <View style={styles.eventView}>
-                    <SetEventForRequest serviceType={data?.servType} isfromClientShowRequest selectedEvent={data.eventData} />
+                    <SetEventForRequest serviceType={data?.servType} isfromClientShowRequest={isfromClientShowRequest || false} selectedEvent={data.eventData} />
                 </View>
 
                 <Recipt

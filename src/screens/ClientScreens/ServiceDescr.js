@@ -76,7 +76,7 @@ const ServiceDescr = (props) => {
                 })
             })
             return reqResult
-        }else{
+        } else {
             return 0
         }
     }
@@ -98,7 +98,7 @@ const ServiceDescr = (props) => {
             );
 
         } else {
-            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data } })
+            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data }, isfromClientShowRequest: false })
 
         }
 
