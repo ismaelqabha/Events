@@ -12,6 +12,8 @@ const InveteesComp = (props) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedItems, setSelectedItems] = useState({});
     const [loading, setLoading] = useState(false);
+    console.log("inviteesList", inviteesList);
+    console.log("inviteesList length ", inviteesList.length);
 
     const fetchRelations = async () => {
         setLoading(true);
@@ -112,7 +114,7 @@ const InveteesComp = (props) => {
         const sortedRelations = [...filteredRelations].sort((a, b) => {
             const aIsInvited = isInvited(a.userInfo._id);
             const bIsInvited = isInvited(b.userInfo._id);
-            return aIsInvited === bIsInvited ? 0 : aIsInvited ? -1 : 1; 
+            return aIsInvited === bIsInvited ? 0 : aIsInvited ? -1 : 1;
         });
 
         return sortedRelations.map(item => {

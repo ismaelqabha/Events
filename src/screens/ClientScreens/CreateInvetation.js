@@ -286,7 +286,8 @@ const CreateInvetation = (props) => {
     }
     const onModalSendPress = async () => {
         try {
-            // Get the selected invitees
+            console.log("slectedInvitees", selectedInvitees);
+
             const inviteesList = Object.keys(selectedInvitees).filter(key => selectedInvitees[key]);
 
             if (!invitationData || !invitationData.invitees) {
@@ -294,31 +295,40 @@ const CreateInvetation = (props) => {
                 return;
             }
 
-            // Get already invited people
             const alreadyInvited = invitationData.invitees.map(invitee => invitee.user._id);
 
-            // Determine new invitees and invitees to be removed
             const newInvitees = inviteesList.filter(userId => !alreadyInvited.includes(userId));
-            const inviteesToRemove = alreadyInvited.filter(userId => !inviteesList.includes(userId));
+            const inviteesToRemove = alreadyInvited.filter(userId => inviteesList.includes(userId));
 
-            // Remove users who were invited but are no longer selected
             for (const userId of inviteesToRemove) {
                 await removeInvitee(invitationId, userId);
             }
 
-            // Add the new invitees if any
             for (const userId of newInvitees) {
                 await addInvitee(invitationId, { userId });
             }
 
-            // Show a message based on the actions performed
+            const updatedInvitees = [
+                ...invitationData.invitees.filter(invitee => !inviteesToRemove.includes(invitee.user._id)),
+                ...newInvitees.map(userId => ({
+                    user: { _id: userId },
+                    status: 'pending',
+                    invitationSentDate: new Date(),
+                })),
+            ];
+
+            setInvitationData(prevData => ({
+                ...prevData,
+                invitees: updatedInvitees
+            }));
+
             if (newInvitees.length === 0 && inviteesToRemove.length === 0) {
                 showMessage('No changes in invitees.');
             } else {
                 showMessage('Invitation updated successfully!');
             }
 
-            setShowModal(false); // Close the modal after successfully updating
+            setShowModal(false);
         } catch (error) {
             console.error('Error updating invitees:', error);
             showMessage('Error updating invitees.');
