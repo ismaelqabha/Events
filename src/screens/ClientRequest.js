@@ -409,7 +409,7 @@ const ClientRequest = (props) => {
                 {renderRequestInfo()}
 
                 <View style={styles.eventView}>
-                    <SetEventForRequest serviceType={data?.servType} isfromClientShowRequest selectedEvent={data.eventData} />
+                    <SetEventForRequest serviceType={data?.servType} isfromClientShowRequest={isfromClientShowRequest || false} selectedEvent={data.eventData} />
                 </View>
 
                 <Recipt

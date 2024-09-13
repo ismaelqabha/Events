@@ -272,12 +272,14 @@ const ProviderCreateOffer = (props) => {
         })
         return fields
     }
+
     const ContentComponent = (props) => {
         const [ContentDescr, setContentDescr] = useState(null)
 
         useEffect(() => {
             if (props.val) {
-                setContentDescr(props?.val?.ContentDescr)
+                // console.log(props.val);
+                setContentDescr(props?.val?.contentItem)
             }
         }, [])
 
@@ -290,7 +292,7 @@ const ProviderCreateOffer = (props) => {
                     style={styles.contentinput}
                     keyboardType='default'
                     placeholder='محتوى جديد'
-                     value={ContentDescr}
+                    value={ContentDescr}
                     onChangeText={val => setContentDescr(val)}
                     onEndEditing={(val) => {
                         const text = val.nativeEvent.text;
@@ -325,7 +327,7 @@ const ProviderCreateOffer = (props) => {
             <View style={OfferContentError ? styles.ContentViewnotFilled : styles.ContentView}>
                 <Text style={styles.regiontxt}>تحديد محتويات العرض من خدماتي</Text>
                 {renderSubDetail()}
-                <View style={{marginTop: 20}}>
+                <View style={{ marginTop: 20 }}>
                     <Text style={styles.Addtxt}>محتويات اضافية</Text>
                     {renderContents()}
                 </View>
@@ -520,13 +522,11 @@ const ProviderCreateOffer = (props) => {
 
         createNewOffer(addNewOffer, offerImg).then(res => {
             let OfferArr = campInfo || [];
-            OfferArr.push(addNewOffer)
-            setCampInfo([...OfferArr])
 
-            if (campInfo[0].campTitle !== OfferTitle) {
-
+            // if (campInfo[0].campTitle !== OfferTitle) {
                 if (res.message === 'newCampaign Created') {
-                    OfferArr.push(addNewOffer);
+                    OfferArr.push({ ...addNewOffer, campImag: res.campImg })
+                    setCampInfo([...OfferArr])
                     ToastAndroid.showWithGravity(
                         'تم اٍنشاء العرض بنجاح',
                         ToastAndroid.SHORT,
@@ -540,13 +540,13 @@ const ProviderCreateOffer = (props) => {
                         ToastAndroid.BOTTOM,
                     );
                 }
-            } else {
-                ToastAndroid.showWithGravity(
-                    'لا يمكن انشاء عرض اخر بأسم عرض سابق',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM,
-                );
-            }
+            // } else {
+            //     ToastAndroid.showWithGravity(
+            //         'لا يمكن انشاء عرض اخر بأسم عرض سابق',
+            //         ToastAndroid.SHORT,
+            //         ToastAndroid.BOTTOM,
+            //     );
+            // }
 
         })
     }

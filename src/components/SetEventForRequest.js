@@ -58,7 +58,7 @@ const SetEventForRequest = (props) => {
         checkIfThereIsEvent()
         getEventTypeInfo()
 
-       // console.log(props.isfromClientShowRequest);
+        console.log(">>>>",props.isfromClientShowRequest);
   
         if (props.isfromClientShowRequest) {
             const eventData = filtereventInfo()
