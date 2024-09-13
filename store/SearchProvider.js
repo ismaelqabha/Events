@@ -6,7 +6,7 @@ const SearchProvider = props => {
 
   //user
 
-  const [enableInvetEditing, setEnableInvetEditing] = useState(false)
+ 
   const [cat, setCat] = useState('');
   const [isFirst, setIsfirst] = useState()
   const [serviceTitle, setserviceTitle] = useState()
@@ -93,8 +93,8 @@ const SearchProvider = props => {
         setServiceCat,
         sType,
         setSType,
-        enableInvetEditing, 
-        setEnableInvetEditing,
+        // enableInvetEditing, 
+        // setEnableInvetEditing,
         // ServId,
         // setServId,
         favorites,

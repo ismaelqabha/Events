@@ -8,20 +8,43 @@ import InvetationCard from '../../components/InvetationCard';
 import SearchContext from '../../../store/SearchContext';
 import SIZES from '../../resources/sizes';
 import InveteesComp from '../../components/InveteesComp';
+import { invetationBackground } from '../../resources/data';
+import { addInvitee, removeInvitee } from '../../resources/API';
+import { showMessage } from '../../resources/Functions';
 
 const height = SIZES.screenWidth * 1.8;
 const width = SIZES.screenWidth - 18;
 
 const InvetationOutboxShow = (props) => {
-    const { eventTypeInfo, enableInvetEditing, setEnableInvetEditing } = useContext(SearchContext);
-    const { relations, loading, eventTitle, invitationCard, eventLogoId, inviteesList } = props.route.params || []
-
-    const [showInveteesModal, setShowInveteesModal] = useState(false)
+    const { eventTypeInfo} = useContext(SearchContext);
+    const { relations, loading, invitation, eventTitle} = props.route.params || []
    
+    const [invitationData, setInvitationData] = useState(invitation);
+    const [BG, setBG] = useState(invitation.invitationCard.invitationBackground);
+    const [eventTime, setEventTime] = useState(invitation.invitationCard.time);
+    const [welcom, setWelcom] = useState(invitation.invitationCard.welcomePhrase);
+    const [eventDate, setEventDate] = useState(invitation.invitationCard.eventDate);
+    const [location, setLocation] = useState(invitation.invitationCard.location);
+    const [hostName, setHostName] = useState(invitation.invitationCard.callerNames[0]);
+    const [hostName2, setHostName2] = useState(invitation.invitationCard.callerNames[1]);
+    const [starName, setStarName] = useState(invitation.invitationCard.eventStars[0]);
+    const [starName2, setStarName2] = useState(invitation.invitationCard.eventStars[1]);
+    const [additionalInfo, setAdditionalInfo] = useState(invitation.invitationCard.explanatoryPhrase);
+    const [invitationId, setInvitationId] = useState(invitation._id);
+
+    
+
+    const [selectedInvitees, setSelectedInvitees] = useState({});
+    const [showInveteesModal, setShowInveteesModal] = useState(false)
+    const [enableInvetEditing, setEnableInvetEditing] = useState(false)
+
+    const handleSelectionChange = (newSelection) => {
+        setSelectedInvitees(newSelection);
+    };
 
     const getEventType = () => {
         return eventTypeInfo.filter(item => {
-            return item.Id === eventLogoId
+            return item.Id === invitation.eventLogoId
         })
     }
     const [eventType, setEventType] = useState(getEventType())
@@ -45,22 +68,35 @@ const InvetationOutboxShow = (props) => {
     const renderInvetationCard = () => {
         return (
             <View style={{}}>
-                <InvetationCard {...props.route.params}
+                <InvetationCard 
                     eventType={eventType[0].eventTitle}
-                    isFromInvetShow={true} />
+                    invitationId={invitationId}
+                    BG={BG}
+                    eventTime={eventTime}
+                    setEventTime={setEventTime}
+                    eventDate={eventDate}
+                    setEventDate={setEventDate}
+                    location={location}
+                    setLocation={setLocation}
+                    hostName={hostName}
+                    setHostName={setHostName}
+                    welcom={welcom}
+                    setWelcom={setWelcom}
+                    additionalInfo={additionalInfo}
+                    setAdditionalInfo={setAdditionalInfo}
+                    hostName2={hostName2}
+                    setHostName2={setHostName2}
+                    starName={starName}
+                    setStarName={setStarName}
+                    starName2={starName2}
+                    setStarName2={setStarName2}
+                    enableInvetEditing={enableInvetEditing}
+                    setEnableInvetEditing={setEnableInvetEditing} />
             </View>
         )
     }
 
-    const renderEditInvetationCard = () => {
-        return (
-            <View style={{}}>
-                <InvetationCard {...props.route.params}
-                    eventType={eventType[0].eventTitle}
-                    isFromInvetShow={false} />
-            </View>
-        )
-    }
+   
     const openInveteesModal = () => {
         setShowInveteesModal(true)
     }
@@ -72,13 +108,71 @@ const InvetationOutboxShow = (props) => {
     const RnderInvtees = () => {
         return (
             <View>
-                <InveteesComp inviteesList={inviteesList}
-                    relations={relations}
-                    loading={loading} />
+                <InveteesComp
+                    // relations={relations}
+                    // loading={loading} 
+                    inviteesList={invitationData.invitees || []}
+                    onSelectionChange={handleSelectionChange}
+                    />
             </View>
 
         )
     }
+    const onModalCancelPress = () => {
+        setShowInveteesModal(false)
+    }
+    const onModalSendPress = async () => {
+        try {
+            // console.log("slectedInvitees", selectedInvitees);
+
+            const inviteeslist = Object.keys(selectedInvitees).filter(key => selectedInvitees[key]);
+
+            if ((!invitationData || !invitationData.invitees)) {
+                showMessage('No invitation data found.');
+                return;
+            }
+
+            const alreadyInvited = invitationData.invitees.map(invitee => invitee.user._id);
+           
+
+
+            const newInvitees = inviteeslist.filter(userId => !alreadyInvited.includes(userId));
+            const inviteesToRemove = alreadyInvited.filter(userId => inviteeslist.includes(userId));
+
+            for (const userId of inviteesToRemove) {
+                await removeInvitee(invitationId, userId);
+            }
+
+            for (const userId of newInvitees) {
+                await addInvitee(invitationId, { userId });
+            }
+
+            const updatedInvitees = [
+                ...invitationData.invitees.filter(invitee => !inviteesToRemove.includes(invitee.user._id)),
+                ...newInvitees.map(userId => ({
+                    user: { _id: userId },
+                    status: 'pending',
+                    invitationSentDate: new Date(),
+                })),
+            ];
+
+            setInvitationData(prevData => ({
+                ...prevData,
+                invitees: updatedInvitees
+            }));
+
+            if (newInvitees.length === 0 && inviteesToRemove.length === 0) {
+                showMessage('No changes in invitees.');
+            } else {
+                showMessage('Invitation updated successfully!');
+            }
+
+            setShowModal(false);
+        } catch (error) {
+            console.error('Error updating invitees:', error);
+            showMessage('Error updating invitees.');
+        }
+    };
     const inveteesModal = () => {
         return (
             <Modal
@@ -96,6 +190,14 @@ const InvetationOutboxShow = (props) => {
 
                         <View style={styles.modalbody}>
                             {RnderInvtees()}
+                        </View>
+                        <View style={styles.btn}>
+                            <Pressable onPress={onModalCancelPress} >
+                                <Text style={styles.modaltext}>الغاء الامر</Text>
+                            </Pressable>
+                            <Pressable onPress={onModalSendPress} >
+                                <Text style={styles.modaltext}>ارسال</Text>
+                            </Pressable>
                         </View>
                     </View>
                 </View>
@@ -135,8 +237,8 @@ const InvetationOutboxShow = (props) => {
         <View style={styles.container}>
             {renderHeader()}
             <ScrollView>
-                <ImageBackground style={styles.card} source={invitationCard.invitationBackgraund}>
-                    {enableInvetEditing ? renderEditInvetationCard() : renderInvetationCard()}
+                <ImageBackground style={styles.card} source={typeof BG === 'string' ? { uri: BG } : BG}>
+                {renderInvetationCard()}
                 </ImageBackground>
                 {renderInvetees()}
                 {editInvetationCard()}
@@ -224,5 +326,20 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 18,
         color: colors.puprble
-    }
+    },
+    btn: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        height: 50,
+        width: '100%',
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        position: 'absolute',
+        bottom: 0
+    },
+    modaltext: {
+        fontSize: 18,
+        color: colors.puprble
+    },
 })

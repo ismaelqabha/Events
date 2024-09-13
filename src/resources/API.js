@@ -93,7 +93,12 @@ export const getAllInvitationBackgrounds = async (body) => {
   const url = 'invitation/backGrounds';
   return await AppFetch(url, 'POST', body || {});
 };
+export const getInvetationByUser = async (body) => {
+  const url = 'invitation/getInvetationAccUser';
+  return await AppFetch(url, 'POST', body || {});
+};
 
+/// services
 export const getHomePageData = async body => {
   const url = 'servicesData/getServiceAccordingCategory';
   return await AppFetch(url, 'POST', body);

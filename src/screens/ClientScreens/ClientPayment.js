@@ -16,7 +16,7 @@ const ClientPayment = (props) => {
   const { userId } = useContext(UsersContext);
   const { requestInfoAccUser } = useContext(SearchContext);
 
-  console.log("requestInfoAccUser", requestInfoAccUser[0].payments);
+ // console.log("requestInfoAccUser", requestInfoAccUser[0].payments);
   const onBackHandler = () => {
     props.navigation.goBack();
   }

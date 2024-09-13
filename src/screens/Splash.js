@@ -71,6 +71,7 @@ export default function Splash(props) {
             return
         }
         if (userEmail && userPassword) {
+        
             signIn({ Email: userEmail, Password: userPassword })
                 .then(res => {
                     if (res.message === 'Authentication succeeded') {

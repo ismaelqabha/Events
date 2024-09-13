@@ -24,7 +24,7 @@ const ServiceDescr = (props) => {
     const servicePhone = props.route.params?.data?.servicePhone;
     const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
 
-    console.log("data>>>", data);
+    
     const [showModal, setShowModal] = useState(false);
     const [changeDateshowModal, setChangeDateshowModal] = useState(false);
     const [changeDateIsLocal, setchangeDateIsLocal] = useState(false);
