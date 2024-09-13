@@ -316,7 +316,7 @@ const EventsCard = (props) => {
                 },
                 {
                     text: 'نعم',
-                    onPress: () => navigation.navigate(ScreenNames.CreateInvetation, { eventType : eventTitle[0]?.eventTitle }),
+                    onPress: () => navigation.navigate(ScreenNames.CreateInvetation, { eventType : eventTitle[0]?.eventTitle , eventTitleId: eventTitleId  }),
                     style: 'destructive', // Use 'destructive' for a red-colored button
                 },
             ],

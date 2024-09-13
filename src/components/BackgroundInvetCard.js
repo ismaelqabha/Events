@@ -1,43 +1,65 @@
-import { ScrollView, StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React from 'react'
-import { invetationBackground } from '../resources/data'
-import { colors } from '../assets/AppColors'
-
+import { ScrollView, StyleSheet, Text, View, Image, Pressable, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { colors } from '../assets/AppColors';
+import { getAllInvitationBackgrounds } from '../resources/API';
+import { invetationBackground } from '../resources/data';
 
 const BackgroundInvetCard = (props) => {
+    const [backgrounds, setBackgrounds] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchBackgrounds = async () => {
+            try {
+                const response = await getAllInvitationBackgrounds();
+                if (response && response.images) {
+                    setBackgrounds(response.images);
+                } else {
+                    setBackgrounds(invetationBackground.map(bg => bg.value));
+                }
+            } catch (error) {
+                console.error('Error fetching backgrounds:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBackgrounds();
+    }, []);
 
     const setInviteBg = (item) => {
-        props.setBG(item.value)
-        props.setShowBGModal(false)
-    }
+        props.setBG(item); // Ensure you're passing only the URI
+        props.setShowBGModal(false);
+    };
 
     const renderBGCards = () => {
-        return invetationBackground.map(item => {
-            return (
-                <Pressable style={styles.card} onPress={() => setInviteBg(item)}>
-                    <Image style={styles.img} source={item.value} />
-                </Pressable>
-            )
-        })
+        return backgrounds.map((item, index) => (
+            <Pressable key={index} style={styles.card} onPress={() => setInviteBg(item)}>
+                <Image style={styles.img} source={{ uri: item }} />
+            </Pressable>
+        ));
+    };
 
-    }
     return (
         <View style={styles.cont}>
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                {renderBGCards()}
-            </ScrollView>
+            {loading ? (
+                <ActivityIndicator size="large" color={colors.puprble} />
+            ) : (
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                    {renderBGCards()}
+                </ScrollView>
+            )}
         </View>
-    )
-}
+    );
+};
 
-export default BackgroundInvetCard
+export default BackgroundInvetCard;
 
 const styles = StyleSheet.create({
     cont: {
         paddingLeft: 10,
         alignSelf: 'center',
         height: '95%',
-
     },
     card: {
         marginRight: 20,
@@ -49,4 +71,4 @@ const styles = StyleSheet.create({
         height: '100%',
         resizeMode: 'stretch'
     }
-})
+});

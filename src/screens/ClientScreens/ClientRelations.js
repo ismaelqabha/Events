@@ -15,7 +15,11 @@ const ClientRelations = (props) => {
   const [searchResults, setSearchResults] = useState([]);
   const slideInAnimation = useRef(new Animated.Value(0)).current;
   const { relations: reciRelations, loading } = props.route.params || []
-  const [relations, setRelations] = useState(reciRelations)
+  const { relations, setRelations } = useContext(UsersContext)
+
+  useEffect(() => {
+    setRelations(reciRelations)
+  }, [])
 
   const searchUsers = async (query) => {
     try {

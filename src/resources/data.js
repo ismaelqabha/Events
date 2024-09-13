@@ -144,27 +144,21 @@ export const hallDetailOptions = [
     { key: '3', value: 'أخرى' }
 ];
 export const invetationBackground = [
-    { key: '0', value : images.invetationCard() },
-    { key: '1', value : require('../assets/photos/invetationImg1.png') },
-    { key: '2', value :require('../assets/photos/invetationImg2.png') },
-    { key: '3', value :require('../assets/photos/invetationImg3.png') },
-    { key: '4', value :require('../assets/photos/invetationImg4.png') },
-    { key: '5', value :require('../assets/photos/invetationImg5.png') },
+    { key: '0', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationCard.png" },
+    { key: '1', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg1.png" },
+    { key: '2', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg2.png" },
+    { key: '3', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg3.png" },
+    { key: '4', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg4.png" },
+    { key: '5', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg5.png" },
 ]
 
 
 export const invitation = [
     {
         user_Id: '65ad914764fcb68f0ed422a1',
-        userName: 'اسماعيل كبها',
-        userPhoto: require('../assets/photos/user.png'),
-
         eventLogoId: '65bfea90ed6965ed8854aec2',
         eventTitle: 'حفل زفاف احمد',
-
         sentStatus: 'unsend',
-        recivedStatus: 'close',
-
         invitationCard: {
             invitId: '0005',
             invitationBackgraund: images.invetationCard(),
@@ -180,10 +174,9 @@ export const invitation = [
         inviteesList: [
             {
                 recived_Id: '65fdd05a0f07c96522542a06',
-                recivedName: 'Ahmed',
-                recivedPhoto: require('../assets/photos/user.png'),
-                recivedConfirmation:  '',
+                status: '',
                 invitationSentDate: '',
+
             },
             {
                 recived_Id: '669bc369c09d0043b89f03b1',

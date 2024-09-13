@@ -1,5 +1,5 @@
 const baseUrl = 'https://ev-server.onrender.com/';
-//const baseUrl = "http://localhost:7000/"
+// const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -70,22 +70,30 @@ export const updateInviteeStatus = async (inviteeData) => {
   const url = 'invitation/invitee/status';
   return await AppFetch(url, 'PATCH', inviteeData);
 };
-export const getInvitationStatus = async (invitationId) => {
-  const url = `invitation/${invitationId}`;
-  return await AppFetch(url, 'POST', invitationId);
+export const getInvitationStatus = async ({ createdBy, eventLogoId }) => {
+  const url = 'invitation/status';
+  return await AppFetch(url, 'POST', { createdBy, eventLogoId });
 };
 export const updateInvitationDetails = async (invitationId, updateData) => {
   const url = `invitation/${invitationId}`;
   return await AppFetch(url, 'PATCH', updateData);
 };
+
 export const removeInvitee = async (invitationId, userId) => {
   const url = `invitation/${invitationId}/invitee/${userId}`;
   return await AppFetch(url, 'DELETE');
 };
+
 export const addInvitee = async (invitationId, inviteeData) => {
   const url = `invitation/${invitationId}/invitee`;
   return await AppFetch(url, 'POST', inviteeData);
 };
+
+export const getAllInvitationBackgrounds = async (body) => {
+  const url = 'invitation/backGrounds';
+  return await AppFetch(url, 'POST', body || {});
+};
+
 export const getHomePageData = async body => {
   const url = 'servicesData/getServiceAccordingCategory';
   return await AppFetch(url, 'POST', body);

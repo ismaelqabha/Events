@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, Modal, ImageBackground, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../../assets/AppColors';
 import { images } from '../../assets/photos/images';
@@ -12,6 +12,8 @@ import BackgroundInvetCard from '../../components/BackgroundInvetCard';
 import { showMessage } from '../../resources/Functions';
 import { useFocusEffect } from '@react-navigation/native';
 import { getItem, setItem } from '../../resources/common/asyncStorageFunctions';
+import { addInvitee, createInvitation, getInvitationStatus, removeInvitee, updateInvitationDetails } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
 
 const height = SIZES.screenWidth * 1.8;
 const width = SIZES.screenWidth - 18;
@@ -22,8 +24,8 @@ const CreateInvetation = (props) => {
 
     const [showModal, setShowModal] = useState(false);
     const [showBGModal, setShowBGModal] = useState(false);
-    const [BG, setBG] = useState(images.invetationCard());
-    const { eventType } = props.route?.params || {}
+    const [BG, setBG] = useState(invetationBackground[0].value);
+    const { eventType, eventTitleId } = props.route?.params || {}
 
     const [eventTime, setEventTime] = useState('');
     const [welcom, setWelcom] = useState('');
@@ -35,63 +37,90 @@ const CreateInvetation = (props) => {
     const [starName2, setStarName2] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState('');
 
-    //   const eventTitle = 'تخرج'
+    const [selectedInvitees, setSelectedInvitees] = useState({});
+    const [invitationId, setInvitationId] = useState(null);
+    const [invitationData, setInvitationData] = useState(null);
+    const { userId } = useContext(UsersContext)
+    const handleSelectionChange = (newSelection) => {
+        setSelectedInvitees(newSelection);
+    };
 
     useEffect(() => {
-        const loadDraft = async () => {
+        const fetchOrCreateInvitation = async () => {
             try {
-                const savedData = await getItem('invitationDraft');
+                const response = await getInvitationStatus({ createdBy: userId, eventLogoId: eventTitleId });
+                if (response && response.invitation) {
+                    setInvitationId(response.invitation._id);
+                    setInvitationData(response.invitation);
+                    setEventTime(response.invitation.invitationCard.time);
+                    setEventDate(response.invitation.invitationCard.eventDate ?
+                        new Date(response.invitation.invitationCard.eventDate).toISOString().split('T')[0] :
+                        '');
+                    setLocation(response.invitation.invitationCard.location);
+                    setHostName(response.invitation.invitationCard.callerNames[0]);
+                    setHostName2(response.invitation.invitationCard.callerNames[1]);
+                    setStarName(response.invitation.invitationCard.eventStars[0]);
+                    setStarName2(response.invitation.invitationCard.eventStars[1]);
+                    setWelcom(response.invitation.invitationCard.welcomePhrase);
+                    setAdditionalInfo(response.invitation.invitationCard.explanatoryPhrase);
+                    setBG(response.invitation.invitationCard.invitationBackground);
+                } else {
+                    const newInvitationData = {
+                        eventLogoId: eventTitleId,
+                        createdBy: userId,
+                        invitees: [],
+                        invitationCard: {
+                            invitationBackground: BG,
+                            location: '',
+                            eventDate: new Date(),
+                            welcomePhrase: '',
+                            explanatoryPhrase: '',
+                            time: '',
+                            callerNames: ['', ''],
+                            eventStars: ['', ''],
+                        }
+                    };
 
-                if (savedData) {
-                    const draft = JSON.parse(savedData);
-
-                    setEventTime(draft.eventTime || '');
-                    setEventDate(draft.eventDate || '');
-                    setLocation(draft.location || '');
-                    setHostName(draft.hostName || '');
-                    setWelcom(draft.welcom || '');
-                    setAdditionalInfo(draft.additionalInfo || '');
-                    setBG(draft.BG || images.invetationCard())
-                    setHostName2(draft.hostName2 || '')
-                    setStarName(draft.starName || '')
-                    setStarName2(draft.starName2 || '')
+                    const createResponse = await createInvitation(newInvitationData);
+                    if (createResponse && createResponse.invitation) {
+                        setInvitationId(createResponse.invitation._id);
+                        setInvitationData(createResponse.invitation);
+                    }
                 }
             } catch (error) {
-                console.error('Failed to load draft:', error);
+                console.error('Error fetching or creating invitation:', error);
+                showMessage('Error fetching or creating invitation.');
             }
         };
 
-        loadDraft();
-    }, []);
+        fetchOrCreateInvitation();
+    }, [eventTitleId, userId]);
 
-    // Save draft data to AsyncStorage when the screen loses focus
-    useFocusEffect(
-        React.useCallback(() => {
-            const saveDraft = async () => {
+    useEffect(() => {
+        if (invitationId) {
+            const updateInvitation = async () => {
+                const updatedInvitationData = {
+                    invitationCard: {
+                        invitationBackground: BG,
+                        location,
+                        eventDate: new Date(eventDate),
+                        welcomePhrase: welcom,
+                        explanatoryPhrase: additionalInfo,
+                        time: eventTime,
+                        callerNames: [hostName, hostName2],
+                        eventStars: [starName, starName2]
+                    }
+                };
                 try {
-                    const draft = {
-                        eventTime: eventTime,
-                        eventDate: eventDate,
-                        location: location,
-                        hostName: hostName,
-                        welcom: welcom,
-                        additionalInfo: additionalInfo,
-                        BG,
-                        hostName2,
-                        starName,
-                        starName2,
-                    };
-
-                    await setItem('invitationDraft', JSON.stringify(draft));
-
+                    const response = await updateInvitationDetails(invitationId, updatedInvitationData);
                 } catch (error) {
-                    console.error('Failed to save draft:', error);
+                    console.error('Error updating invitation:', error);
                 }
             };
 
-            saveDraft();
-        }, [eventTime, welcom, eventDate, location, hostName, hostName2, starName, starName2, additionalInfo, BG])
-    );
+            updateInvitation();
+        }
+    }, [eventTime, welcom, eventDate, location, hostName, hostName2, starName, starName2, additionalInfo, BG, invitationId]);
 
     const onPressBack = () => {
         props.navigation.goBack();
@@ -228,22 +257,23 @@ const CreateInvetation = (props) => {
             return "Host name is required.";
         }
 
-        if (!hostName2.trim()) {
-            return "Second host name is required.";
-        }
+        // if (!hostName2.trim()) {
+        //     return "Second host name is required.";
+        // }
 
         if (!starName.trim()) {
             return "Star name is required.";
         }
 
-        if (!starName2.trim()) {
-            return "Second star name is required.";
-        }
+        // if (!starName2.trim()) {
+        //     return "Second star name is required.";
+        // }
 
         return null;
     };
     const onSendPress = () => {
         const validationError = validateFields();
+        console.log("validate error ", validationError);
 
         if (validationError) {
             showMessage(validationError)
@@ -254,17 +284,67 @@ const CreateInvetation = (props) => {
     const onSaveInvetPress = () => {
 
     }
-    const onModalSendPress = () => {
+    const onModalSendPress = async () => {
+        try {
+            console.log("slectedInvitees", selectedInvitees);
 
-    }
+            const inviteesList = Object.keys(selectedInvitees).filter(key => selectedInvitees[key]);
+
+            if (!invitationData || !invitationData.invitees) {
+                showMessage('No invitation data found.');
+                return;
+            }
+
+            const alreadyInvited = invitationData.invitees.map(invitee => invitee.user._id);
+
+            const newInvitees = inviteesList.filter(userId => !alreadyInvited.includes(userId));
+            const inviteesToRemove = alreadyInvited.filter(userId => inviteesList.includes(userId));
+
+            for (const userId of inviteesToRemove) {
+                await removeInvitee(invitationId, userId);
+            }
+
+            for (const userId of newInvitees) {
+                await addInvitee(invitationId, { userId });
+            }
+
+            const updatedInvitees = [
+                ...invitationData.invitees.filter(invitee => !inviteesToRemove.includes(invitee.user._id)),
+                ...newInvitees.map(userId => ({
+                    user: { _id: userId },
+                    status: 'pending',
+                    invitationSentDate: new Date(),
+                })),
+            ];
+
+            setInvitationData(prevData => ({
+                ...prevData,
+                invitees: updatedInvitees
+            }));
+
+            if (newInvitees.length === 0 && inviteesToRemove.length === 0) {
+                showMessage('No changes in invitees.');
+            } else {
+                showMessage('Invitation updated successfully!');
+            }
+
+            setShowModal(false);
+        } catch (error) {
+            console.error('Error updating invitees:', error);
+            showMessage('Error updating invitees.');
+        }
+    };
     const onModalCancelPress = () => {
         setShowModal(false)
     }
     const getInvetationInfo = () => {
         return (
-            <InveteesComp inviteesList={invitation[0].inviteesList} />
-        )
-    }
+            <InveteesComp
+                inviteesList={invitationData?.invitees || []}
+                onSelectionChange={handleSelectionChange}
+            />
+        );
+    };
 
     const inviteesListModal = () => {
         return (
@@ -305,7 +385,10 @@ const CreateInvetation = (props) => {
             <ScrollView style={{}}>
                 {renderEventType()}
                 {renderSetBackgroundCard()}
-                <ImageBackground style={styles.card} source={BG}>
+                <ImageBackground
+                    style={styles.card}
+                    source={typeof BG === 'string' ? { uri: BG } : BG}
+                >
                     {renderInvetationCard()}
                 </ImageBackground>
 
