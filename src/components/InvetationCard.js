@@ -13,8 +13,8 @@ const InvetationCard = (props) => {
     const { eventType, isFromInvetShow, eventTitle, invitationCard, eventLogoId, reqData } = props
     const { eventTime, setEventTime, eventDate, setEventDate, location, setLocation, hostName, setHostName, welcom, setWelcom, additionalInfo, setAdditionalInfo, hostName2, setHostName2,
         starName, setStarName,
-        starName2, setStarName2 } = props
-    const { enableInvetEditing, setEnableInvetEditing } = useContext(SearchContext);
+        starName2, setStarName2,BG } = props
+
     const [showBGModal, setShowBGModal] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [hallDates, setHallDates] = useState([]);
@@ -85,10 +85,10 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
+                    style={[styles.input, enableInvetEditing ? styles.editingInput : styles.input]}
                     keyboardType='default'
                     placeholder={eventType == 'زواج' ? weddingCaller : regulerEventCaller}
-                    onChangeText={setHostName}
+                    onChangeText={val => setHostName(val)}
                     value={hostName}
                 />
             </View>
@@ -98,10 +98,10 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
+                    style={[styles.input, enableInvetEditing ? styles.editingInput : styles.input]}
                     keyboardType='default'
                     placeholder={'اسم الداعي الثاني'}
-                    onChangeText={setHostName2}
+                    onChangeText={val => setHostName2(val)}
                     value={hostName2}
                 />
             </View>
@@ -111,10 +111,10 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
+                    style={[styles.input, enableInvetEditing ? styles.editingInput : styles.input]}
                     keyboardType='default'
                     placeholder={eventType == 'زواج' ? weddingStar : eventStar}
-                    onChangeText={setStarName}
+                    onChangeText={val => setStarName(val)}
                     value={starName}
                 />
             </View>
@@ -124,10 +124,10 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={[styles.input, isFromInvetShow ? styles.input : styles.editingInput]}
+                    style={[styles.input, enableInvetEditing ? styles.editingInput : styles.input]}
                     keyboardType='default'
                     placeholder={'أسم العروس'}
-                    onChangeText={setStarName2}
+                    onChangeText={val => setStarName2(val)}
                     value={starName2}
                 />
             </View>
@@ -138,7 +138,7 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={[styles.inputPharzeEditing, isFromInvetShow ? styles.inputPharzeEditing : styles.inputPharze]}
+                    style={[styles.inputPharzeEditing, enableInvetEditing ? styles.inputPharze : styles.inputPharzeEditing]}
                     keyboardType='default'
                     placeholder={'عبارة ترحيبية'}
                     onChangeText={setWelcom}
@@ -152,7 +152,7 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={[styles.inputPharzeEditing, isFromInvetShow ? styles.inputPharzeEditing : styles.inputPharze]}
+                    style={[styles.inputPharzeEditing, enableInvetEditing ? styles.inputPharze : styles.inputPharzeEditing]}
                     keyboardType='default'
                     placeholder={'عبارة توضيحية'}
                     onChangeText={setAdditionalInfo}
@@ -233,7 +233,31 @@ const InvetationCard = (props) => {
             </Modal>
         )
     }
+
+    const updateInvitation = async () => {
+        const updatedInvitationData = {
+            invitationCard: {
+                invitationBackground: BG,
+                location,
+                eventDate: new Date(eventDate),
+                welcomePhrase: welcom,
+                explanatoryPhrase: additionalInfo,
+                time: eventTime,
+                callerNames: [hostName, hostName2],
+                eventStars: [starName, starName2]
+            }
+        };
+        try {
+            const response = await updateInvitationDetails(invitationId, updatedInvitationData);
+            if (response.message === '') {
+                console.log("Updated");
+            }
+        } catch (error) {
+            console.error('Error updating invitation:', error);
+        }
+    };
     const saveEditingPress = () => {
+        updateInvitation()
         setEnableInvetEditing(false)
     }
 

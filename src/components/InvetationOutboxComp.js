@@ -19,8 +19,10 @@ const InvetationOutboxComp = (props) => {
             return item.Id === eventLogoId
         })
     }
+
     const [eventLogo, setEventLogo] = useState(getEventLogo())
     // console.log(">>", eventLogo[0].eventImg);
+    
     return (
         <View style={styles.card}>
             <View style={styles.stutes}>

@@ -12,8 +12,8 @@ const InveteesComp = (props) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedItems, setSelectedItems] = useState({});
     const [loading, setLoading] = useState(false);
-    console.log("inviteesList", inviteesList);
-    console.log("inviteesList length ", inviteesList.length);
+    // console.log("inviteesList", inviteesList);
+    // console.log("inviteesList length ", inviteesList.length);
 
     const fetchRelations = async () => {
         setLoading(true);
@@ -40,6 +40,7 @@ const InveteesComp = (props) => {
     }, [selectedItems, onSelectionChange]);
 
     const isInvited = (userId) => {
+        // console.log("inviteesList", inviteesList);
         return inviteesList.some(invitee => invitee.user._id === userId);
     };
 

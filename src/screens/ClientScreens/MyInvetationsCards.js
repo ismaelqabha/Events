@@ -1,22 +1,46 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
 import InvetationOutboxComp from '../../components/InvetationOutboxComp';
 import InvetationInboxComp from '../../components/InvetationInboxComp';
 import { invitation } from '../../resources/data';
+import { getInvetationByUser } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
 
 const MyInvetationsCards = (props) => {
-    
-    const { fromInvetationInbox, fromInvetationOutbox, relations, loading  } = props?.route.params
 
+    const { fromInvetationInbox, fromInvetationOutbox, relations, loading } = props?.route.params
+    const { userId } = useContext(UsersContext);
+    const [invetationInfo, setInvetationInfo] = useState([])
     const onPressHandler = () => {
         props.navigation.goBack();
     }
 
-    useEffect(() => {
+   
 
-    }, [])
+    useEffect(() => {
+        const getInvetationInfo = async () => {
+            try {
+                const response = await getInvetationByUser({ createdBy: userId});
+                if (response && response.invitation) {
+                    setInvetationInfo(response.invitation)
+                }
+    
+            } catch (error) {
+                console.error('Error fetching or creating invitation:', error);
+                showMessage('Error fetching or creating invitation.');
+            }
+    
+            // getInvetationByUser({ createdBy: userId }).then(res => {
+            //      console.log(res);
+            //     setInvetationInfo(res)
+            //  })
+    
+        }
+
+        getInvetationInfo()
+    }, [userId])
 
     const renderHeader = () => {
         return (
@@ -32,12 +56,16 @@ const MyInvetationsCards = (props) => {
             </View>
         )
     }
+
     const renderInvetOutboxCard = () => {
-        return invitation.map(item => {
+        console.log("invetationInfo", invetationInfo);
+        return invetationInfo.map(item => {
             return (
-                <InvetationOutboxComp {...item}
-                relations={relations}
-                loading={loading} />
+                <InvetationOutboxComp //{...item}
+                    id ={item._id}
+                    relations={relations}
+                    loading={loading}
+                />
             )
         })
     }

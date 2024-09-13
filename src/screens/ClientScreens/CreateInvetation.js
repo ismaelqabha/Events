@@ -34,11 +34,14 @@ const CreateInvetation = (props) => {
     const [starName, setStarName] = useState('');
     const [starName2, setStarName2] = useState('');
     const [additionalInfo, setAdditionalInfo] = useState('');
+    const [eventTitle, setEventTitle] = useState('');
+    const [sentStatus, setSentStatus] = useState('');
 
     const [selectedInvitees, setSelectedInvitees] = useState({});
     const [invitationId, setInvitationId] = useState(null);
     const [invitationData, setInvitationData] = useState(null);
     const { userId } = useContext(UsersContext)
+
     const handleSelectionChange = (newSelection) => {
         setSelectedInvitees(newSelection);
     };
@@ -48,12 +51,12 @@ const CreateInvetation = (props) => {
             try {
                 const response = await getInvitationStatus({ createdBy: userId, eventLogoId: eventTitleId });
                 if (response && response.invitation) {
+                    console.log(response.invitation);
                     setInvitationId(response.invitation._id);
                     setInvitationData(response.invitation);
                     setEventTime(response.invitation.invitationCard.time);
                     setEventDate(response.invitation.invitationCard.eventDate ?
-                        new Date(response.invitation.invitationCard.eventDate).toISOString().split('T')[0] :
-                        '');
+                        new Date(response.invitation.invitationCard.eventDate).toISOString().split('T')[0] : '');
                     setLocation(response.invitation.invitationCard.location);
                     setHostName(response.invitation.invitationCard.callerNames[0]);
                     setHostName2(response.invitation.invitationCard.callerNames[1]);
@@ -62,10 +65,14 @@ const CreateInvetation = (props) => {
                     setWelcom(response.invitation.invitationCard.welcomePhrase);
                     setAdditionalInfo(response.invitation.invitationCard.explanatoryPhrase);
                     setBG(response.invitation.invitationCard.invitationBackground);
+                    setEventTitle(response.eventTitle);
+                    setSentStatus(response.sentStatus);
                 } else {
                     const newInvitationData = {
                         eventLogoId: eventTitleId,
                         createdBy: userId,
+                        eventTitle: eventName,
+                        sentStatus: '',
                         invitees: [],
                         invitationCard: {
                             invitationBackground: BG,
@@ -272,7 +279,7 @@ const CreateInvetation = (props) => {
     };
     const onSendPress = () => {
         const validationError = validateFields();
-        console.log("validate error ", validationError);
+        // console.log("validate error ", validationError);
 
         if (validationError) {
             showMessage(validationError)
@@ -283,9 +290,10 @@ const CreateInvetation = (props) => {
     const onSaveInvetPress = () => {
 
     }
+
     const onModalSendPress = async () => {
         try {
-            console.log("slectedInvitees", selectedInvitees);
+            // console.log("slectedInvitees", selectedInvitees);
 
             const inviteesList = Object.keys(selectedInvitees).filter(key => selectedInvitees[key]);
 
@@ -295,6 +303,7 @@ const CreateInvetation = (props) => {
             }
 
             const alreadyInvited = invitationData.invitees.map(invitee => invitee.user._id);
+            console.log("invitationData.invitees", invitationData.invitees);
 
             const newInvitees = inviteesList.filter(userId => !alreadyInvited.includes(userId));
             const inviteesToRemove = alreadyInvited.filter(userId => inviteesList.includes(userId));

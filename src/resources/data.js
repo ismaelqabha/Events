@@ -159,6 +159,7 @@ export const invitation = [
         eventLogoId: '65bfea90ed6965ed8854aec2',
         eventTitle: 'حفل زفاف احمد',
         sentStatus: 'unsend',
+        
         invitationCard: {
             invitId: '0005',
             invitationBackgraund: images.invetationCard(),
