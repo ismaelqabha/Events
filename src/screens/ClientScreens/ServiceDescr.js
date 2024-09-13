@@ -76,7 +76,7 @@ const ServiceDescr = (props) => {
                 })
             })
             return reqResult
-        }else{
+        } else {
             return 0
         }
     }
