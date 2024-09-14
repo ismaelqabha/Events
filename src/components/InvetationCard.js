@@ -6,14 +6,20 @@ import React, { useState, useContext, useEffect } from 'react'
 import { colors } from '../assets/AppColors';
 import SearchContext from '../../store/SearchContext';
 import BackgroundInvetCard from './BackgroundInvetCard';
-import { checkServiceTypeById, getServiceBySerId, getServiceLocationById } from '../resources/API';
+import { checkServiceTypeById, getServiceBySerId, getServiceLocationById, updateInvitationDetails } from '../resources/API';
+import moment from "moment";
 
 
 const InvetationCard = (props) => {
-    const { eventType, isFromInvetShow, eventTitle, invitationCard, eventLogoId, reqData } = props
-    const { eventTime, setEventTime, eventDate, setEventDate, location, setLocation, hostName, setHostName, welcom, setWelcom, additionalInfo, setAdditionalInfo, hostName2, setHostName2,
+    const { eventType, enableInvetEditing,setEnableInvetEditing, 
+        showSaveButton, setShowSaveButton, invitationId,
+         reqData, isFromCreateInvetation } = props
+
+    const { eventTime, setEventTime, eventDate, setEventDate, location, 
+        setLocation, hostName, setHostName, welcom, setWelcom, 
+        additionalInfo, setAdditionalInfo, hostName2, setHostName2,
         starName, setStarName,
-        starName2, setStarName2,BG } = props
+        starName2, setStarName2, BG } = props
 
     const [showBGModal, setShowBGModal] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -24,6 +30,7 @@ const InvetationCard = (props) => {
     const regulerEventCaller = 'أسم الداعي'
     const weddingStar = 'أسم العريس'
     const eventStar = 'أسم نجم المناسبة'
+
 
     useEffect(() => {
         const fetchEventDates = async () => {
@@ -65,8 +72,11 @@ const InvetationCard = (props) => {
                 setIsEditable(false);
             }
         };
+        //console.log(">>", isFromCreateInvetation);
+        if (isFromCreateInvetation) {
+            fetchEventDates();
+        }
 
-        fetchEventDates();
     }, [reqData]);
 
     const onDateSelect = async (selectedDate, ReqServId, startingTime) => {
@@ -85,7 +95,7 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={[styles.input, enableInvetEditing ? styles.editingInput : styles.input]}
+                    style={ enableInvetEditing ? styles.editingInput : styles.input}
                     keyboardType='default'
                     placeholder={eventType == 'زواج' ? weddingCaller : regulerEventCaller}
                     onChangeText={val => setHostName(val)}
@@ -188,7 +198,7 @@ const InvetationCard = (props) => {
                 <Zocial name={"cal"} color={"black"} size={25} />
                 <TextInput
                     style={[styles.input, isEditable ? styles.editingInput : styles.disabledInput]}
-                    value={eventDate}
+                    value={moment(eventDate).format('L')}
                     editable={isEditable}
                     onChangeText={setEventDate}
                 />
@@ -197,7 +207,10 @@ const InvetationCard = (props) => {
     );
 
     const getEventDate = () => {
-        setShowModal(true)
+        if (isFromCreateInvetation) {
+            setShowModal(true)
+        }
+
     }
     const renderEventDates = () => {
         return (
@@ -258,6 +271,7 @@ const InvetationCard = (props) => {
     };
     const saveEditingPress = () => {
         updateInvitation()
+        setShowSaveButton(false)
         setEnableInvetEditing(false)
     }
 
@@ -334,7 +348,7 @@ const InvetationCard = (props) => {
     }
     return (
         <View style={styles.card}>
-            {enableInvetEditing && renderEditingItem()}
+            {showSaveButton && renderEditingItem()}
             {renderCallers()}
             {renderDataTimeLocation()}
             {explanatoryPhrase()}
@@ -364,7 +378,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: 50,
         alignSelf: 'center',
-        borderWidth: 0.6,
+         borderWidth: 0.6,
         borderRadius: 10,
         fontSize: 15,
         backgroundColor: '#e0e0e0',

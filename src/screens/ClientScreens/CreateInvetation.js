@@ -23,8 +23,9 @@ const CreateInvetation = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [showBGModal, setShowBGModal] = useState(false);
     const [BG, setBG] = useState(invetationBackground[0].value);
-    const { eventType, eventTitleId, reqData } = props.route?.params || {}
+    const { eventType, eventTitleId, reqData, eventName } = props.route?.params || {}
 
+    
     const [eventTime, setEventTime] = useState('');
     const [welcom, setWelcom] = useState('');
     const [eventDate, setEventDate] = useState('');
@@ -51,7 +52,7 @@ const CreateInvetation = (props) => {
             try {
                 const response = await getInvitationStatus({ createdBy: userId, eventLogoId: eventTitleId });
                 if (response && response.invitation) {
-                    console.log(response.invitation);
+                    
                     setInvitationId(response.invitation._id);
                     setInvitationData(response.invitation);
                     setEventTime(response.invitation.invitationCard.time);
@@ -72,7 +73,6 @@ const CreateInvetation = (props) => {
                         eventLogoId: eventTitleId,
                         createdBy: userId,
                         eventTitle: eventName,
-                        sentStatus: '',
                         invitees: [],
                         invitationCard: {
                             invitationBackground: BG,
@@ -182,6 +182,8 @@ const CreateInvetation = (props) => {
                     starName2={starName2}
                     setStarName2={setStarName2}
                     reqData={reqData}
+                    enableInvetEditing={true}
+                    isFromCreateInvetation = {true}
                 />
             </View>
 
@@ -303,7 +305,7 @@ const CreateInvetation = (props) => {
             }
 
             const alreadyInvited = invitationData.invitees.map(invitee => invitee.user._id);
-            console.log("invitationData.invitees", invitationData.invitees);
+           
 
             const newInvitees = inviteesList.filter(userId => !alreadyInvited.includes(userId));
             const inviteesToRemove = alreadyInvited.filter(userId => inviteesList.includes(userId));
@@ -327,7 +329,8 @@ const CreateInvetation = (props) => {
 
             setInvitationData(prevData => ({
                 ...prevData,
-                invitees: updatedInvitees
+                invitees: updatedInvitees,
+                sentStatus: 'sent'
             }));
 
             if (newInvitees.length === 0 && inviteesToRemove.length === 0) {

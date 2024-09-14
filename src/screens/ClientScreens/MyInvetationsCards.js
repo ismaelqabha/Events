@@ -7,12 +7,16 @@ import InvetationInboxComp from '../../components/InvetationInboxComp';
 import { invitation } from '../../resources/data';
 import { getInvetationByUser } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
+import SearchContext from '../../../store/SearchContext';
 
 const MyInvetationsCards = (props) => {
 
-    const { fromInvetationInbox, fromInvetationOutbox, relations, loading } = props?.route.params
+    const { fromInvetationInbox, fromInvetationOutbox } = props?.route.params
     const { userId } = useContext(UsersContext);
+    const {invitationData, setInvitationData} = useContext(SearchContext)
     const [invetationInfo, setInvetationInfo] = useState([])
+    
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
@@ -24,7 +28,7 @@ const MyInvetationsCards = (props) => {
             try {
                 const response = await getInvetationByUser({ createdBy: userId});
                 if (response && response.invitation) {
-                    setInvetationInfo(response.invitation)
+                    setInvitationData(response.invitation)
                 }
     
             } catch (error) {
@@ -58,14 +62,10 @@ const MyInvetationsCards = (props) => {
     }
 
     const renderInvetOutboxCard = () => {
-        console.log("invetationInfo", invetationInfo);
-        return invetationInfo.map(item => {
+        // console.log("invetationInfo", invetationInfo);
+        return invitationData.map(item => {
             return (
-                <InvetationOutboxComp //{...item}
-                    id ={item._id}
-                    relations={relations}
-                    loading={loading}
-                />
+                <InvetationOutboxComp {...item}/>
             )
         })
     }

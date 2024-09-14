@@ -78,6 +78,8 @@ const SearchProvider = props => {
   // query Dates
   const [bookingDates, setBookingDates] = useState([])
 
+  //invetation 
+  const [invitationData, setInvitationData] = useState([]);
 
   return (
     <SearchContext.Provider
@@ -178,7 +180,8 @@ const SearchProvider = props => {
         regionData, setRegionData,
         totalPrice, setTotalPrice,
         bookingDates, setBookingDates,
-        ProviderRequests, setProviderRequests
+        ProviderRequests, setProviderRequests,
+        invitationData, setInvitationData
 
       }}>
       {props.children}

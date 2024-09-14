@@ -174,8 +174,6 @@ const Results = (props) => {
             }
 
         })
-
-        console.log("========", serviceRequestsArray);
     }
 
 

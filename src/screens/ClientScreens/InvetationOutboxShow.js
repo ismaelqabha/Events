@@ -16,27 +16,29 @@ const height = SIZES.screenWidth * 1.8;
 const width = SIZES.screenWidth - 18;
 
 const InvetationOutboxShow = (props) => {
-    const { eventTypeInfo} = useContext(SearchContext);
-    const { relations, loading, invitation, eventTitle} = props.route.params || []
+    const { eventTypeInfo, setInvitationData} = useContext(SearchContext);
+    
+    const { eventTitle, _id , invitationCard , eventLogoId ,invitees} = props.route.params || []
    
-    const [invitationData, setInvitationData] = useState(invitation);
-    const [BG, setBG] = useState(invitation.invitationCard.invitationBackground);
-    const [eventTime, setEventTime] = useState(invitation.invitationCard.time);
-    const [welcom, setWelcom] = useState(invitation.invitationCard.welcomePhrase);
-    const [eventDate, setEventDate] = useState(invitation.invitationCard.eventDate);
-    const [location, setLocation] = useState(invitation.invitationCard.location);
-    const [hostName, setHostName] = useState(invitation.invitationCard.callerNames[0]);
-    const [hostName2, setHostName2] = useState(invitation.invitationCard.callerNames[1]);
-    const [starName, setStarName] = useState(invitation.invitationCard.eventStars[0]);
-    const [starName2, setStarName2] = useState(invitation.invitationCard.eventStars[1]);
-    const [additionalInfo, setAdditionalInfo] = useState(invitation.invitationCard.explanatoryPhrase);
-    const [invitationId, setInvitationId] = useState(invitation._id);
+    const [BG, setBG] = useState(invitationCard.invitationBackground);
+    const [eventTime, setEventTime] = useState(invitationCard.time);
+    const [welcom, setWelcom] = useState(invitationCard.welcomePhrase);
+    const [eventDate, setEventDate] = useState(invitationCard.eventDate);
+    const [location, setLocation] = useState(invitationCard.location);
+    const [hostName, setHostName] = useState(invitationCard.callerNames[0]);
+    const [hostName2, setHostName2] = useState(invitationCard.callerNames[1]);
+    const [starName, setStarName] = useState(invitationCard.eventStars[0]);
+    const [starName2, setStarName2] = useState(invitationCard.eventStars[1]);
+    const [additionalInfo, setAdditionalInfo] = useState(invitationCard.explanatoryPhrase);
+    const [invitationId, setInvitationId] = useState(_id);
 
     
 
     const [selectedInvitees, setSelectedInvitees] = useState({});
     const [showInveteesModal, setShowInveteesModal] = useState(false)
+
     const [enableInvetEditing, setEnableInvetEditing] = useState(false)
+    const [showSaveButton, setShowSaveButton] = useState(false)
 
     const handleSelectionChange = (newSelection) => {
         setSelectedInvitees(newSelection);
@@ -44,7 +46,7 @@ const InvetationOutboxShow = (props) => {
 
     const getEventType = () => {
         return eventTypeInfo.filter(item => {
-            return item.Id === invitation.eventLogoId
+            return item.Id === eventLogoId
         })
     }
     const [eventType, setEventType] = useState(getEventType())
@@ -91,7 +93,10 @@ const InvetationOutboxShow = (props) => {
                     starName2={starName2}
                     setStarName2={setStarName2}
                     enableInvetEditing={enableInvetEditing}
-                    setEnableInvetEditing={setEnableInvetEditing} />
+                    setEnableInvetEditing={setEnableInvetEditing}
+                    showSaveButton = {showSaveButton}
+                    setShowSaveButton = {setShowSaveButton}
+                    isFromCreateInvetation = {false} />
             </View>
         )
     }
@@ -102,16 +107,15 @@ const InvetationOutboxShow = (props) => {
     }
 
     const editCardPress = () => {
+        setShowSaveButton(true)
         setEnableInvetEditing(true)
     }
 
     const RnderInvtees = () => {
         return (
             <View>
-                <InveteesComp
-                    // relations={relations}
-                    // loading={loading} 
-                    inviteesList={invitationData.invitees || []}
+                <InveteesComp 
+                    inviteesList={invitees || []}
                     onSelectionChange={handleSelectionChange}
                     />
             </View>
@@ -127,13 +131,13 @@ const InvetationOutboxShow = (props) => {
 
             const inviteeslist = Object.keys(selectedInvitees).filter(key => selectedInvitees[key]);
 
-            if ((!invitationData || !invitationData.invitees)) {
+            if (!invitees) {
                 showMessage('No invitation data found.');
                 return;
             }
 
-            const alreadyInvited = invitationData.invitees.map(invitee => invitee.user._id);
-           
+            const alreadyInvited = invitees.map(invitee => invitee.user._id);
+            //console.log("invitationData.invitees", invitees);
 
 
             const newInvitees = inviteeslist.filter(userId => !alreadyInvited.includes(userId));
@@ -148,7 +152,7 @@ const InvetationOutboxShow = (props) => {
             }
 
             const updatedInvitees = [
-                ...invitationData.invitees.filter(invitee => !inviteesToRemove.includes(invitee.user._id)),
+                ...invitees.filter(invitee => !inviteesToRemove.includes(invitee.user._id)),
                 ...newInvitees.map(userId => ({
                     user: { _id: userId },
                     status: 'pending',

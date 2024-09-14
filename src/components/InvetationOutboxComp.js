@@ -9,20 +9,26 @@ import { ScreenNames } from '../../route/ScreenNames';
 
 const InvetationOutboxComp = (props) => {
     const { eventTypeInfo } = useContext(SearchContext);
-    const { eventTitle, eventLogoId,relations, loading } = props
 
+    const {invitationData, setInvitationData} = useContext(SearchContext)
+    const { eventTitle, eventLogoId,  eventTime, setEventTime, eventDate, setEventDate, 
+        location, setLocation, hostName, setHostName, welcom, setWelcom, 
+        additionalInfo, setAdditionalInfo, hostName2, setHostName2,
+        starName, setStarName,
+        starName2, setStarName2,BG} = props
+   
 
     const navigation = useNavigation();
 
     const getEventLogo = () => {
         return eventTypeInfo.filter(item => {
-            return item.Id === eventLogoId
+            return item.Id === props.eventLogoId
         })
     }
 
     const [eventLogo, setEventLogo] = useState(getEventLogo())
     // console.log(">>", eventLogo[0].eventImg);
-    
+
     return (
         <View style={styles.card}>
             <View style={styles.stutes}>
@@ -42,8 +48,8 @@ const InvetationOutboxComp = (props) => {
                     </Pressable>}
             </View>
 
-            <Pressable style={styles.title} onPress={() => navigation.navigate(ScreenNames.InvetationOutboxShow, {...props}, relations, loading)}>
-                <Text style={styles.text}>{eventTitle}</Text>
+            <Pressable style={styles.title} onPress={() => navigation.navigate(ScreenNames.InvetationOutboxShow, {...props})}>
+                <Text style={styles.text}>{props.eventTitle}</Text>
             </Pressable>
 
             <View style={styles.logo}>
