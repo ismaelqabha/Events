@@ -6,7 +6,7 @@ import {
   Pressable,
   Modal, ToastAndroid, Dimensions, Image
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import SearchContext from '../../../store/SearchContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -66,7 +66,7 @@ const ProviderHome = props => {
   const [detailIsperson, setDetailIsperson] = useState();
   const [sub_DetailArr, setSub_DetailArr] = useState();
 
- 
+
 
   const getImagesfromApi = () => {
     getServiceImages({ serviceID: isFirst }).then(res => {
@@ -615,7 +615,31 @@ const ProviderHome = props => {
     )
   }
   const renderDescription = () => {
-    const data = filterService();
+    const data = useMemo(() => filterService(), [serviceInfoAccorUser]);
+    const [editDescrItemArray, setEditDescrItemArray] = useState([]);
+    const [showDescModalArray, setShowDescModalArray] = useState([]);
+
+    useEffect(() => {
+      if (data[0]?.desc && editDescrItemArray.length === 0 && showDescModalArray.length === 0) {
+        const initialEditArray = data[0].desc.map(() => false);
+        const initialModalArray = data[0].desc.map(() => false);
+        setEditDescrItemArray(initialEditArray);
+        setShowDescModalArray(initialModalArray);
+      }
+    }, [data, editDescrItemArray.length, showDescModalArray.length]);
+
+    const setEditDescrItem = (index, value) => {
+      setEditDescrItemArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    const setShowDescModal = (index, value) => {
+      setShowDescModalArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
     const servicedesc = data?.map(item => {
       if (!item.desc) {
         return null;
@@ -635,8 +659,8 @@ const ProviderHome = props => {
         }
       }
       return item.desc.map((element, index) => {
-        const [editDescrItem, setEditDescrItem] = useState(false)
-        const [showDescModal, setShowDescModal] = useState(false);
+        const editDescrItem = editDescrItemArray[index];
+        const showDescModal = showDescModalArray[index];
 
         return (<View key={index}>
           {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
@@ -663,7 +687,7 @@ const ProviderHome = props => {
     })
     return servicedesc
   };
-  
+
   const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
     return (
       <Modal
@@ -878,7 +902,7 @@ const ProviderHome = props => {
 
   //Social Media
   const deleteSocialMediaItem = (Socialitem, setShowModal) => {
-   
+
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
     const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
 
@@ -898,7 +922,7 @@ const ProviderHome = props => {
     }
 
     updateService(newData).then(res => {
-     
+
       if (res.message === 'Updated Sucessfuly') {
         //console.log("OK");
         setServiceInfoAccorUser([...data])
@@ -932,47 +956,82 @@ const ProviderHome = props => {
     );
   };
   const renderSocialItems = () => {
-    const data = filterService()
-    return data[0].socialMedia.map(element => {
-      const [editSocialMedia, setEditSocialMedia] = useState(false)
-      const [showModal, setShowModal] = useState(false);
-      return (<View>
-        {editSocialMedia ?
-          <EditServiceInfo
-            serviceID={isFirst}
-            editSocialMedia={editSocialMedia}
-            setEditSocialMedia={setEditSocialMedia}
-            socialItem={socialItem}
-            socialLink={socialIndex} /> :
+    const data = useMemo(() => filterService(), [serviceInfoAccorUser]);
+    const [editSocialMediaArray, setEditSocialMediaArray] = useState([]);
+    const [showModalArray, setShowModalArray] = useState([]);
 
-          <View style={styles.item}>
-            <View style={styles.itemSM}>
-              <Pressable onPress={() => {
-                setShowModal(true)
-              }}>
-                <Feather
-                  style={styles.menuIcon}
-                  name={'more-vertical'}
-                  color={colors.BGScereen}
-                  size={25} />
-              </Pressable>
-              <Pressable>
-                <Text style={styles.basicInfo}>{element.social}</Text>
-              </Pressable>
+    useEffect(() => {
+      if (data[0]?.socialMedia) {
+        const initialEditArray = data[0].socialMedia.map(() => false);
+        const initialModalArray = data[0].socialMedia.map(() => false);
+        setEditSocialMediaArray(initialEditArray);
+        setShowModalArray(initialModalArray);
+      }
+    }, [data, editSocialMediaArray.length, showModalArray.length]);
+
+    const setEditSocialMedia = (index, value) => {
+      setEditSocialMediaArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    const setShowModal = (index, value) => {
+      setShowModalArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    return data[0]?.socialMedia.map((element, index) => {
+      const editSocialMedia = editSocialMediaArray[index];
+      const showModal = showModalArray[index];
+
+      return (
+        <View key={index}>
+          {editSocialMedia ? (
+            <EditServiceInfo
+              serviceID={isFirst}
+              editSocialMedia={editSocialMedia}
+              setEditSocialMedia={() => setEditSocialMedia(index, false)}
+              socialItem={element.social}
+              socialLink={element.link}
+            />
+          ) : (
+            <View style={styles.item}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={() => setShowModal(index, true)}>
+                  <Feather
+                    style={styles.menuIcon}
+                    name={'more-vertical'}
+                    color={colors.BGScereen}
+                    size={25}
+                  />
+                </Pressable>
+                <Pressable>
+                  <Text style={styles.basicInfo}>{element.social}</Text>
+                </Pressable>
+              </View>
+              <View style={styles.IconView}>
+                <Entypo
+                  style={styles.icon}
+                  name={element.social}
+                  color={colors.puprble}
+                  size={25}
+                />
+              </View>
             </View>
-            <View style={styles.IconView}>
-              <Entypo
-                style={styles.icon}
-                name={element.social}
-                color={colors.puprble}
-                size={25} />
-            </View>
-          </View>
-        }
-        {renderSocialModal(element.social, element.link, editSocialMedia, setEditSocialMedia, showModal, setShowModal)}
-      </View>)
-    })
-  }
+          )}
+          {renderSocialModal(
+            element.social,
+            element.link,
+            editSocialMedia,
+            () => setEditSocialMedia(index, true),
+            showModal,
+            () => setShowModal(index, false)
+          )}
+        </View>
+      );
+    });
+  };
   const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia, showModal, setShowModal) => {
     return (
       <Modal

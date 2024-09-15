@@ -57,7 +57,7 @@ const EditServiceInfo = (props) => {
     const [serEditedDescrItem, setSerEditedDescrItem] = useState(descriptionItem);
     const [addNewDescrItem, setaddNewDescrItem] = useState();
     const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
-   
+
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
     const [address, setAddress] = useState(null)
@@ -440,7 +440,8 @@ const EditServiceInfo = (props) => {
 
     }
     const updateSocialMediaItem = () => {
-        const SMitemIndex = serviceSocialMedia.findIndex(elme => elme.social === socialItem)
+
+        const SMitemIndex = serviceSocialMedia?.findIndex(elme => elme.social === socialItem)
         const SM = serviceSocialMedia
         if (SMitemIndex > -1) {
             SM[SMitemIndex].link = socialMediaLinkItem
@@ -472,7 +473,7 @@ const EditServiceInfo = (props) => {
             service_id: serviceID,
             desc: serviceDescr
         }
-       
+
         updateInfo(newData, setEditDescrItem)
 
     }
