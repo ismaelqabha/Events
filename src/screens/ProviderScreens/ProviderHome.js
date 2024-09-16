@@ -6,7 +6,7 @@ import {
   Pressable,
   Modal, ToastAndroid, Dimensions, Image
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import SearchContext from '../../../store/SearchContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -66,6 +66,7 @@ const ProviderHome = props => {
   const [DetailType, setDetailType] = useState();
   const [detailIsperson, setDetailIsperson] = useState();
   const [sub_DetailArr, setSub_DetailArr] = useState();
+
 
 
 
@@ -576,6 +577,92 @@ const deleteDescItemPress = (item, setShowDescModal) => {
   const lastUpdate = serviceDescr.filter(ser => ser.descItem !== item)
   setServiceDescr(lastUpdate)
 
+    const newData = {
+      service_id: isFirst,
+      desc: serviceDescr
+    }
+    updateService(newData).then(res => {
+      const data = serviceInfoAccorUser || [];
+      if (selectedServiceIndex > -1) {
+        data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+      }
+      if (res.message === 'Updated Sucessfuly') {
+        setServiceInfoAccorUser([...data])
+        setShowDescModal(false)
+        ToastAndroid.showWithGravity(
+          'تم الحذف بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+    })
+  }
+  const renderAddDescription = () => {
+    return (
+      <View>
+        <Pressable style={styles.item} onPress={addNewDescr}>
+          <Text style={styles.basicInfo}>اضافة جديد</Text>
+          <View style={styles.IconView}>
+            <Entypo
+              style={styles.icon}
+              name={'plus'}
+              color={colors.puprble}
+              size={25}
+            />
+          </View>
+        </Pressable>
+        <View>{addNewDesc && <EditServiceInfo serviceID={isFirst} />}</View>
+        {renderDescription()}
+      </View>
+    )
+  }
+  const renderDescription = () => {
+    const data = useMemo(() => filterService(), [serviceInfoAccorUser]);
+    const [editDescrItemArray, setEditDescrItemArray] = useState([]);
+    const [showDescModalArray, setShowDescModalArray] = useState([]);
+
+    useEffect(() => {
+      if (data[0]?.desc && editDescrItemArray.length === 0 && showDescModalArray.length === 0) {
+        const initialEditArray = data[0].desc.map(() => false);
+        const initialModalArray = data[0].desc.map(() => false);
+        setEditDescrItemArray(initialEditArray);
+        setShowDescModalArray(initialModalArray);
+      }
+    }, [data, editDescrItemArray.length, showDescModalArray.length]);
+
+    const setEditDescrItem = (index, value) => {
+      setEditDescrItemArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    const setShowDescModal = (index, value) => {
+      setShowDescModalArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    const servicedesc = data?.map(item => {
+      if (!item.desc) {
+        return null;
+      } else if (!Array.isArray(item.desc)) {
+        return null;
+      } else if (item.desc.length === 0) {
+        return null;
+      } else {
+        item.desc = item.desc.filter(descc => {
+          if (descc.empty) {
+            return false;
+          }
+          return true;
+        });
+        if (item.desc.length === 0) {
+          return null;
+        }
+      }
+      return item.desc.map((element, index) => {
+        const editDescrItem = editDescrItemArray[index];
+        const showDescModal = showDescModalArray[index];
   const newData = {
     service_id: isFirst,
     desc: serviceDescr
@@ -639,6 +726,72 @@ const renderDescription = () => {
       const [editDescrItem, setEditDescrItem] = useState(false)
       const [showDescModal, setShowDescModal] = useState(false);
 
+        return (<View key={index}>
+          {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
+            <View style={styles.itemService}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={() => setShowDescModal(true)}>
+                  <Feather
+                    style={styles.menuIcon}
+                    name={'more-vertical'}
+                    color={colors.BGScereen}
+                    size={25} />
+                </Pressable>
+                <View>
+                  <Text style={styles.basicInfo}>{element.descItem}</Text>
+                </View>
+              </View>
+              <View style={styles.IconView}>
+                <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
+              </View>
+            </View>}
+          {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal)}
+        </View>)
+      })
+    })
+    return servicedesc
+  };
+
+  const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
+    return (
+      <Modal
+        transparent
+        visible={showDescModal}
+        animationType='fade'
+        onRequestClose={() => setShowDescModal(false)}>
+        <View style={styles.centeredDescView}>
+          <View style={styles.detailModal}>
+            <View>
+              <Pressable onPress={() => closeModalPress(setShowDescModal)} style={styles.modalHeader}>
+                <Feather
+                  name={'more-horizontal'}
+                  color={colors.puprble}
+                  size={25} />
+              </Pressable>
+            </View>
+            <View style={{ justifyContent: 'flex-end', height: '100%' }}>
+              <View style={styles.modalMenu}>
+                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal)}>
+                  <Feather
+                    name={'edit'}
+                    color={colors.gray}
+                    size={25} />
+                  <Text style={styles.modalHeaderTxt}>تعديل</Text>
+                </Pressable>
+                <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal)}>
+                  <AntDesign
+                    name={'delete'}
+                    color={colors.gray}
+                    size={25} />
+                  <Text style={styles.modalHeaderTxt}>حذف</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    )
+  }
       return (<View key={index}>
         {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
           <View style={styles.itemService}>
@@ -877,6 +1030,11 @@ const renderDetailModal = () => {
   )
 }
 
+  //Social Media
+  const deleteSocialMediaItem = (Socialitem, setShowModal) => {
+
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
+    const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
 //Social Media
 const deleteSocialMediaItem = (Socialitem, setShowModal) => {
 
@@ -898,6 +1056,19 @@ const deleteSocialMediaItem = (Socialitem, setShowModal) => {
     data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
   }
 
+    updateService(newData).then(res => {
+
+      if (res.message === 'Updated Sucessfuly') {
+        //console.log("OK");
+        setServiceInfoAccorUser([...data])
+        setShowModal(false)
+        ToastAndroid.showWithGravity(
+          'تم الحذف بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+    })
   updateService(newData).then(res => {
 
     if (res.message === 'Updated Sucessfuly') {
@@ -912,6 +1083,145 @@ const deleteSocialMediaItem = (Socialitem, setShowModal) => {
     }
   })
 
+  }
+  const renderSoialMedia = () => {
+    return (
+      <View>
+        <Pressable style={styles.item} onPress={addNewSocialMediaPress}>
+          <Text style={styles.basicInfo}>اضافة</Text>
+          <View style={styles.IconView}>
+            <Entypo
+              style={styles.icon}
+              name={'plus'}
+              color={colors.puprble}
+              size={25}
+            />
+          </View>
+        </Pressable>
+        <View>{addSocilMedia && <EditServiceInfo serviceID={isFirst} />}</View>
+        {renderSocialItems()}
+      </View>
+    );
+  };
+  const renderSocialItems = () => {
+    const data = useMemo(() => filterService(), [serviceInfoAccorUser]);
+    const [editSocialMediaArray, setEditSocialMediaArray] = useState([]);
+    const [showModalArray, setShowModalArray] = useState([]);
+
+    useEffect(() => {
+      if (data[0]?.socialMedia) {
+        const initialEditArray = data[0].socialMedia.map(() => false);
+        const initialModalArray = data[0].socialMedia.map(() => false);
+        setEditSocialMediaArray(initialEditArray);
+        setShowModalArray(initialModalArray);
+      }
+    }, [data, editSocialMediaArray.length, showModalArray.length]);
+
+    const setEditSocialMedia = (index, value) => {
+      setEditSocialMediaArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    const setShowModal = (index, value) => {
+      setShowModalArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    return data[0]?.socialMedia.map((element, index) => {
+      const editSocialMedia = editSocialMediaArray[index];
+      const showModal = showModalArray[index];
+
+      return (
+        <View key={index}>
+          {editSocialMedia ? (
+            <EditServiceInfo
+              serviceID={isFirst}
+              editSocialMedia={editSocialMedia}
+              setEditSocialMedia={() => setEditSocialMedia(index, false)}
+              socialItem={element.social}
+              socialLink={element.link}
+            />
+          ) : (
+            <View style={styles.item}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={() => setShowModal(index, true)}>
+                  <Feather
+                    style={styles.menuIcon}
+                    name={'more-vertical'}
+                    color={colors.BGScereen}
+                    size={25}
+                  />
+                </Pressable>
+                <Pressable>
+                  <Text style={styles.basicInfo}>{element.social}</Text>
+                </Pressable>
+              </View>
+              <View style={styles.IconView}>
+                <Entypo
+                  style={styles.icon}
+                  name={element.social}
+                  color={colors.puprble}
+                  size={25}
+                />
+              </View>
+            </View>
+          )}
+          {renderSocialModal(
+            element.social,
+            element.link,
+            editSocialMedia,
+            () => setEditSocialMedia(index, true),
+            showModal,
+            () => setShowModal(index, false)
+          )}
+        </View>
+      );
+    });
+  };
+  const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia, showModal, setShowModal) => {
+    return (
+      <Modal
+        transparent
+        visible={showModal}
+        animationType="slide"
+        onRequestClose={() => setShowModal(false)}>
+        <View style={styles.centeredView}>
+          <View style={styles.detailModal}>
+            <View>
+              <Pressable onPress={() => closeSMmodalPress(setShowModal)} style={styles.modalHeader}>
+                <Feather
+                  style={styles.menuIcon}
+                  name={'more-horizontal'}
+                  color={colors.puprble}
+                  size={25} />
+              </Pressable>
+            </View>
+            <View style={{ justifyContent: 'flex-end', height: '100%' }}>
+              <View style={styles.modalMenu}>
+                <Pressable style={styles.modalItem}
+                  onPress={() => socialMediaitemEditPress(item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal)}>
+                  <Feather
+                    name={'edit'}
+                    color={colors.gray}
+                    size={25} />
+                  <Text style={styles.modalHeaderTxt}>تعديل</Text>
+                </Pressable>
+                <Pressable style={styles.modalItem} onPress={() => deleteSocialMediaItem(item, setShowModal)}>
+                  <AntDesign
+                    name={'delete'}
+                    color={colors.gray}
+                    size={25} />
+                  <Text style={styles.modalHeaderTxt}>حذف</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    )
+  }
 }
 const renderSoialMedia = () => {
   return (
