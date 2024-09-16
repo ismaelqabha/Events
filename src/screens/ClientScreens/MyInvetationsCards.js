@@ -62,7 +62,6 @@ const MyInvetationsCards = (props) => {
     }
 
     const renderInvetOutboxCard = () => {
-        // console.log("invetationInfo", invetationInfo);
         return invitationData.map(item => {
             return (
                 <InvetationOutboxComp {...item}/>
