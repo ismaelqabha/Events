@@ -71,6 +71,7 @@ import CreateInvetation from "../src/screens/ClientScreens/CreateInvetation";
 import MyInvetationsCards from "../src/screens/ClientScreens/MyInvetationsCards";
 import InvetationShow from "../src/screens/ClientScreens/InvetationShow";
 import InvetationOutboxShow from "../src/screens/ClientScreens/InvetationOutboxShow";
+import ProviderPhotosPrview from "../src/screens/ProviderScreens/ProviderPhotosPrview";
 
 
 
@@ -170,6 +171,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderOfferDesc} component={ProviderOfferDesc} />
                 <Stack.Screen name={ScreenNames.ProviderDuePayments} component={ProviderDuePayments} />
                 <Stack.Screen name={ScreenNames.ProviderShowRequest} component={ProviderShowRequest} />
+                <Stack.Screen name={ScreenNames.ProviderPhotosPrview} component={ProviderPhotosPrview} />
                 
                 
                 <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />
