@@ -8,15 +8,16 @@ import SearchContext from '../../store/SearchContext';
 import BackgroundInvetCard from './BackgroundInvetCard';
 import { checkServiceTypeById, getServiceBySerId, getServiceLocationById, updateInvitationDetails } from '../resources/API';
 import moment from "moment";
+import DateTimePicker from '@react-native-community/datetimepicker'
 
 
 const InvetationCard = (props) => {
-    const { eventType, enableInvetEditing,setEnableInvetEditing, 
+    const { eventType, enableInvetEditing, setEnableInvetEditing,
         showSaveButton, setShowSaveButton, invitationId,
-         reqData, isFromCreateInvetation } = props
+        reqData, isFromCreateInvetation } = props
 
-    const { eventTime, setEventTime, eventDate, setEventDate, location, 
-        setLocation, hostName, setHostName, welcom, setWelcom, 
+    const { eventTime, setEventTime, eventDate, setEventDate, location,
+        setLocation, hostName, setHostName, welcom, setWelcom,
         additionalInfo, setAdditionalInfo, hostName2, setHostName2,
         starName, setStarName,
         starName2, setStarName2, BG } = props
@@ -24,6 +25,7 @@ const InvetationCard = (props) => {
     const [showBGModal, setShowBGModal] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [hallDates, setHallDates] = useState([]);
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const [isEditable, setIsEditable] = useState(true);
 
     const weddingCaller = 'أسم الداعي الاول'
@@ -95,7 +97,7 @@ const InvetationCard = (props) => {
         return (
             <View>
                 <TextInput
-                    style={ enableInvetEditing ? styles.editingInput : styles.input}
+                    style={enableInvetEditing ? styles.editingInput : styles.input}
                     keyboardType='default'
                     placeholder={eventType == 'زواج' ? weddingCaller : regulerEventCaller}
                     onChangeText={val => setHostName(val)}
@@ -208,10 +210,22 @@ const InvetationCard = (props) => {
 
     const getEventDate = () => {
         if (isFromCreateInvetation) {
-            setShowModal(true)
+            if (hallDates.length === 0) {
+                setShowDatePicker(true);
+            } else {
+                setShowModal(true);
+            }
         }
 
     }
+
+    const onDateTimeChange = (event, selectedDate) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            setEventDate(selectedDate);
+            // setEventTime(moment(selectedDate).format('HH:mm'));
+        }
+    };
     const renderEventDates = () => {
         return (
             <View>
@@ -354,6 +368,14 @@ const InvetationCard = (props) => {
             {explanatoryPhrase()}
             {backgroundCardModal()}
             {EventDateModal()}
+            {showDatePicker && (
+                <DateTimePicker
+                    value={eventDate ? new Date(eventDate) : new Date()}
+                    mode="date"
+                    display="default"
+                    onChange={onDateTimeChange}
+                />
+            )}
         </View>
     )
 }
@@ -378,7 +400,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: 50,
         alignSelf: 'center',
-         borderWidth: 0.6,
+        borderWidth: 0.6,
         borderRadius: 10,
         fontSize: 15,
         backgroundColor: '#e0e0e0',
