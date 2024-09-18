@@ -1,10 +1,40 @@
 import { StyleSheet, Text, View, Pressable, Image, TextInput } from 'react-native'
-import React from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
+import SearchContext from '../../../store/SearchContext';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import { findRequestsByUserId } from '../../resources/API';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 
 const ProviderClientScreen = (props) => {
+
+    const { isFirst } = useContext(SearchContext);
+    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+    const [userData, setUserData] = useState([])
+
+    const filterService = () => {
+        const service = serviceInfoAccorUser?.filter(item => {
+            return item.service_id === isFirst;
+        });
+        return service
+    };
+
+    const getuserfromApi = () => {
+
+        const service = filterService()
+        const allclients = service[0].clients
+
+        findRequestsByUserId({ clients: allclients, service_id: isFirst }).then(res => {
+            setUserData(res)
+
+        })
+    }
+
+    useEffect(() => {
+        getuserfromApi()
+    }, [])
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -28,43 +58,27 @@ const ProviderClientScreen = (props) => {
     const renderNumOfClients = () => {
         return (
             <View style={styles.NumOfClients}>
-                <Pressable style={styles.more}>
-                    <Text style={styles.moretxt}>المزيد</Text>
-                </Pressable>
                 <Pressable style={styles.numclient}>
-                    <Text style={styles.moretxt}> الزبائن(2)</Text>
+                    <Text style={styles.moretxt}>{'الزبائن' + ' ' + '(' + userData.length + ')'}</Text>
                 </Pressable>
             </View>
         )
     }
-    const renderClients = () => {
-        return (
-            <View style={styles.clientView}>
-                <View style={styles.client}>
-                    <Pressable>
-                        <Text style={styles.menuTxt}>...</Text>
-                    </Pressable>
-                    <Pressable style={styles.client}>
-                        <Text style={styles.clientName}>أحمد كبها</Text>
-                        <View style={styles.ImgView}>
-                            <Image style={styles.clientImg} source={require('../../assets/photos/user.png')} />
-                        </View>
-                    </Pressable>
+   
 
-                </View>
-                <View style={styles.client}>
-                    <Pressable>
-                        <Text style={styles.menuTxt}>...</Text>
-                    </Pressable>
-                    <Pressable style={styles.client}>
-                        <Text style={styles.clientName}>خالد احمد</Text>
-                        <View style={styles.ImgView}>
-                            <Image style={styles.clientImg} source={require('../../assets/photos/user.png')} />
-                        </View>
-                    </Pressable>
-                </View>
-            </View>
-        )
+    const renderClients = () => {
+
+        return userData.map(item => {
+            const requests = item.clientReqPay
+            return (
+                <Pressable style={styles.clientView} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientRequestShow, {requests })}>
+                    <Text style={styles.clientName}>{item.client.User_name}</Text>
+                    <View style={styles.ImgView}>
+                        <Image style={styles.clientImg} source={{ uri: item.client.UserPhoto }} />
+                    </View>
+                </Pressable>
+            )
+        })
     }
     const renderSearch = () => {
         return (
@@ -112,18 +126,14 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
+   
     clientView: {
-        backgroundColor: 'white',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        margin: 5,
+        alignItems: 'center',
         width: '90%',
         alignSelf: 'center',
-        borderRadius: 5
-    },
-    client: {
-        flexDirection: 'row',
-        height: 70,
-        justifyContent: 'space-between',
-        margin: 5,
-        alignItems: 'center'
     },
     ImgView: {
         width: 70,
@@ -139,6 +149,7 @@ const styles = StyleSheet.create({
     clientImg: {
         width: 65,
         height: 65,
+        borderRadius: 50,
     },
     clientName: {
         fontSize: 20,
@@ -147,14 +158,12 @@ const styles = StyleSheet.create({
         // alignSelf: 'flex-end'
     },
     NumOfClients: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 30
+        // flexDirection: 'row',
+        // justifyContent: 'space-between',
+        // alignItems: 'center',
+        marginVertical: 20
     },
-    more: {
-        marginLeft: 20
-    },
+   
     numclient: {
         marginRight: 20
     },
@@ -176,5 +185,18 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         paddingRight: 20,
         borderRadius: 10
-    }
+    },
+    servDetailModal: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    bodyModal: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#ffffff',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20
+    },
 })
