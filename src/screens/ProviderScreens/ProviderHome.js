@@ -131,8 +131,8 @@ const ProviderHome = props => {
     setAddNewDesc(true)
   }
 
-  const closeModalPress = (setShowDescModal) => {
-    setShowDescModal(false)
+  const closeModalPress = (index, setShowDescModal) => {
+    setShowDescModal(index, false)
   }
   const closeSMmodalPress = (setShowModal) => {
     setShowModal(false)
@@ -661,12 +661,15 @@ const ProviderHome = props => {
       return item.desc.map((element, index) => {
         const editDescrItem = editDescrItemArray[index];
         const showDescModal = showDescModalArray[index];
+        console.log("index", index)
+        console.log("showDescModal", showDescModal)
+        console.log("editDescrItem", editDescrItem)
 
         return (<View key={index}>
           {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
             <View style={styles.itemService}>
               <View style={styles.itemSM}>
-                <Pressable onPress={() => setShowDescModal(true)}>
+                <Pressable onPress={() => setShowDescModal(index, true)}>
                   <Feather
                     style={styles.menuIcon}
                     name={'more-vertical'}
@@ -681,24 +684,24 @@ const ProviderHome = props => {
                 <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
               </View>
             </View>}
-          {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal)}
+          {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal, index)}
         </View>)
       })
     })
     return servicedesc
   };
 
-  const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
+  const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal, index) => {
     return (
       <Modal
         transparent
         visible={showDescModal}
         animationType='fade'
-        onRequestClose={() => setShowDescModal(false)}>
+        onRequestClose={() => setShowDescModal(index, false)}>
         <View style={styles.centeredDescView}>
           <View style={styles.detailModal}>
             <View>
-              <Pressable onPress={() => closeModalPress(setShowDescModal)} style={styles.modalHeader}>
+              <Pressable onPress={() => closeModalPress(index, setShowDescModal)} style={styles.modalHeader}>
                 <Feather
                   name={'more-horizontal'}
                   color={colors.puprble}
