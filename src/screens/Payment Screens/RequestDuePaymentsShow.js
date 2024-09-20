@@ -9,7 +9,7 @@ import { ScreenNames } from "../../../route/ScreenNames.js"
 const RequestDuePaymentsShow = (props) => {
     const { reqInfo, providerSide, clientSide } = props.route?.params || {}
     const [fromReqDuePaymentShow, setFromReqDuePaymentShow] = useState(true)
-
+console.log(">>",reqInfo);
 
     const [ReqPrice, setReqPrice] = useState()
     const [ReqPaymentInfo, setReqPaymentInfo] = useState([])
@@ -18,7 +18,6 @@ const RequestDuePaymentsShow = (props) => {
 
     const serviceRequest = reqInfo.serviceRequest[0]
     const requestPayment = reqInfo.requestPayment
-    const services = reqInfo.services[0]
     const requestCost = serviceRequest.Cost
 
     //console.log("reqInfo", serviceRequest.paymentInfo);
@@ -30,7 +29,7 @@ const RequestDuePaymentsShow = (props) => {
     }
 
     const paymentNotPaid = filterPaymentInfo()
-    //console.log("paymentNotPaid",paymentNotPaid);
+    // console.log("paymentNotPaid",paymentNotPaid);
 
     useEffect(() => {
         checkSourse()
@@ -38,6 +37,7 @@ const RequestDuePaymentsShow = (props) => {
 
     const checkSourse = () => {
         if (clientSide) {
+            const services = reqInfo.services[0]
             setReqPrice(requestCost)
             setReqPaymentInfo(serviceRequest.paymentInfo)
             setPaymentOwner(services.title)
@@ -49,6 +49,10 @@ const RequestDuePaymentsShow = (props) => {
             setReqPaymentInfo(reqInfo.requestInfo.paymentInfo)
             setPaymentOwner(reqInfo.userInfo)
             setPayments(reqInfo.userPayments)
+        }
+        if (reqInfo.isFromClientRequest) {
+            setReqPaymentInfo(serviceRequest.paymentInfo)
+            setPayments(reqInfo.requestPayment)
         }
     }
 

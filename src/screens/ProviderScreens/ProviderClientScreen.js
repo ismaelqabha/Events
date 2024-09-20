@@ -1,10 +1,41 @@
 import { StyleSheet, Text, View, Pressable, Image, TextInput } from 'react-native'
-import React from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
+import SearchContext from '../../../store/SearchContext';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import { findRequestsByUserId } from '../../resources/API';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 
 const ProviderClientScreen = (props) => {
+
+    const { isFirst } = useContext(SearchContext);
+    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+    const [userData, setUserData] = useState([])
+    const [searched, setSearched] = useState('')
+
+    const filterService = () => {
+        const service = serviceInfoAccorUser?.filter(item => {
+            return item.service_id === isFirst;
+        });
+        return service
+    };
+
+    const getuserfromApi = () => {
+
+        const service = filterService()
+        const allclients = service[0].clients
+
+        findRequestsByUserId({ clients: allclients, service_id: isFirst }).then(res => {
+            setUserData(res)
+
+        })
+    }
+
+    useEffect(() => {
+        getuserfromApi()
+    }, [])
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -28,44 +59,14 @@ const ProviderClientScreen = (props) => {
     const renderNumOfClients = () => {
         return (
             <View style={styles.NumOfClients}>
-                <Pressable style={styles.more}>
-                    <Text style={styles.moretxt}>المزيد</Text>
-                </Pressable>
                 <Pressable style={styles.numclient}>
-                    <Text style={styles.moretxt}> الزبائن(2)</Text>
+                    <Text style={styles.moretxt}>{'الزبائن' + ' ' + '(' + userData.length + ')'}</Text>
                 </Pressable>
             </View>
         )
     }
-    const renderClients = () => {
-        return (
-            <View style={styles.clientView}>
-                <View style={styles.client}>
-                    <Pressable>
-                        <Text style={styles.menuTxt}>...</Text>
-                    </Pressable>
-                    <Pressable style={styles.client}>
-                        <Text style={styles.clientName}>أحمد كبها</Text>
-                        <View style={styles.ImgView}>
-                            <Image style={styles.clientImg} source={require('../../assets/photos/user.png')} />
-                        </View>
-                    </Pressable>
 
-                </View>
-                <View style={styles.client}>
-                    <Pressable>
-                        <Text style={styles.menuTxt}>...</Text>
-                    </Pressable>
-                    <Pressable style={styles.client}>
-                        <Text style={styles.clientName}>خالد احمد</Text>
-                        <View style={styles.ImgView}>
-                            <Image style={styles.clientImg} source={require('../../assets/photos/user.png')} />
-                        </View>
-                    </Pressable>
-                </View>
-            </View>
-        )
-    }
+
     const renderSearch = () => {
         return (
             <View style={styles.search}>
@@ -73,23 +74,84 @@ const ProviderClientScreen = (props) => {
                     style={styles.searchinput}
                     keyboardType="default"
                     placeholder='بحث'
-                // onChangeText={(value) => setSearched(value)}
+                    onChangeText={(value) => setSearched(value)}
                 />
                 <AntDesign
                     style={styles.icon}
                     name={"search1"}
                     size={20}
                 />
-
             </View>
         )
     }
+
+    const renderResults = () => {
+        if (searched.trim().length > 0) {
+            const filteredServices = userData.filter(item => item.client.User_name.toLowerCase().includes(searched.toLowerCase()));
+
+            const filteredServicesCount = filteredServices.length;
+
+            if (filteredServicesCount === 0) {
+                return (
+                    <View style={{ alignSelf: "center" }}>
+                        <Text style={styles.relationLabelText}>لا يوجد نتائج </Text>
+                    </View>
+                );
+            }
+
+            return (
+                <View>
+                    {filteredServicesCount > 0 && (
+                        <View>
+                            {renderClients(filteredServices, true)}
+                        </View>
+                    )}
+                </View >
+            );
+        }
+
+    }
+    // const renderClients = () => {
+    //     return userData.map(item => {
+    //         const requests = item.clientReqPay
+    //         const clientName = item.client.User_name
+    //         return (
+    //             <Pressable style={styles.clientView} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientRequestShow, {requests, clientName })}>
+    //                 <Text style={styles.clientName}>{item.client.User_name}</Text>
+    //                 <View style={styles.ImgView}>
+    //                     <Image style={styles.clientImg} source={{ uri: item.client.UserPhoto }} />
+    //                 </View>
+    //             </Pressable>
+    //         )
+    //     })
+    // }
+    const renderClients = (serData, isSearch = false) => {
+        if (serData && Array.isArray(serData)) {
+            if (serData.length > 0) {
+                const relationJSX = serData.map((data, index) => {
+                    const requests = data.clientReqPay
+                    const clientName = data.client.User_name
+                    return (
+                        <Pressable style={styles.clientView} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientRequestShow, { requests, clientName })}>
+                            <Text style={styles.clientName}>{data.client.User_name}</Text>
+                            <View style={styles.ImgView}>
+                                <Image style={styles.clientImg} source={{ uri: data.client.UserPhoto }} />
+                            </View>
+                        </Pressable>
+                    )
+                });
+                return relationJSX;
+            }
+        }
+    };
+
     return (
         <View style={styles.container}>
             {header()}
             {renderSearch()}
             {renderNumOfClients()}
-            {renderClients()}
+            {/* {renderClients()} */}
+            {renderResults()}
         </View>
     )
 }
@@ -112,18 +174,14 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
+
     clientView: {
-        backgroundColor: 'white',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        margin: 5,
+        alignItems: 'center',
         width: '90%',
         alignSelf: 'center',
-        borderRadius: 5
-    },
-    client: {
-        flexDirection: 'row',
-        height: 70,
-        justifyContent: 'space-between',
-        margin: 5,
-        alignItems: 'center'
     },
     ImgView: {
         width: 70,
@@ -139,6 +197,7 @@ const styles = StyleSheet.create({
     clientImg: {
         width: 65,
         height: 65,
+        borderRadius: 50,
     },
     clientName: {
         fontSize: 20,
@@ -147,14 +206,12 @@ const styles = StyleSheet.create({
         // alignSelf: 'flex-end'
     },
     NumOfClients: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 30
+        // flexDirection: 'row',
+        // justifyContent: 'space-between',
+        // alignItems: 'center',
+        marginVertical: 20
     },
-    more: {
-        marginLeft: 20
-    },
+
     numclient: {
         marginRight: 20
     },
@@ -169,12 +226,25 @@ const styles = StyleSheet.create({
     search: {
         flexDirection: 'row',
         alignSelf: 'center',
-        width: '90%',
-        height: 40,
+        width: '80%',
+        height: 50,
         backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'flex-end',
         paddingRight: 20,
         borderRadius: 10
-    }
+    },
+    servDetailModal: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        backgroundColor: '#00000099',
+    },
+    bodyModal: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#ffffff',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20
+    },
 })

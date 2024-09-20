@@ -13,36 +13,52 @@ const MyInvetationsCards = (props) => {
 
     const { fromInvetationInbox, fromInvetationOutbox } = props?.route.params
     const { userId } = useContext(UsersContext);
-    const {invitationData, setInvitationData} = useContext(SearchContext)
-    const [invetationInfo, setInvetationInfo] = useState([])
-    
+    const { invitationData, setInvitationData } = useContext(SearchContext)
+    const [myInvetation, setMyInvetation] = useState([])
+
 
     const onPressHandler = () => {
         props.navigation.goBack();
     }
 
-   
+
 
     useEffect(() => {
         const getInvetationInfo = async () => {
             try {
-                const response = await getInvetationByUser({ createdBy: userId});
+                const response = await getInvetationByUser({ createdBy: userId });
                 if (response && response.invitation) {
                     setInvitationData(response.invitation)
                 }
-    
+
             } catch (error) {
                 console.error('Error fetching or creating invitation:', error);
                 showMessage('Error fetching or creating invitation.');
             }
-    
-            // getInvetationByUser({ createdBy: userId }).then(res => {
-            //      console.log(res);
-            //     setInvetationInfo(res)
-            //  })
-    
         }
 
+
+        const findMyInvetation = async () => {
+
+            const queryInfo = {
+                invitees: [{ user: userId }]
+            }
+
+            try {
+                const response = await getInvetationByUser(queryInfo);
+                if (response && response.invitation) {
+                    console.log("response.invitation",response.invitation);
+                    setMyInvetation(response.invitation)
+                }
+
+            } catch (error) {
+                console.error('Error fetching or creating invitation:', error);
+                showMessage('Error fetching or creating invitation.');
+            }
+        }
+
+
+        findMyInvetation()
         getInvetationInfo()
     }, [userId])
 
@@ -62,15 +78,14 @@ const MyInvetationsCards = (props) => {
     }
 
     const renderInvetOutboxCard = () => {
-        // console.log("invetationInfo", invetationInfo);
         return invitationData.map(item => {
             return (
-                <InvetationOutboxComp {...item}/>
+                <InvetationOutboxComp {...item} />
             )
         })
     }
     const renderInvetInboxCard = () => {
-        return invitation.map(item => {
+        return myInvetation.map(item => {
             return (
                 <InvetationInboxComp {...item} />
             )

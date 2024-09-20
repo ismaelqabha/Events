@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable, FlatList, ScrollView,ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, Pressable, FlatList, ScrollView, ToastAndroid } from 'react-native'
 import React, { useState, useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../../assets/AppColors';
@@ -31,6 +31,7 @@ const ProviderSetEventType = (props) => {
                     ToastAndroid.SHORT,
                     ToastAndroid.BOTTOM,
                 );
+                props.navigation.goBack();
             }
         })
 
@@ -73,11 +74,15 @@ const ProviderSetEventType = (props) => {
                 <ScrollView contentContainerStyle={styles.home} showsHorizontalScrollIndicator={false}>
                     {renderEventsType()}
 
+                    <Pressable style={styles.footer} onPress={updateWorkingEvents}>
+                        <View style={styles.btn}>
+                            <Text style={styles.itemText}>حفظ</Text>
+                        </View>
+
+                    </Pressable>
                 </ScrollView>
             </View>
-            <Pressable style={styles.footer} onPress={updateWorkingEvents}>
-                <Text style={styles.itemText}>حفظ</Text>
-            </Pressable>
+
         </View>
     )
 }
@@ -116,22 +121,28 @@ const styles = StyleSheet.create({
     home: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     footer: {
         marginTop: 20,
-        // flexDirection: 'row',
-        // justifyContent: 'flex-end',
+        alignItems: 'flex-end',
         width: '100%',
-        height: 70,
-        paddingHorizontal: '10%',
-        position: 'absolute',
-        bottom: 0,
+        padding: 10
+    },
+    btn: {
+        width: '50%',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        elevation: 5,
+        borderRadius: 8,
+        marginVertical: 10
+
     },
     itemText: {
         fontSize: 18,
         color: colors.puprble,
-        marginRight: 20
     },
 
 })
