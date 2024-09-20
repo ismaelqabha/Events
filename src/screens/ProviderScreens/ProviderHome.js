@@ -116,10 +116,10 @@ const ProviderHome = props => {
   const priceEditPress = () => {
     setEditprice(true)
   }
-  const editDescrPress = (item, setEditDescrItem, setShowDescModal) => {
+  const editDescrPress = (item, setEditDescrItem, setShowDescModal, index) => {
     setDescriptionItem(item)
-    setEditDescrItem(true)
-    setShowDescModal(false)
+    setEditDescrItem(index, true)
+    setShowDescModal(index, false)
   }
   const numofRequestEditPress = () => {
     setEditNumofRequest(true)
@@ -570,14 +570,14 @@ const ProviderHome = props => {
     })
   };
 
-  const deleteDescItemPress = (item, setShowDescModal) => {
+  const deleteDescItemPress = (item, setShowDescModal, index) => {
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
     const lastUpdate = serviceDescr.filter(ser => ser.descItem !== item)
     setServiceDescr(lastUpdate)
 
     const newData = {
       service_id: isFirst,
-      desc: serviceDescr
+      desc: lastUpdate
     }
     updateService(newData).then(res => {
       const data = serviceInfoAccorUser || [];
@@ -586,7 +586,7 @@ const ProviderHome = props => {
       }
       if (res.message === 'Updated Sucessfuly') {
         setServiceInfoAccorUser([...data])
-        setShowDescModal(false)
+        setShowDescModal(index, false)
         ToastAndroid.showWithGravity(
           'تم الحذف بنجاح',
           ToastAndroid.SHORT,
@@ -618,15 +618,14 @@ const ProviderHome = props => {
     const data = useMemo(() => filterService(), [serviceInfoAccorUser]);
     const [editDescrItemArray, setEditDescrItemArray] = useState([]);
     const [showDescModalArray, setShowDescModalArray] = useState([]);
-
     useEffect(() => {
-      if (data[0]?.desc && editDescrItemArray.length === 0 && showDescModalArray.length === 0) {
+      if (data[0]?.desc && data[0].desc?.length > editDescrItemArray || data[0].desc?.length < editDescrItemArray) {
         const initialEditArray = data[0].desc.map(() => false);
         const initialModalArray = data[0].desc.map(() => false);
         setEditDescrItemArray(initialEditArray);
         setShowDescModalArray(initialModalArray);
       }
-    }, [data, editDescrItemArray.length, showDescModalArray.length]);
+    }, [data]);
 
     const setEditDescrItem = (index, value) => {
       setEditDescrItemArray(prevState =>
@@ -640,7 +639,7 @@ const ProviderHome = props => {
       );
     };
 
-    const servicedesc = data?.map(item => {
+    const renderSerDesc = data?.map(item => {
       if (!item.desc) {
         return null;
       } else if (!Array.isArray(item.desc)) {
@@ -659,14 +658,10 @@ const ProviderHome = props => {
         }
       }
       return item.desc.map((element, index) => {
-        const editDescrItem = editDescrItemArray[index];
-        const showDescModal = showDescModalArray[index];
-        console.log("index", index)
-        console.log("showDescModal", showDescModal)
-        console.log("editDescrItem", editDescrItem)
-
+        const editDescrItem = editDescrItemArray[index] || false;
+        const showDescModal = showDescModalArray[index] || false;
         return (<View key={index}>
-          {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
+          {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={(value) => setEditDescrItem(index, value)} serviceID={isFirst} /> :
             <View style={styles.itemService}>
               <View style={styles.itemSM}>
                 <Pressable onPress={() => setShowDescModal(index, true)}>
@@ -688,7 +683,7 @@ const ProviderHome = props => {
         </View>)
       })
     })
-    return servicedesc
+    return renderSerDesc
   };
 
   const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal, index) => {
@@ -710,14 +705,14 @@ const ProviderHome = props => {
             </View>
             <View style={{ justifyContent: 'flex-end', height: '100%' }}>
               <View style={styles.modalMenu}>
-                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal)}>
+                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal, index)}>
                   <Feather
                     name={'edit'}
                     color={colors.gray}
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
                 </Pressable>
-                <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal)}>
+                <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal, index)}>
                   <AntDesign
                     name={'delete'}
                     color={colors.gray}

@@ -362,15 +362,13 @@ const EditServiceInfo = (props) => {
     const updateInfo = (infoData, setstate) => {
         const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
         const data = serviceInfoAccorUser || [];
-
+        setstate(false)
         updateService(infoData).then(res => {
-
             if (res.message === 'Updated Sucessfuly') {
                 if (selectedServiceIndex > -1) {
                     data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...infoData };
                 }
                 setServiceInfoAccorUser([...data])
-                setstate(false)
                 ToastAndroid.showWithGravity(
                     'تم التعديل بنجاح',
                     ToastAndroid.SHORT,
@@ -462,6 +460,8 @@ const EditServiceInfo = (props) => {
         updateInfo(newData, seteditHallType)
     }
     const updateServiceDescrItem = () => {
+        console.log("hello 2");
+
         const itemIndex = serviceDescr.findIndex(elme => elme.descItem === descriptionItem)
         const itemDesc = serviceDescr
         if (itemIndex > -1) {
@@ -571,14 +571,12 @@ const EditServiceInfo = (props) => {
     ]
 
     const renderSelectedEdit = () => {
-        return editObject.map(item => {
-            if (item.editItem) {
-                return (
-                    <View>{item.editFunction}</View>
-                )
-            }
-        })
-    }
+        return editObject
+            .filter(item => item.editItem)
+            .map(item => {
+                return <View key={item.editItem}>{item.editFunction}</View>;
+            });
+    };
 
     return (
         <View style={styles.container}>
