@@ -13,6 +13,7 @@ const ProviderClientScreen = (props) => {
     const { isFirst } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const [userData, setUserData] = useState([])
+    const [searched, setSearched] = useState('')
 
     const filterService = () => {
         const service = serviceInfoAccorUser?.filter(item => {
@@ -64,22 +65,8 @@ const ProviderClientScreen = (props) => {
             </View>
         )
     }
-   
 
-    const renderClients = () => {
 
-        return userData.map(item => {
-            const requests = item.clientReqPay
-            return (
-                <Pressable style={styles.clientView} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientRequestShow, {requests })}>
-                    <Text style={styles.clientName}>{item.client.User_name}</Text>
-                    <View style={styles.ImgView}>
-                        <Image style={styles.clientImg} source={{ uri: item.client.UserPhoto }} />
-                    </View>
-                </Pressable>
-            )
-        })
-    }
     const renderSearch = () => {
         return (
             <View style={styles.search}>
@@ -87,23 +74,84 @@ const ProviderClientScreen = (props) => {
                     style={styles.searchinput}
                     keyboardType="default"
                     placeholder='بحث'
-                // onChangeText={(value) => setSearched(value)}
+                    onChangeText={(value) => setSearched(value)}
                 />
                 <AntDesign
                     style={styles.icon}
                     name={"search1"}
                     size={20}
                 />
-
             </View>
         )
     }
+
+    const renderResults = () => {
+        if (searched.trim().length > 0) {
+            const filteredServices = userData.filter(item => item.client.User_name.toLowerCase().includes(searched.toLowerCase()));
+
+            const filteredServicesCount = filteredServices.length;
+
+            if (filteredServicesCount === 0) {
+                return (
+                    <View style={{ alignSelf: "center" }}>
+                        <Text style={styles.relationLabelText}>لا يوجد نتائج </Text>
+                    </View>
+                );
+            }
+
+            return (
+                <View>
+                    {filteredServicesCount > 0 && (
+                        <View>
+                            {renderClients(filteredServices, true)}
+                        </View>
+                    )}
+                </View >
+            );
+        }
+
+    }
+    // const renderClients = () => {
+    //     return userData.map(item => {
+    //         const requests = item.clientReqPay
+    //         const clientName = item.client.User_name
+    //         return (
+    //             <Pressable style={styles.clientView} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientRequestShow, {requests, clientName })}>
+    //                 <Text style={styles.clientName}>{item.client.User_name}</Text>
+    //                 <View style={styles.ImgView}>
+    //                     <Image style={styles.clientImg} source={{ uri: item.client.UserPhoto }} />
+    //                 </View>
+    //             </Pressable>
+    //         )
+    //     })
+    // }
+    const renderClients = (serData, isSearch = false) => {
+        if (serData && Array.isArray(serData)) {
+            if (serData.length > 0) {
+                const relationJSX = serData.map((data, index) => {
+                    const requests = data.clientReqPay
+                    const clientName = data.client.User_name
+                    return (
+                        <Pressable style={styles.clientView} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientRequestShow, { requests, clientName })}>
+                            <Text style={styles.clientName}>{data.client.User_name}</Text>
+                            <View style={styles.ImgView}>
+                                <Image style={styles.clientImg} source={{ uri: data.client.UserPhoto }} />
+                            </View>
+                        </Pressable>
+                    )
+                });
+                return relationJSX;
+            }
+        }
+    };
+
     return (
         <View style={styles.container}>
             {header()}
             {renderSearch()}
             {renderNumOfClients()}
-            {renderClients()}
+            {/* {renderClients()} */}
+            {renderResults()}
         </View>
     )
 }
@@ -126,7 +174,7 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
-   
+
     clientView: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
@@ -163,7 +211,7 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         marginVertical: 20
     },
-   
+
     numclient: {
         marginRight: 20
     },
@@ -178,8 +226,8 @@ const styles = StyleSheet.create({
     search: {
         flexDirection: 'row',
         alignSelf: 'center',
-        width: '90%',
-        height: 40,
+        width: '80%',
+        height: 50,
         backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'flex-end',

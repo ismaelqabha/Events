@@ -616,6 +616,8 @@ const ProviderHome = props => {
       </View>
     )
   }
+  
+
   const renderDescription = () => {
     const data = useMemo(() => filterService(), [serviceInfoAccorUser]);
     const [editDescrItemArray, setEditDescrItemArray] = useState([]);
@@ -663,202 +665,76 @@ const ProviderHome = props => {
       return item.desc.map((element, index) => {
         const editDescrItem = editDescrItemArray[index];
         const showDescModal = showDescModalArray[index];
-        const newData = {
-          service_id: isFirst,
-          desc: serviceDescr
-        }
-        updateService(newData).then(res => {
-          const data = serviceInfoAccorUser || [];
-          if (selectedServiceIndex > -1) {
-            data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-          }
-          if (res.message === 'Updated Sucessfuly') {
-            setServiceInfoAccorUser([...data])
-            setShowDescModal(false)
-            ToastAndroid.showWithGravity(
-              'تم الحذف بنجاح',
-              ToastAndroid.SHORT,
-              ToastAndroid.BOTTOM,
-            );
-          }
-        })
+
+        return (<View key={index}>
+          {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
+            <View style={styles.itemService}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={() => setShowDescModal(true)}>
+                  <Feather
+                    style={styles.menuIcon}
+                    name={'more-vertical'}
+                    color={colors.BGScereen}
+                    size={25} />
+                </Pressable>
+                <View>
+                  <Text style={styles.basicInfo}>{element.descItem}</Text>
+                </View>
+              </View>
+              <View style={styles.IconView}>
+                <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
+              </View>
+            </View>}
+          {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal)}
+        </View>)
       })
-
-      //  const renderAddDescription = () => {
-      //     return (
-      //       <View>
-      //         <Pressable style={styles.item} onPress={addNewDescr}>
-      //           <Text style={styles.basicInfo}>اضافة جديد</Text>
-      //           <View style={styles.IconView}>
-      //             <Entypo
-      //               style={styles.icon}
-      //               name={'plus'}
-      //               color={colors.puprble}
-      //               size={25}
-      //             />
-      //           </View>
-      //         </Pressable>
-      //         <View>{addNewDesc && <EditServiceInfo serviceID={isFirst} />}</View>
-      //         {renderDescription()}
-      //       </View>
-      //     )
-      //   }
-      //   const renderDescription = () => {
-      //     const data = filterService();
-      //     const servicedesc = data?.map(item => {
-      //       if (!item.desc) {
-      //         return null;
-      //       } else if (!Array.isArray(item.desc)) {
-      //         return null;
-      //       } else if (item.desc.length === 0) {
-      //         return null;
-      //       } else {
-      //         item.desc = item.desc.filter(descc => {
-      //           if (descc.empty) {
-      //             return false;
-      //           }
-      //           return true;
-      //         });
-      //         if (item.desc.length === 0) {
-      //           return null;
-      //         }
-      //       }
-      //       return item.desc.map((element, index) => {
-      //         const [editDescrItem, setEditDescrItem] = useState(false)
-      //         const [showDescModal, setShowDescModal] = useState(false);
-
-      //         return (<View key={index}>
-      //           {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
-      //             <View style={styles.itemService}>
-      //               <View style={styles.itemSM}>
-      //                 <Pressable onPress={() => setShowDescModal(true)}>
-      //                   <Feather
-      //                     style={styles.menuIcon}
-      //                     name={'more-vertical'}
-      //                     color={colors.BGScereen}
-      //                     size={25} />
-      //                 </Pressable>
-      //                 <View>
-      //                   <Text style={styles.basicInfo}>{element.descItem}</Text>
-      //                 </View>
-      //               </View>
-      //               <View style={styles.IconView}>
-      //                 <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
-      //               </View>
-      //             </View>}
-      //           {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal)}
-      //         </View>)
-      //       })
-      //     })
-      //     return servicedesc
-      //   };
-
-      //   const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
-      //     return (
-      //       <Modal
-      //         transparent
-      //         visible={showDescModal}
-      //         animationType='fade'
-      //         onRequestClose={() => setShowDescModal(false)}>
-      //         <View style={styles.centeredDescView}>
-      //           <View style={styles.detailModal}>
-      //             <View>
-      //               <Pressable onPress={() => closeModalPress(setShowDescModal)} style={styles.modalHeader}>
-      //                 <Feather
-      //                   name={'more-horizontal'}
-      //                   color={colors.puprble}
-      //                   size={25} />
-      //               </Pressable>
-      //             </View>
-      //             <View style={{ justifyContent: 'flex-end', height: '100%' }}>
-      //               <View style={styles.modalMenu}>
-      //                 <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal)}>
-      //                   <Feather
-      //                     name={'edit'}
-      //                     color={colors.gray}
-      //                     size={25} />
-      //                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
-      //                 </Pressable>
-      //                 <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal)}>
-      //                   <AntDesign
-      //                     name={'delete'}
-      //                     color={colors.gray}
-      //                     size={25} />
-      //                   <Text style={styles.modalHeaderTxt}>حذف</Text>
-      //                 </Pressable>
-      //               </View>
-      //             </View>
-      //           </View>
-      //         </View>
-      //       </Modal>
-      //     )
-      //   }
-      //   return (<View key={index}>
-      //     {editDescrItem ? <EditServiceInfo descriptionItem={descriptionItem} editDescrItem={editDescrItem} setEditDescrItem={setEditDescrItem} serviceID={isFirst} /> :
-      //       <View style={styles.itemService}>
-      //         <View style={styles.itemSM}>
-      //           <Pressable onPress={() => setShowDescModal(true)}>
-      //             <Feather
-      //               style={styles.menuIcon}
-      //               name={'more-vertical'}
-      //               color={colors.BGScereen}
-      //               size={25} />
-      //           </Pressable>
-      //           <View>
-      //             <Text style={styles.basicInfo}>{element.descItem}</Text>
-      //           </View>
-      //         </View>
-      //         <View style={styles.IconView}>
-      //           <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
-      //         </View>
-      //       </View>}
-      //     {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal)}
-      //   </View>)
-      // })
     })
     return servicedesc
-  };
+  };
 
-  const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
-    return (
-      <Modal
-        transparent
-        visible={showDescModal}
-        animationType='fade'
-        onRequestClose={() => setShowDescModal(false)}>
-        <View style={styles.centeredDescView}>
-          <View style={styles.detailModal}>
-            <View>
-              <Pressable onPress={() => closeModalPress(setShowDescModal)} style={styles.modalHeader}>
+
+const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal) => {
+  return (
+    <Modal
+      transparent
+      visible={showDescModal}
+      animationType='fade'
+      onRequestClose={() => setShowDescModal(false)}>
+      <View style={styles.centeredDescView}>
+        <View style={styles.detailModal}>
+          <View>
+            <Pressable onPress={() => closeModalPress(setShowDescModal)} style={styles.modalHeader}>
+              <Feather
+                name={'more-horizontal'}
+                color={colors.puprble}
+                size={25} />
+            </Pressable>
+          </View>
+          <View style={{ justifyContent: 'flex-end', height: '100%' }}>
+            <View style={styles.modalMenu}>
+              <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal)}>
                 <Feather
-                  name={'more-horizontal'}
-                  color={colors.puprble}
+                  name={'edit'}
+                  color={colors.gray}
                   size={25} />
+                <Text style={styles.modalHeaderTxt}>تعديل</Text>
               </Pressable>
-            </View>
-            <View style={{ justifyContent: 'flex-end', height: '100%' }}>
-              <View style={styles.modalMenu}>
-                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal)}>
-                  <Feather
-                    name={'edit'}
-                    color={colors.gray}
-                    size={25} />
-                  <Text style={styles.modalHeaderTxt}>تعديل</Text>
-                </Pressable>
-                <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal)}>
-                  <AntDesign
-                    name={'delete'}
-                    color={colors.gray}
-                    size={25} />
-                  <Text style={styles.modalHeaderTxt}>حذف</Text>
-                </Pressable>
-              </View>
+              <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal)}>
+                <AntDesign
+                  name={'delete'}
+                  color={colors.gray}
+                  size={25} />
+                <Text style={styles.modalHeaderTxt}>حذف</Text>
+              </Pressable>
             </View>
           </View>
         </View>
-      </Modal>
-    )
-  }
+      </View>
+    </Modal>
+    )
+  }
+
+ 
 
   // Service detail and sub detail
   const selectMandatoryDetail = () => {

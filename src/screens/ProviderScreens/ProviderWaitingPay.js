@@ -111,6 +111,7 @@ const ProviderWaitingPay = () => {
   const getBookingInfo = () => {
     if (requestInfoByService.message !== "no Request") {
       const reqInfo = requestInfoByService.filter(item => {
+        // console.log("item.requestInfo.ReqStatus", item.requestInfo.ReqStatus);
         return item.requestInfo.ReqStatus === 'waiting pay'
       })
 
