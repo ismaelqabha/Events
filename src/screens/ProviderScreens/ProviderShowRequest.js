@@ -524,7 +524,7 @@ const ProviderShowRequest = (props) => {
     }
     const calculatePersentage = (persentage) => {
 
-        const ReqPrice = reqInfo.Cost
+        const ReqPrice = reqInfo.requestInfo.Cost
         const fact = ReqPrice * persentage
         const realAmount = fact / 100
 
