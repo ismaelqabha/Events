@@ -5,6 +5,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SIZES from '../../resources/sizes';
 import { colors } from '../../assets/AppColors';
+import { addServiceImages } from '../../resources/API';
+import { showMessage } from '../../resources/Functions';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -44,7 +46,22 @@ const ProviderPhotosPrview = (props) => {
                     name: asset.fileName,
                 }));
 
-                setAllImages((prevImages) => [...prevImages, ...newImages]);
+                addServiceImages(newImages, serviceID)
+                    .then((resJson) => {
+                        if (resJson.message === 'Images saved' || resJson.message === "Images saved and updated") {
+                            showMessage("Images uploaded successfully!");
+                            console.log("resJson", resJson);
+
+                            setAllImages((prevImages) => [...prevImages, ...resJson?.images]);
+                            set
+                        } else {
+                            showMessage("Failed to upload images.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('Error uploading images:', error);
+                        showMessage("Error uploading images");
+                    });
             }
         });
     };
@@ -85,6 +102,8 @@ const ProviderPhotosPrview = (props) => {
 
     const renderImages = () => {
         return allImages.map((image, index) => {
+            console.log("allImages ", allImages);
+
             return (
                 <Pressable key={index} style={styles.imgItem} onPress={() => whenImagePress(index)}>
                     <Image style={styles.img} source={{ uri: image.uri || image }} />
