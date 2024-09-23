@@ -6,12 +6,12 @@ import * as asyncFunctions from './common/asyncStorageFunctions'
 import { images } from "../assets/photos/images";
 
 
-export const showMessage = (msg) => {
+const showMessage = (msg) => {
   Platform.OS === 'android'
     ? ToastAndroid.show(msg, ToastAndroid.SHORT)
     : Alert.IOS.alert(msg);
 };
-export const onPublishPress = async (allData) => {
+const onPublishPress = async (allData) => {
   await addService(allData)
     .then(async res => {
       console.log(' service res ->', res.serviceID);
@@ -38,7 +38,7 @@ export const onPublishPress = async (allData) => {
  * @param {Object} data - Data of the service.
  * @param {Function} setTotalPrice - Function to set the total price.
  */
-export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPrice) => {
+const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPrice) => {
 
   let total = 0;
 
@@ -126,7 +126,7 @@ export const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPric
   setTotalPrice(total);
 };
 
-export const filterSubDetails = (data, subDetailId) => {
+const filterSubDetails = (data, subDetailId) => {
   return data.additionalServices?.map(service => {
     // Filter sub details based on whether their id exists in subDetailId array
     const filteredSubDetailArray = service.subDetailArray.filter(subDetail =>
@@ -141,7 +141,7 @@ export const filterSubDetails = (data, subDetailId) => {
   });
 };
 
-export const getProfileImageSource = (profilePhoto, userGender) => {
+const getProfileImageSource = (profilePhoto, userGender) => {
   if (profilePhoto) {
     return { uri: profilePhoto };
   } else {
@@ -154,5 +154,9 @@ export const getProfileImageSource = (profilePhoto, userGender) => {
 };
 
 export {
-  asyncFunctions
+  asyncFunctions,
+  showMessage,
+  onPublishPress,
+  calculateTotalPrice,
+  getProfileImageSource
 }

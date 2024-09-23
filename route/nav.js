@@ -72,7 +72,6 @@ import MyInvetationsCards from "../src/screens/ClientScreens/MyInvetationsCards"
 import InvetationShow from "../src/screens/ClientScreens/InvetationShow";
 import InvetationOutboxShow from "../src/screens/ClientScreens/InvetationOutboxShow";
 import ProviderPhotosPrview from "../src/screens/ProviderScreens/ProviderPhotosPrview";
-import ProviderClientRequestShow from "../src/screens/ProviderScreens/ProviderClientRequestShow";
 
 
 
@@ -149,8 +148,8 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.MyInvetationsCards} component={MyInvetationsCards} />
                 <Stack.Screen name={ScreenNames.InvetationShow} component={InvetationShow} />
                 <Stack.Screen name={ScreenNames.InvetationOutboxShow} component={InvetationOutboxShow} />
-                
-               
+
+
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />
                 <Stack.Screen name={ScreenNames.ProviderAddInfo} component={ProviderAddInfo} />
                 <Stack.Screen name={ScreenNames.ProviderSetPhotos} component={ProviderSetPhotos} />
@@ -161,7 +160,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderSetPrice} component={ProviderSetPrice} />
                 <Stack.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender} />
                 <Stack.Screen name={ScreenNames.ProviderBookingRequest} component={ProviderBookingRequest} />
-                <Stack.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}/>
+                <Stack.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing} />
                 <Stack.Screen name={ScreenNames.ProviderInitialWithDetailPrice} component={ProviderInitialWithDetailPrice} />
                 <Stack.Screen name={ScreenNames.ProviderContantPrice} component={ProviderContantPrice} />
                 <Stack.Screen name={ScreenNames.ProviderCreateOffer} component={ProviderCreateOffer} />
@@ -173,9 +172,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderDuePayments} component={ProviderDuePayments} />
                 <Stack.Screen name={ScreenNames.ProviderShowRequest} component={ProviderShowRequest} />
                 <Stack.Screen name={ScreenNames.ProviderPhotosPrview} component={ProviderPhotosPrview} />
-                <Stack.Screen name={ScreenNames.ProviderClientRequestShow} component={ProviderClientRequestShow} />
-                
-                
+
                 <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />
                 <Stack.Screen name={ScreenNames.CreatePassword} component={CreatePassword} />
                 <Stack.Screen name={ScreenNames.SetUserAddress} component={SetUserAddress} />

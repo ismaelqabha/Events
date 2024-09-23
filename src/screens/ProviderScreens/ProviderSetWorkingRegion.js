@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, Pressable, ScrollView, ToastAndroid } from 'react-native';
+import { View, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
 import ProviderWorkRegionComp from '../../components/ProviderComponents/ProviderWorkRegionComp';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
 import strings from '../../assets/res/strings';
@@ -13,8 +13,8 @@ import SearchContext from '../../../store/SearchContext';
 
 const ProviderSetWorkingRegion = props => {
   const langauge = strings.arabic.ProviderScreens.ProviderWorkingRegion;
-  
-  const { workAreas, serviceInfoAccorUser, setServiceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
+  // const [Region, SetRegion] = useState([])
+  const { workAreas, serviceInfoAccorUser, setServiceInfoAccorUser,Region, SetRegion } = useContext(ServiceProviderContext);
   const { isFirst } = useContext(SearchContext);
 
   const params = {
@@ -55,14 +55,13 @@ const ProviderSetWorkingRegion = props => {
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         );
-        props.navigation.goBack();
       }
     })
 
   }
 
   useEffect(() => {
-
+    
   }, [])
 
   const onBackPress = () => {
@@ -98,9 +97,7 @@ const ProviderSetWorkingRegion = props => {
       </View>
 
       <Pressable style={styles.footer} onPress={updateWorkingRegions}>
-        <View style={styles.btn}>
-          <Text style={styles.itemText}>حفظ</Text>
-        </View >
+        <Text style={styles.itemText}>حفظ</Text>
       </Pressable>
     </View >
   );
@@ -112,37 +109,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10
+    marginBottom: 20
   },
   headText: {
     fontSize: 18,
     color: colors.puprble,
+    marginRight: 10
+    //fontFamily: 'Cairo-VariableFont_slnt,wght',
+    //fontWeight: 'bold'
   },
   body: {
-    height: '85%',
+    height: '80%',
+    alignItems: 'center',
   },
   footer: {
+    marginTop: 20,
+    // flexDirection: 'row',
+    // justifyContent: 'flex-end',
     width: '100%',
-    height: 70,
+    height: 50,
     paddingHorizontal: '10%',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 0,
   },
   itemText: {
     fontSize: 18,
     color: colors.puprble,
-  },
-  btn: {
-    width: '50%',
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    elevation: 5,
-    borderRadius: 8,
-    marginVertical: 10
-
-  },
+    marginRight: 20
+},
 })
 
 

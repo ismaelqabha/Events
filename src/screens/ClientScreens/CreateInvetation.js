@@ -25,7 +25,7 @@ const CreateInvetation = (props) => {
     const [BG, setBG] = useState(invetationBackground[0].value);
     const { eventType, eventTitleId, reqData, eventName } = props.route?.params || {}
 
-    
+
     const [eventTime, setEventTime] = useState('');
     const [welcom, setWelcom] = useState('');
     const [eventDate, setEventDate] = useState('');
@@ -52,7 +52,7 @@ const CreateInvetation = (props) => {
             try {
                 const response = await getInvitationStatus({ createdBy: userId, eventLogoId: eventTitleId });
                 if (response && response.invitation) {
-                    
+
                     setInvitationId(response.invitation._id);
                     setInvitationData(response.invitation);
                     setEventTime(response.invitation.invitationCard.time);
@@ -183,7 +183,7 @@ const CreateInvetation = (props) => {
                     setStarName2={setStarName2}
                     reqData={reqData}
                     enableInvetEditing={true}
-                    isFromCreateInvetation = {true}
+                    isFromCreateInvetation={true}
                 />
             </View>
 
@@ -303,9 +303,11 @@ const CreateInvetation = (props) => {
                 showMessage('No invitation data found.');
                 return;
             }
+            console.log("invitationData", invitationData.invitees);
+            console.log("inviteesList", inviteesList);
 
-            const alreadyInvited = invitationData.invitees.map(invitee => invitee.user._id);
-           
+            const alreadyInvited = invitationData.invitees.map(invitee => invitee.user.USER_ID);
+
 
             const newInvitees = inviteesList.filter(userId => !alreadyInvited.includes(userId));
             const inviteesToRemove = alreadyInvited.filter(userId => inviteesList.includes(userId));
@@ -319,7 +321,7 @@ const CreateInvetation = (props) => {
             }
 
             const updatedInvitees = [
-                ...invitationData.invitees.filter(invitee => !inviteesToRemove.includes(invitee.user._id)),
+                ...invitationData.invitees.filter(invitee => !inviteesToRemove.includes(invitee.user.USER_ID)),
                 ...newInvitees.map(userId => ({
                     user: { _id: userId },
                     status: 'pending',
@@ -423,6 +425,7 @@ const styles = StyleSheet.create({
         height,
         marginTop: 20,
         width,
+
         alignSelf: 'center',
         borderWidth: 3,
         borderColor: colors.darkGold,

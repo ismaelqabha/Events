@@ -66,14 +66,15 @@ const ProviderClientScreen = (props) => {
     const renderNumOfClients = () => {
         return (
             <View style={styles.NumOfClients}>
+                <Pressable style={styles.more}>
+                    <Text style={styles.moretxt}>المزيد</Text>
+                </Pressable>
                 <Pressable style={styles.numclient}>
-                    <Text style={styles.moretxt}>{'الزبائن' + ' ' + '(' + userData.length + ')'}</Text>
+                    <Text style={styles.moretxt}> الزبائن(2)</Text>
                 </Pressable>
             </View>
         )
     }
-
-
     const renderSearch = () => {
         return (
             <View style={styles.search}>
@@ -81,13 +82,14 @@ const ProviderClientScreen = (props) => {
                     style={styles.searchinput}
                     keyboardType="default"
                     placeholder='بحث'
-                    onChangeText={(value) => setSearched(value)}
+                // onChangeText={(value) => setSearched(value)}
                 />
                 <AntDesign
                     style={styles.icon}
                     name={"search1"}
                     size={20}
                 />
+
             </View>
         )
     }
@@ -209,14 +211,18 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
-
     clientView: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        margin: 5,
-        alignItems: 'center',
+        backgroundColor: 'white',
         width: '90%',
         alignSelf: 'center',
+        borderRadius: 5
+    },
+    client: {
+        flexDirection: 'row',
+        height: 70,
+        justifyContent: 'space-between',
+        margin: 5,
+        alignItems: 'center'
     },
     ImgView: {
         width: 70,
@@ -232,7 +238,6 @@ const styles = StyleSheet.create({
     clientImg: {
         width: 65,
         height: 65,
-        borderRadius: 50,
     },
     clientName: {
         fontSize: 20,
@@ -241,12 +246,14 @@ const styles = StyleSheet.create({
         // alignSelf: 'flex-end'
     },
     NumOfClients: {
-        // flexDirection: 'row',
-        // justifyContent: 'space-between',
-        // alignItems: 'center',
-        marginVertical: 20
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 30
     },
-
+    more: {
+        marginLeft: 20
+    },
     numclient: {
         marginRight: 20
     },
@@ -261,25 +268,12 @@ const styles = StyleSheet.create({
     search: {
         flexDirection: 'row',
         alignSelf: 'center',
-        width: '80%',
-        height: 50,
+        width: '90%',
+        height: 40,
         backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'flex-end',
         paddingRight: 20,
         borderRadius: 10
-    },
-    servDetailModal: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        backgroundColor: '#00000099',
-    },
-    bodyModal: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#ffffff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20
-    },
+    }
 })

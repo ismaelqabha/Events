@@ -1,5 +1,5 @@
- const baseUrl = 'https://ev-server.onrender.com/';
-//const baseUrl = "http://localhost:7000/"
+const baseUrl = 'https://ev-server.onrender.com/';
+// const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -43,8 +43,6 @@ export const updateUserData = async body => {
   const url = 'Users/updateByid';
   return await AppFetch(url, 'PATCH', body);
 };
-
-
 
 export const getRelations = async (body) => {
   const url = 'Users/getRelations';
@@ -129,15 +127,13 @@ export const getServiceLocationById = async body => {
   const url = 'servicesData/getServiceLocationById';
   return await AppFetch(url, 'POST', body);
 };
-export const findRequestsByUserId = async body => {
-  const url = 'servicesData/getClientsReqPayAccId';
-  return await AppFetch(url, 'POST', body);
-};
+
 /// Payment
 export const createNewPayment = async body => {
   const url = 'Payments/makePayment';
   return await AppFetch(url, 'POST', body);
 };
+
 
 
 
@@ -198,7 +194,6 @@ export const deleteRequestbyId = async (body) => {
   return await AppFetch(url, 'DELETE', body)
 }
 
-
 // Camaighns
 export const getCampaigns = async (body) => {
   const url = 'Campaigns/getCampaigns'
@@ -228,7 +223,7 @@ export const createNewOffer = async (AddNewOffer, offerImg) => {
     const headers = {
       'Content-Type': 'multipart/form-data',
     }
-    //console.log("form data ", formData);
+    console.log("form data ", formData);
     return await AppFetch(url, 'POST', formData, headers)
   } catch (error) {
 
@@ -328,7 +323,7 @@ export const addServiceImages = async (imagesArray, serviceID) => {
     imagesArray?.forEach((data, index) => {
       formData.append(`images`, {
         uri: data.uri,
-        type: 'image/jpeg',
+        type: data.type || 'image/jpeg',
         name: `image${index}.jpg`,
       });
 
@@ -340,6 +335,14 @@ export const addServiceImages = async (imagesArray, serviceID) => {
   } catch (error) {
     console.log("error adding images ", error);
   }
+};
+
+export const updateServiceLogo = async (body) => {
+  const url = 'ServiceImags/updateLogoImg';
+  const headers = {
+    'Content-Type': 'multipart/form-data',
+  }
+  return await AppFetch(url, 'PATCH', body, headers);
 };
 
 // Service Booking Dates

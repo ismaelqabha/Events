@@ -40,8 +40,7 @@ const InveteesComp = (props) => {
     }, [selectedItems, onSelectionChange]);
 
     const isInvited = (userId) => {
-        // console.log("inviteesList", inviteesList);
-        return inviteesList.some(invitee => invitee.user._id === userId);
+        return inviteesList.some(invitee => invitee.user.USER_ID === userId);
     };
 
     const toggleSelection = (userId) => {
@@ -74,12 +73,12 @@ const InveteesComp = (props) => {
     };
 
     const RnderInveteesItem = (item) => {
-        const isSelected = selectedItems[item.userInfo._id] || false;
+        const isSelected = selectedItems[item.userInfo.USER_ID] || false;
         return (
-            <View style={styles.ItemView} key={item.userInfo._id}>
+            <View style={styles.ItemView} key={item.userInfo.USER_ID}>
                 <TouchableOpacity
                     style={styles.Invetation}
-                    onPress={() => toggleSelection(item.userInfo._id)}
+                    onPress={() => toggleSelection(item.userInfo.USER_ID)}
                 >
                     <Text style={styles.txt}>{isSelected ? 'تم الاختيار' : 'تم الدعوة'}</Text>
                 </TouchableOpacity>
@@ -92,12 +91,12 @@ const InveteesComp = (props) => {
     };
 
     const rnderOtherRelatio = (item) => {
-        const isSelected = selectedItems[item.userInfo._id] || false;
+        const isSelected = selectedItems[item.userInfo.USER_ID] || false;
         return (
-            <View style={styles.ItemView} key={item.userInfo._id}>
+            <View style={styles.ItemView} key={item.userInfo.USER_ID}>
                 <TouchableOpacity
                     style={styles.Invetation}
-                    onPress={() => toggleSelection(item.userInfo._id)}
+                    onPress={() => toggleSelection(item.userInfo.USER_ID)}
                 >
                     <Text style={styles.txt}>{isSelected ? 'تم الاختيار' : 'اختيار'}</Text>
                 </TouchableOpacity>
@@ -113,13 +112,13 @@ const InveteesComp = (props) => {
         if (!relations) return null;
 
         const sortedRelations = [...filteredRelations].sort((a, b) => {
-            const aIsInvited = isInvited(a.userInfo._id);
-            const bIsInvited = isInvited(b.userInfo._id);
+            const aIsInvited = isInvited(a.userInfo.USER_ID);
+            const bIsInvited = isInvited(b.userInfo.USER_ID);
             return aIsInvited === bIsInvited ? 0 : aIsInvited ? -1 : 1;
         });
 
         return sortedRelations.map(item => {
-            return isInvited(item.userInfo._id) ? RnderInveteesItem(item) : rnderOtherRelatio(item);
+            return isInvited(item.userInfo.USER_ID) ? RnderInveteesItem(item) : rnderOtherRelatio(item);
         });
     };
 

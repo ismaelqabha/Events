@@ -1,124 +1,140 @@
-import { StyleSheet, Text, View, Pressable, Image, ScrollView,Modal } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, View, Pressable, Image, ScrollView, Modal, FlatList, Dimensions } from 'react-native';
+import React, { useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { invetationBackground } from '../../resources/data';
-import { FlatList } from 'react-native-gesture-handler';
+import { launchImageLibrary } from 'react-native-image-picker';
 import SIZES from '../../resources/sizes';
 import { colors } from '../../assets/AppColors';
+import { addServiceImages } from '../../resources/API';
+import { showMessage } from '../../resources/Functions';
 
-const height = SIZES.screenWidth * 0.5;
-const width = SIZES.screenWidth - 265;
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 const ProviderPhotosPrview = (props) => {
-
+    const { serviceImages, serviceID, logoArray } = props.route.params;
+    const filteredImages = serviceImages.filter((_, index) => !logoArray[index]);
+    const [allImages, setAllImages] = useState(filteredImages || []);
     const [showImagModal, setShowImagModal] = useState(false);
-
+    const [modalImageIndex, setModalImageIndex] = useState(0)
     const onPressHandler = () => {
         props.navigation.goBack();
     };
 
-    const header = () => {
-        return (
-            <View style={styles.header}>
-                <Pressable onPress={onPressHandler}>
-                    <AntDesign
-                        style={styles.icon}س
-                        name={'left'}
-                        color={'black'}
-                        size={20}
-                    />
-                </Pressable>
-                <Text style={styles.headerTxt}>الصور</Text>
-            </View>
-        )
-    }
+    const whenImagePress = (index) => {
+        setModalImageIndex(index);
+        setShowImagModal(true);
+    };
 
-    const whenImagePress = () => {
-        setShowImagModal(true)
-    }
+    const openGalleryForMultipleSelection = () => {
+        const options = {
+            mediaType: 'photo',
+            quality: 1,
+            includeBase64: false,
+            selectionLimit: 0,
+        };
+
+        launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.errorMessage) {
+                console.log('ImagePicker Error: ', response.errorMessage);
+            } else if (response.assets && response.assets.length > 0) {
+                const newImages = response.assets.map((asset) => ({
+                    uri: asset.uri,
+                    type: asset.type,
+                    name: asset.fileName,
+                }));
+
+                addServiceImages(newImages, serviceID)
+                    .then((resJson) => {
+                        if (resJson.message === 'Images saved' || resJson.message === "Images saved and updated") {
+                            showMessage("Images uploaded successfully!");
+                            console.log("resJson", resJson);
+
+                            setAllImages((prevImages) => [...prevImages, ...resJson?.images]);
+                            set
+                        } else {
+                            showMessage("Failed to upload images.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.log('Error uploading images:', error);
+                        showMessage("Error uploading images");
+                    });
+            }
+        });
+    };
 
     const showPhotoModal = () => {
         return (
             <Modal
-              transparent
-              visible={showImagModal}
-              animationType='fade'
-              onRequestClose={() => setShowImagModal(false)}>
-              <View style={styles.centeredView}>
-                <View style={styles.detailModal}>
-                <Image style={styles.imge}  source={require('../../assets/photos/ameer.png')}/>
+                transparent
+                visible={showImagModal}
+                animationType="fade"
+                onRequestClose={() => setShowImagModal(false)}>
+                <View style={styles.centeredView}>
+                    <FlatList
+                        data={allImages}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        initialScrollIndex={modalImageIndex}
+                        getItemLayout={(data, index) => ({
+                            length: screenWidth,
+                            offset: screenWidth * index,
+                            index
+                        })}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={({ item }) => (
+                            <Pressable
+                                style={styles.detailModal}
+                                onPress={() => setShowImagModal(false)}
+                            >
+                                <Image style={styles.imge} source={{ uri: item.uri || item || 'https://via.placeholder.com/150' }} />
+                            </Pressable>
+                        )}
+                    />
                 </View>
-              </View>
             </Modal>
-          )
-    }
-
-    const query = () => {
-        return invetationBackground || [];
-    }
-    const renderCard = ({ item }) => {
-        return <View>
-            <Image style={styles.img} source={item.value} />
-        </View>
-
+        );
     };
 
-    const renderImage = () => {
-        return (
-            <View>
-                <View style={styles.row}>
-                    <Pressable style={styles.imgItem} onPress={whenImagePress}>
-                        <Image style={styles.img}  source={require('../../assets/photos/ameer.png')}/>
-                    </Pressable>
-                    <Pressable style={styles.imgItem}></Pressable>
-                    <Pressable style={styles.imgItem}></Pressable>
-                </View>
-                <View style={styles.row}>
-                    <Pressable style={styles.imgItem}></Pressable>
-                    <Pressable style={styles.imgItem}></Pressable>
-                    <Pressable style={styles.imgItem}></Pressable>
-                </View>
-                <View style={styles.row}>
-                    <Pressable style={styles.imgItem}></Pressable>
-                    <Pressable style={styles.imgItem}></Pressable>
-                    <Pressable style={styles.imgItem}></Pressable>
-                </View>
-                <View style={styles.row}>
-                    <Pressable style={styles.imgItem}></Pressable>
-                    <Pressable style={styles.imgItem}></Pressable>
-                    <Pressable style={styles.imgItem}>
-                        <MaterialIcons
-                            name={'add-photo-alternate'}
-                            color={colors.silver}
-                            size={60}
-                        />
-                    </Pressable>
-                </View>
-            </View>
+    const renderImages = () => {
+        return allImages.map((image, index) => {
+            console.log("allImages ", allImages);
 
-        )
-    }
+            return (
+                <Pressable key={index} style={styles.imgItem} onPress={() => whenImagePress(index)}>
+                    <Image style={styles.img} source={{ uri: image.uri || image }} />
+                </Pressable>
+            );
+        });
+    };
 
     return (
         <View style={styles.container}>
-            {header()}
-            <ScrollView>
-                {renderImage()}
+            <View style={styles.header}>
+                <Pressable onPress={onPressHandler}>
+                    <View>
+                        <AntDesign name={'left'} color={'black'} size={20} />
+                    </View>
+                </Pressable>
+                <Text style={styles.headerTxt}>الصور</Text>
+            </View>
+            <ScrollView contentContainerStyle={styles.grid}>
+                {renderImages()}
+                <Pressable style={styles.imgItem} onPress={openGalleryForMultipleSelection}>
+                    <MaterialIcons name={'add-photo-alternate'} color={colors.silver} size={60} />
+                </Pressable>
             </ScrollView>
-
-            {/* <FlatList
-                data={query()}
-                renderItem={renderCard}
-                numColumns={2}
-                refreshing={isRefreshing}
-            /> */}
             {showPhotoModal()}
         </View>
-    )
-}
+    );
+};
 
-export default ProviderPhotosPrview
+export default ProviderPhotosPrview;
+
 
 const styles = StyleSheet.create({
     container: {
@@ -135,39 +151,45 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
+    grid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start',
+        paddingHorizontal: 5,
+        paddingVertical: 10
+    },
     img: {
         width: "100%",
         height: "100%",
         borderWidth: 1
     },
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
     imgItem: {
-        width,
-        height,
+        width: (SIZES.screenWidth / 3) - 15,
+        height: (SIZES.screenHeight / 4) - 10,
+        margin: 5,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1
     },
     detailModal: {
-        width: '95%',
-        height: '95%',
+        width: screenWidth * 0.95,
+        height: screenHeight * 0.95,
         backgroundColor: '#ffffff',
-        borderRadius: 20
-      },
-      centeredView: {
+        borderRadius: 20,
+        marginTop: screenHeight * 0.025,
+        marginHorizontal: screenWidth * 0.025
+    },
+    centeredView: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#00000099',
-      },
-      imge:{
+    },
+    imge: {
         width: "100%",
         height: "100%",
         borderRadius: 20,
         resizeMode: 'stretch'
-      }
-})
+    },
+
+});
