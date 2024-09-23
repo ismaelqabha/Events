@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { StyleSheet, Text, View, Pressable, Image, TextInput,Animated } from 'react-native'
 import React, { useContext, useState, useEffect,useRef } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -9,17 +8,10 @@ import { findRequestsByUserId } from '../../resources/API';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { ActivityIndicator } from 'react-native-paper';
 
-=======
-import { StyleSheet, Text, View, Pressable, Image, TextInput } from 'react-native'
-import React from 'react'
-import AntDesign from "react-native-vector-icons/AntDesign";
-import { colors } from '../../assets/AppColors';
->>>>>>> parent of 1ecb4c4 (Merge branch 'ismael' into fadi)
 
 
 const ProviderClientScreen = (props) => {
 
-<<<<<<< HEAD
     const { isFirst } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const [userData, setUserData] = useState([])
@@ -52,8 +44,6 @@ const ProviderClientScreen = (props) => {
         getuserfromApi()
     }, [])
 
-=======
->>>>>>> parent of 1ecb4c4 (Merge branch 'ismael' into fadi)
     const onPressHandler = () => {
         props.navigation.goBack();
     }
@@ -132,7 +122,6 @@ const ProviderClientScreen = (props) => {
             </View>
         )
     }
-<<<<<<< HEAD
 
     const ResultsComp = ({ data, index = 0 }) => {
         const translateX = slideInAnimation.interpolate({
@@ -223,19 +212,13 @@ const ProviderClientScreen = (props) => {
         )
     }
 
-=======
->>>>>>> parent of 1ecb4c4 (Merge branch 'ismael' into fadi)
     return (
         <View style={styles.container}>
             {header()}
             {renderSearch()}
             {renderNumOfClients()}
-<<<<<<< HEAD
             {renderAll()}
             {/* {renderResults()} */}
-=======
-            {renderClients()}
->>>>>>> parent of 1ecb4c4 (Merge branch 'ismael' into fadi)
         </View>
     )
 }
