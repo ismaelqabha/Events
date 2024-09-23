@@ -39,6 +39,7 @@ const ClientShowRequest = (props) => {
     const reservationDetail = serviceRequest.reservationDetail
     const eventDatesArr = reqInfo?.eventData?.eventDate
 
+    
     const checkSource = () => {
         if (fromclientDuePayment) {
             setRelatedCamp([...reqInfo.relatedCamp])
@@ -507,6 +508,7 @@ const ClientShowRequest = (props) => {
         })
     }
     const isRequestWaitingPayForPaymentInfo = () => {
+       
         if (paymentInfo.length > 0) {
             return (<View>
                 <Text style={styles.labelText}>تفاصيل الدفعات</Text>

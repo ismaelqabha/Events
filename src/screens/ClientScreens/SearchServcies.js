@@ -143,6 +143,7 @@ const SearchServcies = (props) => {
             </View>
         )
     }
+    
     const ResultsComp = ({ data, index = 0 }) => {
         const translateX = slideInAnimation.interpolate({
             inputRange: [0, 1],
