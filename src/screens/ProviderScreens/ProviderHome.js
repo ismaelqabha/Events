@@ -22,6 +22,7 @@ import { BackgroundImage } from '@rneui/base';
 import EditServiceInfo from '../../components/ProviderComponents/EditServiceInfo';
 import EditServiceDetails from '../../components/ProviderComponents/EditServiceDetails';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 const ProviderHome = props => {
   const { isFirst, setserviceTitle } = useContext(SearchContext);
@@ -371,25 +372,25 @@ const ProviderHome = props => {
     const data = filterService();
     const serviceType = data?.map(item => {
       return (
-        <View>
-          <View style={styles.itemService}>
+        < View >
+          <Pressable style={styles.itemService} onPress={() => props.navigation.navigate(ScreenNames.ProviderPhotosPrview)}>
             <View>
               <Text style={styles.basicInfo}>مشاهدة الصور (7)</Text>
             </View>
             <View style={styles.IconView}>
               <Entypo name={'images'} color={colors.puprble} size={25} />
             </View>
-          </View>
+          </Pressable>
 
-          <View style={styles.itemService}>
+          {/* <View style={styles.itemService}>
             <View>
               <Text style={styles.basicInfo}>اضافة صورة</Text>
             </View>
             <View style={styles.IconView}>
               <MaterialIcons name={'add-photo-alternate'} color={colors.puprble} size={25} />
             </View>
-          </View>
-        </View>
+          </View> */}
+        </View >
       );
     });
     return serviceType;
