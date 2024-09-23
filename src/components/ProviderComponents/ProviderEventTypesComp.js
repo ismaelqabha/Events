@@ -8,27 +8,16 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext'
 
 
 const ProviderEventTypesComp = (props) => {
-    const { isFirst } = useContext(SearchContext);
 
-    const {serviceInfoAccorUser, eventsTypeWorking, setEventsTypeWorking } = useContext(ServiceProviderContext);
+    const { eventsTypeWorking, setEventsTypeWorking } = useContext(ServiceProviderContext);
     const [selectEvent, setSelectEvent] = useState(false)
-
-    
-    const getSelectedEvents = () => {
-        return serviceInfoAccorUser.filter (item => {
-            return item.service_id === isFirst
-        })
-    }
 
     useEffect(() => {
         checkPressed()
       }, [])
     
       const checkPressed = () => {
-       const data =  getSelectedEvents()
-       const selectedEvent = data[0].eventWorkWith
-       setEventsTypeWorking(selectedEvent)
-       selectedEvent.includes(props.Id) ? setSelectEvent(true) : null
+        eventsTypeWorking.includes(props.Id) ? setSelectEvent(true) : null
       }
 
       const checkExists = () => {

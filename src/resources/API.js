@@ -44,8 +44,6 @@ export const updateUserData = async body => {
   return await AppFetch(url, 'PATCH', body);
 };
 
-
-
 export const getRelations = async (body) => {
   const url = 'Users/getRelations';
   return await AppFetch(url, 'POST', body);
@@ -129,10 +127,6 @@ export const getServiceLocationById = async body => {
   const url = 'servicesData/getServiceLocationById';
   return await AppFetch(url, 'POST', body);
 };
-export const findRequestsByUserId = async body => {
-  const url = 'servicesData/getClientsReqPayAccId';
-  return await AppFetch(url, 'POST', body);
-};
 /// Payment
 export const createNewPayment = async body => {
   const url = 'Payments/makePayment';
@@ -198,7 +192,6 @@ export const deleteRequestbyId = async (body) => {
   return await AppFetch(url, 'DELETE', body)
 }
 
-
 // Camaighns
 export const getCampaigns = async (body) => {
   const url = 'Campaigns/getCampaigns'
@@ -228,7 +221,7 @@ export const createNewOffer = async (AddNewOffer, offerImg) => {
     const headers = {
       'Content-Type': 'multipart/form-data',
     }
-    //console.log("form data ", formData);
+    console.log("form data ", formData);
     return await AppFetch(url, 'POST', formData, headers)
   } catch (error) {
 

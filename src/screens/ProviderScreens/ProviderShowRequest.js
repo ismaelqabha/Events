@@ -24,7 +24,7 @@ const ProviderShowRequest = (props) => {
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-    // console.log(">>>", reqInfo)
+    //console.log("reqInfo", reqInfo);
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
@@ -314,7 +314,6 @@ const ProviderShowRequest = (props) => {
                         size={25} />
                 </Pressable>
                 {fromProviderDuePay == undefined &&
-                    !(reqInfo.isFromClientRequest) &&
                     <Pressable onPress={moreModalPress}>
                         <Fontisto
                             style={styles.icon}
@@ -565,7 +564,8 @@ const ProviderShowRequest = (props) => {
 
                 {renderfinalCost()}
                 {isRequestWaitingPayForPaymentInfo()}
-                {fromProviderDuePay == undefined &&  moreModal()}
+                {fromProviderDuePay == undefined && moreModal()}
+                {/* {moreModal()} */}
                 {renderModal()}
 
             </ScrollView>

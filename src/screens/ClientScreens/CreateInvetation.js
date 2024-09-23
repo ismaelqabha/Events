@@ -425,6 +425,7 @@ const styles = StyleSheet.create({
         height,
         marginTop: 20,
         width,
+
         alignSelf: 'center',
         borderWidth: 3,
         borderColor: colors.darkGold,

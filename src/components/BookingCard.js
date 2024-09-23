@@ -374,6 +374,11 @@ const styles = StyleSheet.create({
 
     },
     paymentButton: {
+        // width: '40%',
+        // height: 30,
+        // borderWidth: 0.5,
+        // marginLeft: 5,
+        //marginRight: 10,
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',

@@ -199,6 +199,9 @@ const SearchServcies = (props) => {
                 </View >
             );
         }
+        //    else {
+        //     return relations && relations.length > 0 ? friends(relations, false) : noFriends();
+        //   }
     }
 
     const results = (serData, isSearch = false) => {

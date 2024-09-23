@@ -86,6 +86,14 @@ const ProviderProfile = props => {
   }, [isFirst])
 
 
+
+  const filterService = () => {
+    const service = serviceInfoAccorUser?.filter(item => {
+      return item.service_id === isFirst;
+    });
+    return service
+  };
+
   const seprator = () => {
     return <View style={styles.seprater}></View>;
   };
@@ -109,7 +117,7 @@ const ProviderProfile = props => {
             props.navigation.navigate(ScreenNames.ProviderClientScreen)
           }>
           <View>
-            <Text style={styles.basicInfo}>الزبائن</Text>
+            <Text style={styles.basicInfo}>الزبائن (10)</Text>
           </View>
           <View style={styles.IconView}>
             <FontAwesome5 name={'users'} color={colors.puprble} size={25} />
