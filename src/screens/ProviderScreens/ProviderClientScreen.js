@@ -166,8 +166,8 @@ const ProviderClientScreen = (props) => {
     const noFriends = () => {
         return (
           <View style={{ alignSelf: "center" }}>
-            <Text style={styles.relationLabelText}>لا يوجد علاقات قائمة حاليا</Text>
-            <Text style={styles.relationLabelText}>ابحث عن علاقات جديدة</Text>
+            <Text style={styles.relationLabelText}>لا يوجد زبائن</Text>
+            <Text style={styles.relationLabelText}>ابحث عن زبائن جديدة</Text>
           </View>
         );
       };
@@ -185,9 +185,8 @@ const ProviderClientScreen = (props) => {
         <View style={styles.container}>
             {header()}
             {renderSearch()}
-            {renderNumOfClients()}
+            {userData.length > 0 && renderNumOfClients()}
             {renderAll()}
-            {/* {renderResults()} */}
         </View>
     )
 }

@@ -18,11 +18,14 @@ const ProviderBookingRequest = (props) => {
   const [fromReservationScreen, setfromReservationScreen] = useState(true)
   const selectedDate = moment(fulDate).format('L')
 
-  const today = moment(new Date(), "YYYY-MM-DD")
-  const day = today.format('D')
-  const month = today.format('M')
-  const year = today.format('YYYY')
-  const todayDate = year + '-' + month + '-' + day
+  var requestDate = new Date(fulDate)
+  var todayDate = new Date();
+
+    todayDate.setHours(0);
+    todayDate.setMinutes(0);
+    todayDate.setSeconds(0);
+    todayDate.setMilliseconds(0);
+
   const fullDateObj = new Date(fulDate); // Assuming fullDate is coming as a string in 'YYYY-MM-DD' format
   const todayDateObj = new Date(todayDate);
 
@@ -44,9 +47,9 @@ const ProviderBookingRequest = (props) => {
             color={"black"}
             size={25} />
         </Pressable>
-        <Text style={styles.txt}>الحجوزات</Text>
+        {/* <Text style={styles.txt}>الحجوزات</Text> */}
         {/* this a place that check the data   */}
-        {fulDate > todayDate && <Pressable onPress={moreModalPress}
+        {requestDate > todayDate && <Pressable onPress={moreModalPress}
         >
           <Fontisto
             style={styles.iconmore}
@@ -181,6 +184,9 @@ const ProviderBookingRequest = (props) => {
   const moreOperation = () => {
     return (
       <View style={styles.moreChoice}>
+         <Pressable style={styles.moreItem} >
+          <Text style={styles.moreTxt}>حجز</Text>
+        </Pressable>
         <Pressable style={styles.moreItem} onPress={vacationDayPress}>
           <Text style={styles.moreTxt}>تعيين كيوم عطلة</Text>
         </Pressable>
@@ -341,7 +347,7 @@ const styles = StyleSheet.create({
   },
   moreModal: {
     width: '95%',
-    height: 150,
+    height: '30%',
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -363,16 +369,19 @@ const styles = StyleSheet.create({
   },
   moreItem: {
     alignSelf: 'center',
-    marginVertical: 5,
-    alignItems: 'center'
+    marginVertical: 2,
+    alignItems: 'center',
+    borderColor: colors.silver,
+    borderRadius: 20,
+    borderWidth:1,
+    width: '100%',
+    height: '20%'
   },
   moreChoice: {
-    // flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    // borderWidth: 1
+   
   },
   moreTxt: {
-    fontSize: 18
+    fontSize: 18,
+    color: colors.puprble
   },
 })

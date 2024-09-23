@@ -289,15 +289,12 @@ const ProviderProfile = props => {
           {campInfo.message !== 'No Campaigns' && renderCampigns()}
         </View>
 
-        {/* <Text style={styles.txt}>قائمة العروض</Text>
-        <View style={styles.viewSet}>{renderOffers()}</View> */}
 
         <Text style={styles.txt}>العمليات</Text>
         <View style={styles.viewSet}>
           {renderAddCampaign()}
           {renderDetermineRegion()}
           {renderSetEventsType()}
-          {/* {renderSoialMedia1()} */}
         </View>
 
         <Text style={styles.txt}>جديد</Text>
@@ -312,13 +309,11 @@ export default ProviderProfile;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.BGScereen,
     marginBottom: 70,
+    paddingHorizontal:10
   },
   headView: {
-    marginTop: 20,
-    marginRight: 20,
-    marginBottom: 40,
+    margin: 20,
   },
   headtext: {
     fontSize: 20,
@@ -326,22 +321,22 @@ const styles = StyleSheet.create({
     fontFamily: 'Cairo-VariableFont_slnt,wght',
   },
   content: {
-    //marginRight: 20,
   },
   viewSet: {
-    backgroundColor: 'white',
-    width: '90%',
+    borderWidth: 3,
+    borderColor: colors.silver,
+    width: '95%',
     justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 10,
     padding: 10,
+    
   },
   txt: {
     fontSize: 20,
     color: colors.puprble,
     fontWeight: 'bold',
     marginVertical: 10,
-    marginRight: 20,
   },
   basicInfo: {
     fontSize: 18,
@@ -367,11 +362,11 @@ const styles = StyleSheet.create({
 
   seprater: {
     borderColor: colors.puprble,
-    borderWidth: 0.2,
-    width: '80%',
+    borderWidth: 0.5,
+    width: '90%',
     alignSelf: 'center',
-    marginTop: 20,
-    marginBottom: 20,
+    marginVertical: 20,
+    
   },
   header: {
     alignItems: 'center',

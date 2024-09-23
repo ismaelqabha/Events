@@ -14,7 +14,6 @@ const CalenderServiceCard = (props) => {
 
     const onCardPress = () => {
         setIsfirst(props.service_id)
-        // navigation.navigate(ScreenNames.ProviderCalender, { data: { ...props } })
     }
 
     const index = props.logoArray?.findIndex((val) => val === true)
@@ -24,7 +23,7 @@ const CalenderServiceCard = (props) => {
     return (
         <View style={styles.container}>
             <Pressable style={styles.item}
-                onPress={() => onCardPress()}
+                onPress={onCardPress}
             >
                 <View style={[styles.imgView, isFirst == props.service_id ? styles.imgViewforFirst : styles.imgView]}>
                     <View style={{ width: '70%', alignItems: 'center' }}>
@@ -43,12 +42,10 @@ export default CalenderServiceCard
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: 'center'
+        // alignItems: 'center'
     },
     item: {
-        flexDirection: 'row',
         alignItems: 'center',
-        alignSelf: 'flex-end',
         marginTop: 10,
 
     },
@@ -67,12 +64,9 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
     profilImg: {
-        width: 80,
-        height: 80,
+        width: "80%",
+        height: "80%",
         borderRadius: 10,
-        backgroundColor: colors.BGScereen,
-        borderWidth: 3,
-        borderColor: colors.puprble,
     },
     imgView: {
         width: "95%",
@@ -80,12 +74,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-around',
-        elevation: 5,
-        shadowColor: colors.puprble,
-        backgroundColor: 'white',
         alignSelf: 'center',
-        margin: 5,
+        marginVertical: 5,
         borderRadius: 20,
+        borderColor: colors.silver,
+        borderWidth: 3
     },
     imgViewforFirst: {
         width: "95%",
@@ -93,11 +86,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-around',
-        elevation: 5,
-        shadowColor: colors.puprble,
-        backgroundColor: 'white',
         alignSelf: 'center',
-        margin: 5,
+        marginVertical: 5,
         borderRadius: 20,
         borderColor: colors.puprble,
         borderWidth: 3
