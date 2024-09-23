@@ -17,12 +17,13 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { getServiceImages, updateService } from '../../resources/API';
+import { getServiceImages, updateService, updateServiceLogo } from '../../resources/API';
 import { BackgroundImage } from '@rneui/base';
 import EditServiceInfo from '../../components/ProviderComponents/EditServiceInfo';
 import EditServiceDetails from '../../components/ProviderComponents/EditServiceDetails';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { ScreenNames } from '../../../route/ScreenNames';
+import { showMessage } from '../../resources/Functions';
 
 const ProviderHome = props => {
   const { isFirst, setserviceTitle } = useContext(SearchContext);
@@ -193,6 +194,7 @@ const ProviderHome = props => {
   }
   const renderServiceLogo = () => {
     const data = filterService();
+
     const index = data[0].logoArray?.findIndex((val) => val === true);
     const [image, setImage] = useState(data[0]?.serviceImages[index]);
 
@@ -209,16 +211,54 @@ const ProviderHome = props => {
           console.log('ImagePicker Error: ', response.errorMessage);
         } else if (response.assets && response.assets.length > 0) {
           const selectedImage = response.assets[0].uri;
-          setImage(selectedImage); // Set the selected image as the new logo
+          setImage(selectedImage);
+
+          const formData = new FormData();
+          formData.append('serviceID', data[0].service_id);
+          formData.append('images', {
+            uri: selectedImage,
+            type: response.assets[0].type,
+            name: response.assets[0].fileName,
+          });
+
+          updateServiceLogo(formData)
+            .then((resJson) => {
+              console.log('Server Response:', resJson);
+              if (resJson.message === 'Images saved') {
+                const updatedService = {
+                  ...data[0],
+                  serviceImages: resJson.images.serviceImages, 
+                };
+
+                setServiceInfoAccorUser((prevState) => {
+                  const serviceIndex = prevState.findIndex(
+                    (service) => service.service_id === updatedService.service_id
+                  );
+
+                  if (serviceIndex > -1) {
+                    const updatedServices = [...prevState];
+                    updatedServices[serviceIndex] = updatedService;
+                    return updatedServices;
+                  }
+
+                  return prevState;
+                });
+                showMessage("Logo updated successfully");
+              } else {
+                showMessage("Failed to update logo");
+              }
+            })
+            .catch((error) => {
+              console.log('Error uploading logo:', error);
+              showMessage("Error updating logo");
+            });
         }
       });
     };
 
     return (
       <View>
-        <BackgroundImage
-          style={styles.logoview}
-          source={require('../../assets/photos/backgroundPart.png')}>
+        <BackgroundImage style={styles.logoview} source={require('../../assets/photos/backgroundPart.png')}>
           <Image style={styles.logoImg} source={{ uri: image }} />
           <Pressable style={styles.editImg} onPress={openGallery}>
             <Entypo name={'camera'} color={colors.puprble} size={25} />

@@ -1,5 +1,5 @@
- const baseUrl = 'https://ev-server.onrender.com/';
-//const baseUrl = "http://localhost:7000/"
+// const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -127,11 +127,13 @@ export const getServiceLocationById = async body => {
   const url = 'servicesData/getServiceLocationById';
   return await AppFetch(url, 'POST', body);
 };
+
 /// Payment
 export const createNewPayment = async body => {
   const url = 'Payments/makePayment';
   return await AppFetch(url, 'POST', body);
 };
+
 
 
 
@@ -333,6 +335,14 @@ export const addServiceImages = async (imagesArray, serviceID) => {
   } catch (error) {
     console.log("error adding images ", error);
   }
+};
+
+export const updateServiceLogo = async (body) => {
+  const url = 'ServiceImags/updateLogoImg';
+  const headers = {
+    'Content-Type': 'multipart/form-data',
+  }
+  return await AppFetch(url, 'PATCH', body, headers);
 };
 
 // Service Booking Dates
