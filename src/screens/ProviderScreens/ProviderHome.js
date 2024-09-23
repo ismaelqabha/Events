@@ -227,7 +227,7 @@ const ProviderHome = props => {
               if (resJson.message === 'Images saved') {
                 const updatedService = {
                   ...data[0],
-                  serviceImages: resJson.images.serviceImages, 
+                  serviceImages: resJson.images.serviceImages,
                 };
 
                 setServiceInfoAccorUser((prevState) => {
@@ -413,23 +413,14 @@ const ProviderHome = props => {
     const serviceType = data?.map(item => {
       return (
         < View >
-          <Pressable style={styles.itemService} onPress={() => props.navigation.navigate(ScreenNames.ProviderPhotosPrview)}>
+          <Pressable style={styles.itemService} onPress={() => props.navigation.navigate(ScreenNames.ProviderPhotosPrview, { serviceID: data[0].service_id, serviceImages: data[0].serviceImages, logoArray: data[0].logoArray })}>
             <View>
-              <Text style={styles.basicInfo}>مشاهدة الصور (7)</Text>
+              <Text style={styles.basicInfo}>مشاهدة الصور ({data?.[0]?.serviceImages?.length - 1 || ''})</Text>
             </View>
             <View style={styles.IconView}>
               <Entypo name={'images'} color={colors.puprble} size={25} />
             </View>
           </Pressable>
-
-          {/* <View style={styles.itemService}>
-            <View>
-              <Text style={styles.basicInfo}>اضافة صورة</Text>
-            </View>
-            <View style={styles.IconView}>
-              <MaterialIcons name={'add-photo-alternate'} color={colors.puprble} size={25} />
-            </View>
-          </View> */}
         </View >
       );
     });
