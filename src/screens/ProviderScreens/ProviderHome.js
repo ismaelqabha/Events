@@ -21,7 +21,6 @@ import { getServiceImages, updateService } from '../../resources/API';
 import { BackgroundImage } from '@rneui/base';
 import EditServiceInfo from '../../components/ProviderComponents/EditServiceInfo';
 import EditServiceDetails from '../../components/ProviderComponents/EditServiceDetails';
-import { launchImageLibrary } from 'react-native-image-picker';
 
 const ProviderHome = props => {
   const { isFirst, setserviceTitle } = useContext(SearchContext);
@@ -191,41 +190,25 @@ const ProviderHome = props => {
     )
   }
   const renderServiceLogo = () => {
-    const data = filterService();
-    const index = data[0].logoArray?.findIndex((val) => val === true);
-    const [selectedImage, setSelectedImage] = useState(data[0]?.serviceImages[index]);
-
-    const openImageLibrary = () => {
-      const options = {
-        mediaType: 'photo',
-        quality: 1,
-      };
-
-      launchImageLibrary(options, (response) => {
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.errorCode) {
-          console.log('ImagePicker Error: ', response.errorMessage);
-        } else {
-          const uri = response.assets[0]?.uri;
-          setSelectedImage(uri);
-          // You can add the logic to upload the image or save it as needed.
-        }
-      });
-    };
+    const data = filterService()
+    // const serviceLogo = data?.map(item => {
+    const index = data[0].logoArray?.findIndex((val) => val === true)
+    const image = data[0]?.serviceImages[index]
 
     return (
       <View>
         <BackgroundImage
           style={styles.logoview}
           source={require('../../assets/photos/backgroundPart.png')}>
-          <Image style={styles.logoImg} source={{ uri: selectedImage }} />
-          <Pressable style={styles.editImg} onPress={openImageLibrary}>
+          <Image style={styles.logoImg} source={{ uri: image }} />
+          <Pressable style={styles.editImg}>
             <Entypo name={'camera'} color={colors.puprble} size={25} />
           </Pressable>
         </BackgroundImage>
       </View>
     );
+    // })
+    // return serviceLogo
   };
   const renderServiceType = () => {
     const data = filterService();
