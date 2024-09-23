@@ -916,32 +916,41 @@ const ProviderHome = props => {
   }
 
   //Social Media
-  const deleteSocialMediaItem = (Socialitem, setShowModal, index) => {
-    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst);
-    const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem);
-    setServiceSocialMedia(lastUpdate);
+  const deleteSocialMediaItem = (Socialitem, setShowModal) => {
+
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
+    const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem)
+
+    //console.log("lastUpdate", lastUpdate);
+
+    setServiceSocialMedia(lastUpdate)
 
     const newData = {
       service_id: isFirst,
-      socialMedia: lastUpdate,
-    };
+      socialMedia: [...lastUpdate]
+    }
+
+    //console.log("newData", newData);
+    const data = serviceInfoAccorUser || [];
+    if (selectedServiceIndex > -1) {
+      data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+    }
 
     updateService(newData).then(res => {
-      const data = serviceInfoAccorUser || [];
-      if (selectedServiceIndex > -1) {
-        data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-      }
+
       if (res.message === 'Updated Sucessfuly') {
-        setServiceInfoAccorUser([...data]);
-        setShowModal(index, false);
+        //console.log("OK");
+        setServiceInfoAccorUser([...data])
+        setShowModal(false)
         ToastAndroid.showWithGravity(
           'تم الحذف بنجاح',
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM,
         );
       }
-    });
-  };
+    })
+
+  }
   const renderSoialMedia = () => {
     return (
       <View>
@@ -973,7 +982,7 @@ const ProviderHome = props => {
         setEditSocialMediaArray(initialEditArray);
         setShowModalArray(initialModalArray);
       }
-    }, [data]);
+    }, [data, editSocialMediaArray.length, showModalArray.length]);
 
     const setEditSocialMedia = (index, value) => {
       setEditSocialMediaArray(prevState =>
@@ -1032,21 +1041,19 @@ const ProviderHome = props => {
             editSocialMedia,
             () => setEditSocialMedia(index, true),
             showModal,
-            () => setShowModal(index, false),
-            index // Added index here for proper modal handling
+            () => setShowModal(index, false)
           )}
         </View>
       );
     });
   };
-
-  const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia, showModal, setShowModal, index) => {
+  const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia, showModal, setShowModal) => {
     return (
       <Modal
         transparent
         visible={showModal}
         animationType="slide"
-        onRequestClose={() => setShowModal(index, false)}>
+        onRequestClose={() => setShowModal(false)}>
         <View style={styles.centeredView}>
           <View style={styles.detailModal}>
             <View>
@@ -1055,24 +1062,24 @@ const ProviderHome = props => {
                   style={styles.menuIcon}
                   name={'more-horizontal'}
                   color={colors.puprble}
-                  size={25}
-                />
+                  size={25} />
               </Pressable>
             </View>
             <View style={{ justifyContent: 'flex-end', height: '100%' }}>
               <View style={styles.modalMenu}>
-                <Pressable
-                  style={styles.modalItem}
-                  onPress={() =>
-                    socialMediaitemEditPress(item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal)
-                  }>
-                  <Feather name={'edit'} color={colors.gray} size={25} />
+                <Pressable style={styles.modalItem}
+                  onPress={() => socialMediaitemEditPress(item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal)}>
+                  <Feather
+                    name={'edit'}
+                    color={colors.gray}
+                    size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
                 </Pressable>
-                <Pressable
-                  style={styles.modalItem}
-                  onPress={() => deleteSocialMediaItem(item, setShowModal, index)}>
-                  <AntDesign name={'delete'} color={colors.gray} size={25} />
+                <Pressable style={styles.modalItem} onPress={() => deleteSocialMediaItem(item, setShowModal)}>
+                  <AntDesign
+                    name={'delete'}
+                    color={colors.gray}
+                    size={25} />
                   <Text style={styles.modalHeaderTxt}>حذف</Text>
                 </Pressable>
               </View>
@@ -1080,8 +1087,8 @@ const ProviderHome = props => {
           </View>
         </View>
       </Modal>
-    );
-  };
+    )
+  }
 
   return (
     <View style={styles.container}>
