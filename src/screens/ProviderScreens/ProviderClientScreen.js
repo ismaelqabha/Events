@@ -75,35 +75,6 @@ const ProviderClientScreen = (props) => {
             </View>
         )
     }
-    const renderClients = () => {
-        return (
-            <View style={styles.clientView}>
-                <View style={styles.client}>
-                    <Pressable>
-                        <Text style={styles.menuTxt}>...</Text>
-                    </Pressable>
-                    <Pressable style={styles.client}>
-                        <Text style={styles.clientName}>أحمد كبها</Text>
-                        <View style={styles.ImgView}>
-                            <Image style={styles.clientImg} source={require('../../assets/photos/user.png')} />
-                        </View>
-                    </Pressable>
-
-                </View>
-                <View style={styles.client}>
-                    <Pressable>
-                        <Text style={styles.menuTxt}>...</Text>
-                    </Pressable>
-                    <Pressable style={styles.client}>
-                        <Text style={styles.clientName}>خالد احمد</Text>
-                        <View style={styles.ImgView}>
-                            <Image style={styles.clientImg} source={require('../../assets/photos/user.png')} />
-                        </View>
-                    </Pressable>
-                </View>
-            </View>
-        )
-    }
     const renderSearch = () => {
         return (
             <View style={styles.search}>
