@@ -1,5 +1,5 @@
-// const baseUrl = 'https://ev-server.onrender.com/';
-const baseUrl = "http://localhost:7000/"
+const baseUrl = 'https://ev-server.onrender.com/';
+// const baseUrl = "http://localhost:7000/"
 
 
 // Users
@@ -323,7 +323,7 @@ export const addServiceImages = async (imagesArray, serviceID) => {
     imagesArray?.forEach((data, index) => {
       formData.append(`images`, {
         uri: data.uri,
-        type: 'image/jpeg',
+        type: data.type || 'image/jpeg',
         name: `image${index}.jpg`,
       });
 
