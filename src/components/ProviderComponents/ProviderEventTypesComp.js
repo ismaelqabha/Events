@@ -9,33 +9,41 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext'
 
 const ProviderEventTypesComp = (props) => {
 
-    const { eventsTypeWorking, setEventsTypeWorking } = useContext(ServiceProviderContext);
+    const { eventsTypeWorking, setEventsTypeWorking, serviceInfoAccorUser } = useContext(ServiceProviderContext);
+    const { isFirst } = useContext(SearchContext);
     const [selectEvent, setSelectEvent] = useState(false)
 
     useEffect(() => {
         checkPressed()
-      }, [])
-    
-      const checkPressed = () => {
-        eventsTypeWorking.includes(props.Id) ? setSelectEvent(true) : null
-      }
+    }, [])
 
-      const checkExists = () => {
-        eventsTypeWorking.includes(props.Id) ? removeFromList(): addToSelected();
-      }
-    
-      const addToSelected = () => {
+    const getEventWorkingWith = () => {
+        return serviceInfoAccorUser.filter(item => {
+            return item.service_id === isFirst
+        })
+    }
+    const checkPressed = () => {
+        const selectedEvents = getEventWorkingWith()
+        const data = selectedEvents[0].eventWorkWith
+        data.includes(props.Id) ? setSelectEvent(true) : null
+    }
+
+    const checkExists = () => {
+        eventsTypeWorking.includes(props.Id) ? removeFromList() : addToSelected();
+    }
+
+    const addToSelected = () => {
         var list = eventsTypeWorking;
         list.push(props.Id);
         setSelectEvent(true)
         setEventsTypeWorking(list);
-      };
-    
-      const removeFromList = () => {
+    };
+
+    const removeFromList = () => {
         const newList = eventsTypeWorking.filter((area) => area !== props.Id)
         setSelectEvent(false)
         setEventsTypeWorking(newList)
-      }
+    }
 
     const onCardPress = () => {
         setSelectEvent(!selectEvent);

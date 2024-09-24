@@ -303,8 +303,8 @@ const CreateInvetation = (props) => {
                 showMessage('No invitation data found.');
                 return;
             }
-            console.log("invitationData", invitationData.invitees);
-            console.log("inviteesList", inviteesList);
+            // console.log("invitationData", invitationData.invitees);
+            // console.log("inviteesList", inviteesList);
 
             const alreadyInvited = invitationData.invitees.map(invitee => invitee.user.USER_ID);
 

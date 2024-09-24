@@ -128,6 +128,11 @@ export const getServiceLocationById = async body => {
   return await AppFetch(url, 'POST', body);
 };
 
+export const findRequestsByUserId = async body => {
+  const url = 'servicesData/getClientsReqPayAccId'
+  return await AppFetch(url , 'POST', body)
+}
+
 /// Payment
 export const createNewPayment = async body => {
   const url = 'Payments/makePayment';

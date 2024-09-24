@@ -22,7 +22,7 @@ const ProviderSetEventType = (props) => {
         updateService(newData).then(res => {
             const data = serviceInfoAccorUser || [];
             if (selectedServiceIndex > -1) {
-                data[selectedServiceIndex] = newData;
+                data[selectedServiceIndex] = {...data[selectedServiceIndex], ...newData};
             }
             if (res.message === 'Updated Sucessfuly') {
                 setServiceInfoAccorUser([...data])

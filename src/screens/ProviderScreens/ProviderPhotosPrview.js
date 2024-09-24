@@ -17,6 +17,8 @@ const ProviderPhotosPrview = (props) => {
     const [allImages, setAllImages] = useState(filteredImages || []);
     const [showImagModal, setShowImagModal] = useState(false);
     const [modalImageIndex, setModalImageIndex] = useState(0)
+
+
     const onPressHandler = () => {
         props.navigation.goBack();
     };
@@ -102,7 +104,6 @@ const ProviderPhotosPrview = (props) => {
 
     const renderImages = () => {
         return allImages.map((image, index) => {
-            console.log("allImages ", allImages);
 
             return (
                 <Pressable key={index} style={styles.imgItem} onPress={() => whenImagePress(index)}>

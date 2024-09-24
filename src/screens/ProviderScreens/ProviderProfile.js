@@ -3,9 +3,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { colors } from '../../assets/AppColors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+// import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import strings from '../../assets/res/strings';
 import { ScreenNames } from '../../../route/ScreenNames';
@@ -32,7 +31,9 @@ const ProviderProfile = props => {
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
+
     const cardsArray = data?.map((card, index) => {
+
       if (index == 0 && !isFirst) {
         setIsfirst(card.service_id);
         setserviceTitle(card.title);
@@ -56,7 +57,7 @@ const ProviderProfile = props => {
       } else {
         setBookingDates(res);
       }
-     
+
     })
   }
 
@@ -117,10 +118,47 @@ const ProviderProfile = props => {
             props.navigation.navigate(ScreenNames.ProviderClientScreen)
           }>
           <View>
-            <Text style={styles.basicInfo}>الزبائن (10)</Text>
+            <Text style={styles.basicInfo}>الزبائن</Text>
           </View>
           <View style={styles.IconView}>
             <FontAwesome5 name={'users'} color={colors.puprble} size={25} />
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
+  const renderSales = () => {
+    return (
+      <View>
+        <Pressable
+          style={styles.item}
+          // onPress={() =>
+          //   props.navigation.navigate(ScreenNames.ProviderClientScreen)
+          // }
+          >
+          <View>
+            <Text style={styles.basicInfo}>المبيعات</Text>
+          </View>
+          <View style={styles.IconView}>
+            <FontAwesome5 name={'coins'} color={colors.puprble} size={25} />
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
+  const renderViewsClicks = () => {
+    return (
+      <View>
+        <Pressable
+          style={styles.item}
+          onPress={() =>
+            props.navigation.navigate(ScreenNames.ProviderUsersView)}
+        >
+          <View>
+            <Text style={styles.basicInfo}>المشاهدات والزيارات</Text>
+          </View>
+          <View style={styles.IconView}>
+            <FontAwesome5 name={'eye'} color={colors.puprble} size={25} />
           </View>
         </Pressable>
       </View>
@@ -277,7 +315,7 @@ const ProviderProfile = props => {
         </Pressable>
 
       </View>
-      
+
       <ScrollView>
         <View style={styles.headView}>
           <Text style={styles.headtext}>
@@ -291,6 +329,8 @@ const ProviderProfile = props => {
         {seprator()}
         <View style={styles.viewSet}>
           {/* {renderPayments()} */}
+          {renderSales()}
+          {renderViewsClicks()}
           {renderDueRequestPayment()}
           {renderClients()}
           {renderFeedBack()}
@@ -318,7 +358,7 @@ export default ProviderProfile;
 const styles = StyleSheet.create({
   container: {
     marginBottom: 70,
-    paddingHorizontal:10
+    paddingHorizontal: 10
   },
   headView: {
     margin: 20,
@@ -338,7 +378,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 10,
     padding: 10,
-    
+
   },
   txt: {
     fontSize: 20,
@@ -374,7 +414,7 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     marginVertical: 20,
-    
+
   },
   header: {
     alignItems: 'center',

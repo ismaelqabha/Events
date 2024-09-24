@@ -152,6 +152,35 @@ export const invetationBackground = [
     { key: '5', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg5.png" },
 ]
 
+export const Views = [
+    {
+        serviceID :'',
+        accessPoint : [
+            {
+                fieldType : 'view',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'view',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'call',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'faceBook',
+                user : '',
+                visitDate: ''
+            },
+
+        ]
+
+    }
+]
 
 export const invitation = [
     {
