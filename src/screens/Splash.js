@@ -116,6 +116,7 @@ export default function Splash(props) {
     const getDataFromApi = () => {
         getHomePageData({ servType: servType }).then(res => {
             setServiceDataInfo(res)
+            console.log(res);
             LoginUser()
         })
     }

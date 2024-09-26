@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal, Linking } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal, Linking,ToastAndroid } from 'react-native';
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
 import moment from 'moment';
@@ -16,15 +16,18 @@ import { ScreenNames } from '../../../route/ScreenNames';
 import CampaignCard from '../../components/CampaignCard';
 import ClientCalender from '../../components/ClientCalender';
 import { showMessage } from '../../resources/Functions';
-import { getProviderRequests } from '../../resources/API';
+import { addNewVisit, getProviderRequests } from '../../resources/API';
+import { forRevealFromBottomAndroid } from '@react-navigation/stack/lib/typescript/src/TransitionConfigs/CardStyleInterpolators';
+import UsersContext from '../../../store/UsersContext';
 
 
 const ServiceDescr = (props) => {
     const { data, isFromClientRequest, isFromCampaign } = props?.route.params
     const servicePhone = props.route.params?.data?.servicePhone;
-    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender } = useContext(SearchContext);
+    const { requestedDate, setrequestedDate, setResDetail, dateFromCalender, ServiceDataInfo, setServiceDataInfo } = useContext(SearchContext);
+    const { userId } = useContext(UsersContext);
 
-    
+
     const [showModal, setShowModal] = useState(false);
     const [changeDateshowModal, setChangeDateshowModal] = useState(false);
     const [changeDateIsLocal, setchangeDateIsLocal] = useState(false);
@@ -40,14 +43,59 @@ const ServiceDescr = (props) => {
 
     const [ProviderRequests, setProviderRequests] = useState(data.serviceRequests);
 
+    const [currentDate , setCurrentDate] = useState(new Date())
+    const [serviseVisit , setServiceVisit] = useState(data.visits[0].accessPoint)
+
+    //  console.log(">>", ServiceDataInfo[0].serviceData.service_id);
+    //  console.log("data.service_id",data.service_id);
 
 
     useEffect(() => {
+        addVisit('view')
         // Cleanup function to reset resDetail when component unmounts or re-renders
         return () => {
             resetResDetail();
         };
     }, []);
+
+    /// Screen Visit Section
+
+    const addVisit = (type) => {
+        var currentTypes = serviseVisit || []
+        const newVisitType = {
+            fieldType: type,
+            user : userId,
+            visitDate: currentDate
+        }
+        currentTypes.push(newVisitType)
+        setServiceVisit(currentTypes)
+         updateAllServiceData()
+    }
+
+
+    const updateAllServiceData = () => {
+        const accessPointIndex = ServiceDataInfo?.findIndex(item => item.serviceData.service_id === data.service_id)
+        const newRecord = ServiceDataInfo || [];
+
+        const newData = {
+            serviceID: data.service_id,
+            accessPoint: serviseVisit
+        }
+
+        addNewVisit(newData).then(res => {
+            if (accessPointIndex > -1) {
+                newRecord[accessPointIndex].serviceVisits = { ...newRecord[accessPointIndex].serviceVisits, ...newData };
+            }
+            if (res.message === 'Updated Sucessfuly') {
+                setServiceDataInfo([...newRecord])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
+    }
 
     const resetResDetail = () => {
         setResDetail([]);
@@ -98,7 +146,7 @@ const ServiceDescr = (props) => {
             );
 
         } else {
-            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data }, isfromClientShowRequest:false })
+            props.navigation.navigate(ScreenNames.ClientRequest, { data: { ...data }, isfromClientShowRequest: false })
 
         }
 
@@ -669,12 +717,13 @@ const ServiceDescr = (props) => {
         //console.log("campArray", campArray);
         return campArray;
     }
-    const openSocialMedia = (url) => {
+    const openSocialMedia = (url,social) => {
         if (url) {
-            Linking.openURL(url).catch(err => {
-                console.error('An error occurred', err)
-                showMessage('An error occurred')
-            });
+            // Linking.openURL(url).catch(err => {
+            //     console.error('An error occurred', err)
+            //     showMessage('An error occurred')
+            // });
+            addVisit(social)
         } else {
             showMessage("url is wrong")
         }
@@ -686,11 +735,11 @@ const ServiceDescr = (props) => {
             if (social === "facebook") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url)}>
+                        <Pressable onPress={() => openSocialMedia(url, social)}>
                             <Entypo
                                 name={"facebook"}
-                                color={'blue'}
-                                size={35} />
+                                color={colors.puprble}
+                                size={30} />
                         </Pressable>
                     </View>
                 )
@@ -698,11 +747,11 @@ const ServiceDescr = (props) => {
             if (social === "instagram") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url)}>
+                        <Pressable onPress={() => openSocialMedia(url,social)}>
                             <Entypo
                                 name={"instagram"}
-                                color={'black'}
-                                size={35} />
+                                color={colors.puprble}
+                                size={30} />
                         </Pressable>
                     </View>
                 )
@@ -710,11 +759,11 @@ const ServiceDescr = (props) => {
             if (social === "tiktok") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url)}>
+                        <Pressable onPress={() => openSocialMedia(url,social)}>
                             <FontAwesome5Brands
                                 name={"tiktok"}
-                                color={'black'}
-                                size={35} />
+                                color={colors.puprble}
+                                size={30} />
                         </Pressable>
                     </View>
                 )
@@ -722,11 +771,11 @@ const ServiceDescr = (props) => {
             if (social === "youtube") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url)}>
+                        <Pressable onPress={() => openSocialMedia(url,social)}>
                             <Entypo
                                 name={"youtube"}
-                                color={'red'}
-                                size={35} />
+                                color={colors.puprble}
+                                size={30} />
                         </Pressable>
                     </View>
                 )
@@ -734,7 +783,7 @@ const ServiceDescr = (props) => {
             if (social === "X") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url)}>
+                        <Pressable onPress={() => openSocialMedia(url,social)}>
                             <Text>{social}</Text>
                             <Image style={styles.Xstyle} source={require('../../assets/photos/X-Logo.png')} />
                         </Pressable>
@@ -780,7 +829,7 @@ const ServiceDescr = (props) => {
                 <FontAwesome
                     name={"phone-square"}
                     color={colors.puprble}
-                    size={35}
+                    size={30}
                 />
             </Pressable>
         );

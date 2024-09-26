@@ -387,6 +387,18 @@ export const RemoveFavorite = async body => {
   return await AppFetch(url, 'DELETE', body);
 };
 
+// Screen Visits
+
+export const getScreenVisits = async body => {
+  const url = 'visits/getvisits';
+  return await AppFetch(url, 'POST', body);
+};
+export const addNewVisit = async body => {
+  const url = 'visits/updateVisit';
+  return await AppFetch(url, 'PATCH', body);
+};
+
+
 const AppFetch = async (url, method, body, headers) => {
   const fullUrl = baseUrl + url;
   const bodyStr = JSON.stringify(body) || '';

@@ -1,13 +1,21 @@
 import { StyleSheet, Text, View, Pressable } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign"
 import { colors } from '../../assets/AppColors'
 import SearchContext from '../../../store/SearchContext'
 import { Views } from '../../resources/data'
+import ServiceProviderContext from '../../../store/ServiceProviderContext'
 
 const ProviderUsersView = (props) => {
 
     const { isFirst } = useContext(SearchContext);
+    const { visits, setVisits } = useContext(ServiceProviderContext);
+
+    // console.log(">><><>",visits[0].accessPoint);
+    const visitTypes = visits[0].accessPoint
+
+
+    
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -29,65 +37,141 @@ const ProviderUsersView = (props) => {
         )
     }
 
+    useEffect(() => {
+        
+    }, [])
+
     const filterViews = () => {
-       return Views[0].accessPoint.filter(item => {
-        return item.fieldType === 'view'
-       })
+        return visitTypes.filter(item => {
+            return item.fieldType === 'view'
+        })
     }
 
     const filterCall = () => {
-        return Views[0].accessPoint.filter(item => {
-         return item.fieldType === 'call'
+        return visitTypes.filter(item => {
+            return item.fieldType === 'call'
         })
-     }
+    }
 
-     const filterFacebook = () => {
-        return Views[0].accessPoint.filter(item => {
-         return item.fieldType === 'faceBook'
+    const filterFacebook = () => {
+        return visitTypes.filter(item => {
+            return item.fieldType === 'facebook'
         })
-     }
+    }
+    const filterInstegram = () => {
+        return visitTypes.filter(item => {
+            return item.fieldType === 'instegram'
+        })
+    }
+    const filterYoutube = () => {
+        return visitTypes.filter(item => {
+            return item.fieldType === 'youtube'
+        })
+    }
+    const filterX = () => {
+        return visitTypes.filter(item => {
+            return item.fieldType === 'X'
+        })
+    }
+    const filterTiktok = () => {
+        return visitTypes.filter(item => {
+            return item.fieldType === 'tiktok'
+        })
+    }
 
-   
 
-    const renderDataCard = () => {
-        const data = filterViews()
-            return (
-                <View style={styles.card}>
-                    <View style={styles.info}>
+    const renderDataCard = (data) => {
+        var label = ''
+        if (data[0].fieldType === 'view'){
+            label = 'زيارات البروفايل'
+        }
+        if (data[0].fieldType === 'facebook'){
+            label = 'زيارات facebook'
+        }
+        if (data[0].fieldType === 'call'){
+            label = 'الاتصال بالهاتف'
+        }
+        if (data[0].fieldType === 'instegram'){
+            label = 'زيارات Instegram'
+        }
+        if (data[0].fieldType === 'youtube'){
+            label = 'زيارات Youtube'
+        }
+        if (data[0].fieldType === 'tiktok'){
+            label = 'زيارات TikTok'
+        }
+        if (data[0].fieldType === 'X'){
+            label = 'زيارات X'
+        }
+        return (
+            <View style={styles.card}>
+                <View style={styles.info}>
+                    <View style={styles.viewsNumber}>
                         <Text style={styles.txt}>{data.length}</Text>
-                        <Text style={styles.txt}>{data[0].fieldType}</Text>
+                    </View>
+                    <View style={styles.viewsType}>
+                        <Text style={styles.txt}>{label}</Text>
                     </View>
                 </View>
-            )
+            </View>
+        )
     }
+
+    const renderVisits = () => {
+        const data = filterViews()
+        if (data.length > 0) {
+            return <View>{renderDataCard(data)}</View>
+        }
+    }
+
     const renderDataCall = () => {
         const data = filterCall()
-            return (
-                <View style={styles.card}>
-                    <View style={styles.info}>
-                        <Text style={styles.txt}>{data.length}</Text>
-                        <Text style={styles.txt}>{data[0].fieldType}</Text>
-                    </View>
-                </View>
-            )
+        if (data.length > 0) {
+            return <View>{renderDataCard(data)}</View>
+        }
     }
     const renderDataFacebook = () => {
         const data = filterFacebook()
-            return (
-                <View style={styles.card}>
-                    <View style={styles.info}>
-                        <Text style={styles.txt}>{data.length}</Text>
-                        <Text style={styles.txt}>{data[0].fieldType}</Text>
-                    </View>
-                </View>
-            )
+        if (data.length > 0) {
+            return <View>{renderDataCard(data)}</View>
+        }
+
+    }
+
+    const renderDataInstegram = () => {
+        const data = filterInstegram()
+        if (data.length > 0) {
+            return <View>{renderDataCard(data)}</View>
+        }
+    }
+    const renderDataYoutube = () => {
+        const data = filterYoutube()
+        if (data.length > 0) {
+            return <View>{renderDataCard(data)}</View>
+        }
+    }
+    const renderDataX = () => {
+        const data = filterX()
+        if (data.length > 0) {
+            return <View>{renderDataCard(data)}</View>
+        }
+    }
+    const renderDataTiktok = () => {
+        const data = filterTiktok()
+        if (data.length > 0) {
+            return <View>{renderDataCard(data)}</View>
+        }
     }
     return (
         <View style={styles.container}>
             {header()}
-            {renderDataCard()}
+            {renderVisits()}
             {renderDataCall()}
             {renderDataFacebook()}
+            {renderDataInstegram()}
+            {renderDataYoutube()}
+            {renderDataX()}
+            {renderDataTiktok()}
         </View>
     )
 }
@@ -121,11 +205,24 @@ const styles = StyleSheet.create({
     },
     info: {
         flexDirection: 'row',
-        alignItem: 'center',
-        justifyContent: 'space-around'
+        height: '100%'
     },
     txt: {
         fontSize: 20,
         color: colors.puprble,
+    },
+    viewsNumber: {
+        width: '50%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    viewsType: {
+        width: '50%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+
     }
 })

@@ -12,7 +12,7 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
-import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId, getbookingDates } from '../../resources/API';
+import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId, getScreenVisits, getbookingDates } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
@@ -22,12 +22,13 @@ const ProviderProfile = props => {
     serviceCat, setServiceCat, campInfo, setCampInfo,
     setRequestInfoByService, setBookingDates } = useContext(SearchContext);
 
-  const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
+  const { serviceInfoAccorUser, Region, SetRegion, visits, setVisits } = useContext(ServiceProviderContext);
   const { userName } = useContext(UsersContext);
 
   const navigation = useNavigation();
   const providerReview = true
 
+  //console.log("serviceInfoAccorUser", serviceInfoAccorUser);
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
@@ -79,11 +80,18 @@ const ProviderProfile = props => {
     })
   }
 
+  const getServiceVisits = () => {
+    getScreenVisits({ serviceID: isFirst }).then(res => {
+      setVisits(res)
+    })
+  }
+
   useEffect(() => {
     getRegionsfromApi()
     getCampignsfromApi()
     getRequestInfo()
     getBookingfromApi()
+    getServiceVisits()
   }, [isFirst])
 
 

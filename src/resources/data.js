@@ -176,6 +176,16 @@ export const Views = [
                 user : '',
                 visitDate: ''
             },
+            {
+                fieldType : 'faceBook',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'instegram',
+                user : '',
+                visitDate: ''
+            },
 
         ]
 

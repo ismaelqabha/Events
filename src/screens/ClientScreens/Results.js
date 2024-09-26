@@ -340,7 +340,8 @@ const Results = (props) => {
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
                 relatedCamp={card?.serviceCamp}
-                serviceRequests={card?.SerReq}
+                // serviceRequests={card?.SerReq}
+                 visits = {card?.serviceVisits}
                 availableDates={card?.readyDates}
             />;
         });
@@ -375,6 +376,7 @@ const Results = (props) => {
                 images={card?.serviceImages}
                 dates={card?.serviceDates}
                 relatedCamp={card?.serviceCamp}
+                visits = {card?.serviceVisits}
                 availableDates={card?.readyDates}
             />;
         });
