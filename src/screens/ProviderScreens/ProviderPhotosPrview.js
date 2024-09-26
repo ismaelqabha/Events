@@ -93,7 +93,7 @@ const ProviderPhotosPrview = (props) => {
                                 style={styles.detailModal}
                                 onPress={() => setShowImagModal(false)}
                             >
-                                <Image style={styles.imge} source={{ uri: item.uri || item || 'https://via.placeholder.com/150' }} />
+                                <Image resizeMode='contain' style={styles.imge} source={{ uri: item.uri || item || 'https://via.placeholder.com/150' }} />
                             </Pressable>
                         )}
                     />
@@ -104,7 +104,6 @@ const ProviderPhotosPrview = (props) => {
 
     const renderImages = () => {
         return allImages.map((image, index) => {
-
             return (
                 <Pressable key={index} style={styles.imgItem} onPress={() => whenImagePress(index)}>
                     <Image style={styles.img} source={{ uri: image.uri || image }} />
@@ -170,7 +169,15 @@ const styles = StyleSheet.create({
         margin: 5,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 1
+        // borderWidth: 1
+        shadowOffset: {
+            width: 0,
+            height: 0,
+        },
+        shadowOpacity: 0,
+        shadowRadius: 0.1,
+        shadowColor: "black",
+        elevation: 1
     },
     detailModal: {
         width: screenWidth * 0.95,
@@ -187,10 +194,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#00000099',
     },
     imge: {
-        width: "100%",
-        height: "100%",
+        flex: 1,
         borderRadius: 20,
-        resizeMode: 'stretch'
     },
 
 });
