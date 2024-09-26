@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal, Linking,ToastAndroid } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Image, Alert, ScrollView, Modal, Linking, ToastAndroid } from 'react-native';
 import 'react-native-get-random-values'
 import { SliderBox } from 'react-native-image-slider-box';
 import moment from 'moment';
@@ -43,15 +43,12 @@ const ServiceDescr = (props) => {
 
     const [ProviderRequests, setProviderRequests] = useState(data.serviceRequests);
 
-    const [currentDate , setCurrentDate] = useState(new Date())
-    const [serviseVisit , setServiceVisit] = useState(data.visits[0].accessPoint)
-
-    //  console.log(">>", ServiceDataInfo[0].serviceData.service_id);
-    //  console.log("data.service_id",data.service_id);
+    const [currentDate, setCurrentDate] = useState(new Date())
+    const [serviseVisit, setServiceVisit] = useState(data.visits[0].accessPoint)
 
 
     useEffect(() => {
-        addVisit('view')
+        checkVisit('view')
         // Cleanup function to reset resDetail when component unmounts or re-renders
         return () => {
             resetResDetail();
@@ -59,20 +56,41 @@ const ServiceDescr = (props) => {
     }, []);
 
     /// Screen Visit Section
+    const checkVisit = (type) => {
+        var lastVisit
+        var todayDate = new Date();
+        todayDate.setHours(0);
+        todayDate.setMinutes(0);
+        todayDate.setSeconds(0);
+        todayDate.setMilliseconds(0);
 
+        const result = serviseVisit.find(item => {
+            lastVisit = new Date(item.visitDate)
+            lastVisit.setHours(0);
+            lastVisit.setMinutes(0);
+            lastVisit.setSeconds(0);
+            lastVisit.setMilliseconds(0);
+
+            return lastVisit <= todayDate && item.fieldType === type
+        })
+        
+        const res = !!result
+        if (!res) {
+            console.log("in");
+            addVisit(type)
+        }
+    }
     const addVisit = (type) => {
         var currentTypes = serviseVisit || []
         const newVisitType = {
             fieldType: type,
-            user : userId,
+            user: userId,
             visitDate: currentDate
         }
         currentTypes.push(newVisitType)
         setServiceVisit(currentTypes)
-         updateAllServiceData()
+        updateAllServiceData()
     }
-
-
     const updateAllServiceData = () => {
         const accessPointIndex = ServiceDataInfo?.findIndex(item => item.serviceData.service_id === data.service_id)
         const newRecord = ServiceDataInfo || [];
@@ -717,13 +735,13 @@ const ServiceDescr = (props) => {
         //console.log("campArray", campArray);
         return campArray;
     }
-    const openSocialMedia = (url,social) => {
+    const openSocialMedia = (url, social) => {
         if (url) {
             // Linking.openURL(url).catch(err => {
             //     console.error('An error occurred', err)
             //     showMessage('An error occurred')
             // });
-            addVisit(social)
+            checkVisit(social)
         } else {
             showMessage("url is wrong")
         }
@@ -747,7 +765,7 @@ const ServiceDescr = (props) => {
             if (social === "instagram") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url,social)}>
+                        <Pressable onPress={() => openSocialMedia(url, social)}>
                             <Entypo
                                 name={"instagram"}
                                 color={colors.puprble}
@@ -759,7 +777,7 @@ const ServiceDescr = (props) => {
             if (social === "tiktok") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url,social)}>
+                        <Pressable onPress={() => openSocialMedia(url, social)}>
                             <FontAwesome5Brands
                                 name={"tiktok"}
                                 color={colors.puprble}
@@ -771,7 +789,7 @@ const ServiceDescr = (props) => {
             if (social === "youtube") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url,social)}>
+                        <Pressable onPress={() => openSocialMedia(url, social)}>
                             <Entypo
                                 name={"youtube"}
                                 color={colors.puprble}
@@ -783,7 +801,7 @@ const ServiceDescr = (props) => {
             if (social === "X") {
                 return (
                     <View key={social}>
-                        <Pressable onPress={() => openSocialMedia(url,social)}>
+                        <Pressable onPress={() => openSocialMedia(url, social)}>
                             <Text>{social}</Text>
                             <Image style={styles.Xstyle} source={require('../../assets/photos/X-Logo.png')} />
                         </Pressable>
@@ -834,15 +852,14 @@ const ServiceDescr = (props) => {
             </Pressable>
         );
     };
-
     const openPhoneApp = () => {
         if (servicePhone) {
             const phoneNumber = `tel:${servicePhone}`;
             Linking.openURL(phoneNumber).catch(err => {
                 console.error('Error opening phone app', err)
                 showMessage("Error opening phone app")
-            }
-            );
+            });
+            checkVisit("call")
         } else {
             // console.log("Service phone number is not available");
             showMessage("Service phone number is not available")
