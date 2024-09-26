@@ -106,7 +106,7 @@ const ProviderPhotosPrview = (props) => {
         return allImages.map((image, index) => {
             return (
                 <Pressable key={index} style={styles.imgItem} onPress={() => whenImagePress(index)}>
-                    <Image style={styles.img} source={{ uri: image.uri || image }} />
+                    <Image resizeMode='contain' style={styles.img} source={{ uri: image.uri || image }} />
                 </Pressable>
             );
         });
