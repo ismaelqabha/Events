@@ -1,13 +1,13 @@
-import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput } from 'react-native'
-import React, { useContext, useState, useEffect } from 'react'
+import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput, Animated } from 'react-native'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import { colors } from '../../assets/AppColors'
-import Fontisto from "react-native-vector-icons/Fontisto"
 import Entypo from "react-native-vector-icons/Entypo"
 import SearchContext from '../../../store/SearchContext'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
 import { showMessage } from '../../resources/Functions'
+import { ActivityIndicator } from 'react-native-paper'
 
 
 const ProviderWaitingReply = () => {
@@ -31,6 +31,9 @@ const ProviderWaitingReply = () => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
+
+  const slideInAnimation = useRef(new Animated.Value(0)).current;
+  const [loading, setLoading] = useState(true)
 
   const allRequestingDates = []
   const manageArrayDates = []
@@ -56,6 +59,7 @@ const ProviderWaitingReply = () => {
     setspacificDate(true)
     setClientName(false)
     setAllRequests(false)
+    setSelectedSpacificDate("YYYY/MM/DD")
   }
   const clientNamePress = () => {
     setspacificDate(false)
@@ -69,6 +73,8 @@ const ProviderWaitingReply = () => {
     setUseDefultSearch(true)
     setUseClientToSearch(false)
     setUseSpacificDateToSearch(false)
+
+
   }
   const renderFilter = () => {
     if (requestInfoByService.message !== "no Request") {
@@ -95,6 +101,11 @@ const ProviderWaitingReply = () => {
     setUseDefultSearch(true)
     setUseClientToSearch(false)
     setUseSpacificDateToSearch(false)
+
+    const data = getBookingInfo()
+    if (data.length > 0) {
+      setLoading(false)
+    }
   }, [])
 
   var BookDate
@@ -106,33 +117,29 @@ const ProviderWaitingReply = () => {
   todayDate.setMilliseconds(0);
 
   const getBookingInfo = () => {
+    var resDate
     if (requestInfoByService.message !== "no Request") {
       const reqInfo = requestInfoByService.filter(item => {
-        return item.requestInfo.ReqStatus === 'waiting reply'
+        return item.requestInfo.reservationDetail.find(dat => {
+          resDate = new Date(dat.reservationDate)
+          return item.requestInfo.ReqStatus === 'waiting reply' && resDate > todayDate
+        })
       })
       return reqInfo
     } else {
       return []
     }
+
   }
 
   const getRequestsAccDates = () => {
     const data = getBookingInfo()
     const reqInfo = data.filter(item => {
-      if (item.requestInfo.reservationDetail.length > 1) {
-        //if reservation detail has more than one date
-        let result = item.requestInfo.reservationDetail.find(multiItem => {
-          BookDate = new Date(multiItem.reservationDate)
-          return BookDate > todayDate
-        })
-        return result
-
-      } else {
-
-        //if reservation detail has one date
-        BookDate = new Date(item.requestInfo.reservationDetail[0].reservationDate)
+      let result = item.requestInfo.reservationDetail.find(multiItem => {
+        BookDate = new Date(multiItem.reservationDate)
         return BookDate > todayDate
-      }
+      })
+      return result
     })
     return reqInfo
   }
@@ -143,14 +150,10 @@ const ProviderWaitingReply = () => {
     const data = getRequestsAccDates()
 
     const reqInfo = data.filter(req => {
-      if (req.requestInfo.reservationDetail.length > 1) {
-        const multiReqInfo = req.requestInfo.reservationDetail.find(multiItem => {
-          return multiItem.reservationDate.slice(0, 10) == resDate
-        })
-        return multiReqInfo
-      } else {
-        return req.requestInfo.reservationDetail[0].reservationDate.slice(0, 10) == resDate
-      }
+      const multiReqInfo = req.requestInfo.reservationDetail.find(multiItem => {
+        return multiItem.reservationDate.slice(0, 10) == resDate
+      })
+      return multiReqInfo
     })
     return reqInfo
 
@@ -159,48 +162,80 @@ const ProviderWaitingReply = () => {
     const data = getRequestsAccDates()
 
     return data.map(item => {
-      if (item.requestInfo.reservationDetail.length > 1) {
-        //if reservation detail has more than one date
-        return item.requestInfo.reservationDetail.map(multiItem => {
+      const res = item.requestInfo.reservationDetail.map(multiItem => {
 
-          if (!(allRequestingDates.includes(multiItem.reservationDate))) {
-            allRequestingDates.push(multiItem.reservationDate)
-          }
-        })
-      } else {
-        //if reservation detail has one date
-
-        requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
-        if (!(allRequestingDates.includes(requestBookingDate))) {
-          allRequestingDates.push(requestBookingDate)
+        if (!(allRequestingDates.includes(multiItem.reservationDate))) {
+          allRequestingDates.push(multiItem.reservationDate)
         }
-      }
+      })
       allRequestingDates.sort();
+      return res
     })
   }
   const renderBookingCard = (resDate) => {
     const data = getBookingInfoByDate(resDate)
-    //console.log("data", data);
     return data.map(item => {
       return (
         <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} resDate={resDate} />
       )
     })
   }
-  const renderBookingDates = () => {
+  const renderResults = () => {
+    const data = getBookingInfo()
+    return data && data.length > 0 ? renderAllReq(data, false) : noRequest();
+  }
+  const ResultsComp = ({ data, index = 0 }) => {
+    const translateX = slideInAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [100, 0],
+    });
+
+    useEffect(() => {
+      Animated.timing(slideInAnimation, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, []);
+
+    // collectAllRequestDates()
+    //  return data.map(item => {
+
+    return (
+      <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
+        <View style={styles.dateView}>
+          <Text style={styles.dateTxt}>{moment(data).format('dddd')}</Text>
+          <Text style={styles.dateTxt}>{moment(data).format('L')}</Text>
+        </View>
+        {renderBookingCard(data)}
+      </Animated.View >
+    )
+    //  })
+
+  }
+  const noRequest = () => {
+    return (
+      <View style={{ alignSelf: "center" }}>
+        <Text style={styles.relationLabelText}>لا يوجد حجوزات</Text>
+
+      </View>
+    );
+  };
+  const renderAllReq = (isSearch = false) => {
     collectAllRequestDates()
     return allRequestingDates.map(item => {
-      return (
-        <View>
-          <View style={styles.dateView}>
-            <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
-            <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
-          </View>
-          {renderBookingCard(item)}
-        </View>
-      )
+      return <ResultsComp data={item} />;
     })
+  };
+  const getAllRequest = () => {
+    return (
+      <View style={{ width: '100%', alignSelf: 'center' }}>
+        {loading && <ActivityIndicator style={{ alignSelf: 'center', marginTop: '50%' }} size={50} />}
+        {!loading && renderResults()}
+      </View>
+    )
   }
+ 
 
 
 
@@ -219,64 +254,103 @@ const ProviderWaitingReply = () => {
     let requestBookingDate = ''
     const data = filterUsersAccName()
     return data.map(item => {
-
-      if (item.requestInfo.reservationDetail.length > 1) {
-        return item.requestInfo.reservationDetail.map(multiItem => {
-          requestBookingDate = multiItem.reservationDate
-
-          if (!(manageArrayDates.includes(requestBookingDate))) {
-            manageArrayDates.push(requestBookingDate)
-          }
-        })
-      } else {
-        requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
+      const resDetail = item.requestInfo.reservationDetail.map(multiItem => {
+        requestBookingDate = multiItem.reservationDate
 
         if (!(manageArrayDates.includes(requestBookingDate))) {
           manageArrayDates.push(requestBookingDate)
         }
-      }
+      })
       manageArrayDates.sort();
+
+      return resDetail
     })
 
   }
   const filterReqAccUserId = (resDate) => {
     const data = filterUsersAccName()
-
     const reqInfo = data.filter(item => {
-      if (item.requestInfo.reservationDetail.length > 1) {
-        return item.requestInfo.reservationDetail.find(multiItem => {
-          return multiItem.reservationDate === resDate
-        })
-      } else {
-        return item.requestInfo.reservationDetail[0].reservationDate === resDate
-      }
-
+      return item.requestInfo.reservationDetail.find(multiItem => {
+        return multiItem.reservationDate === resDate
+      })
     })
     return reqInfo
   }
   const renderResCard = (resDate) => {
     const data = filterReqAccUserId(resDate)
-
     return data.map(item => {
       return (
         <ProviderReservationCard fromWaitingScreen={fromWaitingScreen}  {...item} resDate={resDate} />
       )
     })
   }
-  const renderRequestAccUserName = () => {
-    manageDatesusingSearchbyName()
-    return manageArrayDates.map(item => {
+  const ResultsUserNameComp = ({ data, index = 0 }) => {
+    const translateX = slideInAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [100, 0],
+    });
+
+    useEffect(() => {
+      Animated.timing(slideInAnimation, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, []);
+
+    return (
+      <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
+        <View style={styles.dateView}>
+          <Text style={styles.dateTxt}>{moment(data).format('dddd')}</Text>
+          <Text style={styles.dateTxt}>{moment(data).format('L')}</Text>
+        </View>
+        {renderResCard(data)}
+      </Animated.View >
+    )
+  }
+  const getRequestByuser = () => {
+    return (
+      <View style={{ width: '100%', alignSelf: 'center' }}>
+        {loading && <ActivityIndicator style={{ alignSelf: 'center', marginTop: '50%' }} size={50} />}
+        {!loading && renderuserNameResults()}
+      </View>
+    )
+  }
+  const renderuserNameResults = () => {
+    const data = getBookingInfo()
+
+    if (client.trim().length > 0) {
+      const filteredServices = data.filter(item => item.userInfo[0].User_name.toLowerCase().includes(client.toLowerCase()));
+      const filteredServicesCount = filteredServices.length;
+
+      if (filteredServicesCount === 0) {
+        return (
+          <View style={{ alignSelf: "center" }}>
+            <Text style={styles.relationLabelText}>لا يوجد نتائج </Text>
+          </View>
+        );
+      }
+
       return (
         <View>
-          <View style={styles.dateView}>
-            <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
-            <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
-          </View>
-          {renderResCard(item)}
-        </View>
-      )
-    })
+          {filteredServicesCount > 0 && (
+            <View>
+              {renderReqByName(filteredServices, true)}
+            </View>
+          )}
+        </View >
+      );
+    } else {
+      return data && data.length > 0 ? renderReqByName(data, false) : noRequest();
+    }
+
   }
+  const renderReqByName = (isSearch = false) => {
+    manageDatesusingSearchbyName()
+    return manageArrayDates.map(item => {
+      return <ResultsUserNameComp data={item} />;
+    })
+  };
   const inputClientName = () => {
     return (
       <View style={{ marginBottom: 30 }}>
@@ -284,7 +358,7 @@ const ProviderWaitingReply = () => {
           style={styles.input}
           keyboardType='default'
           placeholder='ادخل اسم الزبون'
-          onChangeText={setClient}
+          onChangeText={(value) => setClient(value)}
           onEndEditing={onSearchPress}
         />
       </View>
@@ -485,6 +559,25 @@ const ProviderWaitingReply = () => {
       )
     })
   }
+  const getRequestByDate = () => {
+    return (
+      <View style={{ width: '100%', alignSelf: 'center' }}>
+        {loading && <ActivityIndicator style={{ alignSelf: 'center', marginTop: '50%' }} size={50} />}
+        {!loading && renderDateResults()}
+      </View>
+    )
+  }
+  const renderDateResults = () => {
+    const data = getBookingInfo()
+    return data && data.length > 0 ? renderDateReq(data, false) : noRequest();
+  }
+  const renderDateReq = (isSearch = false) => {
+    manageDatesbySearchSpicficDate()
+    return arrayUsingSpicifcDate.map(item => {
+      return <ResultsComp data={item} />;
+    })
+  };
+
   const onSearchSpicaficDatePress = () => {
     setUseDefultSearch(false)
     setUseClientToSearch(false)
@@ -501,14 +594,15 @@ const ProviderWaitingReply = () => {
     )
   }
 
+
   return (
     <View style={styles.container}>
       {renderFilter()}
       {renderFilterTools()}
       <ScrollView>
-        {useDefultSearch && renderBookingDates()}
-        {useSpacificDateToSearch && renderBookingCardAccorDate()}
-        {useClientToSearch && renderRequestAccUserName()}
+        {useDefultSearch && getAllRequest()}
+        {useSpacificDateToSearch && getRequestByDate()}
+        {useClientToSearch && getRequestByuser()}
 
         <View style={{ height: 100 }}></View>
       </ScrollView>
@@ -521,7 +615,6 @@ export default ProviderWaitingReply
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: 'white'
   },
 
   dateTxt: {

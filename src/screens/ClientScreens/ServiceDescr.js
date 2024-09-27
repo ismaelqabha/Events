@@ -70,10 +70,10 @@ const ServiceDescr = (props) => {
             lastVisit.setMinutes(0);
             lastVisit.setSeconds(0);
             lastVisit.setMilliseconds(0);
-
-            return lastVisit <= todayDate && item.fieldType === type
+           
+            return lastVisit >= todayDate && item.fieldType === type && item.user === userId
         })
-        
+
         const res = !!result
         if (!res) {
             console.log("in");

@@ -18,11 +18,6 @@ const PaymentDetailComp = (props) => {
 
     var payId = uuidv4();
 
-    // console.log("requestInfoByService", requestInfoByService);
-    // console.log("reqInfo", reqInfo);
-
-
-
     const updateData = () => {
         const requestInfoAccServiceIndex = requestInfoByService?.findIndex(item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId)
 
@@ -32,7 +27,7 @@ const PaymentDetailComp = (props) => {
             paymentInfo: paymentDataArray
         }
         const result = checkSumPersentage()
-        console.log("result", result);
+        // console.log("result", result);
         if (result < 100) {
             updateRequest(newData).then(res => {
 
@@ -137,7 +132,7 @@ const PaymentDetailComp = (props) => {
 
         const calculateAmountFromPersentage = (pers) => {
             const ReqPrice = reqInfo.requestInfo.Cost
-           // console.log(">>", pers);
+            // console.log(">>", pers);
             if (pers < 100) {
 
                 const fact = ReqPrice * pers
@@ -242,8 +237,8 @@ const PaymentDetailComp = (props) => {
                         placeholder={'الدفعة'}
                         value={amount}
                         onChangeText={setAmount}
-                        // onChangeText={(val) => setAmount(val)}
-                        // onEndEditing={(val) => calculatePersentageFromAmount(val.nativeEvent.text)}
+                    // onChangeText={(val) => setAmount(val)}
+                    // onEndEditing={(val) => calculatePersentageFromAmount(val.nativeEvent.text)}
                     />
 
                     <View style={styles.inputPersentageView}>
@@ -253,7 +248,7 @@ const PaymentDetailComp = (props) => {
                             value={persentage}
                             //onChangeText={setPersentage}
 
-                             onChangeText={(val) => setPersentage(parseInt(val))}
+                            onChangeText={(val) => setPersentage(parseInt(val))}
 
                             onEndEditing={(val) => {
                                 //  calculateAmountFromPersentage(val.nativeEvent.text)
@@ -263,7 +258,7 @@ const PaymentDetailComp = (props) => {
                                     pers: persentage,
                                     paymentStutes: 'not paid'
                                 }
-                                 updateArray(data, index)
+                                updateArray(data, index)
 
                             }}
                         />
@@ -290,7 +285,7 @@ const PaymentDetailComp = (props) => {
 
     const renderRequestDetail = () => {
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={styles.reqInfoView}>
                 <Text style={styles.text}>{"حتى تاريخ  " + reqInfo.requestInfo.reservationDetail[0].reservationDate}</Text>
                 <Text style={styles.text}>{"المبلغ  " + reqInfo.requestInfo.Cost}</Text>
             </View>
@@ -303,14 +298,16 @@ const PaymentDetailComp = (props) => {
                 {renderSaveButton()}
                 <Text style={styles.text}>تحديد عدد الدفعات </Text>
             </View>
-            {seperator()}
+            {/* {seperator()} */}
             {renderRequestDetail()}
             {renderAddButton()}
 
-            <ScrollView>
-                {renderPaymentFeilds()}
-            </ScrollView>
-
+            {paymentDataArray.length > 0 &&
+                <View style={styles.payFeildView}>
+                    <ScrollView>
+                        {renderPaymentFeilds()}
+                    </ScrollView>
+                </View>}
         </View>
     )
 }
@@ -326,7 +323,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-end',
-        marginTop: 20
+        marginVertical: 10
     },
     IconView: {
         width: 40,
@@ -411,5 +408,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 8
+    },
+    reqInfoView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderWidth: 2,
+        borderColor: colors.silver,
+        width: '100%',
+        height: 150,
+        padding: 10,
+        marginVertical: 10
+    },
+    payFeildView: {
+        borderWidth: 2,
+        borderColor: colors.silver,
+        width: "100%",
+        height: '65%',
+        padding: 5
     }
+
 })

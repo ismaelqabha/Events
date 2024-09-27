@@ -314,7 +314,7 @@ const ProviderShowRequest = (props) => {
                         size={25} />
                 </Pressable>
                 {fromProviderDuePay == undefined &&
-                    <Pressable onPress={moreModalPress}>
+                    <Pressable onPress={moreModalPress} style={styles.moreBtnPress}>
                         <Fontisto
                             style={styles.icon}
                             name={"more-v"}
@@ -590,6 +590,12 @@ const styles = StyleSheet.create({
     icon: {
 
     },
+    moreBtnPress: {
+        width: 50,
+        height: 50,
+        alignItems: 'flex-end',
+        justifyContent: 'center'
+    },
     headerText: {
         fontSize: 18,
         color: colors.puprble,
@@ -666,11 +672,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#00000099',
     },
     detailPaymentModal: {
-        width: '100%',
-        height: '80%',
+        width: '90%',
+        height: '100%',
         backgroundColor: '#ffffff',
-        borderTopRightRadius: 20,
-        borderTopLeftRadius: 20,
+        borderRadius : 20,
+        // borderTopRightRadius: 20,
+        // borderTopLeftRadius: 20,
     },
     centeredPaymentView: {
         flex: 1,
