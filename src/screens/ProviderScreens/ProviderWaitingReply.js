@@ -235,7 +235,7 @@ const ProviderWaitingReply = () => {
       </View>
     )
   }
- 
+
 
 
 

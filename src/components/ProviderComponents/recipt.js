@@ -306,8 +306,8 @@ const styles = StyleSheet.create({
         // borderWidth: 1
     },
     priceView: {
-        width: '95%',
-        backgroundColor: 'white',
+        width: '90%',
+        backgroundColor: colors.silver,
         alignSelf: 'center',
         marginBottom: 5,
         borderRadius: 15,
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'lightgray',
+        backgroundColor: colors.BGScereen,
         borderRadius: 30,
         marginLeft: 10
     },
