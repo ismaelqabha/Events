@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, Modal } from 'react-native'
-import React, { useContext, useState,useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard';
@@ -91,9 +91,9 @@ const ProviderBookingRequest = (props) => {
 
   const filterBookingDates = () => {
     var time
-    
+
     return bookingDates[0].dates.filter(item => {
-      time = new Date (item.time)
+      time = new Date(item.time)
       const srTime = time.toISOString()
       return srTime == srselectedDate
     })
@@ -186,10 +186,20 @@ const ProviderBookingRequest = (props) => {
   }
 
   useEffect(() => {
-    
-    dayStutes = filterBookingDates() || []
-    if (dayStutes[0].status === 'full' || dayStutes[0].status === 'holiday') {
-      setIsDateOpen(false)
+    dayStutes = filterBookingDates()
+
+    if (dayStutes.length > 0) {
+      if (requestDate > todayDate) {
+        if (dayStutes[0].status === 'full' || dayStutes[0].status === 'holiday') {
+          setIsDateOpen(false)
+        }
+      } else {
+        setIsDateOpen(false)
+      }
+    } else {
+      if (requestDate < todayDate) {
+        setIsDateOpen(false)
+      }
     }
   }, [])
 
@@ -215,18 +225,21 @@ const ProviderBookingRequest = (props) => {
 
   const getBookingInfo = () => {
     var resDate
+    if (requestInfoByService.message !== "no Request") {
+      const reqInfo = requestInfoByService.filter(item => {
+        const requstStatus = item.requestInfo.ReqStatus === 'partially paid' || item.requestInfo.ReqStatus === 'paid all' ||
+          item.requestInfo.ReqStatus === 'completed'
 
-    const reqInfo = requestInfoByService.filter(item => {
-      const requstStatus = item.requestInfo.ReqStatus === 'partially paid' || item.requestInfo.ReqStatus === 'paid all' ||
-        item.requestInfo.ReqStatus === 'completed'
-
-      return item.requestInfo.reservationDetail.find(dat => {
-        resDate = new Date(dat.reservationDate)
-        const srResDate = resDate.toISOString()
-        return requstStatus && srResDate == srselectedDate
+        return item.requestInfo.reservationDetail.find(dat => {
+          resDate = new Date(dat.reservationDate)
+          const srResDate = resDate.toISOString()
+          return requstStatus && srResDate == srselectedDate
+        })
       })
-    })
-    return reqInfo
+      return reqInfo
+    } else {
+      return []
+    }
   }
 
   const renderBookingCard = () => {
@@ -251,11 +264,21 @@ const ProviderBookingRequest = (props) => {
 
   const renderDayStutes = () => {
     dayStutes = filterBookingDates()
-
-    var label 
-    if (dayStutes[0].status === 'full') {
-      label = 'الحجز مغلق'
+    var label
+    if (requestDate > todayDate) {
+      if (dayStutes.length > 0) {
+        if (dayStutes[0].status === 'full') {
+          label = 'الحجز مغلق'
+        } else {
+          label = 'يوم عطلة'
+        }
+      } else {
+        label = 'الحجز مفتوح'
+      }
+    } else {
+      label = 'يوم سابق'
     }
+
     return (
       <View style={styles.operationView}>
         <Text style={styles.txt}>{label}</Text>
@@ -323,8 +346,8 @@ const ProviderBookingRequest = (props) => {
   return (
     <View style={styles.container}>
       {header()}
-      {requestDate > todayDate && renderDayStutes()}
-      {isDateOpen  && renderCreateRequest()}
+      {renderDayStutes()}
+      {isDateOpen && renderCreateRequest()}
       {mutibleReservation ? renderRequestAccUserName() : renderSelectedDate()}
       {moreModal()}
     </View>
@@ -367,7 +390,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginVertical: 5
   },
-  operationView:{
+  operationView: {
     backgroundColor: colors.silver,
     height: 40,
     justifyContent: 'center',
