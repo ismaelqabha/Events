@@ -16,13 +16,6 @@ const App = () => {
     'Warning: Each child in a list should have a unique "key" prop.',
   ]);
 
-  useEffect(() => {
-    var url = 'https://nameless-meadow-25389.herokuapp.com/server';
-    fetch(url)
-      .then(res => res.json())
-      .then(resJson => console.log('res', resJson));
-  }, []);
-
   return (
     <UsersProvider>
       <SearchProvider>
