@@ -59,7 +59,6 @@ const ProviderCalender = (props) => {
     const renderInputClientName = () => {
         return (
             <View style={styles.searchView}>
-
                 <TextInput
                     style={styles.input}
                     keyboardType='default'
@@ -145,6 +144,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         color: 'black',
-        // borderWidth: 1
+        width: '80%',
+        textAlign: 'right',
     },
 })

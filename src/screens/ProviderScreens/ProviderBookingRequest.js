@@ -9,6 +9,7 @@ import SearchContext from '../../../store/SearchContext';
 import { showMessage } from '../../resources/Functions';
 import { addNewbookingDate, updatebookingDate } from '../../resources/API';
 import { TouchableOpacity } from 'react-native';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 const ProviderBookingRequest = (props) => {
   const { fulDate, mutibleReservation, filterdRequestAccUser, setBookingDates, bookingDates } = props.route?.params || {}
@@ -20,12 +21,15 @@ const ProviderBookingRequest = (props) => {
   const [fromReservationScreen, setfromReservationScreen] = useState(true)
   const selectedDate = moment(fulDate).format('L')
 
-  var requestDate = new Date(fulDate)
-  const srselectedDate = requestDate.toISOString()
+var srselectedDate
+  if (fulDate) {
+    var requestDate = new Date(fulDate)
+    srselectedDate = requestDate.toISOString()
+  }
+
+
   var todayDate = new Date();
-
   var dayStutes
-
   todayDate.setHours(0);
   todayDate.setMinutes(0);
   todayDate.setSeconds(0);
@@ -91,7 +95,6 @@ const ProviderBookingRequest = (props) => {
 
   const filterBookingDates = () => {
     var time
-
     return bookingDates[0].dates.filter(item => {
       time = new Date(item.time)
       const srTime = time.toISOString()
@@ -186,19 +189,21 @@ const ProviderBookingRequest = (props) => {
   }
 
   useEffect(() => {
-    dayStutes = filterBookingDates()
+    if (fulDate) {
+      dayStutes = filterBookingDates()
 
-    if (dayStutes.length > 0) {
-      if (requestDate > todayDate) {
-        if (dayStutes[0].status === 'full' || dayStutes[0].status === 'holiday') {
+      if (dayStutes.length > 0) {
+        if (requestDate > todayDate) {
+          if (dayStutes[0].status === 'full' || dayStutes[0].status === 'holiday') {
+            setIsDateOpen(false)
+          }
+        } else {
           setIsDateOpen(false)
         }
       } else {
-        setIsDateOpen(false)
-      }
-    } else {
-      if (requestDate < todayDate) {
-        setIsDateOpen(false)
+        if (requestDate < todayDate) {
+          setIsDateOpen(false)
+        }
       }
     }
   }, [])
@@ -253,6 +258,8 @@ const ProviderBookingRequest = (props) => {
   const renderSelectedDate = () => {
     return (
       <View>
+        {renderDayStutes()}
+        {isDateOpen && renderCreateRequest()}
         <View style={styles.dateView}>
           <Text style={styles.txt}>{moment(fulDate).format('dddd')}</Text>
           <Text style={styles.txt}>{selectedDate}</Text>
@@ -287,7 +294,7 @@ const ProviderBookingRequest = (props) => {
   }
   const renderCreateRequest = () => {
     return (
-      <TouchableOpacity style={styles.operationView}>
+      <TouchableOpacity style={styles.operationView} onPress={() => props.navigation.navigate(ScreenNames.ProviderSetNewBooking)}>
         <Text style={styles.txt}>انشاء حجز</Text>
       </TouchableOpacity>
     )
@@ -346,8 +353,6 @@ const ProviderBookingRequest = (props) => {
   return (
     <View style={styles.container}>
       {header()}
-      {renderDayStutes()}
-      {isDateOpen && renderCreateRequest()}
       {mutibleReservation ? renderRequestAccUserName() : renderSelectedDate()}
       {moreModal()}
     </View>
