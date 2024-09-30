@@ -29,18 +29,19 @@ const ProviderProfile = props => {
   const navigation = useNavigation();
   const providerReview = true
 
+  useEffect(() => {
+    if (serviceInfoAccorUser?.length && !isFirst) {
+      const firstService = serviceInfoAccorUser[0];
+      setIsfirst(firstService.service_id);
+      setserviceTitle(firstService.title);
+      setServiceCat(firstService.servType);
+    }
+  }, [serviceInfoAccorUser, isFirst]);
+
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
-    const cardsArray = data?.map((card, index) => {
-      if (index == 0 && !isFirst) {
-        setIsfirst(card.service_id);
-        setserviceTitle(card.title);
-        setServiceCat(card.servType);
-      }
-      return <CalenderServiceCard {...card} />;
-    });
-    return cardsArray;
+    return data.map((card) => <CalenderServiceCard key={card.service_id} {...card} />);
   };
 
   const getRegionsfromApi = () => {
@@ -56,7 +57,7 @@ const ProviderProfile = props => {
       } else {
         setBookingDates(res);
       }
-     
+
     })
   }
 
@@ -83,7 +84,7 @@ const ProviderProfile = props => {
     getCampignsfromApi()
     getRequestInfo()
     getBookingfromApi()
-  }, [isFirst])
+  }, [serviceInfoAccorUser, isFirst])
 
 
 
@@ -277,7 +278,7 @@ const ProviderProfile = props => {
         </Pressable>
 
       </View>
-      
+
       <ScrollView>
         <View style={styles.headView}>
           <Text style={styles.headtext}>

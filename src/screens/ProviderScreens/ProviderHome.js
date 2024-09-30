@@ -227,7 +227,7 @@ const ProviderHome = props => {
               },
               {
                 text: "Confirm",
-                onPress: () => confirmChanges(selectedImage),
+                onPress: () => confirmChanges(response),
               },
             ]
           );
@@ -235,25 +235,26 @@ const ProviderHome = props => {
       });
     };
 
-    const confirmChanges = (newImage) => {
-      setImage(newImage);
+    const confirmChanges = (response) => {
+      const imageUri = response.assets[0].uri;
+      setImage(imageUri);
       setSelectedImage(null);
 
       const formData = new FormData();
       formData.append('serviceID', data[0].service_id);
       formData.append('images', {
-        uri: selectedImage,
+        uri: response.assets[0].uri,
         type: response.assets[0].type,
         name: response.assets[0].fileName,
       });
 
       updateServiceLogo(formData)
         .then((resJson) => {
-          console.log('Server Response:', resJson);
-          if (resJson.message === 'Images saved') {
+          if (resJson.message === 'Logo updated successfully') {
             const updatedService = {
               ...data[0],
-              serviceImages: resJson.images.serviceImages,
+              serviceImages: resJson.images,
+              logoArray: resJson.logoArray
             };
 
             setServiceInfoAccorUser((prevState) => {
