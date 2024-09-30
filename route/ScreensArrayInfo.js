@@ -49,7 +49,7 @@ export const SharedScreen = [
         component: Support,
     },
     {
-        route: 'ProviderHome',
+        route: 'ProviderHomeTab',
         label: 'خدماتي كمزود',
         type: Icons.Fontisto,
         icon: 'indent',
@@ -78,9 +78,9 @@ export const ClientScreen = [
         type: Icons.AntDesign,
         icon: 'notification',
         component: ClientNotification,
-    },  
+    },
 ]
 
-export const ProviderScreen =[
+export const ProviderScreen = [
 
 ]
