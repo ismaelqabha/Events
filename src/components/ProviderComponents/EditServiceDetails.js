@@ -19,22 +19,16 @@ const EditServiceDetails = (props) => {
         addNewDetail, setAddNewDetail,
         setShowDetailModal } = useContext(ServiceProviderContext);
 
-    const [serviceAdditionalServ, setServiceAdditionalServ] = useState([]);
     const [serviceDetail, setServiceDetail] = useState();
     const [detailType, setDetailType] = useState();
-    const [priceInclude, setPriceInclude] = useState()
-    const [serEditedDescrItem, setSerEditedDescrItem] = useState();
-    const [addNewDescrItem, setaddNewDescrItem] = useState();
-
+    const [priceInclude, setPriceInclude] = useState();
     const [addNewSubDetItem, setaddNewSubDetItem] = useState();
-
     const [PerPackage, setPerPackage] = useState(false);
     const [PerPerson, setPerPerson] = useState(false);
     const [PerTable, setPerTable] = useState(false);
-
     const [showSubDetModal, setShowSubDetModal] = useState(false);
-
     const [subDetailImg, setSubDetailImg] = useState();
+    const [loading, setLoading] = useState(false);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
     const getServiceInfo = () => {
@@ -45,23 +39,33 @@ const EditServiceDetails = (props) => {
     const serviceData = getServiceInfo()
 
     useEffect(() => {
-        
+    }, []);
 
-    }, [])
+    const handleSave = async (callback) => {
+        setLoading(true);
+        try {
+            await callback();
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            console.error('Error while saving:', error);
+        }
+    };
 
-   
     const Package = () => {
         setPerPackage(true)
         setPerPerson(false)
         setPerTable(false)
         setPriceInclude('لكل الحجز')
     }
+
     const Person = () => {
         setPerPackage(false)
         setPerPerson(true)
         setPerTable(false)
         setPriceInclude('حسب الشخص')
     }
+
     const Table = () => {
         setPerPackage(false)
         setPerPerson(false)
@@ -90,17 +94,6 @@ const EditServiceDetails = (props) => {
         )
     }
 
-    const addNewSubDetPress = () => {
-        setaddNewSubDetItem(true)
-    }
-    const subDetEditPress = (item, editSubDetItem, setEditSubDetItem) => {
-        setEditSubDetItem(true)
-        setShowSubDetModal(false)
-    }
-    const closeModalPress = () => {
-        setShowSubDetModal(false)
-    }
-
     const onAddImgPress = async () => {
         try {
             let options = {
@@ -114,6 +107,7 @@ const EditServiceDetails = (props) => {
             console.error(error);
         }
     };
+
     const GalleryImageResponse = response => {
         if (response.didCancel) {
             console.log('User Cancelled');
@@ -126,6 +120,7 @@ const EditServiceDetails = (props) => {
             SaveImg(imageUri);
         }
     };
+
     const SaveImg = source => {
         if (source) {
             const newImage = {
@@ -139,20 +134,15 @@ const EditServiceDetails = (props) => {
     };
 
     const saveNewSubDet = () => {
-        setaddNewSubDetItem(false)
+        handleSave(() => setaddNewSubDetItem(false));
     }
+
     const updateSubDet = (setEditSubDetItem) => {
-        setEditSubDetItem(false)
+        handleSave(() => setEditSubDetItem(false));
     }
-    
-    // edit Detail
+
     const editServiceDetailPress = () => {
-        let DType = ''
-        if (DetailType == 'Optional') {
-            DType = 'خدمة اختيارية'
-        } else {
-            DType = 'خدمة اجبارية'
-        }
+        let DType = DetailType == 'Optional' ? 'خدمة اختيارية' : 'خدمة اجبارية';
         return (
             <View style={styles.itemView}>
                 <View style={styles.editDetailView}>
@@ -167,7 +157,7 @@ const EditServiceDetails = (props) => {
                     <View style={styles.list}>
                         <SelectList
                             data={mandoteryOptions}
-                            setSelected={val => { setDetailType(mandoteryOptions[val].alt) }}
+                            setSelected={val => setDetailType(mandoteryOptions[val].alt)}
                             placeholder={DType}
                             boxStyles={styles.dropdownDetailType}
                             inputStyles={styles.droptext}
@@ -177,154 +167,116 @@ const EditServiceDetails = (props) => {
                     {renderIsPerPerson()}
 
                     <View style={styles.subDetailView}>
-                        {/* Add new Sub Detail */}
                         {renderAddSubDet()}
-                        {/* Render Sub Detail */}
                         {renderSubDetail()}
                     </View>
 
                     <View style={styles.itemFooter}>
-                        <Pressable onPress={updateServiceDetail}>
-                            <Text style={styles.itemText}>حفظ</Text>
-                        </Pressable>
+                        {loading ? (
+                            <ActivityIndicator size="large" color={colors.puprble} />
+                        ) : (
+                            <Pressable onPress={() => handleSave(updateServiceDetail)}>
+                                <Text style={styles.itemText}>حفظ</Text>
+                            </Pressable>
+                        )}
                     </View>
                 </View>
             </View>)
     }
+
     const renderSubDetail = () => {
         return sub_DetailArr.map(sub => {
             const [editSubDetItem, setEditSubDetItem] = useState();
-            return (<ScrollView>
-                {editSubDetItem ? <View style={styles.addSubDetView}>
-                    <Pressable style={styles.subImg} onPress={onAddImgPress}>
-                        {subDetailImg ?
-                            <Image
-                                source={{ uri: sub.subDetailPhoto.uri }}
-                                style={{ width: 100, height: 100, resizeMode: 'stretch', borderRadius: 10 }} />
-                            :
-                            <MaterialIcons
-                                style={{ alignSelf: 'center' }}
-                                name={"add-photo-alternate"}
-                                color={'white'}
-                                size={100} />}
-                    </Pressable>
-                    <View style={{ width: '95%', alignSelf: 'center' }}>
-                        <TextInput
-                            style={styles.titleInput}
-                            placeholder={sub.detailSubtitle}
-                            keyboardType="default"
-                            maxLength={60}
-                        // onChangeText={value => {
-                        //     setSDTitle(value);
-                        // }}
-                        />
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Pressable onPress={() => updateSubDet(setEditSubDetItem)}
-                            >
-                                <Feather
-                                    name={'save'}
-                                    color={colors.BGScereen}
-                                    size={40} />
+            return (
+                <ScrollView>
+                    {editSubDetItem ? (
+                        <View style={styles.addSubDetView}>
+                            <Pressable style={styles.subImg} onPress={onAddImgPress}>
+                                {subDetailImg ? (
+                                    <Image source={{ uri: sub.subDetailPhoto.uri }} style={{ width: 100, height: 100, resizeMode: 'stretch', borderRadius: 10 }} />
+                                ) : (
+                                    <MaterialIcons style={{ alignSelf: 'center' }} name={"add-photo-alternate"} color={'white'} size={100} />
+                                )}
                             </Pressable>
-                            <TextInput
-                                style={styles.priceInput}
-                                placeholder={sub.detailSubtitleCost}
-                                keyboardType="numeric"
-                            // onChangeText={value => {
-                            //     setSPricetitle(value);
-                            // }}
-                            />
-                        </View>
-                    </View>
-                </View> :
-                    <View style={styles.subDetailItemView}>
-                        <Pressable onPress={() => {
-                            setShowSubDetModal(true)
-                        }}>
-                            <Feather
-                                name={'more-vertical'}
-                                color={colors.puprble}
-                                size={25} />
-                        </Pressable>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                            <View>
-                                <Text style={styles.itemText}>{sub.detailSubtitle}</Text>
-                                <Text style={styles.itemText}>{sub.detailSubtitleCost + ' ₪'}</Text>
+                            <View style={{ width: '95%', alignSelf: 'center' }}>
+                                <TextInput style={styles.titleInput} placeholder={sub.detailSubtitle} keyboardType="default" maxLength={60} />
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    {loading ? (
+                                        <ActivityIndicator size="large" color={colors.puprble} />
+                                    ) : (
+                                        <Pressable onPress={() => updateSubDet(setEditSubDetItem)}>
+                                            <Feather name={'save'} color={colors.BGScereen} size={40} />
+                                        </Pressable>
+                                    )}
+                                    <TextInput style={styles.priceInput} placeholder={sub.detailSubtitleCost} keyboardType="numeric" />
+                                </View>
                             </View>
-
-                            <View style={styles.subDetailImg}>
-                                <Image style={styles.subDetailImg}
-                                    source={{ uri: sub.subDetailPhoto.uri }}
-                                /></View>
                         </View>
-                    </View>
-                }
-                {subDetModal(sub.detailSubtitle, editSubDetItem, setEditSubDetItem)}
-            </ScrollView >)
+                    ) : (
+                        <View style={styles.subDetailItemView}>
+                            <Pressable onPress={() => setShowSubDetModal(true)}>
+                                <Feather name={'more-vertical'} color={colors.puprble} size={25} />
+                            </Pressable>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                <View>
+                                    <Text style={styles.itemText}>{sub.detailSubtitle}</Text>
+                                    <Text style={styles.itemText}>{sub.detailSubtitleCost + ' ₪'}</Text>
+                                </View>
+
+                                <View style={styles.subDetailImg}>
+                                    <Image style={styles.subDetailImg} source={{ uri: sub.subDetailPhoto.uri }} />
+                                </View>
+                            </View>
+                        </View>
+                    )}
+                    {subDetModal(sub.detailSubtitle, editSubDetItem, setEditSubDetItem)}
+                </ScrollView>
+            )
         })
     }
 
-
     const renderAddSubDet = () => {
-        return (<View>
-            {addNewSubDetItem ? <View style={styles.addSubDetView}>
-                <Pressable style={styles.subImg} onPress={onAddImgPress}>
-                    {subDetailImg ?
-                        <Image
-                            source={subDetailImg}
-                            style={{ flex: 1, width: '100%', height: '100%', resizeMode: 'stretch', borderRadius: 10 }}
-                        />
-                        :
-                        <MaterialIcons
-                            style={{ alignSelf: 'center' }}
-                            name={"add-photo-alternate"}
-                            color={'white'}
-                            size={100} />}
-                </Pressable>
-                <View style={{ width: '95%', alignSelf: 'center' }}>
-                    <TextInput
-                        style={styles.titleInput}
-                        placeholder={'ادخل تفاصيل الخدمة'}
-                        keyboardType="default"
-                        maxLength={60}
-                    // onChangeText={value => {
-                    //     setSDTitle(value);
-                    // }}
-                    />
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Pressable onPress={saveNewSubDet}
-                        >
-                            <Feather
-                                name={'save'}
-                                color={colors.BGScereen}
-                                size={40} />
+        return (
+            <View>
+                {addNewSubDetItem ? (
+                    <View style={styles.addSubDetView}>
+                        <Pressable style={styles.subImg} onPress={onAddImgPress}>
+                            {subDetailImg ? (
+                                <Image source={subDetailImg} style={{ flex: 1, width: '100%', height: '100%', resizeMode: 'stretch', borderRadius: 10 }} />
+                            ) : (
+                                <MaterialIcons style={{ alignSelf: 'center' }} name={"add-photo-alternate"} color={'white'} size={100} />
+                            )}
                         </Pressable>
-                        <TextInput
-                            style={styles.priceInput}
-                            placeholder={'السعر'}
-                            keyboardType="numeric"
-                        // onChangeText={value => {
-                        //     setSPricetitle(value);
-                        // }}
-                        />
+                        <View style={{ width: '95%', alignSelf: 'center' }}>
+                            <TextInput style={styles.titleInput} placeholder={'ادخل تفاصيل الخدمة'} keyboardType="default" maxLength={60} />
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                {loading ? (
+                                    <ActivityIndicator size="large" color={colors.puprble} />
+                                ) : (
+                                    <Pressable onPress={saveNewSubDet}>
+                                        <Feather name={'save'} color={colors.BGScereen} size={40} />
+                                    </Pressable>
+                                )}
+                                <TextInput style={styles.priceInput} placeholder={'السعر'} keyboardType="numeric" />
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </View> :
-                <Pressable style={styles.addsubDetailView} onPress={addNewSubDetPress}
-                >
-                    <Text style={styles.itemText}>اضافة جديد</Text>
-                    <View style={styles.IconView}>
-                        <Entypo
-                            name={'plus'}
-                            color={colors.puprble}
-                            size={25}
-                        />
-                    </View>
-                </Pressable>}
-
-
-        </View>)
+                ) : (
+                    <Pressable style={styles.addsubDetailView} onPress={() => setaddNewSubDetItem(true)}>
+                        <Text style={styles.itemText}>اضافة جديد</Text>
+                        <View style={styles.IconView}>
+                            <Entypo name={'plus'} color={colors.puprble} size={25} />
+                        </View>
+                    </Pressable>
+                )}
+            </View>
+        )
     }
+
+    const updateServiceDetail = () => {
+        setShowDetailModal(false);
+    }
+
     const subDetModal = (item, editSubDetItem, setEditSubDetItem) => {
         return (
             <Modal
@@ -335,25 +287,16 @@ const EditServiceDetails = (props) => {
                 <View style={styles.subDetModal}>
                     <View style={styles.bodyModal}>
                         <Pressable onPress={closeModalPress} style={styles.modalHeader}>
-                            <Feather
-                                name={'more-horizontal'}
-                                color={colors.puprble}
-                                size={25} />
+                            <Feather name={'more-horizontal'} color={colors.puprble} size={25} />
                         </Pressable>
                         <View style={{ justifyContent: 'flex-end', height: '100%' }}>
                             <View style={styles.modalMenu}>
                                 <Pressable style={styles.modalItem} onPress={() => subDetEditPress(item, editSubDetItem, setEditSubDetItem)}>
-                                    <Feather
-                                        name={'edit'}
-                                        color={colors.gray}
-                                        size={25} />
+                                    <Feather name={'edit'} color={colors.gray} size={25} />
                                     <Text style={styles.modalHeaderTxt}>تعديل</Text>
                                 </Pressable>
                                 <Pressable style={styles.modalItem}>
-                                    <AntDesign
-                                        name={'delete'}
-                                        color={colors.gray}
-                                        size={25} />
+                                    <AntDesign name={'delete'} color={colors.gray} size={25} />
                                     <Text style={styles.modalHeaderTxt}>اِلغاء</Text>
                                 </Pressable>
                             </View>
@@ -364,10 +307,9 @@ const EditServiceDetails = (props) => {
         )
     }
 
-    // add New detail
     const addNewServiceDetailPress = () => {
         useEffect(() => {
-           
+
         }, [])
 
         return (
@@ -423,49 +365,12 @@ const EditServiceDetails = (props) => {
                 </View>
             </View>)
     }
-    const updateServiceDetail = () => {
-        setShowDetailModal(false)
-        // const data = serviceInfoAccorUser || [];
-        // const selectedServiceDetailItemIndex = data[selectedServiceIndex].additionalServices?.findIndex(item => item.detailTitle === detailItem)
-        // const newDetailItem = {
-        //     detailTitle: serviceDetail,
-        //     necessity: detailType,
-        //     isPerPerson: perPerson
-        // }
-        // setServiceAdditionalServ(element => {
-        //     const newDescElement = [...element];
-        //     newDescElement[selectedServiceDetailItemIndex] = newDetailItem;
-        //     return newDescElement;
-        // })
-        // const newData = {
-        //     service_id: serviceID,
-        //     additionalServices: serviceAdditionalServ
-        // }
-        // updateService(newData).then(res => {
-        //     if (selectedServiceIndex > -1) {
-        //         data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
-        //     }
-        //     if (res.message === 'Updated Sucessfuly') {
-        //         setServiceInfoAccorUser([...data])
-        //         ToastAndroid.showWithGravity(
-        //             'تم التعديل بنجاح',
-        //             ToastAndroid.SHORT,
-        //             ToastAndroid.BOTTOM,
-        //         );
-        //     }
-        // })
-
-    }
 
     const editObject = [
         {
             editItem: addNewDetail,
             editFunction: addNewServiceDetailPress(),
         },
-        // {
-        //     editItem: editServiceDetail,
-        //     editFunction: editServiceDetailPress(),
-        // },
     ]
     const renderSelectedEdit = () => {
         return editObject.map(item => {

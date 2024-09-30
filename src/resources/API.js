@@ -1,5 +1,5 @@
-const baseUrl = 'https://ev-server.onrender.com/';
-// const baseUrl = "http://localhost:7000/"
+// const baseUrl = 'https://ev-server.onrender.com/';
+const baseUrl = "http://localhost:8000/"
 
 
 // Users
@@ -350,6 +350,20 @@ export const updateServiceLogo = async (body) => {
   return await AppFetch(url, 'PATCH', body, headers);
 };
 
+export const deleteServiceImage = async (serviceID, imgId) => {
+  const url = 'ServiceImags/deleteImg';
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  const body = JSON.stringify({
+    serviceId: serviceID,
+    imgId: imgId,
+  });
+
+  return await AppFetch(url, 'DELETE', body, headers);
+};
+
 // Service Booking Dates
 export const getbookingDates = async body => {
   const url = 'Dates/getDates';
@@ -401,22 +415,27 @@ export const addNewVisit = async body => {
 
 const AppFetch = async (url, method, body, headers) => {
   const fullUrl = baseUrl + url;
-  const bodyStr = JSON.stringify(body) || '';
-  return fetch(fullUrl, {
-    method: method,
-    body: headers ? body : bodyStr,
-    headers: headers || {
-      'content-type': 'application/json',
-    },
-  })
-    .then(res => {
-      console.log('req: ', fullUrl, 'res code: ', res?.status, "req method:", method);
-      return res?.json?.();
-    })
-    .then(resJson => {
-      return resJson;
-    })
-    .catch(e => {
-      console.log('fetch error: ', e);
+  const bodyStr = headers ? body : JSON.stringify(body) || '';
+
+  try {
+    const response = await fetch(fullUrl, {
+      method: method,
+      body: bodyStr,
+      headers: headers || {
+        'Content-Type': 'application/json',
+      },
     });
+
+    console.log('Request:', fullUrl, 'Response Status:', response.status);
+    const responseText = await response.text();
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return JSON.parse(responseText);
+    } else {
+      console.error(`Invalid content-type: ${contentType}, expected JSON`);
+      return { error: 'Invalid content-type', details: responseText };
+    }
+  } catch (error) {
+    console.log('Fetch error:', error.message);
+  }
 };

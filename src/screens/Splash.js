@@ -66,12 +66,11 @@ export default function Splash(props) {
 
     const LoginUser = () => {
         if (signInFlag || isGoogle) {
-            // console.log("signing in!");
             props.navigation.replace('Drawr')
             return
         }
         if (userEmail && userPassword) {
-        
+
             signIn({ Email: userEmail, Password: userPassword })
                 .then(res => {
                     if (res.message === 'Authentication succeeded') {
@@ -94,21 +93,28 @@ export default function Splash(props) {
 
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
-            // console.log("res", res);
-            setUserInfo(res[0].userInfo)
-             setEventInfo(res[0].userEvents)
-            setuserId(res[0].userInfo.USER_ID)
-            setUserName(res[0].userInfo.User_name)
-            setFavorites(res[0].favoriteUser)
-            setAllServicesFavorites(res[0].services)
-            getRequestfromApi(res[0].userInfo.USER_ID)
-        
-        })
+            if (res && Array.isArray(res) && res[0]?.userInfo) {
+                setUserInfo(res[0].userInfo);
+                setEventInfo(res[0].userEvents);
+                setuserId(res[0].userInfo.USER_ID);
+                setUserName(res[0].userInfo.User_name);
+                setFavorites(res[0].favoriteUser);
+                setAllServicesFavorites(res[0].services);
+                getRequestfromApi(res[0].userInfo.USER_ID);
+            } else {
+                showMessage('Error: Invalid user data response');
+                props.navigation.replace(ScreenNames.SignIn);
+            }
+        }).catch(error => {
+            showMessage('حدث خطأ أثناء استرجاع البيانات');
+            console.error('Get User Info error:', error);
+            props.navigation.replace(ScreenNames.SignIn);
+        });
     }
 
     const getEventsFromApi = (id) => {
         getEventsInfo({ userId: id }).then(resjson => {
-           // console.log(resjson);
+            // console.log(resjson);
             setEventInfo(resjson)
         })
     }

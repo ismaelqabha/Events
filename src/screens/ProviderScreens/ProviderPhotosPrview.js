@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View, Pressable, Image, ScrollView, Modal, FlatList, Dimensions } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, Text, View, Pressable, Image, ScrollView, Modal, FlatList, Dimensions, Animated, Easing } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import SIZES from '../../resources/sizes';
 import { colors } from '../../assets/AppColors';
-import { addServiceImages } from '../../resources/API';
+import { addServiceImages, deleteServiceImage } from '../../resources/API';
 import { showMessage } from '../../resources/Functions';
 
 const screenWidth = Dimensions.get('window').width;
@@ -17,8 +17,40 @@ const ProviderPhotosPrview = (props) => {
     const [allImages, setAllImages] = useState(filteredImages || []);
     const [showImagModal, setShowImagModal] = useState(false);
     const [modalImageIndex, setModalImageIndex] = useState(0)
+    const [isDeleteMode, setIsDeleteMode] = useState(false);
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [animation, setAnimation] = useState(new Animated.Value(0));
 
+    useEffect(() => {
+        if (isDeleteMode) {
+            startWiggle();
+        } else {
+            stopWiggle();
+        }
+    }, [isDeleteMode]);
 
+    const startWiggle = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(animation, {
+                    toValue: 1,
+                    duration: 250,
+                    easing: Easing.inOut(Easing.cubic),
+                    useNativeDriver: true,
+                }),
+                Animated.timing(animation, {
+                    toValue: -1,
+                    duration: 250,
+                    easing: Easing.inOut(Easing.cubic),
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    };
+
+    const stopWiggle = () => {
+        animation.setValue(0);
+    };
     const onPressHandler = () => {
         props.navigation.goBack();
     };
@@ -26,6 +58,68 @@ const ProviderPhotosPrview = (props) => {
     const whenImagePress = (index) => {
         setModalImageIndex(index);
         setShowImagModal(true);
+    };
+
+    const toggleImageSelection = (imageUri) => {
+        setSelectedImages((prevSelected) => {
+            if (prevSelected.includes(imageUri)) {
+                return prevSelected.filter((uri) => uri !== imageUri);
+            } else {
+                return [...prevSelected, imageUri];
+            }
+        });
+    };
+
+    const deleteSelectedImages = async () => {
+        try {
+            for (let imageUri of selectedImages) {
+                const imgId = imageUri;
+                console.log("serviceID", serviceID);
+
+                const response = await deleteServiceImage(serviceID, imgId);
+
+                if (response?.message === 'Image deleted successfully') {
+                    console.log('Image deleted:', imgId);
+                } else {
+                    console.error('Failed to delete image:', imgId, " response ", response);
+                }
+            }
+            const remainingImages = allImages.filter(
+                (image) => !selectedImages.includes(image.uri || image)
+            );
+            setAllImages(remainingImages);
+            setIsDeleteMode(false);
+            setSelectedImages([]);
+        } catch (error) {
+            console.error('Error deleting selected images:', error);
+        }
+    };
+
+    const renderDeleteButton = () => {
+        if (isDeleteMode) {
+            return (
+                <Pressable style={styles.deleteButton} onPress={deleteSelectedImages}>
+                    <Text style={styles.deleteButtonText}>Delete Selected</Text>
+                </Pressable>
+            );
+        }
+        return null;
+    };
+
+    const renderCancelButton = () => {
+        if (isDeleteMode) {
+            return (
+                <Pressable style={styles.cancelButton} onPress={cancelDeleteMode}>
+                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                </Pressable>
+            );
+        }
+        return null;
+    };
+
+    const cancelDeleteMode = () => {
+        setIsDeleteMode(false);
+        setSelectedImages([]);
     };
 
     const openGalleryForMultipleSelection = () => {
@@ -103,11 +197,40 @@ const ProviderPhotosPrview = (props) => {
     };
 
     const renderImages = () => {
+        const wiggleInterpolation = animation.interpolate({
+            inputRange: [-1, 1],
+            outputRange: ['-2deg', '2deg'],
+        });
+
         return allImages.map((image, index) => {
+            const isSelected = selectedImages.includes(image.uri || image);
+            const animatedStyle = isDeleteMode && isSelected ? { transform: [{ rotate: wiggleInterpolation }] } : {};
+
             return (
-                <Pressable key={index} style={styles.imgItem} onPress={() => whenImagePress(index)}>
-                    <Image resizeMode='contain' style={styles.img} source={{ uri: image.uri || image }} />
-                </Pressable>
+                <Animated.View
+                    key={index}
+                    style={[
+                        styles.imgItem,
+                        isSelected ? styles.selectedImage : null,
+                        animatedStyle,
+                    ]}
+                >
+                    <Pressable
+                        style={{ width: '100%' }}
+                        onPress={() => (isDeleteMode ? toggleImageSelection(image.uri || image) : whenImagePress(index))}
+                        onLongPress={() => {
+                            if (isDeleteMode) {
+                                showMessage("Aleardy in delete mode") // show a message to indicate that this cant be done in a delete mode
+                                return
+                            }
+                            setIsDeleteMode(true);
+                            toggleImageSelection(image.uri || image);
+                        }}
+
+                    >
+                        <Image style={styles.img} source={{ uri: image.uri || image }} />
+                    </Pressable>
+                </Animated.View>
             );
         });
     };
@@ -128,6 +251,8 @@ const ProviderPhotosPrview = (props) => {
                     <MaterialIcons name={'add-photo-alternate'} color={colors.silver} size={60} />
                 </Pressable>
             </ScrollView>
+            {renderDeleteButton()}
+            {renderCancelButton()}
             {showPhotoModal()}
         </View>
     );
@@ -169,7 +294,6 @@ const styles = StyleSheet.create({
         margin: 5,
         alignItems: 'center',
         justifyContent: 'center',
-        // borderWidth: 1
         shadowOffset: {
             width: 0,
             height: 0,
@@ -177,7 +301,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0,
         shadowRadius: 0.1,
         shadowColor: "black",
-        elevation: 1
+        elevation: 1,
     },
     detailModal: {
         width: screenWidth * 0.95,
@@ -197,5 +321,35 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 20,
     },
-
+    selectedImage: {
+        opacity: 0.5,
+        borderWidth: 2,
+        borderColor: colors.puprble,
+    },
+    deleteButton: {
+        backgroundColor: 'red',
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 10,
+        borderRadius: 5,
+    },
+    deleteButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    cancelButton: {
+        backgroundColor: 'gray',
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 10,
+        borderRadius: 5,
+    },
+    cancelButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
 });

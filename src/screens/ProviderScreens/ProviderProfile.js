@@ -28,21 +28,19 @@ const ProviderProfile = props => {
   const navigation = useNavigation();
   const providerReview = true
 
-  //console.log("serviceInfoAccorUser", serviceInfoAccorUser);
+  useEffect(() => {
+    if (serviceInfoAccorUser?.length && !isFirst) {
+      const firstService = serviceInfoAccorUser[0];
+      setIsfirst(firstService.service_id);
+      setserviceTitle(firstService.title);
+      setServiceCat(firstService.servType);
+    }
+  }, [serviceInfoAccorUser, isFirst]);
+
 
   const renderMyService = () => {
     const data = serviceInfoAccorUser || [];
-
-    const cardsArray = data?.map((card, index) => {
-
-      if (index == 0 && !isFirst) {
-        setIsfirst(card.service_id);
-        setserviceTitle(card.title);
-        setServiceCat(card.servType);
-      }
-      return <CalenderServiceCard {...card} />;
-    });
-    return cardsArray;
+    return data.map((card) => <CalenderServiceCard key={card.service_id} {...card} />);
   };
 
   const getRegionsfromApi = () => {
@@ -92,7 +90,7 @@ const ProviderProfile = props => {
     getRequestInfo()
     getBookingfromApi()
     getServiceVisits()
-  }, [isFirst])
+  }, [serviceInfoAccorUser, isFirst])
 
 
 
