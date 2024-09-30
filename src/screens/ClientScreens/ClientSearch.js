@@ -282,9 +282,10 @@ const ClientSearch = (props) => {
 
     const onBtnSearchPress = () => {
         if (Categorychozen) {
-            props.navigation.navigate(ScreenNames.Results, { data: { ...props } });
+            const dataToPass = {};
+            props.navigation.navigate(ScreenNames.Results, { data: dataToPass });
         }
-    }
+    };
 
 
     return (
