@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { colors } from '../../assets/AppColors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-// import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import strings from '../../assets/res/strings';
@@ -92,14 +91,6 @@ const ProviderProfile = props => {
     getServiceVisits()
   }, [serviceInfoAccorUser, isFirst])
 
-
-
-  const filterService = () => {
-    const service = serviceInfoAccorUser?.filter(item => {
-      return item.service_id === isFirst;
-    });
-    return service
-  };
 
   const seprator = () => {
     return <View style={styles.seprater}></View>;

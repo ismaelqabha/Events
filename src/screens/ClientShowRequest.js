@@ -27,7 +27,7 @@ const ClientShowRequest = (props) => {
 
     const serviceRequest = reqInfo.serviceRequest[0]
     const requestPayment = reqInfo.requestPayment[0]
-
+    
     const services = reqInfo.services[0]
     const [relatedCamp, setRelatedCamp] = useState([])
 
@@ -573,7 +573,6 @@ const ClientShowRequest = (props) => {
             {header()}
             <ScrollView>
                 {renderSendingReqDate()}
-
                 {reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
                 <Recipt

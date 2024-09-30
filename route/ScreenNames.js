@@ -73,6 +73,7 @@ export const ScreenNames = {
     ProviderDuePayments: 'ProviderDuePayments',
     ProviderPhotosPrview: 'ProviderPhotosPrview',
     ProviderUsersView:'ProviderUsersView',
+    ProviderSetNewBooking: 'ProviderSetNewBooking',
 
     Splash: 'Splash',
     Results: 'Results',
