@@ -1,5 +1,5 @@
 const baseUrl = 'https://ev-server.onrender.com/';
-// const baseUrl = "http://localhost:7000/"
+// const baseUrl = "http://localhost:8000/"
 
 
 // Users
@@ -343,6 +343,20 @@ export const updateServiceLogo = async (body) => {
     'Content-Type': 'multipart/form-data',
   }
   return await AppFetch(url, 'PATCH', body, headers);
+};
+
+export const deleteServiceImage = async (serviceID, imgId) => {
+  const url = 'ServiceImags/deleteImg';
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  const body = JSON.stringify({
+    serviceId: serviceID,
+    imgId: imgId,
+  });
+
+  return await AppFetch(url, 'DELETE', body, headers);
 };
 
 // Service Booking Dates
