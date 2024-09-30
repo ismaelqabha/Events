@@ -148,7 +148,7 @@ const Results = (props) => {
     const serviceRequestsArray = []
 
     const countAllRequestDates = (servicId, dataforReservation) => {
-       
+
         const queryInfo = {
             ReqServId: servicId,
             reservationDetail: [{ reservationDate: dataforReservation }]
@@ -209,6 +209,8 @@ const Results = (props) => {
     const findFirstDateAvailable = (serviceDates, servicId, maxNumOfReq) => {
 
         var daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
+        console.log("daysinmonth", daysInMonth);
+
         let completeDate = ''
 
         if (currentDate > daysInMonth) {
@@ -319,7 +321,7 @@ const Results = (props) => {
                 var serviceRequestsArray = []
                 var reqDateItem = {}
                 result.forEach(element => {
-                   // reqDateItem = retriveRequestAccDate(item.serviceData.service_id, element)
+                    // reqDateItem = retriveRequestAccDate(item.serviceData.service_id, element)
                     serviceRequestsArray.push(reqDateItem)
                 });
                 item.SerReq = serviceRequestsArray
