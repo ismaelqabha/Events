@@ -4,7 +4,8 @@ import {
   View,
   ScrollView,
   Pressable,
-  Modal, ToastAndroid, Dimensions, Image
+  Modal, ToastAndroid, Dimensions, Image,
+  Alert
 } from 'react-native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import SearchContext from '../../../store/SearchContext';
@@ -197,6 +198,8 @@ const ProviderHome = props => {
 
     const index = data[0].logoArray?.findIndex((val) => val === true);
     const [image, setImage] = useState(data[0]?.serviceImages[index]);
+    const [selectedImage, setSelectedImage] = useState(null);
+
 
     const openGallery = () => {
       const options = {
@@ -211,55 +214,80 @@ const ProviderHome = props => {
           console.log('ImagePicker Error: ', response.errorMessage);
         } else if (response.assets && response.assets.length > 0) {
           const selectedImage = response.assets[0].uri;
-          setImage(selectedImage);
+          setSelectedImage(selectedImage);
 
-          const formData = new FormData();
-          formData.append('serviceID', data[0].service_id);
-          formData.append('images', {
-            uri: selectedImage,
-            type: response.assets[0].type,
-            name: response.assets[0].fileName,
-          });
-
-          updateServiceLogo(formData)
-            .then((resJson) => {
-              console.log('Server Response:', resJson);
-              if (resJson.message === 'Images saved') {
-                const updatedService = {
-                  ...data[0],
-                  serviceImages: resJson.images.serviceImages,
-                };
-
-                setServiceInfoAccorUser((prevState) => {
-                  const serviceIndex = prevState.findIndex(
-                    (service) => service.service_id === updatedService.service_id
-                  );
-
-                  if (serviceIndex > -1) {
-                    const updatedServices = [...prevState];
-                    updatedServices[serviceIndex] = updatedService;
-                    return updatedServices;
-                  }
-
-                  return prevState;
-                });
-                showMessage("Logo updated successfully");
-              } else {
-                showMessage("Failed to update logo");
-              }
-            })
-            .catch((error) => {
-              console.log('Error uploading logo:', error);
-              showMessage("Error updating logo");
-            });
+          Alert.alert(
+            "Confirm Changes",
+            "Would you like to confirm or discard the new image?",
+            [
+              {
+                text: "Discard",
+                onPress: () => discardChanges(),
+                style: "cancel",
+              },
+              {
+                text: "Confirm",
+                onPress: () => confirmChanges(selectedImage),
+              },
+            ]
+          );
         }
       });
+    };
+
+    const confirmChanges = (newImage) => {
+      setImage(newImage);
+      setSelectedImage(null);
+
+      const formData = new FormData();
+      formData.append('serviceID', data[0].service_id);
+      formData.append('images', {
+        uri: selectedImage,
+        type: response.assets[0].type,
+        name: response.assets[0].fileName,
+      });
+
+      updateServiceLogo(formData)
+        .then((resJson) => {
+          console.log('Server Response:', resJson);
+          if (resJson.message === 'Images saved') {
+            const updatedService = {
+              ...data[0],
+              serviceImages: resJson.images.serviceImages,
+            };
+
+            setServiceInfoAccorUser((prevState) => {
+              const serviceIndex = prevState.findIndex(
+                (service) => service.service_id === updatedService.service_id
+              );
+
+              if (serviceIndex > -1) {
+                const updatedServices = [...prevState];
+                updatedServices[serviceIndex] = updatedService;
+                return updatedServices;
+              }
+
+              return prevState;
+            });
+            showMessage('Logo updated successfully');
+          } else {
+            showMessage('Failed to update logo');
+          }
+        })
+        .catch((error) => {
+          console.log('Error uploading logo:', error);
+          showMessage('Error updating logo');
+        });
+    };
+
+    const discardChanges = () => {
+      setSelectedImage(null);
     };
 
     return (
       <View>
         <BackgroundImage style={styles.logoview} source={require('../../assets/photos/backgroundPart.png')}>
-          <Image style={styles.logoImg} source={{ uri: image }} />
+          <Image style={styles.logoImg} source={{ uri: selectedImage || image }} />
           <Pressable style={styles.editImg} onPress={openGallery}>
             <Entypo name={'camera'} color={colors.puprble} size={25} />
           </Pressable>
