@@ -159,7 +159,7 @@ export const invitation = [
         eventLogoId: '65bfea90ed6965ed8854aec2',
         eventTitle: 'حفل زفاف احمد',
         sentStatus: 'unsend',
-        
+
         invitationCard: {
             invitId: '0005',
             invitationBackgraund: images.invetationCard(),
@@ -171,7 +171,7 @@ export const invitation = [
             callerNames: ["عبد الله احمد عباس", "خالد فتحي حسين"],
             eventStar: ['أحمد', 'سمر']
         },
-        
+
         inviteesList: [
             {
                 recived_Id: '65fdd05a0f07c96522542a06',
@@ -228,6 +228,54 @@ export const invitation = [
             },
 
         ],
+    }
+]
+
+export const review = [
+    {
+        reviewId: '111',
+        senderId: '65ad914764fcb68f0ed422a1',
+        RecieverId: '661059d64cc4ba7664305a1a',
+        reviewText: 'كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير',
+        reviewDate: '2022-11-3',
+        replay: [
+            {
+                replierId: '',
+                replayText: '',
+                replayDate: ''
+            }
+        ],
+
+    },
+    {
+        reviewId: '111',
+        senderId: '670017d2cc910aa746bfd115',
+        RecieverId: '661059d64cc4ba7664305a1a',
+        reviewText: 'كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير',
+        reviewDate: '2024-11-3',
+        replay: [
+            {
+                replierId: '',
+                replayText: '',
+                replayDate: ''
+            }
+        ],
+
+    },
+    {
+        reviewId: '111',
+        senderId: '661059d64cc4ba7664305a1a',
+        RecieverId: '65ad914764fcb68f0ed422a1',
+        reviewText: 'كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير',
+        reviewDate: '2024-5-3',
+        replay: [
+            {
+                replierId: '',
+                replayText: '',
+                replayDate: ''
+            }
+        ],
+
     }
 ]
 
