@@ -10,9 +10,12 @@ import moment from 'moment';
 const ReviewsScreen = (props) => {
     const { setIsfirst, isFirst } = useContext(SearchContext);
     const { clientReview, providerReview, userId } = props.route?.params || {}
+    const [sderviceData, setServiceData] = useState([])
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
 
 
     const getProviderInfo = (item) => {
@@ -23,15 +26,21 @@ const ReviewsScreen = (props) => {
     const getClientInfo = (item) => {
         return review?.filter(item => {
             return item.RecieverId === userId
+
+        })
+    }
+
+    const getServiceInfo = () => {
+        getServiceBySerId({ service_id: isFirst }).then(res => {
+            setServiceData(res)
+
         })
     }
 
     useEffect(() => {
-    }, [])
 
-    const getClientData = () => {
-
-    }
+        getServiceInfo()
+    }, []);
 
 
     const renderHeader = () => {
