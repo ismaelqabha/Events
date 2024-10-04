@@ -1,10 +1,21 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
+import { SelectList } from 'react-native-dropdown-select-list';
+import { getRegions } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
+import { showMessage } from '../../resources/Functions';
+import ProviderSetClientForBooking from '../../components/ProviderComponents/ProviderSetClientForBooking';
+import SearchContext from '../../../store/SearchContext';
+import ServiceProviderContext from '../../../store/ServiceProviderContext';
 
 
 const ProviderSetNewBooking = (props) => {
+
+    const { userCity, setUserCity, setCreateUserRegion } = useContext(UsersContext);
+    const { isFirst } = useContext(SearchContext);
+    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
 
     const [clientStatus, setClientStatus] = useState(true)
     const [bookStatus, setBookStatus] = useState(false)
@@ -14,9 +25,28 @@ const ProviderSetNewBooking = (props) => {
     const [booking, setBooking] = useState(false)
     const [payment, setPayment] = useState(false)
 
+    const [regionData, setRegionData] = useState([])
+    const [regions, setRegions] = useState(null)
+    const [serviceData, setServiceData] = useState([])
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
+    const findProviderInfo = () => {
+        const data = serviceInfoAccorUser.filter(item => {
+            return item.service_id === isFirst
+        })
+        setServiceData(data)
+        return data
+    }
+
+    useEffect(() => {
+        getRegionsfromApi()
+        findProviderInfo()
+    }, [])
+
+    
     const header = () => {
         return (
             <View style={styles.title}>
@@ -70,16 +100,100 @@ const ProviderSetNewBooking = (props) => {
         return (
             <View style={styles.body}>
                 <View style={styles.bodyTitle}>
-                {client && <Text style={styles.nextText}>معلومات الزبون</Text>}
-                {booking && <Text style={styles.nextText}>تفاصيل الحجز</Text>}
-                {payment && <Text style={styles.nextText}>معلومات الدفع</Text>}
+                    {client && <Text style={styles.nextText}>معلومات الزبون</Text>}
+                    {booking && <Text style={styles.nextText}>تفاصيل الحجز</Text>}
+                    {payment && <Text style={styles.nextText}>معلومات الدفع</Text>}
                 </View>
                 <View style={styles.bodyTaps}>
-
+                    {client && renderClientInfo()}
+                    {booking && renderBookingInfo()}
+                    {payment && renderPaymentDetail()}
                 </View>
             </View>
         )
     }
+
+    const getRegionsfromApi = async () => {
+        getRegions().then((res) => {
+            res?.message ? showMessage(res.message) : updateData(res?.regions)
+        }).catch((e) => {
+            console.log("error fetching -> ", e);
+        })
+
+    }
+
+    const updateData = (regions) => {
+        setRegions(regions)
+        const allData = []
+        regions?.forEach(region => {
+            allData.push(...region?.regionCities)
+        });
+        allData.sort()
+        setRegionData(allData)
+    }
+
+    const searchRegion = (val) => {
+        if (!regions) {
+            return;
+        } else {
+            regions.forEach((region) => {
+                var index = region?.regionCities?.findIndex(city => {
+                    return city === val
+                })
+                if (!(index === -1)) {
+                    setCreateUserRegion(region?.regionName)
+                }
+            })
+        }
+    }
+
+    const renderClientInfo = () => {
+        return (
+            <View>
+                <TextInput
+                    style={styles.input}
+                    keyboardType='default'
+                    placeholder='اسم الزبون'
+                    value={{}}
+                    onChangeText={{}}
+                />
+                <TextInput
+                    style={styles.input}
+                    keyboardType='default'
+                    placeholder='رقم الهاتف'
+                    value={{}}
+                    onChangeText={{}} />
+
+                <View style={styles.addressView}>
+                    <SelectList
+                        data={regionData}
+                        setSelected={val => {
+                            setUserCity(val);
+                            searchRegion(val)
+                        }}
+                        placeholder={"أختر العنوان"}
+                        boxStyles={styles.dropdown}
+                        inputStyles={styles.droptext}
+                        dropdownTextStyles={styles.dropstyle}
+                    />
+                </View>
+
+            </View>
+        )
+    }
+    const renderBookingInfo = () => {
+        return (
+            <ScrollView>
+                  <ProviderSetClientForBooking serviceData={serviceData}/>
+            </ScrollView>
+        )
+    }
+    const renderPaymentDetail = () => {
+        return (
+            <View></View>
+        )
+    }
+
     const nextPress = () => {
         if (bookStatus) {
             setPaymentStatus(true)
@@ -127,6 +241,7 @@ const ProviderSetNewBooking = (props) => {
             {header()}
             {renderHeadLines()}
             {screenBody()}
+            
             {footer()}
         </View>
     )
@@ -192,7 +307,7 @@ const styles = StyleSheet.create({
     },
     bodyTaps: {
         width: '90%',
-        height: 400,
+        // height: 450,
         alignSelf: 'center',
         backgroundColor: 'white',
         borderBottomLeftRadius: 10,
@@ -256,11 +371,13 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 60,
         alignSelf: 'center',
-        position: 'absolute',
-        bottom: 10,
+        // position: 'absolute',
+        // bottom: 0,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        //borderWidth: 1,
+        // marginTop: 50
     },
     btnNext: {
         width: '50%',
@@ -286,5 +403,42 @@ const styles = StyleSheet.create({
         fontSize: 15,
         // color: colors.puprble,
         fontWeight: 'bold'
-    }
+    },
+    input: {
+        width: '90%',
+        height: 50,
+        borderWidth: 1.5,
+        borderColor: colors.silver,
+        alignSelf: 'center',
+        marginVertical: 10,
+        borderRadius: 10,
+        paddingHorizontal: 10
+    },
+    addressView: {
+        width: '90%',
+        height: 50,
+        alignSelf: 'center',
+        marginVertical: 10,
+        borderRadius: 10,
+    },
+    dropdown: {
+       // height: 50,
+        // maxWidth: '80%',
+        // minWidth: '80%',
+        // alignSelf: 'center',
+        // backgroundColor: 'lightgray',
+        // borderRadius: 10,
+        textAlign: 'right',
+        borderWidth: 1.5,
+        borderColor: colors.silver,
+    },
+    dropstyle: {
+        color: 'black',
+        fontSize: 15,
+
+    },
+    droptext: {
+        fontSize: 18,
+        color: 'black',
+    },
 })
