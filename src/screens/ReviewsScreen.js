@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect ,useState} from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
 import { review } from '../resources/data';
 import SearchContext from '../../store/SearchContext';
 import moment from 'moment';
+import { getServiceBySerId } from '../resources/API';
 
 
 const ReviewsScreen = (props) => {
