@@ -1,10 +1,18 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+
 
 const ProviderSetNewBooking = (props) => {
+
+    const [clientStatus, setClientStatus] = useState(true)
+    const [bookStatus, setBookStatus] = useState(false)
+    const [paymentStatus, setPaymentStatus] = useState(false)
+
+    const [client, setClient] = useState(true)
+    const [booking, setBooking] = useState(false)
+    const [payment, setPayment] = useState(false)
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -29,41 +37,97 @@ const ProviderSetNewBooking = (props) => {
         return (
             <View style={styles.head}>
                 <View style={styles.headShape}>
-                    <View style={styles.circle}>
-                        <Text style={styles.numberTxt}>3</Text>
+                    <View style={[styles.circle, paymentStatus ? styles.circlePassed : styles.circle]}>
+                        <Text style={[styles.numberTxt, paymentStatus ? styles.numberTxtPassed : styles.numberTxt]}>3</Text>
                     </View>
 
-                    <View style={styles.line}></View>
-                    <View style={styles.circlePassed}>
-                        <Text style={styles.numberTxtPassed}>2</Text>
+                    <View style={[styles.line, paymentStatus ? styles.linePassed : styles.line]}></View>
+                    <View style={[styles.circle, bookStatus ? styles.circlePassed : styles.circle]}>
+                        <Text style={[styles.numberTxt, bookStatus ? styles.numberTxtPassed : styles.numberTxt]}>2</Text>
                     </View>
 
-                    <View style={styles.linePassed}></View>
-                    <View style={styles.circlePassed}>
-                        <Text style={styles.numberTxtPassed}>1</Text>
+                    <View style={[styles.line, bookStatus ? styles.linePassed : styles.line]}></View>
+                    <View style={[styles.circle, clientStatus ? styles.circlePassed : styles.circle]}>
+                        <Text style={[styles.numberTxt, clientStatus ? styles.numberTxtPassed : styles.numberTxt]}>1</Text>
                     </View>
 
                 </View>
                 <View style={styles.headTitle}>
                     <View style={styles.headItem}>
-                        <Text style={styles.headTxt}>الدفع</Text>
+                        <Text style={[styles.headTxt, paymentStatus ? styles.headTxtSelected : styles.headTxt]}>الدفع</Text>
                     </View>
                     <View style={styles.headItem}>
-                        <Text style={styles.headTxtSelected}>تفاصيل الحجز</Text>
+                        <Text style={[styles.headTxt, bookStatus ? styles.headTxtSelected : styles.headTxt]}>تفاصيل الحجز</Text>
                     </View>
                     <View style={styles.headItem}>
-                        <Text style={styles.headTxt}>معلومات الزبون</Text>
+                        <Text style={[styles.headTxt, clientStatus ? styles.headTxtSelected : styles.headTxt]}>معلومات الزبون</Text>
                     </View>
                 </View>
             </View>
         )
     }
+    const screenBody = () => {
+        return (
+            <View style={styles.body}>
+                <View style={styles.bodyTitle}>
+                {client && <Text style={styles.nextText}>معلومات الزبون</Text>}
+                {booking && <Text style={styles.nextText}>تفاصيل الحجز</Text>}
+                {payment && <Text style={styles.nextText}>معلومات الدفع</Text>}
+                </View>
+                <View style={styles.bodyTaps}>
 
+                </View>
+            </View>
+        )
+    }
+    const nextPress = () => {
+        if (bookStatus) {
+            setPaymentStatus(true)
+            setClient(false)
+            setBooking(false)
+            setPayment(true)
+        } else {
+            setBookStatus(true)
+            setClient(false)
+            setBooking(true)
+            setPayment(false)
+        }
+    }
+    const backPress = () => {
+        if (paymentStatus) {
+            setPaymentStatus(false)
+            setClient(false)
+            setBooking(true)
+            setPayment(false)
+        } else {
+            if (bookStatus) {
+                setBookStatus(false)
+                setClient(true)
+                setBooking(false)
+                setPayment(false)
+            }
+        }
+    }
+
+    const footer = () => {
+        return (
+            <View style={styles.btnView}>
+                <TouchableOpacity style={styles.btnNext} onPress={nextPress}>
+                    <Text style={styles.nextText}>التالي</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnBack} onPress={backPress}>
+                    <Text style={styles.backText}>رجوع</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
 
     return (
         <View style={styles.container}>
             {header()}
             {renderHeadLines()}
+            {screenBody()}
+            {footer()}
         </View>
     )
 }
@@ -92,7 +156,7 @@ const styles = StyleSheet.create({
         height: '50%',
         //   borderWidth: 1
     },
-    headShape:{
+    headShape: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -107,15 +171,40 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         backgroundColor: colors.puprble,
+    },
+    body: {
+        width: '100%',
+        height: 500,
+        alignSelf: 'center',
         // borderWidth: 1
     },
+    bodyTitle: {
+        width: '50%',
+        height: 50,
+        alignSelf: 'flex-end',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        backgroundColor: 'white',
+        marginRight: 20,
+        elevation: 5,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    bodyTaps: {
+        width: '90%',
+        height: 400,
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        elevation: 5
+    },
     headItem: {
-        // borderWidth: 1,
         alignItems: 'center',
         width: '20%',
     },
     circle: {
-        borderWidth: 1,
+        borderWidth: 2,
         width: '12%',
         height: '85%',
         borderRadius: 30,
@@ -141,26 +230,61 @@ const styles = StyleSheet.create({
         width: "22%",
         borderColor: colors.BGScereen
     },
-    headTxt:{
+    headTxt: {
         fontSize: 15,
         textAlign: 'center',
         color: colors.silver
     },
-    headTxtSelected:{
+    headTxtSelected: {
         fontSize: 15,
         color: colors.BGScereen,
         fontWeight: 'bold',
-        textAlign: 'center',  
+        textAlign: 'center',
     },
-    numberTxt:{
+    numberTxt: {
         fontSize: 15,
         textAlign: 'center',
         color: colors.silver
     },
-    numberTxtPassed:{
+    numberTxtPassed: {
         fontSize: 15,
         textAlign: 'center',
         color: colors.puprble,
         fontWeight: 'bold',
     },
+    btnView: {
+        width: '90%',
+        height: 60,
+        alignSelf: 'center',
+        position: 'absolute',
+        bottom: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    btnNext: {
+        width: '50%',
+        height: 40,
+        backgroundColor: colors.silver,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5
+    },
+    btnBack: {
+        width: '20%',
+        height: 40,
+        backgroundColor: colors.silver,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5
+    },
+    nextText: {
+        fontSize: 18,
+        color: colors.puprble
+    },
+    backText: {
+        fontSize: 15,
+        // color: colors.puprble,
+        fontWeight: 'bold'
+    }
 })
