@@ -1,14 +1,28 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
+import SearchContext from '../../store/SearchContext';
 
 
 const ReviewsScreen = (props) => {
     const { clientReview, providerReview } = props.route?.params || {}
+    const { isFirst } = useContext(SearchContext);
+    const [sderviceData, setServiceData] = useState([])
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
+
+    const getServiceInfo = () => {
+        getServiceBySerId({ service_id: isFirst }).then(res => {
+            setServiceData(res)
+        })
+    }
+
+    useEffect(() => {
+        getServiceInfo()
+    }, []);
 
     const renderHeader = () => {
         return (
@@ -66,14 +80,14 @@ const ReviewsScreen = (props) => {
             return <View>
                 {clientReviewInfo()}
             </View>
-             
-            
+
+
         }
-        if(providerReview) {
+        if (providerReview) {
             return <View>
-            {ProviderReviewInfo()}
-        </View>
-            
+                {ProviderReviewInfo()}
+            </View>
+
         }
     }
     return (
