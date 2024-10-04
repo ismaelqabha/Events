@@ -64,7 +64,7 @@ const ClientProfile = (props) => {
     }
     const renderFeedBack = () => {
         return (<View>
-            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen, { clientReview })}>
+            <Pressable style={styles.item} onPress={() => props.navigation.navigate(ScreenNames.ReviewsScreen, { clientReview , userId})}>
                 <View>
                     <Text style={styles.basicInfo}>التغذية الراجعة (2)</Text>
                 </View>

@@ -1,17 +1,20 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
+import { review } from '../resources/data';
 import SearchContext from '../../store/SearchContext';
+import moment from 'moment';
 
 
 const ReviewsScreen = (props) => {
-    const { clientReview, providerReview } = props.route?.params || {}
-    const { isFirst } = useContext(SearchContext);
+    const { setIsfirst, isFirst } = useContext(SearchContext);
+    const { clientReview, providerReview, userId } = props.route?.params || {}
     const [sderviceData, setServiceData] = useState([])
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
 
 
     const getServiceInfo = () => {
@@ -19,8 +22,20 @@ const ReviewsScreen = (props) => {
             setServiceData(res)
         })
     }
+    const getProviderInfo = (item) => {
+        return review?.filter(item => {
+            return item.RecieverId === isFirst
+        })
+    }
+    const getClientInfo = (item) => {
+        return review?.filter(item => {
+            return item.RecieverId === userId
+
+        })
+    }
 
     useEffect(() => {
+
         getServiceInfo()
     }, []);
 
@@ -39,36 +54,45 @@ const ReviewsScreen = (props) => {
     }
 
     const clientReviewInfo = () => {
-        return (<View>
-            <View style={styles.messageView}>
-                <View style={styles.reviewInfo}>
-                    <View>
-                        <Text style={styles.servicenameTxt}>قاعة الامير</Text>
-                        <Text>منذ 3 شهور</Text>
+        const data = getClientInfo()
+
+        return data?.map(item => {
+            const reviewDate = moment(item.reviewDate, "YYYYMMDD").fromNow()
+            return (<View>
+                <View style={styles.messageView}>
+                    <View style={styles.reviewInfo}>
+                        <View>
+                            <Text style={styles.servicenameTxt}>قاعة الامير</Text>
+                            <Text style={styles.servicenameTxt}>{reviewDate}</Text>
+                        </View>
+                        <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/ameer.png')} /></View>
                     </View>
-                    <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/ameer.png')} /></View>
+                    <Text style={styles.ReviewTxt}>{item.reviewText}</Text>
                 </View>
-                <Text style={styles.ReviewTxt}>زبون محترم وخلوق جدا كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير</Text>
+                {seperater()}
             </View>
-            {seperater()}
-        </View>
-        )
+            )
+        })
     }
     const ProviderReviewInfo = () => {
-        return (<View>
-            <View style={styles.messageView}>
-                <View style={styles.reviewInfo}>
-                    <View>
-                        <Text style={styles.servicenameTxt}>عبد الله الزيود</Text>
-                        <Text>منذ 3 شهور</Text>
+        const data = getProviderInfo()
+        return data?.map(item => {
+            const reviewDate = moment(item.reviewDate, "YYYYMMDD").fromNow()
+            return (<View>
+                <View style={styles.messageView}>
+                    <View style={styles.reviewInfo}>
+                        <View>
+                            <Text style={styles.servicenameTxt}>ابو عبدالله</Text>
+                            <Text style={styles.servicenameTxt}> {reviewDate} </Text>
+                        </View>
+                        <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/raaed.png')} /></View>
                     </View>
-                    <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/raaed.png')} /></View>
+                    <Text style={styles.ReviewTxt}>{item.reviewText}</Text>
                 </View>
-                <Text style={styles.ReviewTxt}>معاملة جميلة وخدمات ممتازة كل الاحترام والتقدير</Text>
+                {seperater()}
             </View>
-            {seperater()}
-        </View>
-        )
+            )
+        })
     }
     const seperater = () => {
         return (
@@ -106,6 +130,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
+
     },
     header: {
         width: "95%",
