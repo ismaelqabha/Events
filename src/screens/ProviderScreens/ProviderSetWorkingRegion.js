@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, Pressable, ScrollView,ToastAndroid } from 'react-native';
 import ProviderWorkRegionComp from '../../components/ProviderComponents/ProviderWorkRegionComp';
 import ScreenHeader from '../../components/ProviderComponents/ScreenHeader';
 import strings from '../../assets/res/strings';
@@ -38,15 +38,16 @@ const ProviderSetWorkingRegion = props => {
 
   const updateWorkingRegions = () => {
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
+    const data = serviceInfoAccorUser || [];
 
     const newData = {
       service_id: isFirst,
       workingRegion: workAreas
     }
     updateService(newData).then(res => {
-      const data = serviceInfoAccorUser || [];
+      
       if (selectedServiceIndex > -1) {
-        data[selectedServiceIndex] = newData;
+        data[selectedServiceIndex] = {...data[selectedServiceIndex], ...newData};
       }
       if (res.message === 'Updated Sucessfuly') {
         setServiceInfoAccorUser([...data])

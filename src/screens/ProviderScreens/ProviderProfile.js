@@ -4,8 +4,6 @@ import { colors } from '../../assets/AppColors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import strings from '../../assets/res/strings';
 import { ScreenNames } from '../../../route/ScreenNames';
@@ -13,7 +11,7 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import CalenderServiceCard from '../../components/ProviderComponents/CalenderServiceCard';
 import { useNavigation } from '@react-navigation/native';
-import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId, getbookingDates } from '../../resources/API';
+import { getCampaignsByServiceId, getRegions, getRequestByServiceId, getRequestsAndUsersByServiceId, getScreenVisits, getbookingDates } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
 
 const ProviderProfile = props => {
@@ -23,7 +21,7 @@ const ProviderProfile = props => {
     serviceCat, setServiceCat, campInfo, setCampInfo,
     setRequestInfoByService, setBookingDates } = useContext(SearchContext);
 
-  const { serviceInfoAccorUser, Region, SetRegion } = useContext(ServiceProviderContext);
+  const { serviceInfoAccorUser, Region, SetRegion, visits, setVisits } = useContext(ServiceProviderContext);
   const { userName } = useContext(UsersContext);
 
   const navigation = useNavigation();
@@ -79,21 +77,20 @@ const ProviderProfile = props => {
     })
   }
 
+  const getServiceVisits = () => {
+    getScreenVisits({ serviceID: isFirst }).then(res => {
+      setVisits(res)
+    })
+  }
+
   useEffect(() => {
     getRegionsfromApi()
     getCampignsfromApi()
     getRequestInfo()
     getBookingfromApi()
+    getServiceVisits()
   }, [serviceInfoAccorUser, isFirst])
 
-
-
-  const filterService = () => {
-    const service = serviceInfoAccorUser?.filter(item => {
-      return item.service_id === isFirst;
-    });
-    return service
-  };
 
   const seprator = () => {
     return <View style={styles.seprater}></View>;
@@ -118,10 +115,47 @@ const ProviderProfile = props => {
             props.navigation.navigate(ScreenNames.ProviderClientScreen)
           }>
           <View>
-            <Text style={styles.basicInfo}>الزبائن (10)</Text>
+            <Text style={styles.basicInfo}>الزبائن</Text>
           </View>
           <View style={styles.IconView}>
             <FontAwesome5 name={'users'} color={colors.puprble} size={25} />
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
+  const renderSales = () => {
+    return (
+      <View>
+        <Pressable
+          style={styles.item}
+          // onPress={() =>
+          //   props.navigation.navigate(ScreenNames.ProviderClientScreen)
+          // }
+          >
+          <View>
+            <Text style={styles.basicInfo}>المبيعات</Text>
+          </View>
+          <View style={styles.IconView}>
+            <FontAwesome5 name={'coins'} color={colors.puprble} size={25} />
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
+  const renderViewsClicks = () => {
+    return (
+      <View>
+        <Pressable
+          style={styles.item}
+          onPress={() =>
+            props.navigation.navigate(ScreenNames.ProviderUsersView)}
+        >
+          <View>
+            <Text style={styles.basicInfo}>المشاهدات والزيارات</Text>
+          </View>
+          <View style={styles.IconView}>
+            <FontAwesome5 name={'eye'} color={colors.puprble} size={25} />
           </View>
         </Pressable>
       </View>
@@ -292,21 +326,20 @@ const ProviderProfile = props => {
         {seprator()}
         <View style={styles.viewSet}>
           {/* {renderPayments()} */}
+          {renderSales()}
+          {renderViewsClicks()}
           {renderDueRequestPayment()}
           {renderClients()}
           {renderFeedBack()}
           {campInfo.message !== 'No Campaigns' && renderCampigns()}
         </View>
 
-        {/* <Text style={styles.txt}>قائمة العروض</Text>
-        <View style={styles.viewSet}>{renderOffers()}</View> */}
 
         <Text style={styles.txt}>العمليات</Text>
         <View style={styles.viewSet}>
           {renderAddCampaign()}
           {renderDetermineRegion()}
           {renderSetEventsType()}
-          {/* {renderSoialMedia1()} */}
         </View>
 
         <Text style={styles.txt}>جديد</Text>
@@ -321,13 +354,11 @@ export default ProviderProfile;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.BGScereen,
     marginBottom: 70,
+    paddingHorizontal: 10
   },
   headView: {
-    marginTop: 20,
-    marginRight: 20,
-    marginBottom: 40,
+    margin: 20,
   },
   headtext: {
     fontSize: 20,
@@ -335,22 +366,22 @@ const styles = StyleSheet.create({
     fontFamily: 'Cairo-VariableFont_slnt,wght',
   },
   content: {
-    //marginRight: 20,
   },
   viewSet: {
-    backgroundColor: 'white',
-    width: '90%',
+    borderWidth: 3,
+    borderColor: colors.silver,
+    width: '95%',
     justifyContent: 'center',
     alignSelf: 'center',
     borderRadius: 10,
     padding: 10,
+
   },
   txt: {
     fontSize: 20,
     color: colors.puprble,
     fontWeight: 'bold',
     marginVertical: 10,
-    marginRight: 20,
   },
   basicInfo: {
     fontSize: 18,
@@ -376,11 +407,11 @@ const styles = StyleSheet.create({
 
   seprater: {
     borderColor: colors.puprble,
-    borderWidth: 0.2,
-    width: '80%',
+    borderWidth: 0.5,
+    width: '90%',
     alignSelf: 'center',
-    marginTop: 20,
-    marginBottom: 20,
+    marginVertical: 20,
+
   },
   header: {
     alignItems: 'center',

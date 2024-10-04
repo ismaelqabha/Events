@@ -8,20 +8,30 @@ import { updateRequest } from '../resources/API';
 import SearchContext from '../../store/SearchContext';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+import moment from "moment";
+import ServiceProviderContext from '../../store/ServiceProviderContext';
+import { TouchableOpacity } from 'react-native';
 
 
 const PaymentDetailComp = (props) => {
 
-    const { setRequestInfoByService, requestInfoByService } = useContext(SearchContext);
+    const { setRequestInfoByService, requestInfoByService, isFirst } = useContext(SearchContext);
+    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const [paymentDataArray, setPaymentDataArray] = useState([])
     const { reqInfo, setShowPaymentModal } = props
 
     var payId = uuidv4();
 
-    // console.log("requestInfoByService", requestInfoByService);
-    // console.log("reqInfo", reqInfo);
+    const filterService = () => {
+        const service = serviceInfoAccorUser?.filter(item => {
+            return item.service_id === isFirst;
+        });
+        return service
+    };
 
+    useEffect(() => {
 
+    }, [])
 
     const updateData = () => {
         const requestInfoAccServiceIndex = requestInfoByService?.findIndex(item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId)
@@ -32,7 +42,7 @@ const PaymentDetailComp = (props) => {
             paymentInfo: paymentDataArray
         }
         const result = checkSumPersentage()
-        console.log("result", result);
+        // console.log("result", result);
         if (result < 100) {
             updateRequest(newData).then(res => {
 
@@ -68,9 +78,9 @@ const PaymentDetailComp = (props) => {
 
     const renderAddButton = () => {
         return (
-            <Pressable style={styles.item} onPress={addPaymentData}
+            <TouchableOpacity style={styles.item} onPress={addPaymentData}
             >
-                <Text style={styles.basicInfo}>اضافة تفاصيل دفعة</Text>
+                <Text style={styles.basicInfo}>اضافة</Text>
                 <View style={styles.IconView}>
                     <Entypo
                         style={styles.icon}
@@ -78,14 +88,14 @@ const PaymentDetailComp = (props) => {
                         color={colors.puprble}
                         size={25} />
                 </View>
-            </Pressable>
+            </TouchableOpacity>
         )
     }
 
 
     const checkSumPersentage = () => {
         var sumPers = 0
-        console.log("paymentDataArray", paymentDataArray);
+        // console.log("paymentDataArray", paymentDataArray);
         paymentDataArray.forEach(element => {
             sumPers += element.pers
         });
@@ -101,6 +111,8 @@ const PaymentDetailComp = (props) => {
 
 
     const updateArray = (data, index) => {
+
+
         setPaymentDataArray(prevArray => {
             const newArray = [...prevArray];
             newArray[index] = data;
@@ -137,7 +149,7 @@ const PaymentDetailComp = (props) => {
 
         const calculateAmountFromPersentage = (pers) => {
             const ReqPrice = reqInfo.requestInfo.Cost
-           // console.log(">>", pers);
+            // console.log(">>", pers);
             if (pers < 100) {
 
                 const fact = ReqPrice * pers
@@ -148,7 +160,6 @@ const PaymentDetailComp = (props) => {
                 console.log("persentage is more than 100%");
             }
         }
-
         const calculatePersentageFromAmount = (amou) => {
             const ReqPrice = reqInfo.requestInfo.Cost
             if (amou < ReqPrice) {
@@ -193,7 +204,7 @@ const PaymentDetailComp = (props) => {
             setShow(true);
             setMode(currentMode);
         }
-
+console.log("props.val", props.val);
         useEffect(() => {
             if (props.val) {
                 setPaymentDate(props?.val?.PayDate)
@@ -205,14 +216,14 @@ const PaymentDetailComp = (props) => {
             <View key={props?.index} style={styles.mediaItem}>
 
                 <View style={styles.mediaList}>
-                    <Pressable onPress={() => removePaymentItem(index)} style={{ width: '10%', padding: 5, alignItems: 'center' }}
+                    <TouchableOpacity onPress={() => removePaymentItem(index)} style={{ width: '10%', padding: 5, alignItems: 'center' }}
                     >
                         <FontAwesome name="remove" size={15} />
-                    </Pressable>
+                    </TouchableOpacity>
 
                 </View>
                 <View>
-                    <Pressable onPress={() => showMode('date')} >
+                    <TouchableOpacity onPress={() => showMode('date')} >
                         <View style={styles.viewDate}>
                             <View style={{ width: '80%', alignItems: 'center' }}>
                                 <Text style={styles.datetxt}>{paymentDate || "تاريخ الدفعة"}</Text>
@@ -222,7 +233,7 @@ const PaymentDetailComp = (props) => {
                                 style={{ fontSize: 30, color: colors.puprble, paddingRight: 10 }}
                             />
                         </View>
-                    </Pressable>
+                    </TouchableOpacity>
                     {show && (
                         <DateTimePicker
                             testID='dateTimePicker'
@@ -242,8 +253,8 @@ const PaymentDetailComp = (props) => {
                         placeholder={'الدفعة'}
                         value={amount}
                         onChangeText={setAmount}
-                        // onChangeText={(val) => setAmount(val)}
-                        // onEndEditing={(val) => calculatePersentageFromAmount(val.nativeEvent.text)}
+                        //onChangeText={(val) => setAmount(val)}
+                        onEndEditing={(val) => calculatePersentageFromAmount(val.nativeEvent.text)}
                     />
 
                     <View style={styles.inputPersentageView}>
@@ -253,17 +264,17 @@ const PaymentDetailComp = (props) => {
                             value={persentage}
                             //onChangeText={setPersentage}
 
-                             onChangeText={(val) => setPersentage(parseInt(val))}
+                            onChangeText={(val) => setPersentage(parseInt(val))}
 
                             onEndEditing={(val) => {
-                                //  calculateAmountFromPersentage(val.nativeEvent.text)
+                                  calculateAmountFromPersentage(val.nativeEvent.text)
                                 const data = {
                                     id: payId,
                                     PayDate: paymentDate,
                                     pers: persentage,
                                     paymentStutes: 'not paid'
                                 }
-                                 updateArray(data, index)
+                                updateArray(data, index)
 
                             }}
                         />
@@ -277,9 +288,10 @@ const PaymentDetailComp = (props) => {
 
     const renderSaveButton = () => {
         return (
-            <Pressable style={styles.footer} onPress={updateData}>
+            <TouchableOpacity style={styles.footer} onPress={updateData}
+            >
                 <Text style={styles.text}>حفظ</Text>
-            </Pressable>
+            </TouchableOpacity>
         )
     }
     const seperator = () => {
@@ -289,10 +301,15 @@ const PaymentDetailComp = (props) => {
     }
 
     const renderRequestDetail = () => {
+        const serviceInfo = filterService()
         return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.text}>{"حتى تاريخ  " + reqInfo.requestInfo.reservationDetail[0].reservationDate}</Text>
-                <Text style={styles.text}>{"المبلغ  " + reqInfo.requestInfo.Cost}</Text>
+            <View style={styles.reqInfoView}>
+                <View style={{ height: '50%' }}>
+                    <Text style={styles.text}>{"الدفعةالاولى قبل تاريخ  " + moment(reqInfo.requestInfo.reservationDetail[0].reservationDate).format('L')}</Text>
+                </View>
+                <View style={styles.amount}>
+                    <Text style={styles.text}>{"₪" + reqInfo.requestInfo.Cost}</Text>
+                </View>
             </View>
         )
     }
@@ -303,14 +320,16 @@ const PaymentDetailComp = (props) => {
                 {renderSaveButton()}
                 <Text style={styles.text}>تحديد عدد الدفعات </Text>
             </View>
-            {seperator()}
+            {/* {seperator()} */}
             {renderRequestDetail()}
             {renderAddButton()}
 
-            <ScrollView>
-                {renderPaymentFeilds()}
-            </ScrollView>
-
+            {paymentDataArray.length > 0 &&
+                <View style={styles.payFeildView}>
+                    <ScrollView>
+                        {renderPaymentFeilds()}
+                    </ScrollView>
+                </View>}
         </View>
     )
 }
@@ -325,15 +344,21 @@ const styles = StyleSheet.create({
     item: {
         flexDirection: 'row',
         alignItems: 'center',
-        alignSelf: 'flex-end',
-        marginTop: 20
+        justifyContent: 'flex-end',
+        // alignSelf: 'flex-end',
+        marginVertical: 5,
+        borderWidth: 2,
+        borderColor: colors.silver,
+        width: '100%',
+        borderRadius: 20
+
     },
     IconView: {
         width: 40,
         height: 40,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'lightgray',
+        // backgroundColor: 'lightgray',
         borderRadius: 30,
         marginLeft: 15
     },
@@ -400,7 +425,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     text: {
-        fontSize: 18,
+        fontSize: 20,
         color: colors.puprble
     },
     footer: {
@@ -411,5 +436,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 8
+    },
+    reqInfoView: {
+        borderWidth: 2,
+        borderColor: colors.silver,
+        width: '100%',
+        height: 140,
+        padding: 10,
+        marginVertical: 10
+    },
+    payFeildView: {
+        borderWidth: 2,
+        borderColor: colors.silver,
+        width: "100%",
+        height: '65%',
+        padding: 5
+    },
+    amount: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '50%',
     }
+
 })

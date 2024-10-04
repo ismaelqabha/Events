@@ -42,6 +42,11 @@ const ProviderProvider = props => {
   // Calender Scrren
   const [serviceInfoAccorUser, setServiceInfoAccorUser] = useState([]);
 
+
+  // screen visit
+
+  const [visits, setVisits] = useState([]);
+
   // edit service variable
   const [editTitle, seteditTitle] = useState(false);
   const [editSubTitle, seteditSubTitle] = useState(false);
@@ -136,6 +141,8 @@ const ProviderProvider = props => {
         setDraftServices,
         draftID,
         setDraftID,
+        visits, 
+        setVisits,
 
         editTitle,
         seteditTitle,

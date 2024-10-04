@@ -460,8 +460,6 @@ const EditServiceInfo = (props) => {
         updateInfo(newData, seteditHallType)
     }
     const updateServiceDescrItem = () => {
-        console.log("hello 2");
-
         const itemIndex = serviceDescr.findIndex(elme => elme.descItem === descriptionItem)
         const itemDesc = serviceDescr
         if (itemIndex > -1) {
