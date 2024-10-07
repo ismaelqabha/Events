@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput } from 'react-native'
-import React, { useContext, useState, useEffect } from 'react'
+import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput, Animated } from 'react-native'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import { colors } from '../../assets/AppColors'
 import moment from "moment";
 import Fontisto from "react-native-vector-icons/Fontisto"
@@ -10,10 +10,11 @@ import MonthCom from '../../components/MonthCom'
 import ProviderReservationCard from '../../components/ProviderComponents/ProviderReservationCard'
 import UsersContext from '../../../store/UsersContext';
 import { showMessage } from '../../resources/Functions';
+import { ActivityIndicator } from 'react-native-paper';
 
 const ProviderWaitingPay = () => {
 
-  const { requestInfoByService, setselectMonthforSearch, selectMonthforSearch, yearforSearch } = useContext(SearchContext);
+  const { requestInfoByService } = useContext(SearchContext);
   const { } = useContext(UsersContext);
   const [fromWaitingPayScreen, setFromWaitingPayScreen] = useState(true)
 
@@ -31,6 +32,9 @@ const ProviderWaitingPay = () => {
 
   const [client, setClient] = useState(null)
   const [selectedSpacificDate, setSelectedSpacificDate] = useState("YYYY/MM/DD")
+
+  const slideInAnimation = useRef(new Animated.Value(0)).current;
+  const [loading, setLoading] = useState(true)
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
@@ -87,6 +91,11 @@ const ProviderWaitingPay = () => {
     setUseDefultSearch(true)
     setUseClientToSearch(false)
     setUseSpacificDateToSearch(false)
+
+    const data = getBookingInfo()
+    if (data.length > 0) {
+      setLoading(false)
+    }
   }, [])
 
 
@@ -108,37 +117,26 @@ const ProviderWaitingPay = () => {
     }
   }
 
+  var BookDate
+  var todaDate = new Date();
+
+  todaDate.setHours(0);
+  todaDate.setMinutes(0);
+  todaDate.setSeconds(0);
+  todaDate.setMilliseconds(0);
+
   const getBookingInfo = () => {
+    var resDate
     if (requestInfoByService.message !== "no Request") {
       const reqInfo = requestInfoByService.filter(item => {
-        return item.requestInfo.ReqStatus === 'waiting pay'
+        return item.requestInfo.reservationDetail.find(dat => {
+          resDate = new Date(dat.reservationDate)
+          return item.requestInfo.ReqStatus === 'waiting pay' && resDate > todaDate
+        })
       })
-
       return reqInfo
     } else {
       return []
-    }
-  }
-
-  const checkDate = (d) => {
-    const resDate = moment(d, "YYYY-MM-DD")
-    const Day = resDate.format('D')
-    const Month = resDate.format('M')
-    const Year = resDate.format('YYYY')
-
-    if (Year >= year && Month >= month) {
-      if (Year == year && Month == month) {
-        //console.log(Day, '>', day, Day > day);
-        if (Day > day) {
-          return true
-        } else {
-          return false
-        }
-      } else {
-        return true
-      }
-    } else {
-      return false
     }
   }
 
@@ -146,68 +144,39 @@ const ProviderWaitingPay = () => {
     const data = getBookingInfo()
 
     const reqInfo = data.filter(item => {
-      console.log(item.requestInfo.reservationDetail.length);
-      if (item.requestInfo.reservationDetail.length > 1) {
-        //if reservation detail has more than one date
-        let result = item.requestInfo.reservationDetail.find(multiItem => {
-
-          return checkDate(multiItem.reservationDate)
-        })
-
-        return result
-
-      } else {
-
-        //if reservation detail has one date
-
-        return checkDate(item.requestInfo.reservationDetail[0].reservationDate)
-      }
+      let result = item.requestInfo.reservationDetail.find(multiItem => {
+        BookDate = new Date(multiItem.reservationDate)
+        return BookDate > todaDate
+      })
+      return result
     })
-
     return reqInfo
   }
 
   /// searching all requests
   const getBookingInfoByDate = (resDate) => {
-
     const data = getRequestsAccDates()
+
     const reqInfo = data.filter(req => {
-      if (req.requestInfo.reservationDetail.length > 1) {
-        const multiReqInfo = req.requestInfo.reservationDetail.find(multiItem => {
-          return multiItem.reservationDate.slice(0, 10) == resDate
-        })
-
-        return multiReqInfo
-      } else {
-        return req.requestInfo.reservationDetail[0].reservationDate.slice(0, 10) == resDate
-      }
+      const multiReqInfo = req.requestInfo.reservationDetail.find(multiItem => {
+        return multiItem.reservationDate.slice(0, 10) == resDate
+      })
+      return multiReqInfo
     })
-
     return reqInfo
   }
   const collectAllRequestDates = () => {
-
     const data = getRequestsAccDates()
+
     return data.map(item => {
-
-      if (item.requestInfo.reservationDetail.length > 1) {
-        //if reservation detail has more than one date
-        return item.requestInfo.reservationDetail.map(multiItem => {
-
-          if (!(allRequestingDates.includes(multiItem.reservationDate))) {
-            allRequestingDates.push(multiItem.reservationDate)
-          }
-          // }
-        })
-      } else {
-        //if reservation detail has one date
-        requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
-
-        if (!(allRequestingDates.includes(requestBookingDate))) {
-          allRequestingDates.push(requestBookingDate)
+      const res = item.requestInfo.reservationDetail.map(multiItem => {
+        if (!(allRequestingDates.includes(multiItem.reservationDate))) {
+          allRequestingDates.push(multiItem.reservationDate)
         }
-      }
+      })
+
       allRequestingDates.sort();
+      return res
     })
   }
   const renderBookingCard = (resDate) => {
@@ -218,25 +187,64 @@ const ProviderWaitingPay = () => {
       )
     })
   }
-  const renderBookingDates = () => {
+  const renderResults = () => {
+    const data = getBookingInfo()
+    return data && data.length > 0 ? renderAllReq(data, false) : noRequest();
+  }
+  const ResultsComp = ({ data, index = 0 }) => {
+    const translateX = slideInAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [100, 0],
+    });
+
+    useEffect(() => {
+      Animated.timing(slideInAnimation, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, []);
+
+    return (
+      <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
+        <View style={styles.dateView}>
+          <Text style={styles.dateTxt}>{moment(data).format('dddd')}</Text>
+          <Text style={styles.dateTxt}>{moment(data).format('L')}</Text>
+        </View>
+        {renderBookingCard(data)}
+      </Animated.View >
+    )
+    //  })
+
+  }
+  const noRequest = () => {
+    return (
+      <View style={{ alignSelf: "center" }}>
+        <Text style={styles.relationLabelText}>لا يوجد حجوزات</Text>
+
+      </View>
+    );
+  };
+  const renderAllReq = (isSearch = false) => {
     collectAllRequestDates()
     return allRequestingDates.map(item => {
-      return (
-        <View>
-          <View style={styles.dateView}>
-            <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
-            <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
-          </View>
-          {renderBookingCard(item)}
-        </View>
-      )
+      return <ResultsComp data={item} />;
     })
+  };
+  const getAllRequest = () => {
+    return (
+      <View style={{ width: '100%', alignSelf: 'center' }}>
+        {loading && <ActivityIndicator style={{ alignSelf: 'center', marginTop: '50%' }} size={50} />}
+        {!loading && renderResults()}
+      </View>
+    )
   }
 
 
   // seraching By Client Name
   const filterUsersAccName = () => {
     const data = getBookingInfo()
+
     const filterUsers = data.filter(item => {
       return item.userInfo.find(elem => {
         return elem.User_name.includes(client)
@@ -249,24 +257,15 @@ const ProviderWaitingPay = () => {
     const data = filterUsersAccName()
 
     return data.map(item => {
-
-      if (item.requestInfo.reservationDetail.length > 1) {
-        return item.requestInfo.reservationDetail.map(multiItem => {
-          requestBookingDate = multiItem.reservationDate
-
-          if (!(manageArrayDates.includes(requestBookingDate))) {
-            manageArrayDates.push(requestBookingDate)
-          }
-        })
-      } else {
-        requestBookingDate = item.requestInfo.reservationDetail[0].reservationDate
+      const resDetail = item.requestInfo.reservationDetail.map(multiItem => {
+        requestBookingDate = multiItem.reservationDate
 
         if (!(manageArrayDates.includes(requestBookingDate))) {
           manageArrayDates.push(requestBookingDate)
         }
-      }
-
+      })
       manageArrayDates.sort();
+      return resDetail
     })
 
 
@@ -275,14 +274,9 @@ const ProviderWaitingPay = () => {
     const data = filterUsersAccName()
 
     const reqInfo = data.filter(item => {
-      if (item.requestInfo.reservationDetail.length > 1) {
-        return item.requestInfo.reservationDetail.find(multiItem => {
-          return multiItem.reservationDate === resDate
-        })
-      } else {
-        return item.requestInfo.reservationDetail[0].reservationDate === resDate
-      }
-
+      return item.requestInfo.reservationDetail.find(multiItem => {
+        return multiItem.reservationDate === resDate
+      })
     })
     return reqInfo
   }
@@ -295,20 +289,74 @@ const ProviderWaitingPay = () => {
       )
     })
   }
-  const renderRequestAccUserName = () => {
-    manageDatesusingSearchbyName()
-    return manageArrayDates.map(item => {
+  const ResultsUserNameComp = ({ data, index = 0 }) => {
+    const translateX = slideInAnimation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [100, 0],
+    });
+
+    useEffect(() => {
+      Animated.timing(slideInAnimation, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }, []);
+
+    return (
+      <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
+        <View style={styles.dateView}>
+          <Text style={styles.dateTxt}>{moment(data).format('dddd')}</Text>
+          <Text style={styles.dateTxt}>{moment(data).format('L')}</Text>
+        </View>
+        {renderResCard(data)}
+      </Animated.View >
+    )
+  }
+  const getRequestByuser = () => {
+    return (
+      <View style={{ width: '100%', alignSelf: 'center' }}>
+        {loading && <ActivityIndicator style={{ alignSelf: 'center', marginTop: '50%' }} size={50} />}
+        {!loading && renderuserNameResults()}
+      </View>
+    )
+  }
+  const renderuserNameResults = () => {
+    const data = getBookingInfo()
+
+    if (client.trim().length > 0) {
+      const filteredServices = data.filter(item => item.userInfo[0].User_name.toLowerCase().includes(client.toLowerCase()));
+      const filteredServicesCount = filteredServices.length;
+
+      if (filteredServicesCount === 0) {
+        return (
+          <View style={{ alignSelf: "center" }}>
+            <Text style={styles.relationLabelText}>لا يوجد نتائج </Text>
+          </View>
+        );
+      }
+
       return (
         <View>
-          <View style={styles.dateView}>
-            <Text style={styles.dateTxt}>{moment(item).format('dddd')}</Text>
-            <Text style={styles.dateTxt}>{moment(item).format('L')}</Text>
-          </View>
-          {renderResCard(item)}
-        </View>
-      )
-    })
+          {filteredServicesCount > 0 && (
+            <View>
+              {renderReqByName(filteredServices, true)}
+            </View>
+          )}
+        </View >
+      );
+    } else {
+      return data && data.length > 0 ? renderReqByName(data, false) : noRequest();
+    }
+
   }
+  const renderReqByName = (isSearch = false) => {
+    manageDatesusingSearchbyName()
+    return manageArrayDates.map(item => {
+      return <ResultsUserNameComp data={item} />;
+    })
+  };
+
   const inputClientName = () => {
     return (
       <View>
@@ -316,7 +364,7 @@ const ProviderWaitingPay = () => {
           style={styles.input}
           keyboardType='default'
           placeholder='ادخل اسم الزبون'
-          onChangeText={setClient}
+          onChangeText={(value) => setClient(value)}
           onEndEditing={onSearchPress}
         />
       </View>
@@ -515,6 +563,24 @@ const ProviderWaitingPay = () => {
       )
     })
   }
+  const getRequestByDate = () => {
+    return (
+      <View style={{ width: '100%', alignSelf: 'center' }}>
+        {loading && <ActivityIndicator style={{ alignSelf: 'center', marginTop: '50%' }} size={50} />}
+        {!loading && renderDateResults()}
+      </View>
+    )
+  }
+  const renderDateResults = () => {
+    const data = getBookingInfo()
+    return data && data.length > 0 ? renderDateReq(data, false) : noRequest();
+  }
+  const renderDateReq = (isSearch = false) => {
+    manageDatesbySearchSpicficDate()
+    return arrayUsingSpicifcDate.map(item => {
+      return <ResultsComp data={item} />;
+    })
+  };
   const onSearchSpicaficDatePress = () => {
     setUseDefultSearch(false)
     setUseClientToSearch(false)
@@ -537,9 +603,9 @@ const ProviderWaitingPay = () => {
       {renderFilter()}
       {renderFilterTools()}
       <ScrollView>
-        {useDefultSearch && renderBookingDates()}
-        {useSpacificDateToSearch && renderBookingCardAccorDate()}
-        {useClientToSearch && renderRequestAccUserName()}
+        {useDefultSearch && getAllRequest()}
+        {useSpacificDateToSearch && getRequestByDate()}
+        {useClientToSearch && getRequestByuser()}
         <View style={{ height: 100 }}></View>
       </ScrollView>
     </View>

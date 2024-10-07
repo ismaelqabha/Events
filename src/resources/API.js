@@ -128,6 +128,11 @@ export const getServiceLocationById = async body => {
   return await AppFetch(url, 'POST', body);
 };
 
+export const findRequestsByUserId = async body => {
+  const url = 'servicesData/getClientsReqPayAccId'
+  return await AppFetch(url , 'POST', body)
+}
+
 /// Payment
 export const createNewPayment = async body => {
   const url = 'Payments/makePayment';
@@ -395,6 +400,18 @@ export const RemoveFavorite = async body => {
   const url = 'FavoritesList/deleteByid';
   return await AppFetch(url, 'DELETE', body);
 };
+
+// Screen Visits
+
+export const getScreenVisits = async body => {
+  const url = 'visits/getvisits';
+  return await AppFetch(url, 'POST', body);
+};
+export const addNewVisit = async body => {
+  const url = 'visits/updateVisit';
+  return await AppFetch(url, 'PATCH', body);
+};
+
 
 const AppFetch = async (url, method, body, headers) => {
   const fullUrl = baseUrl + url;

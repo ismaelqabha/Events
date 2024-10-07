@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable, Image, TextInput,Animated } from 'react-native'
-import React, { useContext, useState, useEffect,useRef } from 'react'
+import { StyleSheet, Text, View, Pressable, Image, TextInput, Animated } from 'react-native'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
 import SearchContext from '../../../store/SearchContext';
@@ -7,6 +7,7 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { findRequestsByUserId } from '../../resources/API';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { ActivityIndicator } from 'react-native-paper';
+import { showMessage } from '../../resources/Functions';
 
 
 
@@ -29,15 +30,18 @@ const ProviderClientScreen = (props) => {
     };
 
     const getuserfromApi = () => {
-
+        // try {
         const service = filterService()
-        const allclients = service[0].clients
+        const allclients = service[0].clients || []
 
-        findRequestsByUserId({ clients: allclients, service_id: isFirst }).then(res => {
+        findRequestsByUserId({ service_id: isFirst, clients: allclients }).then(res => {
             setLoading(false)
             setUserData(res)
-
         })
+        // } catch (e) {
+        //     console.log(e);
+        // }
+
     }
 
     useEffect(() => {
@@ -66,12 +70,7 @@ const ProviderClientScreen = (props) => {
     const renderNumOfClients = () => {
         return (
             <View style={styles.NumOfClients}>
-                <Pressable style={styles.more}>
-                    <Text style={styles.moretxt}>المزيد</Text>
-                </Pressable>
-                <Pressable style={styles.numclient}>
-                    <Text style={styles.moretxt}> الزبائن(2)</Text>
-                </Pressable>
+                <Text style={styles.moretxt}> {'الزبائن' + ' ' + '(' + userData.length + ')'}</Text>
             </View>
         )
     }
@@ -82,7 +81,7 @@ const ProviderClientScreen = (props) => {
                     style={styles.searchinput}
                     keyboardType="default"
                     placeholder='بحث'
-                // onChangeText={(value) => setSearched(value)}
+                    onChangeText={(value) => setSearched(value)}
                 />
                 <AntDesign
                     style={styles.icon}
@@ -109,19 +108,20 @@ const ProviderClientScreen = (props) => {
         }, []);
 
         // return userData.map(item => {
-            const requests = data.clientReqPay
-            const clientName = data.client.User_name
+        const requests = data.clientReqPay
+        const clientName = data.client.User_name
 
-            return (
-                <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
-                    <Pressable style={styles.clientView} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientRequestShow, { requests, clientName })}>
-                        <Text style={styles.clientName}>{data.client.User_name}</Text>
-                        <View style={styles.ImgView}>
-                            <Image style={styles.clientImg} source={{ uri: data.client.UserPhoto }} />
-                        </View>
-                    </Pressable>
-                </Animated.View >
-            )
+        return (
+            <Animated.View key={index} style={{ ...styles.item, opacity: slideInAnimation, transform: [{ translateX }] }}>
+                <Pressable style={styles.clientView} onPress={() => props.navigation.navigate(ScreenNames.ProviderClientRequestShow, { requests, clientName })}
+                >
+                    <Text style={styles.clientName}>{data.client.User_name}</Text>
+                    <View style={styles.ImgView}>
+                        <Image style={styles.clientImg} source={{ uri: data.client.UserPhoto }} />
+                    </View>
+                </Pressable>
+            </Animated.View >
+        )
         // })
 
     }
@@ -149,12 +149,12 @@ const ProviderClientScreen = (props) => {
                     )}
                 </View >
             );
-        } else{
+        } else {
             return userData && userData.length > 0 ? renderClients(userData, false) : noFriends();
         }
 
     }
-    
+
     const renderClients = (serData, isSearch = false) => {
         if (serData && Array.isArray(serData)) {
             if (serData.length > 0) {
@@ -167,12 +167,12 @@ const ProviderClientScreen = (props) => {
     };
     const noFriends = () => {
         return (
-          <View style={{ alignSelf: "center" }}>
-            <Text style={styles.relationLabelText}>لا يوجد علاقات قائمة حاليا</Text>
-            <Text style={styles.relationLabelText}>ابحث عن علاقات جديدة</Text>
-          </View>
+            <View style={{ alignSelf: "center" }}>
+                <Text style={styles.relationLabelText}>لا يوجد زبائن</Text>
+                <Text style={styles.relationLabelText}>ابحث عن زبائن جديدة</Text>
+            </View>
         );
-      };
+    };
 
     const renderAll = () => {
         return (
@@ -187,9 +187,8 @@ const ProviderClientScreen = (props) => {
         <View style={styles.container}>
             {header()}
             {renderSearch()}
-            {renderNumOfClients()}
+            {userData.length > 0 && renderNumOfClients()}
             {renderAll()}
-            {/* {renderResults()} */}
         </View>
     )
 }
@@ -213,10 +212,12 @@ const styles = StyleSheet.create({
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
     clientView: {
-        backgroundColor: 'white',
         width: '90%',
         alignSelf: 'center',
-        borderRadius: 5
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginVertical: 5
     },
     client: {
         flexDirection: 'row',
@@ -239,6 +240,7 @@ const styles = StyleSheet.create({
     clientImg: {
         width: 65,
         height: 65,
+        borderRadius: 50,
     },
     clientName: {
         fontSize: 20,
@@ -247,16 +249,11 @@ const styles = StyleSheet.create({
         // alignSelf: 'flex-end'
     },
     NumOfClients: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 30
+        marginRight: 20,
+        marginVertical: 20
     },
     more: {
         marginLeft: 20
-    },
-    numclient: {
-        marginRight: 20
     },
     moretxt: {
         fontSize: 15,
@@ -269,8 +266,8 @@ const styles = StyleSheet.create({
     search: {
         flexDirection: 'row',
         alignSelf: 'center',
-        width: '90%',
-        height: 40,
+        width: '80%',
+        height: 50,
         backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'flex-end',

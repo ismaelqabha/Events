@@ -4,17 +4,26 @@ import { Text, TouchableOpacity } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
+import SearchContext from '../../../store/SearchContext';
 
 const LocationComp = props => {
   const [pressed, setPressed] = useState(false);
-  const { workAreas, setWorkAreas } = useContext(ServiceProviderContext);
-
+  const { workAreas, setWorkAreas, serviceInfoAccorUser } = useContext(ServiceProviderContext);
+  const { isFirst } = useContext(SearchContext);
   useEffect(() => {
     checkPressed()
   }, [])
 
+  const getCurrentSelReg = () => {
+    return serviceInfoAccorUser.filter(item => {
+        return item.service_id === isFirst
+    })
+  }
+
   const checkPressed = () => {
-    workAreas.includes(props.value) ? setPressed(true) : null
+    const selectedArea = getCurrentSelReg()
+   const data = selectedArea[0].workingRegion
+   data.includes(props.value) ? setPressed(true) : null
   }
 
   const onLocationPress = () => {
@@ -24,7 +33,7 @@ const LocationComp = props => {
   };
 
   const checkExists = () => {
-    workAreas.includes(props.value) ? removeFromList(): addToSelected();
+    workAreas.includes(props.value) ? removeFromList() : addToSelected();
   }
 
   const addToSelected = () => {
@@ -46,7 +55,7 @@ const LocationComp = props => {
       style={pressed ? [styles.bodyActive, AppStyles.shadow] : [styles.body, AppStyles.shadow]}
       onPress={() => onLocationPress()}>
 
-      <Text style={pressed ? [styles.textActive,AppStyles.shadow] : [styles.text,AppStyles.shadow]}>
+      <Text style={pressed ? [styles.textActive, AppStyles.shadow] : [styles.text, AppStyles.shadow]}>
 
         {props.value}
       </Text>

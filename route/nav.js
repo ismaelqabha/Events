@@ -44,6 +44,7 @@ import UserProfile from "../src/screens/UserProfile";
 import ProviderNotification from "../src/screens/ProviderScreens/ProviderNotification";
 import ProviderClientScreen from "../src/screens/ProviderScreens/ProviderClientScreen";
 
+
 import ProviderShowOffers from "../src/screens/ProviderScreens/ProviderShowOffers";
 import ProviderOfferDesc from "../src/screens/ProviderScreens/ProviderOfferDesc";
 
@@ -72,6 +73,8 @@ import MyInvetationsCards from "../src/screens/ClientScreens/MyInvetationsCards"
 import InvetationShow from "../src/screens/ClientScreens/InvetationShow";
 import InvetationOutboxShow from "../src/screens/ClientScreens/InvetationOutboxShow";
 import ProviderPhotosPrview from "../src/screens/ProviderScreens/ProviderPhotosPrview";
+import ProviderUsersView from "../src/screens/ProviderScreens/ProviderUsersView";
+import ProviderSetNewBooking from "../src/screens/ProviderScreens/ProviderSetNewBooking";
 
 
 
@@ -172,6 +175,8 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderDuePayments} component={ProviderDuePayments} />
                 <Stack.Screen name={ScreenNames.ProviderShowRequest} component={ProviderShowRequest} />
                 <Stack.Screen name={ScreenNames.ProviderPhotosPrview} component={ProviderPhotosPrview} />
+                <Stack.Screen name={ScreenNames.ProviderUsersView} component={ProviderUsersView} />
+                <Stack.Screen name={ScreenNames.ProviderSetNewBooking} component={ProviderSetNewBooking} />
 
                 <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />
                 <Stack.Screen name={ScreenNames.CreatePassword} component={CreatePassword} />

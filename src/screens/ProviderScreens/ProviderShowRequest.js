@@ -11,8 +11,8 @@ import moment from "moment";
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { updateRequest } from '../../resources/API';
 import { images } from '../../assets/photos/images';
-
 import PaymentDetailComp from '../../components/PaymentDetailComp';
+import Recipt from '../../components/ProviderComponents/recipt';
 
 
 const ProviderShowRequest = (props) => {
@@ -24,13 +24,20 @@ const ProviderShowRequest = (props) => {
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-    //console.log("reqInfo", reqInfo);
+    const [showDetailRecipt, setShowDetailRecipt] = useState(false)
+
+
+    const totalCost = reqInfo.requestInfo.Cost
+    const reservationDetail = reqInfo.requestInfo.reservationDetail
+   
 
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
+            console.log(item.service_id, isFirst);
             return item.service_id === isFirst;
         });
     }
+    
     const serviceData = filterService()
 
     const filterSelectedCampign = (id) => {
@@ -314,7 +321,7 @@ const ProviderShowRequest = (props) => {
                         size={25} />
                 </Pressable>
                 {fromProviderDuePay == undefined &&
-                    <Pressable onPress={moreModalPress}>
+                    <Pressable onPress={moreModalPress} style={styles.moreBtnPress}>
                         <Fontisto
                             style={styles.icon}
                             name={"more-v"}
@@ -562,10 +569,17 @@ const ProviderShowRequest = (props) => {
 
                 {reqInfo.requestInfo.reservationDetail.length > 1 ? renderMultibleDatesRequest() : renderSingleDateRequest()}
 
-                {renderfinalCost()}
+                <Recipt
+                    totalPrice={totalCost}
+                    requestedDate={reservationDetail.reservationDate}
+                    resDetail={reservationDetail}
+                    showDetailRecipt={showDetailRecipt}
+                    setShowDetailRecipt={setShowDetailRecipt}
+                    data={serviceData}
+                />
+                {/* {renderfinalCost()} */}
                 {isRequestWaitingPayForPaymentInfo()}
                 {fromProviderDuePay == undefined && moreModal()}
-                {/* {moreModal()} */}
                 {renderModal()}
 
             </ScrollView>
@@ -589,6 +603,12 @@ const styles = StyleSheet.create({
     },
     icon: {
 
+    },
+    moreBtnPress: {
+        width: 50,
+        height: 50,
+        alignItems: 'flex-end',
+        justifyContent: 'center'
     },
     headerText: {
         fontSize: 18,
@@ -666,11 +686,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#00000099',
     },
     detailPaymentModal: {
-        width: '100%',
-        height: '80%',
+        width: '90%',
+        height: '100%',
         backgroundColor: '#ffffff',
-        borderTopRightRadius: 20,
-        borderTopLeftRadius: 20,
+        borderRadius : 20,
+        // borderTopRightRadius: 20,
+        // borderTopLeftRadius: 20,
     },
     centeredPaymentView: {
         flex: 1,
