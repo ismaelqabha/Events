@@ -9,10 +9,11 @@ import { showMessage } from '../../resources/Functions';
 import ProviderSetClientForBooking from '../../components/ProviderComponents/ProviderSetClientForBooking';
 import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
+import ProviderSetPaymentForClient from '../../components/ProviderComponents/ProviderSetPaymentForClient';
 
 
 const ProviderSetNewBooking = (props) => {
-
+    const { fulDate } = props.route?.params || {}
     const { userCity, setUserCity, setCreateUserRegion } = useContext(UsersContext);
     const { isFirst } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
@@ -29,6 +30,8 @@ const ProviderSetNewBooking = (props) => {
     const [regions, setRegions] = useState(null)
     const [serviceData, setServiceData] = useState([])
 
+
+    
     const onPressHandler = () => {
         props.navigation.goBack();
     }
@@ -46,7 +49,7 @@ const ProviderSetNewBooking = (props) => {
         findProviderInfo()
     }, [])
 
-    
+
     const header = () => {
         return (
             <View style={styles.title}>
@@ -184,13 +187,15 @@ const ProviderSetNewBooking = (props) => {
     const renderBookingInfo = () => {
         return (
             <ScrollView>
-                  <ProviderSetClientForBooking serviceData={serviceData}/>
+                <ProviderSetClientForBooking serviceData={serviceData} fulDate={fulDate} />
             </ScrollView>
         )
     }
     const renderPaymentDetail = () => {
         return (
-            <View></View>
+            <View>
+                <ProviderSetPaymentForClient/>
+            </View>
         )
     }
 
@@ -236,15 +241,17 @@ const ProviderSetNewBooking = (props) => {
         )
     }
 
+
     return (
         <View style={styles.container}>
             {header()}
             {renderHeadLines()}
             {screenBody()}
-            
             {footer()}
-        </View>
-    )
+        
+
+    </View >
+)
 }
 
 export default ProviderSetNewBooking
@@ -306,13 +313,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     bodyTaps: {
-        width: '90%',
-        // height: 450,
+        width: '100%',
         alignSelf: 'center',
         backgroundColor: 'white',
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        elevation: 5
+       
     },
     headItem: {
         alignItems: 'center',
@@ -422,7 +426,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     dropdown: {
-       // height: 50,
+        // height: 50,
         // maxWidth: '80%',
         // minWidth: '80%',
         // alignSelf: 'center',
