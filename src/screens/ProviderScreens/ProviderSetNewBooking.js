@@ -31,7 +31,7 @@ const ProviderSetNewBooking = (props) => {
     const [serviceData, setServiceData] = useState([])
 
 
-    
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
@@ -194,7 +194,7 @@ const ProviderSetNewBooking = (props) => {
     const renderPaymentDetail = () => {
         return (
             <View>
-                <ProviderSetPaymentForClient/>
+                <ProviderSetPaymentForClient />
             </View>
         )
     }
@@ -231,9 +231,9 @@ const ProviderSetNewBooking = (props) => {
     const footer = () => {
         return (
             <View style={styles.btnView}>
-                <TouchableOpacity style={styles.btnNext} onPress={nextPress}>
+                {!payment && <TouchableOpacity style={styles.btnNext} onPress={nextPress}>
                     <Text style={styles.nextText}>التالي</Text>
-                </TouchableOpacity>
+                </TouchableOpacity>}
                 <TouchableOpacity style={styles.btnBack} onPress={backPress}>
                     <Text style={styles.backText}>رجوع</Text>
                 </TouchableOpacity>
@@ -244,14 +244,13 @@ const ProviderSetNewBooking = (props) => {
 
     return (
         <View style={styles.container}>
+
             {header()}
             {renderHeadLines()}
             {screenBody()}
             {footer()}
-        
-
-    </View >
-)
+        </View >
+    )
 }
 
 export default ProviderSetNewBooking
@@ -316,7 +315,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignSelf: 'center',
         backgroundColor: 'white',
-       
+
     },
     headItem: {
         alignItems: 'center',

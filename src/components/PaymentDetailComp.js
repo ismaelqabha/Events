@@ -111,8 +111,6 @@ const PaymentDetailComp = (props) => {
 
 
     const updateArray = (data, index) => {
-
-
         setPaymentDataArray(prevArray => {
             const newArray = [...prevArray];
             newArray[index] = data;
@@ -204,7 +202,7 @@ const PaymentDetailComp = (props) => {
             setShow(true);
             setMode(currentMode);
         }
-console.log("props.val", props.val);
+// console.log("props.val", props.val);
         useEffect(() => {
             if (props.val) {
                 setPaymentDate(props?.val?.PayDate)
