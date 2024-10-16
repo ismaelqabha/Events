@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React, { useContext, useEffect ,useState} from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
 import { review } from '../resources/data';
@@ -11,34 +11,52 @@ import { getServiceBySerId } from '../resources/API';
 const ReviewsScreen = (props) => {
     const { setIsfirst, isFirst } = useContext(SearchContext);
     const { clientReview, providerReview, userId } = props.route?.params || {}
-    const [sderviceData, setServiceData] = useState([])
+    const [service, setService] = useState([])
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
 
+    useEffect(() => {
+        // findServiseTitleLogo()
+    }, []);
 
-
-    const getServiceInfo = () => {
-        getServiceBySerId({ service_id: isFirst }).then(res => {
-            setServiceData(res)
-        })
-    }
-    const getProviderInfo = (item) => {
+    const getProviderInfo = () => {
         return review?.filter(item => {
             return item.RecieverId === isFirst
         })
     }
-    const getClientInfo = (item) => {
+    const getClientInfo = () => {
         return review?.filter(item => {
             return item.RecieverId === userId
 
         })
     }
 
-    useEffect(() => {
+    const findServiseTitleLogo = (id) => {
+        getServiceInfo(id)
 
-        getServiceInfo()
-    }, []);
+
+        console.log(id);
+        console.log(">>", service);
+
+
+        var serviceTitle = service[0].serviceData.title
+        const index = service[0].serviceImages.logoArray?.findIndex((val) => val === true)
+        const logo = service[0].serviceImages?.serviceImages[index]
+        console.log(serviceTitle, logo);
+
+    }
+    const getServiceInfo = async (id) => {
+        const respons = await getServiceBySerId({ service_id: id })
+
+        setService(respons)
+        //  console.log('res ', respons[0].serviceImages);
+
+
+    }
+
+
 
     const renderHeader = () => {
         return (
@@ -58,15 +76,20 @@ const ReviewsScreen = (props) => {
         const data = getClientInfo()
 
         return data?.map(item => {
+
+            getServiceInfo(item.senderId)
+            const index = service[0].serviceImages[0].logoArray?.findIndex((val) => val === true)
+            const logo = service[0].serviceImages[0]?.serviceImages[index]
+
             const reviewDate = moment(item.reviewDate, "YYYYMMDD").fromNow()
             return (<View>
                 <View style={styles.messageView}>
                     <View style={styles.reviewInfo}>
                         <View>
-                            <Text style={styles.servicenameTxt}>قاعة الامير</Text>
+                            <Text style={styles.servicenameTxt}>{service[0].serviceData.title} </Text>
                             <Text style={styles.servicenameTxt}>{reviewDate}</Text>
                         </View>
-                        <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/ameer.png')} /></View>
+                        <View style={styles.clientImgView}><Image style={styles.clientImg} source={{ uri: logo }} /></View>
                     </View>
                     <Text style={styles.ReviewTxt}>{item.reviewText}</Text>
                 </View>
