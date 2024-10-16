@@ -12,7 +12,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 export default function Splash(props) {
     const { setServiceDataInfo, servType,
         setEventTypeInfo, setEventInfo, setRequestInfoAccUser, setFavorites, setAllServicesFavorites } = useContext(SearchContext);
-    const { setUserInfo, userId, setuserId, setUserName } = useContext(UsersContext);
+    const { setUserInfo, userId, setuserId, setUserName, userType, setUserType } = useContext(UsersContext);
 
     let userEmail
     let userPassword
@@ -76,7 +76,14 @@ export default function Splash(props) {
                     if (res.message === 'Authentication succeeded') {
                         showMessage('تم تسجيل الدخول بنجاح');
                         getUserInfo();
-                        props.navigation.replace('Drawr')
+                        
+                        if (res.userType !== 'admin') {
+                            props.navigation.replace('Drawr')
+                        } else {
+                            console.log("userType", res.userType);
+                            props.navigation.replace('AdminTapNav')
+                        }
+                        
                     } else {
                         showMessage('حدث خطأ: ' + res.message);
                         console.error("error : ", error);
@@ -101,6 +108,7 @@ export default function Splash(props) {
                 setFavorites(res[0].favoriteUser);
                 setAllServicesFavorites(res[0].services);
                 getRequestfromApi(res[0].userInfo.USER_ID);
+                setUserType(res[0].userInfo.UserType)
             } else {
                 showMessage('Error: Invalid user data response');
                 props.navigation.replace(ScreenNames.SignIn);

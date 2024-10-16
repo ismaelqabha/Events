@@ -2,19 +2,15 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 
 import React, { useState, useEffect, useContext } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
-import { SelectList } from 'react-native-dropdown-select-list';
-import { getRegions } from '../../resources/API';
-import UsersContext from '../../../store/UsersContext';
-import { showMessage } from '../../resources/Functions';
 import ProviderSetClientForBooking from '../../components/ProviderComponents/ProviderSetClientForBooking';
 import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import ProviderSetPaymentForClient from '../../components/ProviderComponents/ProviderSetPaymentForClient';
+import ProviderSetClientInfo from './ProviderSetClientInfo';
 
 
 const ProviderSetNewBooking = (props) => {
     const { fulDate } = props.route?.params || {}
-    const { userCity, setUserCity, setCreateUserRegion } = useContext(UsersContext);
     const { isFirst } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
 
@@ -26,10 +22,6 @@ const ProviderSetNewBooking = (props) => {
     const [booking, setBooking] = useState(false)
     const [payment, setPayment] = useState(false)
 
-    const [regionData, setRegionData] = useState([])
-    const [regions, setRegions] = useState(null)
-    const [serviceData, setServiceData] = useState([])
-
 
 
     const onPressHandler = () => {
@@ -40,13 +32,11 @@ const ProviderSetNewBooking = (props) => {
         const data = serviceInfoAccorUser.filter(item => {
             return item.service_id === isFirst
         })
-        setServiceData(data)
         return data
     }
 
     useEffect(() => {
-        getRegionsfromApi()
-        findProviderInfo()
+       
     }, [])
 
 
@@ -116,75 +106,18 @@ const ProviderSetNewBooking = (props) => {
         )
     }
 
-    const getRegionsfromApi = async () => {
-        getRegions().then((res) => {
-            res?.message ? showMessage(res.message) : updateData(res?.regions)
-        }).catch((e) => {
-            console.log("error fetching -> ", e);
-        })
-
-    }
-
-    const updateData = (regions) => {
-        setRegions(regions)
-        const allData = []
-        regions?.forEach(region => {
-            allData.push(...region?.regionCities)
-        });
-        allData.sort()
-        setRegionData(allData)
-    }
-
-    const searchRegion = (val) => {
-        if (!regions) {
-            return;
-        } else {
-            regions.forEach((region) => {
-                var index = region?.regionCities?.findIndex(city => {
-                    return city === val
-                })
-                if (!(index === -1)) {
-                    setCreateUserRegion(region?.regionName)
-                }
-            })
-        }
-    }
-
+ 
     const renderClientInfo = () => {
+        const data =  findProviderInfo()
+        const providerClients = data[0].clients
         return (
             <View>
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                    placeholder='اسم الزبون'
-                    value={{}}
-                    onChangeText={{}}
-                />
-                <TextInput
-                    style={styles.input}
-                    keyboardType='default'
-                    placeholder='رقم الهاتف'
-                    value={{}}
-                    onChangeText={{}} />
-
-                <View style={styles.addressView}>
-                    <SelectList
-                        data={regionData}
-                        setSelected={val => {
-                            setUserCity(val);
-                            searchRegion(val)
-                        }}
-                        placeholder={"أختر العنوان"}
-                        boxStyles={styles.dropdown}
-                        inputStyles={styles.droptext}
-                        dropdownTextStyles={styles.dropstyle}
-                    />
-                </View>
-
+                <ProviderSetClientInfo providerClients={providerClients}/>
             </View>
         )
     }
     const renderBookingInfo = () => {
+        const serviceData =  findProviderInfo()
         return (
             <ScrollView>
                 <ProviderSetClientForBooking serviceData={serviceData} fulDate={fulDate} />
@@ -407,41 +340,6 @@ const styles = StyleSheet.create({
         // color: colors.puprble,
         fontWeight: 'bold'
     },
-    input: {
-        width: '90%',
-        height: 50,
-        borderWidth: 1.5,
-        borderColor: colors.silver,
-        alignSelf: 'center',
-        marginVertical: 10,
-        borderRadius: 10,
-        paddingHorizontal: 10
-    },
-    addressView: {
-        width: '90%',
-        height: 50,
-        alignSelf: 'center',
-        marginVertical: 10,
-        borderRadius: 10,
-    },
-    dropdown: {
-        // height: 50,
-        // maxWidth: '80%',
-        // minWidth: '80%',
-        // alignSelf: 'center',
-        // backgroundColor: 'lightgray',
-        // borderRadius: 10,
-        textAlign: 'right',
-        borderWidth: 1.5,
-        borderColor: colors.silver,
-    },
-    dropstyle: {
-        color: 'black',
-        fontSize: 15,
-
-    },
-    droptext: {
-        fontSize: 18,
-        color: 'black',
-    },
+  
+   
 })
