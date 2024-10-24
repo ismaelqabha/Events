@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, TouchableOpacity, Dimensions, Modal } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, Dimensions, Modal,TouchableOpacity } from 'react-native';
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SearchContext from '../../store/SearchContext';
@@ -380,7 +380,7 @@ const RequestDetail = (props) => {
         } else {
             Alert.alert(
                 'تنبية',
-                'الرجاء اختيار وقت بداية الحجز',
+                'الرجاء اختيار وقت نهاية الحجز',
                 [
                     {
                         text: 'Ok',
@@ -393,7 +393,7 @@ const RequestDetail = (props) => {
     }
     const renderReservStartingTime = () => {
         return <View>
-            <Pressable onPress={() => checkStartTime()}
+            <TouchableOpacity onPress={() => checkStartTime()}
             >
                 <View style={styles.viewDate}>
                     <Text style={styles.text}>{startTimeText || "00:00"}</Text>
@@ -402,7 +402,7 @@ const RequestDetail = (props) => {
                         source={require('../assets/photos/time.png')}
                     />
                 </View>
-            </Pressable>
+            </TouchableOpacity>
             {showStart && (
                 <DateTimePicker
                     testID='dateTimePicker'
@@ -504,6 +504,7 @@ const RequestDetail = (props) => {
             placeholder: 'ادخل الكمية',
         }]
     }
+
     const renderInput = () => {
         return CatOfService[cat].map(type => {
             return (<TextInput
@@ -535,6 +536,7 @@ const RequestDetail = (props) => {
         }
         updateReservationDet(SubId, 'subDetail')
     }
+
     const renderServiceDetail = () => {
         const detail = props.additionalServices
         return detail.map(element => {
@@ -548,13 +550,13 @@ const RequestDetail = (props) => {
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
-                            <Pressable style={styles.subPressable} onPress={() => whenSupDetailPress(item.id)}>
+                            <TouchableOpacity style={styles.subPressable} onPress={() => whenSupDetailPress(item.id)}>
                                 {found && <Entypo
                                     style={{ alignSelf: 'center', position: 'absolute' }}
                                     name={"check"}
                                     color={colors.puprble}
                                     size={25} />}
-                            </Pressable>
+                            </TouchableOpacity>
                         </View>
                     )
                 })
@@ -578,18 +580,18 @@ const RequestDetail = (props) => {
             <View style={{ backgroundColor: bgColorDate }}>
                 <Text style={styles.text}>قم بتحديد تفاصيل الحجز اِما من الخدمات او العروض</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 }}>
-                    <Pressable style={pressed === 0 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
+                    <TouchableOpacity style={pressed === 0 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
                         handlePressFirstPage()
                         setPressed(0)
                     }}>
                         <Text style={styles.detailViewText}>الخدمات</Text>
-                    </Pressable>
-                    {isCampaign && <Pressable style={pressed === 1 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
+                    </TouchableOpacity>
+                    {isCampaign && <TouchableOpacity style={pressed === 1 ? styles.detailLabelPressed : styles.detailLabel} onPress={() => {
                         handlePressSecondPage()
                         setPressed(1)
                     }}>
                         <Text style={styles.detailViewText}>العروض</Text>
-                    </Pressable>}
+                    </TouchableOpacity>}
                 </View>
                 <ScrollView
                     ref={scrollViewRef}
@@ -619,8 +621,9 @@ const RequestDetail = (props) => {
 
         )
     }
-    const getServiceDetail = (id) => {
 
+
+    const getServiceDetail = (id) => {
         const serviceData = additionalServices.filter(element => {
             return element.subDetailArray.find(itemId => {
                 return itemId.id === id

@@ -1,14 +1,62 @@
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native'
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { colors } from '../assets/AppColors';
+import { review } from '../resources/data';
+import SearchContext from '../../store/SearchContext';
+import moment from 'moment';
+import { getServiceBySerId } from '../resources/API';
 
 
 const ReviewsScreen = (props) => {
-    const { clientReview, providerReview } = props.route?.params || {}
+    const { setIsfirst, isFirst } = useContext(SearchContext);
+    const { clientReview, providerReview, userId } = props.route?.params || {}
+    const [service, setService] = useState([])
+
     const onPressHandler = () => {
         props.navigation.goBack();
     }
+
+    useEffect(() => {
+        // findServiseTitleLogo()
+    }, []);
+
+    const getProviderInfo = () => {
+        return review?.filter(item => {
+            return item.RecieverId === isFirst
+        })
+    }
+    const getClientInfo = () => {
+        return review?.filter(item => {
+            return item.RecieverId === userId
+
+        })
+    }
+
+    const findServiseTitleLogo = (id) => {
+        getServiceInfo(id)
+
+
+        console.log(id);
+        console.log(">>", service);
+
+
+        var serviceTitle = service[0].serviceData.title
+        const index = service[0].serviceImages.logoArray?.findIndex((val) => val === true)
+        const logo = service[0].serviceImages?.serviceImages[index]
+        console.log(serviceTitle, logo);
+
+    }
+    const getServiceInfo = async (id) => {
+        const respons = await getServiceBySerId({ service_id: id })
+
+        setService(respons)
+        //  console.log('res ', respons[0].serviceImages);
+
+
+    }
+
+
 
     const renderHeader = () => {
         return (
@@ -25,36 +73,50 @@ const ReviewsScreen = (props) => {
     }
 
     const clientReviewInfo = () => {
-        return (<View>
-            <View style={styles.messageView}>
-                <View style={styles.reviewInfo}>
-                    <View>
-                        <Text style={styles.servicenameTxt}>قاعة الامير</Text>
-                        <Text>منذ 3 شهور</Text>
+        const data = getClientInfo()
+
+        return data?.map(item => {
+
+            getServiceInfo(item.senderId)
+            const index = service[0].serviceImages[0].logoArray?.findIndex((val) => val === true)
+            const logo = service[0].serviceImages[0]?.serviceImages[index]
+
+            const reviewDate = moment(item.reviewDate, "YYYYMMDD").fromNow()
+            return (<View>
+                <View style={styles.messageView}>
+                    <View style={styles.reviewInfo}>
+                        <View>
+                            <Text style={styles.servicenameTxt}>{service[0].serviceData.title} </Text>
+                            <Text style={styles.servicenameTxt}>{reviewDate}</Text>
+                        </View>
+                        <View style={styles.clientImgView}><Image style={styles.clientImg} source={{ uri: logo }} /></View>
                     </View>
-                    <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/ameer.png')} /></View>
+                    <Text style={styles.ReviewTxt}>{item.reviewText}</Text>
                 </View>
-                <Text style={styles.ReviewTxt}>زبون محترم وخلوق جدا كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير</Text>
+                {seperater()}
             </View>
-            {seperater()}
-        </View>
-        )
+            )
+        })
     }
     const ProviderReviewInfo = () => {
-        return (<View>
-            <View style={styles.messageView}>
-                <View style={styles.reviewInfo}>
-                    <View>
-                        <Text style={styles.servicenameTxt}>عبد الله الزيود</Text>
-                        <Text>منذ 3 شهور</Text>
+        const data = getProviderInfo()
+        return data?.map(item => {
+            const reviewDate = moment(item.reviewDate, "YYYYMMDD").fromNow()
+            return (<View>
+                <View style={styles.messageView}>
+                    <View style={styles.reviewInfo}>
+                        <View>
+                            <Text style={styles.servicenameTxt}>ابو عبدالله</Text>
+                            <Text style={styles.servicenameTxt}> {reviewDate} </Text>
+                        </View>
+                        <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/raaed.png')} /></View>
                     </View>
-                    <View style={styles.clientImgView}><Image style={styles.clientImg} source={require('../assets/photos/raaed.png')} /></View>
+                    <Text style={styles.ReviewTxt}>{item.reviewText}</Text>
                 </View>
-                <Text style={styles.ReviewTxt}>معاملة جميلة وخدمات ممتازة كل الاحترام والتقدير</Text>
+                {seperater()}
             </View>
-            {seperater()}
-        </View>
-        )
+            )
+        })
     }
     const seperater = () => {
         return (
@@ -66,14 +128,14 @@ const ReviewsScreen = (props) => {
             return <View>
                 {clientReviewInfo()}
             </View>
-             
-            
+
+
         }
-        if(providerReview) {
+        if (providerReview) {
             return <View>
-            {ProviderReviewInfo()}
-        </View>
-            
+                {ProviderReviewInfo()}
+            </View>
+
         }
     }
     return (
@@ -92,6 +154,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
+
     },
     header: {
         width: "95%",

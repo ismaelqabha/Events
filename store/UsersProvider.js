@@ -8,6 +8,7 @@ const UsersProvider = (props) => {
     const [userEmail, setUserEmail] = useState('');
     const [userPhone, setUserPhone] = useState('');
     const [userBD, setUserBD] = useState('');
+    const [userType, setUserType] = useState('');
     const [userGender, setUserGender] = useState(null);
     const [userStatus, setUserStatus] = useState(null);
     const [userCity, setUserCity] = useState(null);
@@ -61,6 +62,7 @@ const UsersProvider = (props) => {
                 setLongitude,
                 relations,
                 setRelations,
+                userType, setUserType,
             }}>
             {props.children}
         </UsersContext.Provider>

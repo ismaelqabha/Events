@@ -1,86 +1,25 @@
-import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, ToastAndroid } from 'react-native'
-import React, { useState, useEffect, useContext } from 'react'
-import FontAwesome from "react-native-vector-icons/FontAwesome"
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import Entypo from "react-native-vector-icons/Entypo"
+import { colors } from '../../assets/AppColors'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { colors } from '../assets/AppColors';
-import { updateRequest } from '../resources/API';
-import SearchContext from '../../store/SearchContext';
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
+import FontAwesome from "react-native-vector-icons/FontAwesome"
 import moment from "moment";
-import ServiceProviderContext from '../../store/ServiceProviderContext';
-import { TouchableOpacity } from 'react-native';
 
+const ProviderSetPaymentForClient = () => {
 
-const PaymentDetailComp = (props) => {
-
-    const { setRequestInfoByService, requestInfoByService, isFirst } = useContext(SearchContext);
-    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
     const [paymentDataArray, setPaymentDataArray] = useState([])
-    const { reqInfo, setShowPaymentModal } = props
+    const [creditCard, setCreditCard] = useState(false)
+    const [cash, setCash] = useState(false)
+    const [checks, setChecks] = useState(false)
 
-    var payId = uuidv4();
-
-    const filterService = () => {
-        const service = serviceInfoAccorUser?.filter(item => {
-            return item.service_id === isFirst;
-        });
-        return service
-    };
-
-    useEffect(() => {
-
-    }, [])
-
-    const updateData = () => {
-        const requestInfoAccServiceIndex = requestInfoByService?.findIndex(item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId)
-
-        const newData = {
-            RequestId: reqInfo.requestInfo.RequestId,
-            ReqStatus: 'waiting pay',
-            paymentInfo: paymentDataArray
-        }
-        const result = checkSumPersentage()
-        // console.log("result", result);
-        if (result < 100) {
-            updateRequest(newData).then(res => {
-
-                if (res.message == "Updated Sucessfuly") {
-                    const data = requestInfoByService || [];
-                    if (requestInfoAccServiceIndex > -1) {
-                        data[requestInfoAccServiceIndex] = { ...data[requestInfoAccServiceIndex], ...newData };
-                    }
-                    setRequestInfoByService([...data])
-
-                    ToastAndroid.showWithGravity(
-                        'تم التعديل بنجاح',
-                        ToastAndroid.SHORT,
-                        ToastAndroid.BOTTOM,
-                    );
-                    setShowPaymentModal(false)
-                }
-            })
-        } else {
-            ToastAndroid.showWithGravity(
-                'مجموع نسب الدفعات اكثر من 100',
-                ToastAndroid.SHORT,
-                ToastAndroid.BOTTOM,
-            );
-        }
-
-    }
-
-
-    const addPaymentData = () => {
-        setPaymentDataArray([...paymentDataArray, { empty: "empty" }])
-    }
+    const [continuePay, setContinuePay] = useState(false)
 
     const renderAddButton = () => {
         return (
             <TouchableOpacity style={styles.item} onPress={addPaymentData}
             >
-                <Text style={styles.basicInfo}>اضافة</Text>
+                <Text style={styles.addTxt}>اضافة تفاصيل دفعة</Text>
                 <View style={styles.IconView}>
                     <Entypo
                         style={styles.icon}
@@ -92,24 +31,22 @@ const PaymentDetailComp = (props) => {
         )
     }
 
-
-    const checkSumPersentage = () => {
-        var sumPers = 0
-        // console.log("paymentDataArray", paymentDataArray);
-        paymentDataArray.forEach(element => {
-            sumPers += element.pers
-        });
-        return sumPers
+    /// determine number of payment section
+    
+    const addPaymentData = () => {
+        setPaymentDataArray([...paymentDataArray, { empty: "empty" }])
     }
-
     const renderPaymentFeilds = () => {
         const fields = paymentDataArray?.map((val, index) =>
             <PaymentComponent val={val} index={index} />
         )
         return fields
     }
-
-
+    const removePaymentItem = (index) => {
+        const newArray = [...paymentDataArray];
+        newArray.splice(index, 1);
+        setPaymentDataArray(newArray);
+    };
     const updateArray = (data, index) => {
         setPaymentDataArray(prevArray => {
             const newArray = [...prevArray];
@@ -117,13 +54,6 @@ const PaymentDetailComp = (props) => {
             return newArray;
         });
     };
-
-    const removePaymentItem = (index) => {
-        const newArray = [...paymentDataArray];
-        newArray.splice(index, 1);
-        setPaymentDataArray(newArray);
-    };
-
     const PaymentComponent = (props) => {
         const [paymentDate, setPaymentDate] = useState(null)
         const [persentage, setPersentage] = useState(null)
@@ -202,7 +132,7 @@ const PaymentDetailComp = (props) => {
             setShow(true);
             setMode(currentMode);
         }
-// console.log("props.val", props.val);
+        // console.log("props.val", props.val);
         useEffect(() => {
             if (props.val) {
                 setPaymentDate(props?.val?.PayDate)
@@ -265,7 +195,7 @@ const PaymentDetailComp = (props) => {
                             onChangeText={(val) => setPersentage(parseInt(val))}
 
                             onEndEditing={(val) => {
-                                  calculateAmountFromPersentage(val.nativeEvent.text)
+                                calculateAmountFromPersentage(val.nativeEvent.text)
                                 const data = {
                                     id: payId,
                                     PayDate: paymentDate,
@@ -283,73 +213,145 @@ const PaymentDetailComp = (props) => {
             </View>
         )
     }
-
-    const renderSaveButton = () => {
-        return (
-            <TouchableOpacity style={styles.footer} onPress={updateData}
-            >
-                <Text style={styles.text}>حفظ</Text>
-            </TouchableOpacity>
-        )
-    }
-    const seperator = () => {
-        return (
-            <View style={{ borderBottomWidth: 1, borderColor: colors.silver, marginTop: 10 }}></View>
-        )
-    }
-
     const renderRequestDetail = () => {
-        const serviceInfo = filterService()
+
         return (
             <View style={styles.reqInfoView}>
                 <View style={{ height: '50%' }}>
-                    <Text style={styles.text}>{"الدفعةالاولى قبل تاريخ  " + moment(reqInfo.requestInfo.reservationDetail[0].reservationDate).format('L')}</Text>
+                    <Text style={styles.addTxt}>{"الدفعةالاولى قبل تاريخ  " + '2025/8/20'}</Text>
                 </View>
                 <View style={styles.amount}>
-                    <Text style={styles.text}>{"₪" + reqInfo.requestInfo.Cost}</Text>
+                    <Text style={styles.addTxt}>{"₪" + "10000"}</Text>
                 </View>
+            </View>
+        )
+    }
+
+    const determineNumOfPayment = () => {
+        return (
+            <View style={styles.paymentQuntView}>
+                <View style={styles.titleItem}>
+                    {renderRequestDetail()}
+                </View>
+
+                {renderPaymentFeilds()}
+                {renderAddButton()}
+            </View>
+        )
+    }
+    /// make payment section
+
+    const creditCardPress = () => {
+        setCreditCard(true)
+        setCash(false)
+        setChecks(false)
+        // setpaymentMethod('Credit Card')
+
+    }
+    const cashPress = () => {
+        setCreditCard(false)
+        setCash(true)
+        setChecks(false)
+        // setpaymentMethod('Cash')
+    }
+    const checksPress = () => {
+        setCreditCard(false)
+        setCash(false)
+        setChecks(true)
+        // setpaymentMethod('Checks')
+    }
+
+    const renderPayAmount = () => {
+        return (
+            <View style={styles.amountView}>
+                <Text style={styles.amountTxt}>15000</Text>
+            </View>
+        )
+    }
+    const renderContinueButton = () => {
+        return (
+            <TouchableOpacity style={styles.continueButton} onPress={() => setContinuePay(true)}
+            >
+                <Text style={styles.buttonText}>تحرير الدفعة</Text>
+            </TouchableOpacity>
+        )
+    }
+    const renderPayButton = () => {
+        return (
+            <TouchableOpacity style={styles.payView} //onPress={onPaymentPress}
+            >
+                <Text style={styles.buttonText}>تأكيد الدفع</Text>
+            </TouchableOpacity>
+        )
+    }
+    const creatPaymentProviderSide = () => {
+        return (
+
+            <View style={styles.payMethodView}>
+                <TouchableOpacity style={[styles.methodItem, cash ? styles.methodItemPress : styles.methodItem]} onPress={cashPress}>
+                    <Text style={styles.methodText}>كاش</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.methodItem, checks ? styles.methodItemPress : styles.methodItem]} onPress={checksPress}>
+                    <Text style={styles.methodText}>شيكات</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.methodItem, creditCard ? styles.methodItemPress : styles.methodItem]} onPress={creditCardPress}>
+                    <Text style={styles.methodText}>بطاقة ائتمان</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+    const makePayment = () => {
+        return (
+            <View style={styles.paymentQuntView}>
+                {!continuePay && renderContinueButton()}
+                {continuePay && renderPayAmount()}
+                {continuePay && creatPaymentProviderSide()}
+                {continuePay && renderPayButton()}
             </View>
         )
     }
 
     return (
-        <View style={styles.comp}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                {renderSaveButton()}
-                <Text style={styles.text}>تحديد عدد الدفعات </Text>
-            </View>
-            {/* {seperator()} */}
-            {renderRequestDetail()}
-            {renderAddButton()}
+        <View>
+            <ScrollView>
+                {determineNumOfPayment()}
+                {makePayment()}
+            </ScrollView>
 
-            {paymentDataArray.length > 0 &&
-                <View style={styles.payFeildView}>
-                    <ScrollView>
-                        {renderPaymentFeilds()}
-                    </ScrollView>
-                </View>}
         </View>
     )
 }
 
-export default PaymentDetailComp
+export default ProviderSetPaymentForClient
 
 const styles = StyleSheet.create({
-    comp: {
-        padding: 20
-        // backgroundColor: 'red'
+
+    paymentQuntView: {
+        width: '100%',
+        marginVertical: 20,
+        // borderWidth: 1
     },
+
     item: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        // alignSelf: 'flex-end',
+        alignSelf: 'center',
         marginVertical: 5,
         borderWidth: 2,
         borderColor: colors.silver,
-        width: '100%',
+        width: '90%',
         borderRadius: 20
-
+    },
+    titleItem: {
+        alignSelf: 'center',
+        marginVertical: 5,
+        width: '90%',
+    },
+    addTxt: {
+        fontSize: 18,
+        color: colors.puprble,
+        fontWeight: 'bold'
     },
     IconView: {
         width: 40,
@@ -360,54 +362,6 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         marginLeft: 15
     },
-    txt: {
-        fontSize: 20,
-        color: colors.puprble,
-        fontWeight: 'bold'
-    },
-    basicInfo: {
-        fontSize: 18,
-        color: colors.puprble,
-        fontWeight: 'bold'
-    },
-    mediaItem: {
-        borderWidth: 1,
-        padding: 5,
-        borderRadius: 8,
-        borderColor: colors.silver,
-        marginVertical: 10
-    },
-
-    inputView: {
-        flexDirection: 'row',
-        height: 50,
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        alignSelf: 'center',
-    },
-    input: {
-        height: 50,
-        width: '45%',
-        borderRadius: 10,
-        alignItems: 'center',
-        backgroundColor: colors.silver,
-        justifyContent: 'center',
-        alignSelf: 'center',
-        fontSize: 18,
-        textAlign: 'center'
-    },
-
-    inputPersentageView: {
-        flexDirection: 'row',
-        height: 50,
-        width: '45%',
-        borderRadius: 10,
-        alignItems: 'center',
-        backgroundColor: colors.silver,
-        justifyContent: 'center',
-    },
-
     viewDate: {
         flexDirection: 'row',
         height: 50,
@@ -422,39 +376,125 @@ const styles = StyleSheet.create({
     datetxt: {
         fontSize: 18,
     },
-    text: {
-        fontSize: 20,
-        color: colors.puprble
-    },
-    footer: {
-        borderWidth: 1,
-        borderColor: colors.puprble,
-        width: 60,
-        height: 30,
+    inputView: {
+        flexDirection: 'row',
+        height: 50,
+        width: '100%',
         alignItems: 'center',
+        justifyContent: 'space-around',
+        alignSelf: 'center',
+    },
+    input: {
+        height: 40,
+        width: '45%',
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: colors.silver,
         justifyContent: 'center',
-        borderRadius: 8
+        alignSelf: 'center',
+        fontSize: 18,
+        textAlign: 'center'
+    },
+    inputPersentageView: {
+        flexDirection: 'row',
+        height: 50,
+        width: '45%',
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: colors.silver,
+        justifyContent: 'center',
+    },
+    mediaItem: {
+        borderWidth: 1,
+        padding: 5,
+        borderRadius: 8,
+        borderColor: colors.silver,
+        marginVertical: 10,
+        width: '90%',
+        alignSelf: 'center'
     },
     reqInfoView: {
         borderWidth: 2,
         borderColor: colors.silver,
         width: '100%',
-        height: 140,
+        height: 100,
         padding: 10,
         marginVertical: 10
-    },
-    payFeildView: {
-        borderWidth: 2,
-        borderColor: colors.silver,
-        width: "100%",
-        height: '65%',
-        padding: 5
     },
     amount: {
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
         height: '50%',
+    },
+    amountView: {
+        width: '80%',
+        height: 70,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        borderWidth: 0.6,
+        borderColor: colors.silver,
+        borderRadius: 5,
+        marginVertical: 20
+    },
+    amountTxt: {
+        fontSize: 20,
+        color: colors.darkGold,
+    },
+    continueButton: {
+        width: '90%',
+        alignSelf: 'center',
+        //  borderWidth:1,
+    },
+    payView: {
+        width: '60%',
+        alignSelf: 'flex-start',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 30,
+        borderColor: colors.silver,
+        borderWidth: 3,
+    },
+    buttonText: {
+        fontSize: 20,
+        color: colors.puprble,
+    },
+
+    payMethodView: {
+        width: '90%',
+        height: 100,
+        alignSelf: 'center',
+        padding: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    methodItem: {
+        marginVertical: 5,
+        width: '31%',
+        height: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.gold,
+        borderRadius: 10,
+        elevation: 5
+    },
+    methodItemPress: {
+        marginVertical: 5,
+        width: '31%',
+        height: 60,
+        borderWidth: 3,
+        borderColor: colors.puprble,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.gold,
+        borderRadius: 10,
+        elevation: 5
+    },
+    methodText: {
+        fontSize: 18,
+        color: colors.puprble
     }
 
 })

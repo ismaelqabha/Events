@@ -294,7 +294,7 @@ var srselectedDate
   }
   const renderCreateRequest = () => {
     return (
-      <TouchableOpacity style={styles.operationView} onPress={() => props.navigation.navigate(ScreenNames.ProviderSetNewBooking)}>
+      <TouchableOpacity style={styles.operationView} onPress={() => props.navigation.navigate(ScreenNames.ProviderSetNewBooking, {fulDate})}>
         <Text style={styles.txt}>انشاء حجز</Text>
       </TouchableOpacity>
     )

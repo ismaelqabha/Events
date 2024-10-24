@@ -75,6 +75,10 @@ import InvetationOutboxShow from "../src/screens/ClientScreens/InvetationOutboxS
 import ProviderPhotosPrview from "../src/screens/ProviderScreens/ProviderPhotosPrview";
 import ProviderUsersView from "../src/screens/ProviderScreens/ProviderUsersView";
 import ProviderSetNewBooking from "../src/screens/ProviderScreens/ProviderSetNewBooking";
+import AdminTapNav from "./AdminTapNav";
+import AdminHome from "../src/screens/adminScreens/AdminHome";
+import AdminClients from "../src/screens/adminScreens/AdminClients";
+import AdminVisits from "../src/screens/adminScreens/AdminVisits";
 
 
 
@@ -121,6 +125,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name="Tap" component={TabNavigator} />
                 <Stack.Screen name="TapNoti" component={TopTapNotificaNavig} />
                 <Stack.Screen name="TapProvider" component={ProviderTapNav} />
+                <Stack.Screen name="AdminTapNav" component={AdminTapNav} />
                 <Stack.Screen name={ScreenNames.Splash} component={Splash} />
                 <Stack.Screen name={ScreenNames.SignIn} component={SignIn} />
                 <Stack.Screen name={ScreenNames.ForgotPassword} component={ForgotPassword} />
@@ -177,6 +182,10 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderPhotosPrview} component={ProviderPhotosPrview} />
                 <Stack.Screen name={ScreenNames.ProviderUsersView} component={ProviderUsersView} />
                 <Stack.Screen name={ScreenNames.ProviderSetNewBooking} component={ProviderSetNewBooking} />
+                
+                <Stack.Screen name={ScreenNames.AdminHome} component={AdminHome} />
+                <Stack.Screen name={ScreenNames.AdminClients} component={AdminClients} />
+                <Stack.Screen name={ScreenNames.AdminVisits} component={AdminVisits} />
 
                 <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />
                 <Stack.Screen name={ScreenNames.CreatePassword} component={CreatePassword} />

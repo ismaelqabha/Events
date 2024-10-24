@@ -34,7 +34,7 @@ const SetUserAddress = (props) => {
   const translateY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation()
 
-  console.log("props ", props.route.params);
+  
   const onPressBack = () => {
     props.navigation.goBack();
   }
@@ -258,14 +258,14 @@ const SetUserAddress = (props) => {
   };
 
   const saveData = async () => {
-    console.log("userId", userId);
+    //console.log("userId", userId);
     const body = {
       USER_ID: userId,
       UserRegion: createUserRegion,
       UserCity: userCity,
       isSetUpFinished: true,
     }
-    console.log("body ", body);
+   // console.log("body ", body);
     await updateUserData(body)
       .then((response) => {
         if (response?.message === "Updated Successfully") {

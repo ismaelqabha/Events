@@ -14,6 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { ScreenNames } from '../../../route/ScreenNames';
 import moment from 'moment';
+import { TouchableOpacity } from 'react-native';
 
 const ProviderCreateOffer = (props) => {
     const { isFirst, serviceCat, Region } = props.route?.params || {}
@@ -193,7 +194,7 @@ const ProviderCreateOffer = (props) => {
             const [selectedRegion, setSelectedRegion] = useState(false);
             return <View style={styles.regionView}>
                 <Text style={styles.regionText}>{item.regionName}</Text>
-                <Pressable style={styles.regionPressable}
+                <TouchableOpacity style={styles.regionPressable}
                     onPress={() => whenSetWorkingRegion(item.regionName, setSelectedRegion, selectedRegion)}>
                     {selectedRegion &&
                         <Entypo
@@ -202,7 +203,7 @@ const ProviderCreateOffer = (props) => {
                             color={colors.puprble}
                             size={20} />
                     }
-                </Pressable>
+                </TouchableOpacity>
             </View>
         });
         return cardsArray;

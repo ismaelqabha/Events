@@ -35,6 +35,7 @@ const ProviderClientScreen = (props) => {
         const allclients = service[0].clients || []
 
         findRequestsByUserId({ service_id: isFirst, clients: allclients }).then(res => {
+            console.log(res);
             setLoading(false)
             setUserData(res)
         })
