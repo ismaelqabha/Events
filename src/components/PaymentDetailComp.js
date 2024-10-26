@@ -148,14 +148,15 @@ const PaymentDetailComp = (props) => {
         const calculateAmountFromPersentage = (pers) => {
             const ReqPrice = reqInfo.requestInfo.Cost
             // console.log(">>", pers);
-            if (pers < 100) {
-
+            if (pers <= 100) {
                 const fact = ReqPrice * pers
                 const realAmount = fact / 100
-                setAmount(realAmount?.toFixed(1).toString() || '0')
-                setPersentage(parseInt(pers)?.toFixed(1).toString() || '0')
+                setPersentage(parseInt(pers)?.toFixed(0).toString() || '0')
+                setAmount(realAmount?.toFixed(0).toString() || '0')
             } else {
                 console.log("persentage is more than 100%");
+                setPersentage('100')
+                setAmount(ReqPrice?.toString() || '0')
             }
         }
         const calculatePersentageFromAmount = (amou) => {
@@ -163,8 +164,8 @@ const PaymentDetailComp = (props) => {
             if (amou < ReqPrice) {
                 const value = amou / ReqPrice
                 const pers = value * 100
-                setAmount(parseInt(amou)?.toFixed(1).toString() || '0')
-                setPersentage(pers?.toFixed(1).toString() || '0')
+                setAmount(parseInt(amou)?.toFixed(0).toString() || '0')
+                setPersentage(pers?.toFixed(0).toString() || '0')
             } else {
                 console.log("amount is more than Total Cost");
             }
@@ -172,6 +173,8 @@ const PaymentDetailComp = (props) => {
         }
 
         const onChange = (event, selectedDate) => {
+            console.log("reqinfo ", reqInfo);
+
             setShow(false)
             const currentDate = selectedDate || date;
             setDate(currentDate);
@@ -202,7 +205,7 @@ const PaymentDetailComp = (props) => {
             setShow(true);
             setMode(currentMode);
         }
-// console.log("props.val", props.val);
+        // console.log("props.val", props.val);
         useEffect(() => {
             if (props.val) {
                 setPaymentDate(props?.val?.PayDate)
@@ -260,21 +263,8 @@ const PaymentDetailComp = (props) => {
                             keyboardType={'numeric'}
                             placeholder={'النسبة'}
                             value={persentage}
-                            //onChangeText={setPersentage}
-
-                            onChangeText={(val) => setPersentage(parseInt(val))}
-
-                            onEndEditing={(val) => {
-                                  calculateAmountFromPersentage(val.nativeEvent.text)
-                                const data = {
-                                    id: payId,
-                                    PayDate: paymentDate,
-                                    pers: persentage,
-                                    paymentStutes: 'not paid'
-                                }
-                                updateArray(data, index)
-
-                            }}
+                            onChangeText={setPersentage}
+                            onEndEditing={(val) => calculateAmountFromPersentage(val.nativeEvent.text)}
                         />
                         <Text style={styles.text}>%</Text>
                     </View>
