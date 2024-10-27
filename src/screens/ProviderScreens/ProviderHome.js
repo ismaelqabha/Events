@@ -5,7 +5,8 @@ import {
   ScrollView,
   Pressable,
   Modal, ToastAndroid, Dimensions, Image,
-  Alert
+  Alert,
+  TouchableOpacity
 } from 'react-native';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import SearchContext from '../../../store/SearchContext';
@@ -45,6 +46,7 @@ const ProviderHome = props => {
     addNewDetail, setAddNewDetail,
     showDetailModal, setShowDetailModal } = useContext(ServiceProviderContext);
 
+  const [isServiceDetailOpen, setIsServiceDetailOpen] = useState(false)
   const [servicePhotos, setservicePhotos] = useState();
   // const [showDetailModal, setShowDetailModal] = useState(false);
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
@@ -136,7 +138,7 @@ const ProviderHome = props => {
   }
 
   const closeModalPress = (index, setShowDescModal) => {
-    setShowDescModal(index, false)
+    setShowDetailModal(index, false)
   }
   const closeSMmodalPress = (setShowModal, index) => {
     setShowModal(index, false)
@@ -308,7 +310,6 @@ const ProviderHome = props => {
     });
     return serviceType;
   };
-
   const renderServiceTitle = () => {
     const data = filterService();
     const serviceTitle = data?.map(item => {
@@ -745,7 +746,6 @@ const ProviderHome = props => {
       );
     });
   };
-
   const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal, index) => {
     return (
       <Modal
@@ -801,23 +801,28 @@ const ProviderHome = props => {
         <View >
           <View style={styles.itemService}>
             <View style={styles.itemSM}>
-              <Pressable
+              <TouchableOpacity
                 onPress={() => serviceDetailEditPress(itemDetail.detailTitle, itemDetail.necessity, itemDetail.isPerPerson, itemDetail.subDetailArray)}>
                 <Feather
                   style={styles.menuIcon}
                   name={'more-vertical'}
                   color={colors.puprble}
                   size={25} />
-              </Pressable>
-              <Text style={styles.detailtxt}>{itemDetail.detailTitle}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setIsServiceDetailOpen(!isServiceDetailOpen)}>
+                <Text style={styles.detailtxt}>{itemDetail.detailTitle}</Text>
+              </TouchableOpacity>
+
             </View>
+
             <View style={styles.IconView}>
               <Entypo name={'info'} color={colors.puprble} size={25} />
             </View>
           </View>
           {itemDetail.subDetailArray.map(subDItem => {
-            return (
-              <View style={styles.detailView}>
+            return (<View>
+              {isServiceDetailOpen && <View style={styles.detailView}>
                 <Text style={styles.basicInfo}>
                   {subDItem.detailSubtitle}
                 </Text>
@@ -827,7 +832,8 @@ const ProviderHome = props => {
                   color={colors.puprble}
                   size={25}
                 />
-              </View>
+              </View>}
+            </View>
             );
           })}
         </View>
@@ -848,23 +854,25 @@ const ProviderHome = props => {
         <View >
           <View style={styles.itemService}>
             <View style={styles.itemSM}>
-              <Pressable
+              <TouchableOpacity
                 onPress={() => serviceDetailEditPress(itemDetail.detailTitle, itemDetail.necessity, itemDetail.isPerPerson, itemDetail.subDetailArray)}>
                 <Feather
                   style={styles.menuIcon}
                   name={'more-vertical'}
                   color={colors.puprble}
                   size={25} />
-              </Pressable>
-              <Text style={styles.basicInfo}>{itemDetail.detailTitle}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsServiceDetailOpen(!isServiceDetailOpen)}>
+                <Text style={styles.basicInfo}>{itemDetail.detailTitle}</Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.IconView}>
               <Entypo name={'info'} color={colors.puprble} size={25} />
             </View>
           </View>
           {itemDetail.subDetailArray.map(subDItem => {
-            return (
-              <View style={styles.detailView}>
+            return (<View>
+              {isServiceDetailOpen && <View style={styles.detailView}>
                 <Text style={styles.basicInfo}>
                   {subDItem.detailSubtitle}
                 </Text>
@@ -874,7 +882,8 @@ const ProviderHome = props => {
                   color={colors.puprble}
                   size={25}
                 />
-              </View>
+              </View>}
+            </View>
             );
           })}
         </View>
@@ -889,7 +898,7 @@ const ProviderHome = props => {
         <View>
           <Text style={styles.sectionTitletxt}>الخدمات الاختيارية</Text>
           <View style={styles.content}>
-            <Pressable style={styles.item} onPress={() => {
+            <TouchableOpacity style={styles.item} onPress={() => {
               addNewDetailPress()
               setIsOptioal(true)
             }}>
@@ -902,7 +911,7 @@ const ProviderHome = props => {
                   size={25}
                 />
               </View>
-            </Pressable>
+            </TouchableOpacity>
             {renderOptionalDetail()}</View>
         </View>
       )
@@ -915,7 +924,7 @@ const ProviderHome = props => {
         <View>
           <Text style={styles.sectionTitletxt}>الخدمات الاجبارية</Text>
           <View style={styles.content}>
-            <Pressable style={styles.item} onPress={() => {
+            <TouchableOpacity style={styles.item} onPress={() => {
               addNewDetailPress()
               setIsOptioal(false)
             }}>
@@ -928,7 +937,7 @@ const ProviderHome = props => {
                   size={25}
                 />
               </View>
-            </Pressable>
+            </TouchableOpacity>
             {renderMandatoryDetail()}
           </View>
         </View>
@@ -944,13 +953,13 @@ const ProviderHome = props => {
         onRequestClose={() => setShowDetailModal(false)}>
         <View style={styles.servDetailModal}>
           <View style={styles.bodyModal}>
-            <Pressable onPress={closeModalPress} style={styles.modalHeader}>
+            <TouchableOpacity onPress={closeModalPress} style={styles.modalHeader}>
               <Feather
                 style={styles.menuIcon}
                 name={'more-horizontal'}
                 color={colors.puprble}
                 size={25} />
-            </Pressable>
+            </TouchableOpacity>
             {renderEditServiceDetailInfo()}
           </View>
         </View>
@@ -1063,7 +1072,6 @@ const ProviderHome = props => {
       );
     });
   };
-
   const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia, showModal, setShowModal, index) => {
     return (
       <Modal

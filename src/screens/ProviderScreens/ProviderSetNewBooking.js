@@ -117,7 +117,7 @@ const ProviderSetNewBooking = (props) => {
         )
     }
     const renderBookingInfo = () => {
-        const serviceData =  findProviderInfo()
+        const serviceData = findProviderInfo()
         return (
             <ScrollView>
                 <ProviderSetClientForBooking serviceData={serviceData} fulDate={fulDate} />
@@ -179,9 +179,10 @@ const ProviderSetNewBooking = (props) => {
         <View style={styles.container}>
 
             {header()}
+            {footer()}
             {renderHeadLines()}
             {screenBody()}
-            {footer()}
+           
         </View >
     )
 }
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        //borderWidth: 1,
+        borderWidth: 1,
         // marginTop: 50
     },
     btnNext: {

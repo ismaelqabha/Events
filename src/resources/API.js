@@ -139,6 +139,16 @@ export const createNewPayment = async body => {
   return await AppFetch(url, 'POST', body);
 };
 
+/// Review
+export const getReviewForClient = async body => {
+  const url = 'reviews/getClientReview';
+  return await AppFetch(url, 'POST', body);
+};
+export const getReviewForProvider = async body => {
+  const url = 'reviews/getProviderReview';
+  return await AppFetch(url, 'POST', body);
+};
+
 
 
 
