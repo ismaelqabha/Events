@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import moment from "moment";
 import ServiceProviderContext from '../../store/ServiceProviderContext';
 import { TouchableOpacity } from 'react-native';
+import { showMessage } from '../resources/Functions';
 
 
 const PaymentDetailComp = (props) => {
@@ -34,42 +35,59 @@ const PaymentDetailComp = (props) => {
     }, [])
 
     const updateData = () => {
-        const requestInfoAccServiceIndex = requestInfoByService?.findIndex(item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId)
+        // First, check if all payment fields are filled properly
+        const service = filterService();
+        for (let payment of paymentDataArray) {
+            if (!payment.pers || payment.pers <= 0 || !payment.PayDate) {
+                showMessage('يجب تعبئة جميع الحقول بشكل صحيح');
+                return;
+            }
+            const paymentDate = new Date(payment.PayDate);
+            const eventDate = new Date(reqInfo.requestInfo.reservationDetail[0].reservationDate);
+
+            if (service[0].paymentPolicy === 'pre' && paymentDate >= eventDate) {
+                showMessage('التاريخ يجب ان يكون قبل تاريخ الحدث نظرا لسياسة الدفع المسبق');
+                return;
+            }
+        }
+
+
+        // Calculate the total percentage
+        const result = checkSumPersentage();
+
+        // Ensure the total percentage is exactly 100
+        if (result !== 100) {
+            showMessage('يجب أن يكون مجموع النسب 100%');
+            return;
+        }
+
+        // Proceed with updating the request if all conditions are met
+        const requestInfoAccServiceIndex = requestInfoByService?.findIndex(
+            item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId
+        );
 
         const newData = {
             RequestId: reqInfo.requestInfo.RequestId,
             ReqStatus: 'waiting pay',
-            paymentInfo: paymentDataArray
-        }
-        const result = checkSumPersentage()
-        // console.log("result", result);
-        if (result < 100) {
-            updateRequest(newData).then(res => {
+            paymentInfo: paymentDataArray,
+        };
 
-                if (res.message == "Updated Sucessfuly") {
-                    const data = requestInfoByService || [];
-                    if (requestInfoAccServiceIndex > -1) {
-                        data[requestInfoAccServiceIndex] = { ...data[requestInfoAccServiceIndex], ...newData };
-                    }
-                    setRequestInfoByService([...data])
-
-                    ToastAndroid.showWithGravity(
-                        'تم التعديل بنجاح',
-                        ToastAndroid.SHORT,
-                        ToastAndroid.BOTTOM,
-                    );
-                    setShowPaymentModal(false)
+        updateRequest(newData).then(res => {
+            if (res.message === "Updated Successfully") {
+                const data = requestInfoByService || [];
+                if (requestInfoAccServiceIndex > -1) {
+                    data[requestInfoAccServiceIndex] = {
+                        ...data[requestInfoAccServiceIndex],
+                        ...newData,
+                    };
                 }
-            })
-        } else {
-            ToastAndroid.showWithGravity(
-                'مجموع نسب الدفعات اكثر من 100',
-                ToastAndroid.SHORT,
-                ToastAndroid.BOTTOM,
-            );
-        }
+                setRequestInfoByService([...data]);
 
-    }
+                showMessage('تم التعديل بنجاح');
+                setShowPaymentModal(false);
+            }
+        });
+    };
 
 
     const addPaymentData = () => {
@@ -94,17 +112,24 @@ const PaymentDetailComp = (props) => {
 
 
     const checkSumPersentage = () => {
-        var sumPers = 0
-        // console.log("paymentDataArray", paymentDataArray);
-        paymentDataArray.forEach(element => {
-            sumPers += element.pers
+        let sumPers = 0;
+
+        paymentDataArray.forEach((element, index) => {
+            const percentage = parseFloat(element.pers);
+            if (!isNaN(percentage)) {
+                console.log(index + 1, "percentage", percentage);
+
+                sumPers += percentage;
+            }
         });
-        return sumPers
-    }
+
+        return sumPers;
+    };
 
     const renderPaymentFeilds = () => {
+        const service = filterService()
         const fields = paymentDataArray?.map((val, index) =>
-            <PaymentComponent val={val} index={index} />
+            <PaymentComponent val={val} index={index} service={service} />
         )
         return fields
     }
@@ -125,16 +150,18 @@ const PaymentDetailComp = (props) => {
     };
 
     const PaymentComponent = (props) => {
-        const [paymentDate, setPaymentDate] = useState(null)
-        const [persentage, setPersentage] = useState(null)
-        const [amount, setAmount] = useState(null)
-
+        const [paymentDate, setPaymentDate] = useState(props?.val?.PayDate || null)
+        const [persentage, setPersentage] = useState(props?.val?.pers || null)
+        const [amount, setAmount] = useState(props?.val?.amount || null)
 
         const index = props.index
 
         const [date, setDate] = useState(new Date());
         const [mode, setMode] = useState('date');
         const [show, setShow] = useState(false);
+
+        const { service } = props
+        const paymentPolicy = service[0]?.paymentPolicy;
 
         var payDate
         var todayDate = new Date();
@@ -146,63 +173,96 @@ const PaymentDetailComp = (props) => {
 
 
         const calculateAmountFromPersentage = (pers) => {
-            const ReqPrice = reqInfo.requestInfo.Cost
-            // console.log(">>", pers);
-            if (pers < 100) {
+            const ReqPrice = reqInfo.requestInfo.Cost;
+            const currentTotal = checkSumPersentage() - paymentDataArray[index]?.pers;
 
-                const fact = ReqPrice * pers
-                const realAmount = fact / 100
-                setAmount(realAmount?.toFixed(1).toString() || '0')
-                setPersentage(parseInt(pers)?.toFixed(1).toString() || '0')
-            } else {
-                console.log("persentage is more than 100%");
+            const maxAllowed = 100 - currentTotal;
+
+            let adjustedPers = pers;
+
+            if (currentTotal + parseFloat(pers) > 100) {
+                adjustedPers = maxAllowed;
             }
-        }
+
+            const fact = ReqPrice * adjustedPers;
+            const realAmount = fact / 100;
+            const newPersentage = parseInt(adjustedPers)?.toFixed(0).toString() || '0';
+            const newAmount = realAmount?.toFixed(0).toString() || '0';
+
+            setPersentage(newPersentage);
+            setAmount(newAmount);
+
+            updateArray(
+                {
+                    id: payId,
+                    PayDate: paymentDate,
+                    pers: newPersentage,
+                    paymentStutes: 'not paid',
+                    amount: newAmount
+                },
+                index
+            );
+        };
         const calculatePersentageFromAmount = (amou) => {
-            const ReqPrice = reqInfo.requestInfo.Cost
-            if (amou < ReqPrice) {
-                const value = amou / ReqPrice
-                const pers = value * 100
-                setAmount(parseInt(amou)?.toFixed(1).toString() || '0')
-                setPersentage(pers?.toFixed(1).toString() || '0')
-            } else {
-                console.log("amount is more than Total Cost");
+            const ReqPrice = reqInfo.requestInfo.Cost;
+            const currentTotalPercentage = checkSumPersentage() - parseFloat(paymentDataArray[index]?.pers || 0);
+
+            const maxAllowedPercentage = 100 - currentTotalPercentage;
+            const maxAllowedAmount = (ReqPrice * maxAllowedPercentage) / 100;
+
+            let adjustedAmount = amou;
+
+            if (amou > maxAllowedAmount) {
+                adjustedAmount = maxAllowedAmount;
             }
 
-        }
+            const value = adjustedAmount / ReqPrice;
+            const pers = value * 100;
+            const newAmount = parseInt(adjustedAmount)?.toFixed(0).toString() || '0';
+            const newPersentage = pers?.toFixed(0).toString() || '0';
+
+            setAmount(newAmount);
+            setPersentage(newPersentage);
+
+            updateArray(
+                {
+                    id: payId,
+                    PayDate: paymentDate,
+                    pers: newPersentage,
+                    paymentStutes: 'not paid',
+                    amount: newAmount
+                },
+                index
+            );
+        };
 
         const onChange = (event, selectedDate) => {
-            setShow(false)
-            const currentDate = selectedDate || date;
-            setDate(currentDate);
+            setShow(false);
+            const chosenDate = selectedDate || date;
 
-            let tempDate = new Date(currentDate);
-            let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
-            let cuurentDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-            payDate = new Date(fDate)
-
-            if (payDate > todayDate) {
-                const data = {
-                    id: payId,
-                    PayDate: fDate,
-                    pers: persentage,
-                    paymentStutes: 'not paid'
-                }
-                updateArray(data, index)
-
-                setPaymentDate(fDate);
-            } else {
-                console.log("date not coorect");
-                setPaymentDate(cuurentDate);
+            // Check the policy conditions
+            if (paymentPolicy === 'pre' && chosenDate >= eventDate) {
+                showMessage('التاريخ يجب ان يكون قبل تاريخ الحدث نظرا لسياسة الدفع المسبق');
+                return;
             }
+            // Set the valid date
+            setDate(chosenDate);
+            setPaymentDate(chosenDate.toISOString().split('T')[0]);
 
-
-        }
+            const data = {
+                id: payId,
+                PayDate: chosenDate.toISOString().split('T')[0],
+                pers: persentage,
+                amount: amount,
+                paymentStutes: 'not paid'
+            };
+            updateArray(data, index);
+        };
         const showMode = (currentMode) => {
             setShow(true);
             setMode(currentMode);
         }
-// console.log("props.val", props.val);
+        // console.log("props.val", props.val);
         useEffect(() => {
             if (props.val) {
                 setPaymentDate(props?.val?.PayDate)
@@ -260,21 +320,8 @@ const PaymentDetailComp = (props) => {
                             keyboardType={'numeric'}
                             placeholder={'النسبة'}
                             value={persentage}
-                            //onChangeText={setPersentage}
-
-                            onChangeText={(val) => setPersentage(parseInt(val))}
-
-                            onEndEditing={(val) => {
-                                  calculateAmountFromPersentage(val.nativeEvent.text)
-                                const data = {
-                                    id: payId,
-                                    PayDate: paymentDate,
-                                    pers: persentage,
-                                    paymentStutes: 'not paid'
-                                }
-                                updateArray(data, index)
-
-                            }}
+                            onChangeText={setPersentage}
+                            onEndEditing={(val) => calculateAmountFromPersentage(val.nativeEvent.text)}
                         />
                         <Text style={styles.text}>%</Text>
                     </View>
@@ -299,7 +346,6 @@ const PaymentDetailComp = (props) => {
     }
 
     const renderRequestDetail = () => {
-        const serviceInfo = filterService()
         return (
             <View style={styles.reqInfoView}>
                 <View style={{ height: '50%' }}>
