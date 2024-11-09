@@ -93,6 +93,8 @@ const ProviderSetNewBooking = (props) => {
     const screenBody = () => {
         return (
             <View style={styles.body}>
+                            <ScrollView>
+
                 <View style={styles.bodyTitle}>
                     {client && <Text style={styles.nextText}>معلومات الزبون</Text>}
                     {booking && <Text style={styles.nextText}>تفاصيل الحجز</Text>}
@@ -103,6 +105,7 @@ const ProviderSetNewBooking = (props) => {
                     {booking && renderBookingInfo()}
                     {payment && renderPaymentDetail()}
                 </View>
+                </ScrollView>
             </View>
         )
     }
@@ -120,9 +123,7 @@ const ProviderSetNewBooking = (props) => {
     const renderBookingInfo = () => {
         const serviceData = findProviderInfo()
         return (
-            <ScrollView>
-                <ProviderSetClientForBooking serviceData={serviceData} fulDate={fulDate} />
-            </ScrollView>
+            <ProviderSetClientForBooking serviceData={serviceData} fulDate={fulDate} />
         )
     }
     const renderPaymentDetail = () => {
@@ -315,8 +316,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         // borderWidth: 1,
         // marginTop: 50
-        marginTop:'10%'
-    
+        marginTop: '10%'
+
     },
     btnNext: {
         width: '50%',
