@@ -7,6 +7,7 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import ProviderSetPaymentForClient from '../../components/ProviderComponents/ProviderSetPaymentForClient';
 import ProviderSetClientInfo from './ProviderSetClientInfo';
+import { AppStyles } from '../../assets/res/AppStyles';
 
 
 const ProviderSetNewBooking = (props) => {
@@ -36,7 +37,7 @@ const ProviderSetNewBooking = (props) => {
     }
 
     useEffect(() => {
-       
+
     }, [])
 
 
@@ -106,13 +107,13 @@ const ProviderSetNewBooking = (props) => {
         )
     }
 
- 
+
     const renderClientInfo = () => {
-        const data =  findProviderInfo()
+        const data = findProviderInfo()
         const providerClients = data[0].clients
         return (
             <View>
-                <ProviderSetClientInfo providerClients={providerClients}/>
+                <ProviderSetClientInfo providerClients={providerClients} />
             </View>
         )
     }
@@ -164,11 +165,11 @@ const ProviderSetNewBooking = (props) => {
     const footer = () => {
         return (
             <View style={styles.btnView}>
-                {!payment && <TouchableOpacity style={styles.btnNext} onPress={nextPress}>
-                    <Text style={styles.nextText}>التالي</Text>
+                {!payment && <TouchableOpacity style={AppStyles.next} onPress={nextPress}>
+                    <Text style={AppStyles.nextText}>التالي</Text>
                 </TouchableOpacity>}
-                <TouchableOpacity style={styles.btnBack} onPress={backPress}>
-                    <Text style={styles.backText}>رجوع</Text>
+                <TouchableOpacity style={AppStyles.back} onPress={backPress}>
+                    <Text style={AppStyles.backText}>رجوع</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -179,10 +180,9 @@ const ProviderSetNewBooking = (props) => {
         <View style={styles.container}>
 
             {header()}
-            {footer()}
             {renderHeadLines()}
             {screenBody()}
-           
+            {footer()}
         </View >
     )
 }
@@ -313,8 +313,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderWidth: 1,
+        // borderWidth: 1,
         // marginTop: 50
+        marginTop:'10%'
+    
     },
     btnNext: {
         width: '50%',
@@ -341,6 +343,6 @@ const styles = StyleSheet.create({
         // color: colors.puprble,
         fontWeight: 'bold'
     },
-  
-   
+
+
 })
