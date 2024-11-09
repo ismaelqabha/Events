@@ -23,7 +23,11 @@ const ProviderSetNewBooking = (props) => {
     const [booking, setBooking] = useState(false)
     const [payment, setPayment] = useState(false)
 
+    const [inputValues, setInputValues] = useState({ name: '', phone: '', email: '', location: '' });
 
+    const handleClientInfoChange = (newValues) => {
+        setInputValues(newValues);
+    };
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -93,18 +97,18 @@ const ProviderSetNewBooking = (props) => {
     const screenBody = () => {
         return (
             <View style={styles.body}>
-                            <ScrollView>
+                <ScrollView>
 
-                <View style={styles.bodyTitle}>
-                    {client && <Text style={styles.nextText}>معلومات الزبون</Text>}
-                    {booking && <Text style={styles.nextText}>تفاصيل الحجز</Text>}
-                    {payment && <Text style={styles.nextText}>معلومات الدفع</Text>}
-                </View>
-                <View style={styles.bodyTaps}>
-                    {client && renderClientInfo()}
-                    {booking && renderBookingInfo()}
-                    {payment && renderPaymentDetail()}
-                </View>
+                    <View style={styles.bodyTitle}>
+                        {client && <Text style={styles.nextText}>معلومات الزبون</Text>}
+                        {booking && <Text style={styles.nextText}>تفاصيل الحجز</Text>}
+                        {payment && <Text style={styles.nextText}>معلومات الدفع</Text>}
+                    </View>
+                    <View style={styles.bodyTaps}>
+                        {client && renderClientInfo()}
+                        {booking && renderBookingInfo()}
+                        {payment && renderPaymentDetail()}
+                    </View>
                 </ScrollView>
             </View>
         )
@@ -116,7 +120,7 @@ const ProviderSetNewBooking = (props) => {
         const providerClients = data[0].clients
         return (
             <View>
-                <ProviderSetClientInfo providerClients={providerClients} />
+                <ProviderSetClientInfo providerClients={providerClients} onInputChange={handleClientInfoChange} />
             </View>
         )
     }
@@ -134,19 +138,70 @@ const ProviderSetNewBooking = (props) => {
         )
     }
 
-    const nextPress = () => {
-        if (bookStatus) {
-            setPaymentStatus(true)
-            setClient(false)
-            setBooking(false)
-            setPayment(true)
-        } else {
-            setBookStatus(true)
-            setClient(false)
-            setBooking(true)
-            setPayment(false)
+    const nextPress = async () => {
+        const { name, phone, email, location } = inputValues;
+        const data = findProviderInfo()
+        const providerClients = data[0].clients
+
+        if (!name || !phone || !email || !location) {
+            showMessage("Please fill in all fields before proceeding.");
+            return;
         }
-    }
+
+        // Check if the user already exists in providerClients
+        const clientExists = providerClients.some(
+            (client) => client.phone === phone || client.email === email
+        );
+
+        if (!clientExists) {
+            Alert.alert(
+                "User Not Found",
+                "This user does not exist in the database. Would you like to add them?",
+                [
+                    { text: "No", style: "cancel" },
+                    {
+                        text: "Yes",
+                        onPress: async () => {
+                            await createNewUser(inputValues); // Create new user if confirmed
+                            proceedToNextStep(); // Go to next step after creation
+                        },
+                    },
+                ]
+            );
+        } else {
+            proceedToNextStep(); // If user exists, move to the next screen directly
+        }
+    };
+
+    const createNewUser = async (userData) => {
+        try {
+            const AddNewUser = {
+                name: inputValues.name,
+                phone: inputValues.phone,
+                email: inputValues.email,
+                location: inputValues.location,
+            };
+            const newUser = await addUser(AddNewUser, null);
+            if (newUser) showMessage("User created successfully!");
+        } catch (error) {
+            showMessage("Error creating user. Please try again.");
+            console.error("User creation error:", error);
+        }
+    };
+    const proceedToNextStep = () => {
+        if (bookStatus) {
+            setPaymentStatus(true);
+            setClient(false);
+            setBooking(false);
+            setPayment(true);
+        } else {
+            setBookStatus(true);
+            setClient(false);
+            setBooking(true);
+            setPayment(false);
+        }
+    };
+
     const backPress = () => {
         if (paymentStatus) {
             setPaymentStatus(false)

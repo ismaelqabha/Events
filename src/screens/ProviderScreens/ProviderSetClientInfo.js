@@ -9,7 +9,7 @@ import SearchContext from '../../../store/SearchContext';
 import { TouchableOpacity } from 'react-native';
 
 const ProviderSetClientInfo = (props) => {
-    const { providerClients } = props
+    const { providerClients, onInputChange } = props
     const { setUserCity, setCreateUserRegion } = useContext(UsersContext);
     const { isFirst } = useContext(SearchContext);
     const [regionData, setRegionData] = useState([])
@@ -18,6 +18,7 @@ const ProviderSetClientInfo = (props) => {
     const [inputValues, setInputValues] = useState({ name: '', phone: '', email: '' });
     const [selectedUser, setSelectedUser] = useState(null);
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+    const [activeField, setActiveField] = useState(null);
 
     useEffect(() => {
         getRegionsfromApi()
@@ -74,13 +75,15 @@ const ProviderSetClientInfo = (props) => {
 
     const handleInputChange = async (field, value) => {
         setInputValues(prev => ({ ...prev, [field]: value }));
-        setSelectedUser(null);
+        onInputChange({ ...inputValues, [field]: value });
 
-        const clientExists = providerClients.some(client => client[field] === value);
-
-        if (!clientExists && value) {
-            const searchResults = await searchUsersAPI({ query: value, field }); // Adjust API to search by specific field
-            setSearchResults(searchResults || []);
+        if (value) {
+            try {
+                const results = await searchUsersAPI({ query: value, field });
+                setSearchResults(results || []);
+            } catch (error) {
+                console.log("Error fetching search results:", error);
+            }
         } else {
             setSearchResults([]);
         }
@@ -122,6 +125,7 @@ const ProviderSetClientInfo = (props) => {
                 keyboardType='phone-pad'
                 placeholder='رقم الهاتف'
                 value={inputValues.phone}
+                onFocus={() => setActiveField('phone')}
                 onChangeText={(value) => handleInputChange('phone', value)}
             />
             <TextInput
@@ -129,6 +133,7 @@ const ProviderSetClientInfo = (props) => {
                 keyboardType='email-address'
                 placeholder='البريد الالكتروني'
                 value={inputValues.email}
+                onFocus={() => setActiveField('email')}
                 onChangeText={(value) => handleInputChange('email', value)}
             />
         </View>
@@ -140,6 +145,7 @@ const ProviderSetClientInfo = (props) => {
             keyboardType='default'
             placeholder='اسم الزبون'
             value={inputValues.name}
+            onFocus={() => setActiveField('name')}
             onChangeText={(value) => handleInputChange('name', value)}
         />
     );
@@ -150,7 +156,7 @@ const ProviderSetClientInfo = (props) => {
             keyExtractor={(item) => item.userInfo.USER_ID}
             style={[
                 styles.searchResultsContainer,
-                isKeyboardVisible ? { position: 'absolute', bottom: "40%" } : { position: 'relative' }
+                isKeyboardVisible ? { position: 'absolute', bottom: activeField === 'name' ? '40%' : activeField === 'phone' ? '75%' : '50%' } : { position: 'relative' }
             ]}
             renderItem={({ item }) => {
                 const isClient = providerClients.some(client => client === item.userInfo.USER_ID);
