@@ -8,6 +8,7 @@ import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import ProviderSetPaymentForClient from '../../components/ProviderComponents/ProviderSetPaymentForClient';
 import ProviderSetClientInfo from './ProviderSetClientInfo';
 import { AppStyles } from '../../assets/res/AppStyles';
+import { showMessage } from '../../resources/Functions';
 
 
 const ProviderSetNewBooking = (props) => {
