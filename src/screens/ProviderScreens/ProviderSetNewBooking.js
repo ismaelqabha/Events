@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
@@ -9,6 +9,7 @@ import ProviderSetPaymentForClient from '../../components/ProviderComponents/Pro
 import ProviderSetClientInfo from './ProviderSetClientInfo';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { showMessage } from '../../resources/Functions';
+import { addUser } from '../../resources/API';
 
 
 const ProviderSetNewBooking = (props) => {
@@ -121,7 +122,7 @@ const ProviderSetNewBooking = (props) => {
         const providerClients = data[0].clients
         return (
             <View>
-                <ProviderSetClientInfo providerClients={providerClients} onInputChange={handleClientInfoChange} />
+                <ProviderSetClientInfo providerClients={providerClients} onInputChange={handleClientInfoChange} inputValuesParent={inputValues} />
             </View>
         )
     }
@@ -140,9 +141,20 @@ const ProviderSetNewBooking = (props) => {
     }
 
     const nextPress = async () => {
+        console.log("Client", client);
+
+        if (client) {
+            checkIfNew()
+        } else {
+            proceedToNextStep()
+        }
+    }
+
+    const checkIfNew = async () => {
         const { name, phone, email, location } = inputValues;
         const data = findProviderInfo()
         const providerClients = data[0].clients
+        console.log("input values", inputValues);
 
         if (!name || !phone || !email || !location) {
             showMessage("Please fill in all fields before proceeding.");
@@ -159,7 +171,10 @@ const ProviderSetNewBooking = (props) => {
                 "User Not Found",
                 "This user does not exist in the database. Would you like to add them?",
                 [
-                    { text: "No", style: "cancel" },
+                    {
+                        text: "No", style: "cancel",
+                        onPress: () => proceedToNextStep()
+                    },
                     {
                         text: "Yes",
                         onPress: async () => {
@@ -172,7 +187,7 @@ const ProviderSetNewBooking = (props) => {
         } else {
             proceedToNextStep(); // If user exists, move to the next screen directly
         }
-    };
+    }
 
     const createNewUser = async (userData) => {
         try {

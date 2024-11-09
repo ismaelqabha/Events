@@ -9,13 +9,13 @@ import SearchContext from '../../../store/SearchContext';
 import { TouchableOpacity } from 'react-native';
 
 const ProviderSetClientInfo = (props) => {
-    const { providerClients, onInputChange } = props
+    const { providerClients, onInputChange, inputValuesParent } = props
     const { setUserCity, setCreateUserRegion } = useContext(UsersContext);
     const { isFirst } = useContext(SearchContext);
     const [regionData, setRegionData] = useState([])
     const [regions, setRegions] = useState(null)
     const [searchResults, setSearchResults] = useState([]);
-    const [inputValues, setInputValues] = useState({ name: '', phone: '', email: '' });
+    const [inputValues, setInputValues] = useState({ ...inputValuesParent });
     const [selectedUser, setSelectedUser] = useState(null);
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
     const [activeField, setActiveField] = useState(null);
@@ -108,6 +108,7 @@ const ProviderSetClientInfo = (props) => {
                     setSelected={val => {
                         setUserCity(val);
                         searchRegion(val)
+                        handleInputChange('location', val)
                     }}
                     placeholder={"أختر العنوان"}
                     boxStyles={styles.dropdown}
@@ -161,7 +162,11 @@ const ProviderSetClientInfo = (props) => {
             renderItem={({ item }) => {
                 const isClient = providerClients.some(client => client === item.userInfo.USER_ID);
                 return (
-                    <TouchableOpacity style={styles.resultItem} onPress={() => handleSelectUser(item)}>
+                    <TouchableOpacity
+                        style={styles.resultItem}
+                        onPress={() => handleSelectUser(item)}
+                        activeOpacity={1} // Keeps the touchable fully active
+                    >
                         <Text style={styles.resultText}>{item.userInfo.User_name}</Text>
                         <Text style={styles.resultText}>Phone: {item.userInfo.UserPhone}</Text>
                         <Text style={styles.resultText}>Email: {item.userInfo.Email}</Text>
@@ -173,6 +178,7 @@ const ProviderSetClientInfo = (props) => {
             }}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled" // Prevents keyboard from dismissing on touch
         />
     );
 
@@ -211,6 +217,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginVertical: 10,
         borderRadius: 10,
+        zIndex: 1
     },
     dropdown: {
         // height: 50,
@@ -239,6 +246,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         width: 300,
         marginHorizontal: 5,
+        zIndex: 1,
     },
     resultText: {
         color: 'black',
@@ -248,7 +256,7 @@ const styles = StyleSheet.create({
         maxHeight: 200,
         alignSelf: 'center',
         width: '90%',
-        zIndex: 1,
+        zIndex: 2,
     },
     statusText: {
         fontSize: 13,
