@@ -191,13 +191,13 @@ const ProviderSetNewBooking = (props) => {
         if (client) {
             checkIfNew();
         }
-        //  else if (booking) {
-        //     if (checkAllDetails()) {
-        //         proceedToNextStep();
-        //     } else {
-        //         showMessage("Please fill in all required booking details.");
-        //     }
-        // } 
+         else if (booking) {
+            if (checkAllDetails()) {
+                proceedToNextStep();
+            } else {
+                showMessage("Please fill in all required booking details.");
+            }
+        } 
         else {
             proceedToNextStep();
         }
