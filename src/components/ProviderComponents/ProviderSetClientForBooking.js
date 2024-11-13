@@ -12,7 +12,7 @@ import Recipt from './recipt';
 import { calculateTotalPrice } from '../../resources/Functions';
 
 const ProviderSetClientForBooking = (props) => {
-    const { serviceData, fulDate } = props
+    const { serviceData, fulDate, totalPrice, setTotalPrice, resDetail, setResDetail } = props
 
     const { campInfo, setCampInfo } = useContext(SearchContext);
 
@@ -32,16 +32,8 @@ const ProviderSetClientForBooking = (props) => {
     const [isCampaign, setIsCampaign] = useState(true)
     const [isOfferContOpen, setIsOfferContOpen] = useState(false)
 
-    const [totalPrice, setTotalPrice] = useState(0); // Track total price
     const [requestedDate, setRequestedDate] = useState(fulDate); // Set requested date
-    const [resDetail, setResDetail] = useState([{
-        reservationDate: fulDate,
-        startingTime: null,
-        EndTime: null,
-        numOfInviters: null,
-        subDetailId: [],
-        offerId: []
-    }]); // Store reservation details
+
     const [showDetailRecipt, setShowDetailRecipt] = useState(false); // Control receipt visibility
 
     useEffect(() => {

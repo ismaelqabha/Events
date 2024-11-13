@@ -9,7 +9,7 @@ import ProviderSetPaymentForClient from '../../components/ProviderComponents/Pro
 import ProviderSetClientInfo from './ProviderSetClientInfo';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { showMessage } from '../../resources/Functions';
-import { addUser } from '../../resources/API';
+import { addUser, checkUserExists } from '../../resources/API';
 
 
 const ProviderSetNewBooking = (props) => {
@@ -24,6 +24,16 @@ const ProviderSetNewBooking = (props) => {
     const [client, setClient] = useState(true)
     const [booking, setBooking] = useState(false)
     const [payment, setPayment] = useState(false)
+
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [resDetail, setResDetail] = useState([{
+        reservationDate: fulDate,
+        startingTime: null,
+        EndTime: null,
+        numOfInviters: null,
+        subDetailId: [],
+        offerId: []
+    }]);
 
     const [inputValues, setInputValues] = useState({ name: '', phone: '', email: '', location: '' });
 
@@ -129,7 +139,14 @@ const ProviderSetNewBooking = (props) => {
     const renderBookingInfo = () => {
         const serviceData = findProviderInfo()
         return (
-            <ProviderSetClientForBooking serviceData={serviceData} fulDate={fulDate} />
+            <ProviderSetClientForBooking
+                serviceData={serviceData}
+                fulDate={fulDate}
+                totalPrice={totalPrice}
+                setTotalPrice={setTotalPrice}
+                resDetail={resDetail}
+                setResDetail={setResDetail}
+            />
         )
     }
     const renderPaymentDetail = () => {
@@ -140,20 +157,55 @@ const ProviderSetNewBooking = (props) => {
         )
     }
 
-    const nextPress = async () => {
-        console.log("Client", client);
+    const checkAllDetails = () => {
+        const serviceData = findProviderInfo()?.[0]
 
-        if (client) {
-            checkIfNew()
-        } else {
-            proceedToNextStep()
+        if (typeof totalPrice !== 'number' || totalPrice <= 0) {
+            showMessage("Please choose proper services.");
+            return false;
         }
-    }
+
+        if (!serviceData || !serviceData._id) {
+            showMessage("Invalid service data.");
+            return false;
+        }
+
+        if (!Array.isArray(resDetail) || resDetail.length === 0) {
+            showMessage("Please provide reservation details.");
+            return false;
+        }
+
+        for (const detail of resDetail) {
+            if (!detail.reservationDate || !detail.startingTime || !detail.EndTime ||
+                detail.numOfInviters === null || !Array.isArray(detail.subDetailId) ||
+                !Array.isArray(detail.offerId) || (detail.subDetailId.length === 0 &&
+                    detail.offerId.length === 0)) {
+                showMessage("Please fill all reservation details.");
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const nextPress = async () => {
+        if (client) {
+            checkIfNew();
+        }
+        //  else if (booking) {
+        //     if (checkAllDetails()) {
+        //         proceedToNextStep();
+        //     } else {
+        //         showMessage("Please fill in all required booking details.");
+        //     }
+        // } 
+        else {
+            proceedToNextStep();
+        }
+    };
 
     const checkIfNew = async () => {
         const { name, phone, email, location } = inputValues;
-        const data = findProviderInfo()
-        const providerClients = data[0].clients
+
         console.log("input values", inputValues);
 
         if (!name || !phone || !email || !location) {
@@ -161,33 +213,37 @@ const ProviderSetNewBooking = (props) => {
             return;
         }
 
-        // Check if the user already exists in providerClients
-        const clientExists = providerClients.some(
-            (client) => client.phone === phone || client.email === email
-        );
+        try {
+            // Call API to check if the user exists in the database
+            const userExists = await checkUserExists({ phone, email });
 
-        if (!clientExists) {
-            Alert.alert(
-                "User Not Found",
-                "This user does not exist in the database. Would you like to add them?",
-                [
-                    {
-                        text: "No", style: "cancel",
-                        onPress: () => proceedToNextStep()
-                    },
-                    {
-                        text: "Yes",
-                        onPress: async () => {
-                            await createNewUser(inputValues); // Create new user if confirmed
-                            proceedToNextStep(); // Go to next step after creation
+            if (!userExists) {
+                Alert.alert(
+                    "User Not Found",
+                    "This user does not exist in the database. Would you like to add them?",
+                    [
+                        {
+                            text: "No",
+                            style: "cancel",
+                            onPress: () => proceedToNextStep()
                         },
-                    },
-                ]
-            );
-        } else {
-            proceedToNextStep(); // If user exists, move to the next screen directly
+                        {
+                            text: "Yes",
+                            onPress: async () => {
+                                await createNewUser(inputValues); // Create new user if confirmed
+                                proceedToNextStep(); // Go to next step after creation
+                            },
+                        },
+                    ]
+                );
+            } else {
+                proceedToNextStep(); // User exists, move to the next screen directly
+            }
+        } catch (error) {
+            console.log("Error checking user existence:", error);
+            showMessage("Error checking user existence. Please try again.");
         }
-    }
+    };
 
     const createNewUser = async (userData) => {
         try {

@@ -31,6 +31,16 @@ export const addUser = async (AddNewUser, UserPhoto) => {
 
   }
 }
+export const checkUserExists = async ({ phone, email }) => {
+  const url = 'Users/checkIfExists';
+  try {
+    const response = await AppFetch(url, 'POST', { phone, email });
+    return response.exists;
+  } catch (error) {
+    console.error('Error checking user existence:', error);
+    return true
+  }
+};
 export const LoginGoogleUser = async (body) => {
   const url = 'Users/loginGoogle'
   return await AppFetch(url, 'POST', body)
@@ -130,7 +140,7 @@ export const getServiceLocationById = async body => {
 
 export const findRequestsByUserId = async body => {
   const url = 'servicesData/getClientsReqPayAccId'
-  return await AppFetch(url , 'POST', body)
+  return await AppFetch(url, 'POST', body)
 }
 
 /// Payment
