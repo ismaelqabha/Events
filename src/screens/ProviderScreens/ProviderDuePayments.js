@@ -16,7 +16,7 @@ import { ScreenNames } from '../../../route/ScreenNames'
 const ProviderDuePayments = (props) => {
     const { requestInfoByService } = useContext(SearchContext);
     // const [fromclientDuePayment, setFromClientDuePayment] = useState(true)
-
+    
     const [fromProviderDuePay, setFromProviderDuePay] = useState(true)
 
     // const allRequestingDates = []

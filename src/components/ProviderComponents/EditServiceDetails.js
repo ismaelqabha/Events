@@ -1,27 +1,33 @@
-import { StyleSheet, Text, View, ToastAndroid, TextInput, Pressable, Image, ScrollView, Modal } from 'react-native'
+import { StyleSheet, Text, View, ToastAndroid, TextInput, Pressable, Image, ScrollView, Modal, TouchableOpacity, Alert } from 'react-native'
 import React, { useState, useContext, useEffect } from 'react'
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { updateService } from '../../resources/API';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Feather from 'react-native-vector-icons/Feather';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../../assets/AppColors';
 import { hallDetailOptions, mandoteryOptions } from "../../resources/data";
 import { launchImageLibrary } from 'react-native-image-picker';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
 const EditServiceDetails = (props) => {
-    const { serviceID, detailItem, DetailType, sub_DetailArr, detailIsperson } = props
+
+    const { serviceID, detailItem, DetailType, sub_DetailArr, serviceItemInclude, editProviderServiceItem } = props
 
     const { serviceInfoAccorUser, setServiceInfoAccorUser,
         editServiceDetail, setEditServiceDetail,
         addNewDetail, setAddNewDetail,
         setShowDetailModal } = useContext(ServiceProviderContext);
 
-    const [serviceDetail, setServiceDetail] = useState();
+    const [serviceDetail, setServiceDetail] = useState(null);
+    const [otherDetail, setOtherDetail] = useState();
     const [detailType, setDetailType] = useState();
-    const [priceInclude, setPriceInclude] = useState();
+    const [priceInclude, setPriceInclude] = useState(null);
     const [addNewSubDetItem, setaddNewSubDetItem] = useState();
     const [PerPackage, setPerPackage] = useState(false);
     const [PerPerson, setPerPerson] = useState(false);
@@ -31,6 +37,7 @@ const EditServiceDetails = (props) => {
     const [loading, setLoading] = useState(false);
 
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
+
     const getServiceInfo = () => {
         return serviceInfoAccorUser?.filter(item => {
             return item.service_id === serviceID;
@@ -38,7 +45,24 @@ const EditServiceDetails = (props) => {
     };
     const serviceData = getServiceInfo()
 
+    const [providerDetail, setProviderDetail] = useState(serviceData[0].additionalServices);
+
     useEffect(() => {
+        if (serviceItemInclude === 'perRequest') {
+            setPerPackage(true)
+            setPerPerson(false)
+            setPerTable(false)
+        }
+        if (serviceItemInclude === 'perPerson') {
+            setPerPackage(false)
+            setPerPerson(true)
+            setPerTable(false)
+        }
+        if (serviceItemInclude === 'perTable') {
+            setPerPackage(false)
+            setPerPerson(false)
+            setPerTable(true)
+        }
     }, []);
 
     const handleSave = async (callback) => {
@@ -56,39 +80,58 @@ const EditServiceDetails = (props) => {
         setPerPackage(true)
         setPerPerson(false)
         setPerTable(false)
-        setPriceInclude('لكل الحجز')
+        setPriceInclude('perRequest')
     }
 
     const Person = () => {
         setPerPackage(false)
         setPerPerson(true)
         setPerTable(false)
-        setPriceInclude('حسب الشخص')
+        setPriceInclude('perPerson')
     }
 
     const Table = () => {
         setPerPackage(false)
         setPerPerson(false)
         setPerTable(true)
-        setPriceInclude('حسب الطاولة')
+        setPriceInclude('perTable')
     }
 
-    const renderIsPerPerson = () => {
+    const renderIncludedType = () => {
+
         return (
-            <View style={styles.perPersoneView}>
-                <Text style={styles.perPersoneText}>ماذا يشمل هذا السعر ؟</Text>
-                <View style={{ alignItems: 'flex-end' }}>
-                    <Pressable style={[PerPackage ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Package}>
+            <View >
+                <Text style={styles.perPersoneText}>السعر يشمل </Text>
+                <View style={styles.perPersoneView}>
+                    <TouchableOpacity style={[PerPackage ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Package}>
+
+                        <MaterialCommunityIcons
+                            style={{ alignSelf: 'center' }}
+                            name={"all-inclusive"}
+                            color={colors.puprble}
+                            size={30} />
                         <Text style={styles.perPersoneText}>لكل الحجز</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable style={[PerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Person}>
-                        <Text style={styles.perPersoneText}>حسب الشخص</Text>
-                    </Pressable>
+                    <TouchableOpacity style={[PerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Person}>
 
-                    <Pressable style={[PerTable ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Table}>
-                        <Text style={styles.perPersoneText}>حسب الطاولة</Text>
-                    </Pressable>
+                        <Fontisto
+                            style={{ alignSelf: 'center' }}
+                            name={"person"}
+                            color={colors.puprble}
+                            size={30} />
+                        <Text style={styles.perPersoneText}>للشخص</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[PerTable ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Table}>
+
+                        <MaterialCommunityIcons
+                            style={{ alignSelf: 'center' }}
+                            name={"table-furniture"}
+                            color={colors.puprble}
+                            size={30} />
+                        <Text style={styles.perPersoneText}>للطاولة</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         )
@@ -107,7 +150,6 @@ const EditServiceDetails = (props) => {
             console.error(error);
         }
     };
-
     const GalleryImageResponse = response => {
         if (response.didCancel) {
             console.log('User Cancelled');
@@ -120,7 +162,6 @@ const EditServiceDetails = (props) => {
             SaveImg(imageUri);
         }
     };
-
     const SaveImg = source => {
         if (source) {
             const newImage = {
@@ -141,37 +182,116 @@ const EditServiceDetails = (props) => {
         handleSave(() => setEditSubDetItem(false));
     }
 
-    const editServiceDetailPress = () => {
-        let DType = DetailType == 'Optional' ? 'خدمة اختيارية' : 'خدمة اجبارية';
+    const addNewServiceDetailPress = () => {
         return (
-            <View style={styles.itemView}>
-                <View style={styles.editDetailView}>
-                    <Text style={styles.itemText}>الخدمة</Text>
-                    <TextInput
-                        style={styles.input}
-                        keyboardType="default"
-                        maxLength={60}
-                        placeholder={detailItem}
-                        onChangeText={setServiceDetail}
-                    />
+
+            <View style={styles.editDetailView}>
+
+                <View style={styles.modalHead}>
+                    <TouchableOpacity style={styles.saveBtn} onPress={newServiceDetail}>
+                        <Text style={styles.itemText}>حفظ</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.modalPart}>
                     <View style={styles.list}>
                         <SelectList
-                            data={mandoteryOptions}
-                            setSelected={val => setDetailType(mandoteryOptions[val].alt)}
-                            placeholder={DType}
+                            data={hallDetailOptions}
+                            setSelected={val => {
+                                setServiceDetail(hallDetailOptions[val].value);
+                            }}
+                            placeholder={'اختيار وصف الخدمة'}
                             boxStyles={styles.dropdownDetailType}
                             inputStyles={styles.droptext}
                             dropdownTextStyles={styles.dropstyle}
                         />
                     </View>
-                    {renderIsPerPerson()}
 
+                    {serviceDetail === 'أخرى' &&
+                        <TextInput
+                            style={styles.titleInput}
+                            keyboardType="default"
+                            maxLength={60}
+                            placeholder={'أدخل اسم الخدمة'}
+                            onChangeText={setOtherDetail}
+                        />}
+
+                    {/* <View style={styles.list}>
+                        <SelectList
+                            data={mandoteryOptions}
+                            setSelected={val => { setDetailType(mandoteryOptions[val].alt) }}
+                            placeholder={'أختر نوع الخدمة'}
+                            boxStyles={styles.dropdownDetailType}
+                            inputStyles={styles.droptext}
+                            dropdownTextStyles={styles.dropstyle}
+                        />
+                    </View> */}
+                </View>
+
+                <View style={styles.modalfooter}>
+                    {renderIncludedType()}
+
+                    {/* <Text style={styles.itemText}>أدخل تفاصيل الخدمة </Text>
                     <View style={styles.subDetailView}>
+                  
                         {renderAddSubDet()}
-                        {renderSubDetail()}
+                    </View> */}
+                </View>
+            </View>
+        )
+    }
+    const editServiceDetailPress = () => {
+        let DType = DetailType == 'Optional' ? 'خدمة اختيارية' : 'خدمة اجبارية';
+        return (
+                <View style={styles.editDetailView}>
+                    <View style={styles.modalHead}>
+                        <TouchableOpacity style={styles.saveBtn} onPress={updateServiceDetail}>
+                            <Text style={styles.itemText}>حفظ</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.modalPart}>
+                        <View style={styles.list}>
+                            <SelectList
+                                data={hallDetailOptions}
+                                setSelected={val => {
+                                    setServiceDetail(hallDetailOptions[val].value);
+                                }}
+                                placeholder={'اختيار وصف الخدمة'}
+                                boxStyles={styles.dropdownDetailType}
+                                inputStyles={styles.droptext}
+                                dropdownTextStyles={styles.dropstyle}
+                            />
+                        </View>
+                        {serviceDetail === 'أخرى' &&
+                        <TextInput
+                            style={styles.titleInput}
+                            keyboardType="default"
+                            maxLength={60}
+                            placeholder={'أدخل اسم الخدمة'}
+                            onChangeText={setOtherDetail}
+                        />}
+                       
+                        <View style={styles.list}>
+                            <SelectList
+                                data={mandoteryOptions}
+                                setSelected={val => setDetailType(mandoteryOptions[val].alt)}
+                                placeholder={DType}
+                                boxStyles={styles.dropdownDetailType}
+                                inputStyles={styles.droptext}
+                                dropdownTextStyles={styles.dropstyle}
+                            />
+                        </View>
+                    </View>
+                    <View style={styles.modalfooter}>
+                        {renderIncludedType()}
                     </View>
 
-                    <View style={styles.itemFooter}>
+                    {/* <View style={styles.subDetailView}>
+                        {renderAddSubDet()}
+                        {renderSubDetail()}
+                    </View> */}
+
+                    {/* <View style={styles.itemFooter}>
                         {loading ? (
                             <ActivityIndicator size="large" color={colors.puprble} />
                         ) : (
@@ -179,10 +299,12 @@ const EditServiceDetails = (props) => {
                                 <Text style={styles.itemText}>حفظ</Text>
                             </Pressable>
                         )}
-                    </View>
+                    </View> */}
                 </View>
-            </View>)
+        )
     }
+
+
 
     const renderSubDetail = () => {
         return sub_DetailArr.map(sub => {
@@ -234,7 +356,6 @@ const EditServiceDetails = (props) => {
             )
         })
     }
-
     const renderAddSubDet = () => {
         return (
             <View>
@@ -248,7 +369,12 @@ const EditServiceDetails = (props) => {
                             )}
                         </Pressable>
                         <View style={{ width: '95%', alignSelf: 'center' }}>
-                            <TextInput style={styles.titleInput} placeholder={'ادخل تفاصيل الخدمة'} keyboardType="default" maxLength={60} />
+                            <TextInput
+                                style={styles.titleInput}
+                                placeholder={'ادخل تفاصيل الخدمة'}
+                                keyboardType="default"
+                                maxLength={60} />
+
                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                 {loading ? (
                                     <ActivityIndicator size="large" color={colors.puprble} />
@@ -257,7 +383,10 @@ const EditServiceDetails = (props) => {
                                         <Feather name={'save'} color={colors.BGScereen} size={40} />
                                     </Pressable>
                                 )}
-                                <TextInput style={styles.priceInput} placeholder={'السعر'} keyboardType="numeric" />
+                                <TextInput
+                                    style={styles.priceInput}
+                                    placeholder={'السعر'}
+                                    keyboardType="numeric" />
                             </View>
                         </View>
                     </View>
@@ -272,11 +401,6 @@ const EditServiceDetails = (props) => {
             </View>
         )
     }
-
-    const updateServiceDetail = () => {
-        setShowDetailModal(false);
-    }
-
     const subDetModal = (item, editSubDetItem, setEditSubDetItem) => {
         return (
             <Modal
@@ -286,7 +410,8 @@ const EditServiceDetails = (props) => {
                 onRequestClose={() => setShowSubDetModal(false)}>
                 <View style={styles.subDetModal}>
                     <View style={styles.bodyModal}>
-                        <Pressable onPress={closeModalPress} style={styles.modalHeader}>
+                        <Pressable //onPress={closeModalPress} 
+                            style={styles.modalHeader}>
                             <Feather name={'more-horizontal'} color={colors.puprble} size={25} />
                         </Pressable>
                         <View style={{ justifyContent: 'flex-end', height: '100%' }}>
@@ -307,69 +432,83 @@ const EditServiceDetails = (props) => {
         )
     }
 
-    const addNewServiceDetailPress = () => {
-        useEffect(() => {
+    //// update database
+    const updateInfo = (infoData) => {
+        const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === serviceID)
+        const data = serviceInfoAccorUser || [];
 
-        }, [])
+        updateService(infoData).then(res => {
 
-        return (
-            <View style={styles.itemView}>
-                <View style={styles.editDetailView}>
-                    <Text style={styles.itemText}>الخدمة</Text>
-
-                    <View style={styles.list}>
-                        <SelectList
-                            data={hallDetailOptions}
-                            setSelected={val => {
-                                setServiceDetail(hallDetailOptions[val].value);
-                            }}
-                            placeholder={'اختيار وصف الخدمة'}
-                            boxStyles={styles.dropdownDetailType}
-                            inputStyles={styles.droptext}
-                            dropdownTextStyles={styles.dropstyle}
-                        />
-                    </View>
-
-                    {serviceDetail === 'أخرى' &&
-                        <TextInput
-                            style={styles.titleInput}
-                            keyboardType="default"
-                            maxLength={60}
-                            placeholder={'أدخل اسم الخدمة'}
-                            onChangeText={setServiceDetail}
-                        />}
-
-                    <View style={styles.list}>
-                        <SelectList
-                            data={mandoteryOptions}
-                            setSelected={val => { setDetailType(mandoteryOptions[val].alt) }}
-                            placeholder={'أختر نوع الخدمة'}
-                            boxStyles={styles.dropdownDetailType}
-                            inputStyles={styles.droptext}
-                            dropdownTextStyles={styles.dropstyle}
-                        />
-                    </View>
-                    {renderIsPerPerson()}
-                    <Text style={styles.itemText}>أدخل تفاصيل الخدمة </Text>
-
-                    <View style={styles.subDetailView}>
-                        {/* Add new Sub Detail */}
-                        {renderAddSubDet()}
-                    </View>
-
-                    <View style={styles.itemFooter}>
-                        <Pressable onPress={updateServiceDetail}>
-                            <Text style={styles.itemText}>حفظ</Text>
-                        </Pressable>
-                    </View>
-                </View>
-            </View>)
+            if (res.message === 'Updated Sucessfuly') {
+                if (selectedServiceIndex > -1) {
+                    data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...infoData };
+                }
+                setServiceInfoAccorUser([...data])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+        })
     }
+    const addNewServiceDet = () => {
+        const addNewDItem = {
+            detail_Id: uuidv4(),
+            detailTitle: serviceDetail,
+            necessity: DetailType,
+            additionType: priceInclude,
+            numberPerTable: '',
+            subDetailArray: [],
+        }
+
+        const newRecord = providerDetail || []
+        newRecord.push(addNewDItem)
+        setProviderDetail([...newRecord])
+
+        const newData = {
+            service_id: serviceID,
+            additionalServices: [...newRecord]
+        }
+
+        updateInfo(newData)
+    }
+    const updateServiceDetail = () => {
+
+    }
+    const newServiceDetail = () => {
+        if (priceInclude !== null && serviceDetail !== null) {
+            addNewServiceDet()
+            setShowDetailModal(false);
+        } else {
+
+            Alert.alert(
+                'تنبية',
+                'الرجاء التأكد من ملء جميع الحقول',
+                [
+                    {
+                        text: 'Ok',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: false } // Prevent closing the alert by tapping outside
+            );
+
+        }
+
+    }
+
+   
+
+
 
     const editObject = [
         {
             editItem: addNewDetail,
             editFunction: addNewServiceDetailPress(),
+        }, {
+            editItem: editProviderServiceItem,
+            editFunction: editServiceDetailPress(),
         },
     ]
     const renderSelectedEdit = () => {
@@ -395,11 +534,19 @@ export default EditServiceDetails
 const styles = StyleSheet.create({
     editDetailView: {
         height: '100%',
-        backgroundColor: 'lightgray',
-        elevation: 5,
-        margin: 5,
-        // alignItems: 'center',
         paddingVertical: 10
+    },
+    modalHead: {
+        height: '10%',
+        justifyContent: 'center'
+    },
+    modalPart: {
+        height: '45%',
+        // justifyContent: 'center'
+    },
+    modalfooter: {
+        height: '45%',
+        justifyContent: 'flex-end'
     },
     subDetailItemView: {
         //borderWidth: 1,
@@ -432,72 +579,71 @@ const styles = StyleSheet.create({
         padding: 10
     },
     perPersoneView: {
-        marginVertical: 20,
-        width: '90%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        backgroundColor: colors.silver,
+        elevation: 5,
+        marginVertical: 10
     },
     itemPersonView: {
         borderWidth: 2,
         borderColor: '#dcdcdc',
-        width: '60%',
-        height: 40,
+        width: '30%',
+        height: '80%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: 30,
+        marginHorizontal: 5,
         borderRadius: 5,
-        marginTop: 10
     },
     itemPersonViewPressed: {
         borderWidth: 3,
         borderColor: colors.puprble,
-        width: '60%',
-        height: 40,
+        width: '30%',
+        height: '80%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: 30,
+        marginHorizontal: 5,
         borderRadius: 5,
-        marginTop: 10
+
     },
     perPersoneText: {
         fontSize: 18,
-        color: colors.puprble
+        color: colors.puprble,
+
     },
     itemText: {
         fontSize: 18,
         color: colors.puprble,
-        marginRight: 20,
-        // textAlign: 'right'
-    },
-    itemView: {
-        width: '100%',
-        marginTop: 20,
-        justifyContent: 'center',
-        //borderWidth: 1
+
     },
 
-    itemFooter: {
-        width: '100%',
+
+    saveBtn: {
+        width: '20%',
         alignItems: 'center',
         justifyContent: 'center',
-        alignSelf: 'center',
-        //borderWidth: 1,
-        position: 'absolute',
-        bottom: 25
+        borderRadius: 5,
+        backgroundColor: colors.silver,
+        elevation: 5,
+        marginLeft: 20,
+        marginBottom: 20
     },
     input: {
         textAlign: 'center',
         height: 50,
         width: '90%',
-        borderWidth: 0.6,
+        borderWidth: 2,
         borderRadius: 8,
-        borderColor: 'white',
+        borderColor: colors.silver,
         fontSize: 15,
         color: 'black',
         alignSelf: 'center',
-        marginVertical: 5
+        marginTop: 20
     },
     list: {
         width: '90%',
-        marginTop: 20,
+        marginVertical: 10,
         alignSelf: 'center',
     },
     IconView: {
@@ -511,7 +657,8 @@ const styles = StyleSheet.create({
     dropdownDetailType: {
         height: 50,
         fontSize: 17,
-        borderColor: 'white'
+        borderColor: colors.silver,
+        borderWidth: 2
     },
     dropstyle: {
         textAlign: 'center',
@@ -545,12 +692,11 @@ const styles = StyleSheet.create({
         width: '90%',
         borderWidth: 2,
         borderRadius: 10,
-        borderColor: '#dcdcdc',
-        fontSize: 18,
-        color: 'black',
-        backgroundColor: 'white',
+        borderColor: colors.silver,
+        fontSize: 15,
+        color: colors.puprble,
         alignSelf: 'center',
-        marginTop: 20
+        marginVertical: 10
     },
     priceInput: {
         textAlign: 'right',
@@ -589,7 +735,7 @@ const styles = StyleSheet.create({
         //borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
 
     },
     modalItem: {

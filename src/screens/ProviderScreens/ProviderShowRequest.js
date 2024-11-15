@@ -18,7 +18,6 @@ import Recipt from '../../components/ProviderComponents/recipt';
 const ProviderShowRequest = (props) => {
     const { isFirst, campInfo, setRequestInfoByService, requestInfoByService } = useContext(SearchContext);
     const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
-
     const { reqInfo, fromProviderDuePay, fromRequestCard } = props.route?.params || {}
     const [showModal, setShowModal] = useState(false);
     const [showMoreModal, setShowMoreModal] = useState(false);
@@ -29,11 +28,9 @@ const ProviderShowRequest = (props) => {
 
     const totalCost = reqInfo.requestInfo.Cost
     const reservationDetail = reqInfo.requestInfo.reservationDetail
-   
-
+       
     const filterService = () => {
         return serviceInfoAccorUser?.filter(item => {
-            console.log(item.service_id, isFirst);
             return item.service_id === isFirst;
         });
     }

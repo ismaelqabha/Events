@@ -1,14 +1,16 @@
-import { StyleSheet, Text, View, TextInput,TouchableOpacity,ScrollView,Dimensions } from 'react-native'
-import React, { useState,useRef,useContext ,useEffect} from 'react'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Dimensions, Image } from 'react-native'
+import React, { useState, useRef, useContext, useEffect } from 'react'
 import { colors } from '../../assets/AppColors'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from "react-native-vector-icons/Feather";
+import Fontisto from "react-native-vector-icons/Fontisto";
+import moment from "moment";
 import SearchContext from '../../../store/SearchContext';
 
 const ProviderSetClientForBooking = (props) => {
-    const {serviceData} = props
+    const { serviceData, fulDate } = props
 
     const { campInfo, setCampInfo } = useContext(SearchContext);
 
@@ -24,6 +26,7 @@ const ProviderSetClientForBooking = (props) => {
     const [multiSelected, setMultiSelected] = useState(false)
     const [bgColorDate, setColorDate] = useState('white');
     const [isCampaign, setIsCampaign] = useState(true)
+    const [isOfferContOpen, setIsOfferContOpen] = useState(false)
 
     const [offer, setOffer] = useState();
 
@@ -32,13 +35,13 @@ const ProviderSetClientForBooking = (props) => {
     const secondPageRef = useRef(null);
 
 
- useEffect(() => {
+    useEffect(() => {
         setIsCampaign(campInfo && campInfo.length > 0);
     }, []);
 
     //console.log("serviceData>>", serviceData[0].additionalServices);
 
-/// Time Functions
+    /// Time Functions
     const checkStartTime = () => {
         showStartMode('time')
         if (startTimeText != "00:00") {
@@ -134,7 +137,7 @@ const ProviderSetClientForBooking = (props) => {
                 <View style={styles.viewDate}>
                     <Text style={styles.text}>{endTimeText || "00:00"}</Text>
                     <MaterialCommunityIcons name={'clock-time-eight'} color={colors.puprble} size={25} />
-        
+
                 </View>
             </TouchableOpacity>
             {showEnd && (
@@ -202,15 +205,14 @@ const ProviderSetClientForBooking = (props) => {
         const CampData = campInfo || [];
 
         const campArray = CampData?.map((camp, index) => {
+            var found = offer?.find((det) => det === camp?.CampId)
 
-            return <View key={index} style={styles.campaignView}>
+            return <TouchableOpacity key={index} onPress={() => onCampPress(camp?.CampId || index)} style={!found ? styles.campaignView : styles.campaignViewSelected}>
+
                 {renderCampaighnHeader(camp, index)}
-                {renderCampaighnSubHeader()}
+                {renderCampaighnSubHeader(camp)}
 
-                {renderCampaighnContentFromSub(camp)}
-                {renderCampaighnContent(camp)}
-
-            </View >
+            </TouchableOpacity >
         });
         return campArray;
 
@@ -219,51 +221,93 @@ const ProviderSetClientForBooking = (props) => {
 
     }
     const renderCampaighnHeader = (camp, index) => {
-        var found = offer?.find((det) => det === camp?.CampId)
+
         return (
-            <TouchableOpacity onPress={() => onCampPress(camp?.CampId || index)} style={!found ? styles.offerTitle : styles.offerTitleSelected}>
-                <Text style={styles.campText}>{camp.campTitle}</Text>
-                {camp.priceInclude == 'حسب الشخص' ?
-                    <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
-                    <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
-            </TouchableOpacity>
+            <View style={styles.offerTitle}>
+                <View style={styles.includeView}>
+                    <Text style={styles.campText}>{camp.campTitle}</Text>
+                    <Image style={styles.offerImg} source={{ uri: camp.campImag }} />
+                </View>
+
+                <View style={{ marginRight: 20 }}>
+                    {camp.priceInclude == 'perPerson' &&
+                        <View style={styles.includeView}>
+                            <Text style={styles.campText}>{'السعر للشخص ' + '(₪' + camp.campCost + ')'}</Text>
+                            <View style={styles.IconView}>
+                                <Fontisto
+                                    style={{ alignSelf: 'center' }}
+                                    name={"person"}
+                                    color={colors.puprble}
+                                    size={30} />
+                            </View>
+                        </View>
+                    }
+                    {camp.priceInclude == 'perRequest' &&
+                        <View style={styles.includeView}>
+                            <Text style={styles.campText}>{'السعر شامل ' + '(₪' + camp.campCost + ')'}</Text>
+                            <View style={styles.IconView}>
+                                <MaterialCommunityIcons
+                                    style={{ alignSelf: 'center' }}
+                                    name={"all-inclusive"}
+                                    color={colors.puprble}
+                                    size={30} />
+                            </View>
+                        </View>
+                    }
+                    {camp.priceInclude == 'perTable' &&
+                        <View style={styles.includeView}>
+                            <Text style={styles.campText}>{'السعر للطاولة ' + '(₪' + camp.campCost + ')'}</Text>
+                            <View style={styles.IconView}>
+                                <MaterialCommunityIcons
+                                    style={{ alignSelf: 'center' }}
+                                    name={"table-furniture"}
+                                    color={colors.puprble}
+                                    size={30} />
+                            </View>
+                        </View>
+                    }
+                </View>
+
+            </View>
         );
     }
-    const renderCampaighnSubHeader = () => {
+
+    const onOfferContentPress = () => {
+        setIsOfferContOpen(!isOfferContOpen)
+    }
+    const renderCampaighnSubHeader = (camp) => {
         return (
-            <View style={styles.offerContentView}>
-                <Text style={styles.campText}>محتويات العرض</Text>
-                <View style={styles.IconView}>
-                    <MaterialCommunityIcons
-                        style={{ alignSelf: 'center' }}
-                        name={"table-of-contents"}
-                        color={colors.puprble}
-                        size={30} />
-                </View>
+            <View>
+                <TouchableOpacity style={styles.offerContentView} onPress={onOfferContentPress}>
+                    <Text style={styles.campText}>محتويات العرض</Text>
+                    <View style={styles.IconView}>
+                        <MaterialCommunityIcons
+                            style={{ alignSelf: 'center' }}
+                            name={"table-of-contents"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                </TouchableOpacity>
+
+                {isOfferContOpen && allCampighnContent(camp)}
             </View>
         )
     }
-    const getServiceDetail = (id) => {
-        const serData = serviceData[0].additionalServices.filter(element => {
-            return element.subDetailArray.find(itemId => {
-                return itemId.id === id
-            })
-        })
-        return serData
-    }
-    const getSerSubDet = (id) => {
-        const data = getServiceDetail(id)
-        const subDetInfo = data[0].subDetailArray.filter(item => {
-            return item.id === id
-        })
-        return subDetInfo
+
+    const allCampighnContent = (camp) => {
+        return (
+            <View>
+                {renderCampaighnContentFromSub(camp)}
+                {renderCampaighnContent(camp)}
+            </View>
+        )
     }
     const renderCampaighnContentFromSub = (camp) => {
         return (
             camp.contentFromSubDet.map(itemID => {
                 const titleInfo = getSerSubDet(itemID)
                 return (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                    <View style={styles.contView}>
                         <Text style={styles.subDetText}>{titleInfo[0].detailSubtitle}</Text>
                         <Feather
                             style={{ alignSelf: 'center' }}
@@ -280,7 +324,7 @@ const ProviderSetClientForBooking = (props) => {
         return (
             camp.campContents.map(elment => {
                 return (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                    <View style={styles.contView}>
                         <Text style={styles.subDetText}>{elment.contentItem}</Text>
                         <Feather
                             style={{ alignSelf: 'center' }}
@@ -292,6 +336,23 @@ const ProviderSetClientForBooking = (props) => {
             })
         )
     }
+
+    const getServiceDetail = (id) => {
+        const serData = serviceData[0].additionalServices.filter(element => {
+            return element.subDetailArray.find(itemId => {
+                return itemId.id === id
+            })
+        })
+        return serData
+    }
+    const getSerSubDet = (id) => {
+        const data = getServiceDetail(id)
+        const subDetInfo = data[0].subDetailArray.filter(item => {
+            return item.id === id
+        })
+        return subDetInfo
+    }
+
     const renderCheckSelectedOffer = () => {
         return (
             <View style={styles.checkDataView}>
@@ -339,12 +400,12 @@ const ProviderSetClientForBooking = (props) => {
                     onScroll={handleScroll}
                     scrollEventThrottle={16}
                 >
-                    <View ref={firstPageRef} style={{ width: Dimensions.get('screen').width }} >
+                    <View ref={firstPageRef} style={{ width: Dimensions.get('screen').width, alignItems: 'center' }} >
                         <View style={styles.serviceDetBooking}>
                             {renderServiceDetail()}
                         </View>
                     </View>
-                    {isCampaign && <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width }}>
+                    {isCampaign && <View ref={secondPageRef} style={{ width: Dimensions.get('screen').width, alignItems: 'center' }}>
                         <View style={[styles.serviceOfferBooking]}>
                             {pressed === 1 && renderCampaighn()}
                             {multiSelected && renderCheckSelectedOffer()}
@@ -361,7 +422,7 @@ const ProviderSetClientForBooking = (props) => {
             <View>
                 <TextInput
                     style={styles.input}
-                    keyboardType='default'
+                    keyboardType='numeric'
                     placeholder='عدد الزوار'
                     value={{}}
                     onChangeText={{}} />
@@ -371,8 +432,9 @@ const ProviderSetClientForBooking = (props) => {
 
     const renderBiookingFields = () => {
         return (<View>
-            <View style={styles.input}>
-                <Text >2024/5/8</Text>
+            <View style={styles.dateView}>
+                <Text style={styles.subDetText}>{moment(fulDate).format('L')}</Text>
+                <Text style={styles.subDetText}>{moment(fulDate).format('dddd')}</Text>
             </View>
             <View style={styles.Time}>
                 {renderReservStartingTime()}
@@ -387,9 +449,9 @@ const ProviderSetClientForBooking = (props) => {
         </View>)
     }
     return (
-        <View>
+        <View style={{ marginTop: 30 }}>
             {renderBiookingFields()}
-           
+
         </View>
     )
 }
@@ -406,6 +468,17 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         borderRadius: 10,
         paddingHorizontal: 10
+    },
+    dateView:{
+        flexDirection: 'row',
+        alignSelf: 'center',
+        width: '100%',
+        height: 50,
+        elevation: 5,
+        alignItems: 'center',
+        backgroundColor: colors.silver,
+        justifyContent: 'space-evenly',
+        marginBottom: 20
     },
     viewDate: {
         flexDirection: 'row',
@@ -461,7 +534,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     serviceDetBooking: {
-         width: Dimensions.get('screen').width * 0.9,
+        width: Dimensions.get('screen').width * 0.9,
         flex: 1,
         minHeight: 150,
         padding: 5,
@@ -469,7 +542,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'white',
     },
     serviceOfferBooking: {
-         width: Dimensions.get('screen').width * 0.9,
+        width: Dimensions.get('screen').width * 0.9,
         // backgroundColor: 'white',
     },
     checkDataView: {
@@ -480,29 +553,39 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 10,
         marginTop: 10
-    }, 
+    },
     offerTitle: {
-        width: '90%',
-        borderRadius: 10,
-        alignSelf: 'center',
-        backgroundColor: colors.silver,
-        alignItems: 'center'
+        // width: '90%',
+        // borderRadius: 10,
+        // alignSelf: 'center',
+        // backgroundColor: colors.silver,
+        // alignItems: 'center'
     },
-    offerTitleSelected: {
-        width: '90%',
-        borderRadius: 10,
-        alignSelf: 'center',
-        backgroundColor: colors.silver,
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: colors.darkGold
-    },
+    // offerTitleSelected: {
+    //     width: '90%',
+    //     borderRadius: 10,
+    //     alignSelf: 'center',
+    //     backgroundColor: colors.silver,
+    //     alignItems: 'center',
+    //     borderWidth: 2,
+    //     borderColor: colors.darkGold
+    // },
     campaignView: {
+        width: '100%',
+        alignSelf: 'center',
+        padding: 10,
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: colors.silver,
+        borderRadius: 10
+    },
+    campaignViewSelected: {
         width: '100%',
         alignSelf: 'center',
         padding: 5,
         marginTop: 10,
-        //borderWidth: 1
+        borderWidth: 3,
+        borderColor: colors.puprble
     },
     detailItem: {
         backgroundColor: 'lightgray',
@@ -535,5 +618,49 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         marginRight: 10
     },
-   
+    offerContentView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginVertical: 5,
+        marginRight: 20
+        // borderWidth: 1
+    },
+    campText: {
+        fontSize: 18,
+        color: colors.puprble,
+    },
+    IconView: {
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginLeft: 10
+    },
+    text: {
+        fontSize: 15,
+        color: 'black',
+        marginRight: 20
+    },
+    includeView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginBottom: 10
+    },
+    offerImg: {
+        width: 80,
+        height: 80,
+        borderRadius: 50,
+        marginLeft: 20
+    },
+    contView: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'flex-end', 
+        marginRight: 30 
+    }
+
 })
