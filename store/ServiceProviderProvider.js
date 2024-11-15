@@ -65,6 +65,8 @@ const ProviderProvider = props => {
   const [addNewDesc, setAddNewDesc] = useState(false);
   const [addNewDetail, setAddNewDetail] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showSubDetailModal, setShowSubDetailModal] = useState(false);
+  const [detailId, setDetailId] = useState();
  
 
 
@@ -178,8 +180,9 @@ const ProviderProvider = props => {
         setAddNewDetail,
         showDetailModal,
         setShowDetailModal,
-        // provideSerDetType, 
-        // setProvideSerDetType
+        detailId, setDetailId,
+        showSubDetailModal, 
+        setShowSubDetailModal
       }}>
       {props.children}
     </ServiceProviderContext.Provider>
