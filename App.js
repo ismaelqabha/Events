@@ -17,17 +17,20 @@ const App = () => {
   ]);
 
   return (
-    <UsersProvider>
-      <SearchProvider>
-        <ServiceProviderProvider>
-          <KeyboardAvoidingView style={{ flex: 1 }}>
-            <BottomSheetModalProvider>
-              <MainNavigation />
-            </BottomSheetModalProvider>
-          </KeyboardAvoidingView>
-        </ServiceProviderProvider>
-      </SearchProvider>
-    </UsersProvider>
+    // <UsersProvider>
+    //   <SearchProvider>
+    //     <ServiceProviderProvider>
+    //       <KeyboardAvoidingView style={{ flex: 1 }}>
+    //         <BottomSheetModalProvider>
+    //           <MainNavigation />
+    //         </BottomSheetModalProvider>
+    //       </KeyboardAvoidingView>
+    //     </ServiceProviderProvider>
+    //   </SearchProvider>
+    // </UsersProvider>
+    <View>
+      
+    </View>
   );
 };
 
