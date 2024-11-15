@@ -19,7 +19,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { getServiceImages, updateService, updateServiceLogo } from '../../resources/API';
+import { updateService, updateServiceLogo } from '../../resources/API';
 import { BackgroundImage } from '@rneui/base';
 import EditServiceInfo from '../../components/ProviderComponents/EditServiceInfo';
 import EditServiceDetails from '../../components/ProviderComponents/EditServiceDetails';
@@ -43,8 +43,8 @@ const ProviderHome = props => {
     editNumofRequest, setEditNumofRequest,
     editServiceDetail, setEditServiceDetail,
     addSocilMedia, setAddSocilMedia,
-    addNewDetail, setAddNewDetail,
-    showDetailModal, setShowDetailModal } = useContext(ServiceProviderContext);
+    addNewDetail, setAddNewDetail, showSubDetailModal, setShowSubDetailModal,
+    showDetailModal, setShowDetailModal, detailId, setDetailId } = useContext(ServiceProviderContext);
 
 
   const [servicePhotos, setservicePhotos] = useState();
@@ -60,7 +60,9 @@ const ProviderHome = props => {
 
   const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
   const [serviceSocialMedia, setServiceSocialMedia] = useState(serviceData[0].socialMedia)
-
+  const [providerDetail, setProviderDetail] = useState(serviceData[0].additionalServices);
+  // console.log(serviceData[0].additionalServices);
+  // console.log("mmmm", providerDetail);
   const [socialItem, setSocialItem] = useState();
   const [socialIndex, setSocialIndex] = useState();
   const [descriptionItem, setDescriptionItem] = useState();
@@ -68,20 +70,13 @@ const ProviderHome = props => {
 
   const [editProviderServiceItem, setEditProviderServiceItem] = useState(false);
   const [deleteProviderServiceItem, setDeleteProviderServiceItem] = useState(false);
+  const [showSubDetail, setShowSubDetail] = useState(false);
 
+  // const [detailId, setDetailId] = useState();
   const [detailItem, setDetailItem] = useState();
   const [DetailType, setDetailType] = useState();
   const [serviceItemInclude, setServiceItemInclude] = useState();
   const [sub_DetailArr, setSub_DetailArr] = useState();
-
-
-
-  const getImagesfromApi = () => {
-    getServiceImages({ serviceID: isFirst }).then(res => {
-      setservicePhotos(res);
-    });
-  };
-
 
   useEffect(() => {
 
@@ -116,8 +111,6 @@ const ProviderHome = props => {
     setEditEmail(true)
   }
   const socialMediaitemEditPress = (item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal, index) => {
-    // setSocialItem(item)
-    // setSocialIndex(itemLink)
     setEditSocialMedia(index, !editSocialMedia)
     setShowModal(index, false)
   }
@@ -125,7 +118,6 @@ const ProviderHome = props => {
     setEditprice(true)
   }
   const editDescrPress = (item, setEditDescrItem, setShowDescModal, index) => {
-    // setDescriptionItem(item)
     setEditDescrItem(index, true)
     setShowDescModal(index, false)
   }
@@ -138,50 +130,89 @@ const ProviderHome = props => {
   const addNewDescr = () => {
     setAddNewDesc(true)
   }
-
   const closeModalPress = (index, setShowDescModal) => {
     setShowDetailModal(index, false)
   }
   const closeSMmodalPress = (setShowModal, index) => {
     setShowModal(index, false)
   }
-
   const addNewDetailPress = (type) => {
     setDetailType(type)
     setAddNewDetail(true)
     setEditProviderServiceItem(false)
-
     setShowDetailModal(true)
   }
-  const serviceDetailEditPress = (title, type, includedType, subDetail) => {
-console.log(">>", includedType);
+  const assin = (detail_Id, title, type, includedType, subDetail) => {
+    setDetailId(detail_Id)
     setDetailItem(title)
     setDetailType(type)
     setServiceItemInclude(includedType)
     setSub_DetailArr(subDetail)
-    setEditProviderServiceItem(true)
-    setAddNewDetail(false)
     setShowMenuModal(true)
   }
-  const renderEditingServiceItem = () => {
-   // if (editProviderServiceItem) {
-    setShowMenuModal(false)
+  const serviceDetailEditPress = () => {
     setShowDetailModal(true)
-      return (
-        <EditServiceDetails
-          editProviderServiceItem={editProviderServiceItem}
-          detailItem={detailItem}
-          DetailType={DetailType}
-          serviceItemInclude={serviceItemInclude}
-          sub_DetailArr={sub_DetailArr}
-          serviceID={isFirst}
-        />
-      )
-   // }
+    setEditProviderServiceItem(true)
+    setAddNewDetail(false)
+    setShowMenuModal(false)
+  }
+  const deleteSerDetailItem = () => {
+    setDeleteProviderServiceItem(true)
+    setShowMenuModal(false)
+  }
+  const supDetailShowPress = () => {
+    setShowSubDetailModal(true)
+    setShowMenuModal(false)
+    setShowSubDetail(true)
+  }
+
+  const renderSupDetailShow = () => {
+    return (
+      <EditServiceDetails
+        serviceID={isFirst}
+        showSubDetail={showSubDetail}
+        sub_DetailArr={sub_DetailArr}
+      />
+    )
+  }
+
+  const deleteDetItem = () => {
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
+
+    const item = providerDetail.filter(elme => elme.detail_Id !== detailId)
+
+    console.log("PPPP", item);
+    // setProviderDetail(item)
+
+    const newData = {
+      service_id: isFirst,
+      additionalServices: item,
+    };
+
+    const data = [...serviceInfoAccorUser];
+
+    updateService(newData).then(res => {
+      if (res.message === 'Updated Sucessfuly') {
+        if (selectedServiceIndex > -1) {
+          data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+        }
+        setServiceInfoAccorUser(data)
+        setDeleteProviderServiceItem(false)
+        ToastAndroid.showWithGravity(
+          'تم التعديل بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+    })
   }
 
   const renderEditServiceDetailInfo = () => {
+    if (deleteProviderServiceItem) {
+      deleteDetItem()
+    }
     if (editProviderServiceItem) {
+
       return (
         <EditServiceDetails
           editProviderServiceItem={editProviderServiceItem}
@@ -813,22 +844,25 @@ console.log(">>", includedType);
   }
 
   // Service detail and sub detail
+
+
   const selectMandatoryDetail = () => {
     const data = filterService();
     return data[0].additionalServices.filter(item => {
-      return item.necessity == 'Mandatory'
+      return item.necessity === 'Mandatory'
     })
   }
   const renderMandatoryDetail = () => {
     const [isMandetoryItemOpen, setIsMandetoryItemOpen] = useState(false)
     const data = selectMandatoryDetail()
-    const serviceDetailInfo = data.map((itemDetail) => {
+    const serviceDetailInfo = data.map((itemDetail, index) => {
+      // console.log(">>", itemDetail.detail_Id, itemDetail.subDetailArray);
       return (
         <View >
           <View style={styles.itemService}>
             <View style={styles.itemSM}>
               <TouchableOpacity
-                onPress={() => serviceDetailEditPress(itemDetail.detailTitle, itemDetail.necessity, itemDetail.additionType, itemDetail.subDetailArray)}>
+                onPress={() => assin(itemDetail.detail_Id, itemDetail.detailTitle, itemDetail.necessity, itemDetail.additionType, itemDetail.subDetailArray)}>
                 <Feather
                   style={styles.menuIcon}
                   name={'more-vertical'}
@@ -862,6 +896,7 @@ console.log(">>", includedType);
             </View>
             );
           })}
+
         </View>
       );
     })
@@ -882,7 +917,7 @@ console.log(">>", includedType);
           <View style={styles.itemService}>
             <View style={styles.itemSM}>
               <TouchableOpacity
-                onPress={() => serviceDetailEditPress(itemDetail.detailTitle, itemDetail.necessity, itemDetail.additionType, itemDetail.subDetailArray)}>
+                onPress={() => assin(itemDetail.detail_Id, itemDetail.detailTitle, itemDetail.necessity, itemDetail.additionType, itemDetail.subDetailArray)}>
                 <Feather
                   style={styles.menuIcon}
                   name={'more-vertical'}
@@ -980,13 +1015,6 @@ console.log(">>", includedType);
         onRequestClose={() => setShowDetailModal(false)}>
         <View style={styles.servDetailModal}>
           <View style={styles.bodyModal}>
-            {/* <TouchableOpacity onPress={closeModalPress} style={styles.modalHeader}>
-              <Feather
-                style={styles.menuIcon}
-                name={'more-horizontal'}
-                color={colors.puprble}
-                size={25} />
-            </TouchableOpacity> */}
             {renderEditServiceDetailInfo()}
           </View>
         </View>
@@ -1008,20 +1036,35 @@ console.log(">>", includedType);
             </Pressable>
 
             <View style={styles.modalMenu}>
-              <TouchableOpacity style={styles.modalItem}>
+              <TouchableOpacity style={styles.modalItem} onPress={supDetailShowPress}>
                 <Entypo name={'list'} color={colors.gray} size={25} />
                 <Text style={styles.modalHeaderTxt}>تفاصيل</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalItem} onPress={renderEditingServiceItem}>
+              <TouchableOpacity style={styles.modalItem} onPress={serviceDetailEditPress}>
                 <Feather name={'edit'} color={colors.gray} size={25} />
                 <Text style={styles.modalHeaderTxt}>تعديل</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalItem}>
+              <TouchableOpacity style={styles.modalItem} onPress={deleteSerDetailItem}>
                 <AntDesign name={'delete'} color={colors.gray} size={25} />
                 <Text style={styles.modalHeaderTxt}>اِلغاء</Text>
               </TouchableOpacity>
             </View>
 
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+  const renderSubDetailModal = () => {
+    return (
+      <Modal
+        transparent
+        visible={showSubDetailModal}
+        animationType="slide"
+        onRequestClose={() => setShowSubDetailModal(false)}>
+        <View style={styles.servDetailModal}>
+          <View style={styles.SubDetbodyModal}>
+            {renderSupDetailShow()}
           </View>
         </View>
       </Modal>
@@ -1212,6 +1255,7 @@ console.log(">>", includedType);
         {renderOptional()}
         {renderDetailModal()}
         {renderEditingMenu()}
+        {renderSubDetailModal()}
 
         <View style={{ height: 100 }}></View>
       </ScrollView>
@@ -1375,8 +1419,6 @@ const styles = StyleSheet.create({
     bottom: 10,
     width: '100%'
   },
-
-
   servDetailModal: {
     flex: 1,
     justifyContent: 'center',
@@ -1387,6 +1429,12 @@ const styles = StyleSheet.create({
     width: '95%',
     height: '60%',
     backgroundColor: '#ffffff',
+    borderRadius: 10
+  },
+  SubDetbodyModal: {
+    width: '95%',
+    height: '95%',
+    backgroundColor: colors.silver,
     borderRadius: 10
   },
   modalHeader: {
