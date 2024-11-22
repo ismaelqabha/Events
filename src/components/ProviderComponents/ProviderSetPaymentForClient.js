@@ -98,12 +98,29 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
         const [paymentDate, setPaymentDate] = useState(props?.val?.PayDate || null)
         const [persentage, setPersentage] = useState(props?.val?.pers || null)
         const [amount, setAmount] = useState(props?.val?.amount || null)
+        const [paymentStatus, setPaymentStatus] = useState(props?.val?.paymentStutes || 'not paid');
 
         const index = props.index
 
         const [date, setDate] = useState(new Date());
         const [mode, setMode] = useState('date');
         const [show, setShow] = useState(false);
+
+        const togglePaymentStatus = () => {
+            const newStatus = paymentStatus === 'not paid' ? 'paid' : 'not paid';
+            setPaymentStatus(newStatus);
+
+            updateArray(
+                {
+                    id: payId,
+                    PayDate: paymentDate,
+                    pers: persentage,
+                    paymentStutes: newStatus,
+                    amount: amount,
+                },
+                index
+            );
+        };
 
         var payDate
         var todayDate = new Date();
@@ -139,7 +156,7 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
                     id: payId,
                     PayDate: paymentDate,
                     pers: newPersentage,
-                    paymentStutes: 'not paid',
+                    paymentStutes: paymentStatus,
                     amount: newAmount
                 },
                 index
@@ -171,7 +188,7 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
                     id: payId,
                     PayDate: paymentDate,
                     pers: newPersentage,
-                    paymentStutes: 'not paid',
+                    paymentStutes: paymentStatus,
                     amount: newAmount
                 },
                 index
@@ -196,7 +213,7 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
                 PayDate: chosenDate.toISOString().split('T')[0],
                 pers: persentage,
                 amount: amount,
-                paymentStutes: 'not paid'
+                paymentStutes: paymentStatus
             };
             updateArray(data, index);
         };
@@ -209,6 +226,7 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
             if (props.val) {
                 setPaymentDate(props?.val?.PayDate)
                 setPersentage(props?.val?.pers)
+                setPaymentStatus(props?.val?.paymentStutes || 'not paid');
             }
         }, [])
 
@@ -269,6 +287,16 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
                     </View>
 
                 </View>
+                {index === 0 && (
+                    <TouchableOpacity
+                        style={styles.toggleButton}
+                        onPress={togglePaymentStatus}
+                    >
+                        <Text style={[styles.toggleButtonText, { color: paymentStatus === 'not paid' ? 'white' : colors.gold }]}>
+                            {paymentStatus === 'not paid' ? 'Confirm Payment' : 'Revert to Unpaid'}
+                        </Text>
+                    </TouchableOpacity>
+                )}
             </View>
         )
     }
@@ -587,6 +615,16 @@ const styles = StyleSheet.create({
     methodText: {
         fontSize: 18,
         color: colors.puprble
-    }
+    },
+    toggleButton: {
+        marginTop: 10,
+        padding: 10,
+        backgroundColor: colors.puprble,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    toggleButtonText: {
+        fontWeight: 'bold',
+    },
 
 })
