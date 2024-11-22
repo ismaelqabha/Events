@@ -14,6 +14,7 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
     const [cash, setCash] = useState(false)
     const [checks, setChecks] = useState(false)
     const [initialPaymentAmount, setInitialPaymentAmount] = useState(0);
+    const [selectedPaymentIndex, setSelectedPaymentIndex] = useState(null);
 
     var payId = uuidv4();
 
@@ -30,7 +31,7 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
                 initialAmount = totalPrice;
                 break;
             case 'prePost':
-                initialAmount = totalPrice ;
+                initialAmount = totalPrice;
                 break;
             case 'post':
                 initialAmount = 0;
@@ -63,11 +64,19 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
         setPaymentDataArray([...paymentDataArray, { empty: "empty" }])
     }
     const renderPaymentFeilds = () => {
-        const fields = paymentDataArray?.map((val, index) =>
-            <PaymentComponent val={val} index={index} />
-        )
-        return fields
-    }
+        return paymentDataArray.map((val, index) => (
+            <TouchableOpacity
+                key={index}
+                onPress={() => setSelectedPaymentIndex(index)}
+                style={selectedPaymentIndex === index ? styles.selectedMediaItem : styles.mediaItem}>
+                <PaymentComponent
+                    val={val}
+                    index={index}
+                    updateArray={updateArray}
+                />
+            </TouchableOpacity>
+        ));
+    };
     const removePaymentItem = (index) => {
         const newArray = [...paymentDataArray];
         newArray.splice(index, 1);
@@ -337,12 +346,16 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
     }
 
     const renderPayAmount = () => {
-        return (
-            <View style={styles.amountView}>
-                <Text style={styles.amountTxt}>15000</Text>
-            </View>
-        )
-    }
+        if (selectedPaymentIndex !== null) {
+            const selectedPayment = paymentDataArray[selectedPaymentIndex];
+            return (
+                <View style={styles.amountView}>
+                    <Text style={styles.amountTxt}>{selectedPayment.amount || 0}</Text>
+                </View>
+            );
+        }
+        return null;
+    };
     const renderContinueButton = () => {
         return (
             <TouchableOpacity style={styles.continueButton} onPress={() => setContinuePay(true)}
@@ -567,6 +580,15 @@ const styles = StyleSheet.create({
         backgroundColor: colors.gold,
         borderRadius: 10,
         elevation: 5
+    },
+    selectedMediaItem: {
+        borderWidth: 2,
+        borderColor: colors.puprble,
+        padding: 10,
+        borderRadius: 8,
+        marginVertical: 10,
+        width: '90%',
+        alignSelf: 'center',
     },
     methodText: {
         fontSize: 18,
