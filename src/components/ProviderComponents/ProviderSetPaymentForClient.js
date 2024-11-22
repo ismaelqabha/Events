@@ -5,9 +5,11 @@ import { colors } from '../../assets/AppColors'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FontAwesome from "react-native-vector-icons/FontAwesome"
 import { v4 as uuidv4 } from 'uuid';
+import { showMessage } from '../../resources/Functions';
+import { addNewRequest } from '../../resources/API';
 
 
-const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
+const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date, serviceId, userId, resDetails }) => {
 
     const [paymentDataArray, setPaymentDataArray] = useState([])
     const [creditCard, setCreditCard] = useState(false)
@@ -389,12 +391,52 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
     };
     const renderPayButton = () => {
         return (
-            <TouchableOpacity style={styles.payView} //onPress={onPaymentPress}
+            <TouchableOpacity style={styles.payView} onPress={onPaymentPress}
             >
                 <Text style={styles.buttonText}>تأكيد الدفع</Text>
             </TouchableOpacity>
         )
     }
+    const onPaymentPress = async () => {
+        const totalPercentage = checkSumPersentage(); // Sum up all percentages from the paymentDataArray
+        const totalAmount = paymentDataArray.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0); // Sum up all amounts
+
+        if (totalPercentage < 100 || totalAmount < totalPrice) {
+            showMessage("الدفعات غير مكتملة. تأكد من أن النسبة الإجمالية تصل إلى 100%.");
+            return;
+        }
+
+        try {
+            // Check if the first payment has been marked as "paid"
+            const firstPaymentStatus = paymentDataArray[0]?.paymentStutes || "not paid";
+            const reqStatus = firstPaymentStatus === "paid" ? "partially paid" : "waiting pay";
+
+            // Prepare the request body
+            const requestBody = {
+                ReqServId: serviceId,
+                ReqUserId: userId,
+                ReqStatus: reqStatus,
+                ReqDate: new Date().toISOString(),
+                Cost: totalPrice,
+                reservationDetail: resDetails,
+                paymentInfo: paymentDataArray,
+            };
+
+            // Call the function to create the request
+            const requestResponse = await addNewRequest(requestBody);
+            console.log("requestBody", requestBody);
+            console.log("requestResponse", requestResponse);
+
+            if (requestResponse?.message === "Request Created") {
+                showMessage("تم إنشاء الطلب بنجاح!");
+            } else {
+                showMessage("حدث خطأ أثناء إنشاء الطلب. الرجاء المحاولة مرة أخرى.");
+            }
+        } catch (error) {
+            console.error("Error during payment process:", error);
+            showMessage("حدث خطأ أثناء معالجة الدفع. الرجاء المحاولة مرة أخرى.");
+        }
+    };
     const creatPaymentProviderSide = () => {
         return (
 

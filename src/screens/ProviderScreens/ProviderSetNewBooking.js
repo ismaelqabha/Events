@@ -25,7 +25,7 @@ const ProviderSetNewBooking = (props) => {
     const [client, setClient] = useState(true)
     const [booking, setBooking] = useState(false)
     const [payment, setPayment] = useState(false)
-
+    const [userId, setUserId] = useState(null);
     const [totalPrice, setTotalPrice] = useState(0);
     const [resDetail, setResDetail] = useState([{
         reservationDate: fulDate,
@@ -156,8 +156,11 @@ const ProviderSetNewBooking = (props) => {
             <View>
                 <ProviderSetPaymentForClient
                     paymentPolicy={serviceData?.[0]?.paymentPolicy}
+                    serviceId={serviceData?.[0]?.service_id}
+                    userId={userId}
                     totalPrice={totalPrice}
                     date={fulDate}
+                    resDetails={resDetail}
                 />
             </View>
         )
@@ -212,8 +215,6 @@ const ProviderSetNewBooking = (props) => {
     const checkIfNew = async () => {
         const { name, phone, email, location } = inputValues;
 
-        console.log("input values", inputValues);
-
         if (!name || !phone || !email || !location) {
             showMessage("Please fill in all fields before proceeding.");
             return;
@@ -221,10 +222,15 @@ const ProviderSetNewBooking = (props) => {
 
         try {
             // Call API to check if the user exists in the database
-            const userExists = await checkUserExists({ phone, email });
-            console.log("userExists", userExists);
+            const userExistsResponse = await checkUserExists({ phone, email });
+            console.log("userExistsResponse", userExistsResponse);
 
-            if (!userExists) {
+            if (userExistsResponse?.exists) {
+                const existingUserId = userExistsResponse?.user?.USER_ID; // Assuming `userId` is part of the response
+                setUserId(existingUserId);
+                proceedToNextStep(); // User exists, move to the next screen directly
+            } else {
+                // User not found, prompt to create a new user
                 Alert.alert(
                     "User Not Found",
                     "This user does not exist in the database. Would you like to add them?",
@@ -232,22 +238,30 @@ const ProviderSetNewBooking = (props) => {
                         {
                             text: "No",
                             style: "cancel",
-                            onPress: () => proceedToNextStep()
+                            onPress: () => {
+                                setUserId("unknown"); // Set ID to "unknown" if the user is not created
+                                proceedToNextStep();
+                            },
                         },
                         {
                             text: "Yes",
                             onPress: async () => {
-                                await createNewUser(inputValues); // Create new user if confirmed
-                                proceedToNextStep(); // Go to next step after creation
+                                const newUser = await createNewUser(inputValues); // Create new user if confirmed
+                                if (newUser?.userId) {
+                                    setUserId(newUser.userId); // Save the new user's ID
+                                    proceedToNextStep();
+                                } else {
+                                    setUserId("unknown"); // Handle case where user creation fails
+                                    showMessage("User creation failed. Proceeding with unknown user.");
+                                    proceedToNextStep();
+                                }
                             },
                         },
                     ]
                 );
-            } else {
-                proceedToNextStep(); // User exists, move to the next screen directly
             }
         } catch (error) {
-            console.log("Error checking user existence:", error);
+            console.error("Error checking user existence:", error);
             showMessage("Error checking user existence. Please try again.");
         }
     };
