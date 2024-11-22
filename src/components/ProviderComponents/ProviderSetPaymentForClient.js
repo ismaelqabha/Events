@@ -67,7 +67,10 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
         return paymentDataArray.map((val, index) => (
             <TouchableOpacity
                 key={index}
-                onPress={() => setSelectedPaymentIndex(index)}
+                onPress={() => {
+                    setSelectedPaymentIndex(index)
+                    setContinuePay(true)
+                }}
                 style={selectedPaymentIndex === index ? styles.selectedMediaItem : styles.mediaItem}>
                 <PaymentComponent
                     val={val}
@@ -356,14 +359,6 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
         }
         return null;
     };
-    const renderContinueButton = () => {
-        return (
-            <TouchableOpacity style={styles.continueButton} onPress={() => setContinuePay(true)}
-            >
-                <Text style={styles.buttonText}>تحرير الدفعة</Text>
-            </TouchableOpacity>
-        )
-    }
     const renderPayButton = () => {
         return (
             <TouchableOpacity style={styles.payView} //onPress={onPaymentPress}
@@ -391,7 +386,6 @@ const ProviderSetPaymentForClient = ({ paymentPolicy, totalPrice, date }) => {
     const makePayment = () => {
         return (
             <View style={styles.paymentQuntView}>
-                {!continuePay && renderContinueButton()}
                 {continuePay && renderPayAmount()}
                 {continuePay && creatPaymentProviderSide()}
                 {continuePay && renderPayButton()}
