@@ -10,6 +10,7 @@ import ProviderSetClientInfo from './ProviderSetClientInfo';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { showMessage } from '../../resources/Functions';
 import { addUser, checkUserExists } from '../../resources/API';
+import { images } from '../../assets/photos/images';
 
 
 const ProviderSetNewBooking = (props) => {
@@ -250,16 +251,27 @@ const ProviderSetNewBooking = (props) => {
             showMessage("Error checking user existence. Please try again.");
         }
     };
-
+    const generateRandomPassword = (length = 8) => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+=';
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            password += chars[randomIndex];
+        }
+        return password;
+    };
     const createNewUser = async (userData) => {
         try {
+            const pass = generateRandomPassword()
             const AddNewUser = {
-                name: inputValues.name,
-                phone: inputValues.phone,
-                email: inputValues.email,
-                location: inputValues.location,
+                User_name: inputValues.name,
+                UserPhone: inputValues.phone,
+                Email: inputValues.email,
+                UserCity: inputValues.location,
+                Password: pass,
+                PasswordConfirmation: pass
             };
-            const newUser = await addUser(AddNewUser, null);
+            const newUser = await addUser(AddNewUser, images.profileMalePicture);
             if (newUser) showMessage("User created successfully!");
         } catch (error) {
             showMessage("Error creating user. Please try again.");
@@ -383,7 +395,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignSelf: 'center',
         backgroundColor: 'white',
-        paddingBottom:100
+        paddingBottom: 100
 
     },
     headItem: {
