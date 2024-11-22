@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginVertical: 10,
         borderRadius: 10,
-        zIndex: 1
     },
     dropdown: {
         // height: 50,
@@ -246,7 +245,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         width: 300,
         marginHorizontal: 5,
-        zIndex: 1,
     },
     resultText: {
         color: 'black',
@@ -256,7 +254,6 @@ const styles = StyleSheet.create({
         maxHeight: 200,
         alignSelf: 'center',
         width: '90%',
-        zIndex: 2,
     },
     statusText: {
         fontSize: 13,
