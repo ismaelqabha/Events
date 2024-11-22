@@ -192,6 +192,8 @@ const ProviderSetClientForBooking = (props) => {
         }
     };
     const toggleSubDetail = (subId) => {
+
+        console.log("subId", subId)
         setSelectedSupDet(prevSelected => {
             const updatedSelected = prevSelected.includes(subId)
                 ? prevSelected.filter(id => id !== subId)
@@ -214,13 +216,14 @@ const ProviderSetClientForBooking = (props) => {
                     <Text style={styles.detailText}>{element.detailTitle}</Text>
                 </View>
                 {element.subDetailArray.map(item => {
-                    const isSelected = selectedSupDet.includes(item.id);
+
+                    const isSelected = selectedSupDet.includes(item.subDetail_Id);
                     return (
-                        <View key={item.id} style={styles.subDetail}>
+                        <View key={item.subDetail_Id} style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
                             <TouchableOpacity
                                 style={styles.subPressable}
-                                onPress={() => toggleSubDetail(item.id)}
+                                onPress={() => toggleSubDetail(item.subDetail_Id)}
                             >
                                 {isSelected && <Entypo
                                     style={{ alignSelf: 'center', position: 'absolute' }}
@@ -394,7 +397,7 @@ const ProviderSetClientForBooking = (props) => {
     const getSerSubDet = (id) => {
         const data = getServiceDetail(id)
         const subDetInfo = data[0].subDetailArray.filter(item => {
-            return item.id === id
+            return item.subDetail_Id === id
         })
         return subDetInfo
     }

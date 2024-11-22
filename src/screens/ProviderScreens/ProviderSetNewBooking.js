@@ -150,9 +150,14 @@ const ProviderSetNewBooking = (props) => {
         )
     }
     const renderPaymentDetail = () => {
+        const serviceData = findProviderInfo()
         return (
             <View>
-                <ProviderSetPaymentForClient />
+                <ProviderSetPaymentForClient
+                    paymentPolicy={serviceData?.[0]?.paymentPolicy}
+                    totalPrice={totalPrice}
+                    date={fulDate}
+                />
             </View>
         )
     }
@@ -191,13 +196,13 @@ const ProviderSetNewBooking = (props) => {
         if (client) {
             checkIfNew();
         }
-         else if (booking) {
+        else if (booking) {
             if (checkAllDetails()) {
                 proceedToNextStep();
             } else {
                 showMessage("Please fill in all required booking details.");
             }
-        } 
+        }
         else {
             proceedToNextStep();
         }
@@ -216,6 +221,7 @@ const ProviderSetNewBooking = (props) => {
         try {
             // Call API to check if the user exists in the database
             const userExists = await checkUserExists({ phone, email });
+            console.log("userExists", userExists);
 
             if (!userExists) {
                 Alert.alert(
