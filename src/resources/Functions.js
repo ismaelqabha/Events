@@ -158,5 +158,6 @@ export {
   showMessage,
   onPublishPress,
   calculateTotalPrice,
-  getProfileImageSource
+  getProfileImageSource,
+  filterSubDetails
 }

@@ -14,7 +14,6 @@ import { colors } from '../../assets/AppColors';
 
 const ProviderCreateListing = props => {
 
-
   const { draftServices, setDraftID, setDraftServices } = useContext(ServiceProviderContext)
   const { userId } = useContext(SearchContext)
   const language = strings.arabic.ProviderScreens.ProviderCreateListing

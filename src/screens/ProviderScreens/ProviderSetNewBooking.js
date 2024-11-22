@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
@@ -7,6 +7,10 @@ import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import ProviderSetPaymentForClient from '../../components/ProviderComponents/ProviderSetPaymentForClient';
 import ProviderSetClientInfo from './ProviderSetClientInfo';
+import { AppStyles } from '../../assets/res/AppStyles';
+import { showMessage } from '../../resources/Functions';
+import { addUser, checkUserExists } from '../../resources/API';
+import { images } from '../../assets/photos/images';
 
 
 const ProviderSetNewBooking = (props) => {
@@ -21,8 +25,22 @@ const ProviderSetNewBooking = (props) => {
     const [client, setClient] = useState(true)
     const [booking, setBooking] = useState(false)
     const [payment, setPayment] = useState(false)
+    const [userId, setUserId] = useState(null);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [resDetail, setResDetail] = useState([{
+        reservationDate: fulDate,
+        startingTime: null,
+        EndTime: null,
+        numOfInviters: null,
+        subDetailId: [],
+        offerId: []
+    }]);
 
+    const [inputValues, setInputValues] = useState({ name: '', phone: '', email: '', location: '' });
 
+    const handleClientInfoChange = (newValues) => {
+        setInputValues(newValues);
+    };
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -36,7 +54,7 @@ const ProviderSetNewBooking = (props) => {
     }
 
     useEffect(() => {
-       
+
     }, [])
 
 
@@ -92,59 +110,202 @@ const ProviderSetNewBooking = (props) => {
     const screenBody = () => {
         return (
             <View style={styles.body}>
-                <View style={styles.bodyTitle}>
-                    {client && <Text style={styles.nextText}>معلومات الزبون</Text>}
-                    {booking && <Text style={styles.nextText}>تفاصيل الحجز</Text>}
-                    {payment && <Text style={styles.nextText}>معلومات الدفع</Text>}
-                </View>
-                <View style={styles.bodyTaps}>
-                    {client && renderClientInfo()}
-                    {booking && renderBookingInfo()}
-                    {payment && renderPaymentDetail()}
-                </View>
+                <ScrollView>
+
+                    <View style={styles.bodyTitle}>
+                        {client && <Text style={styles.nextText}>معلومات الزبون</Text>}
+                        {booking && <Text style={styles.nextText}>تفاصيل الحجز</Text>}
+                        {payment && <Text style={styles.nextText}>معلومات الدفع</Text>}
+                    </View>
+                    <View style={styles.bodyTaps}>
+                        {client && renderClientInfo()}
+                        {booking && renderBookingInfo()}
+                        {payment && renderPaymentDetail()}
+                    </View>
+                </ScrollView>
             </View>
         )
     }
 
- 
+
     const renderClientInfo = () => {
-        const data =  findProviderInfo()
+        const data = findProviderInfo()
         const providerClients = data[0].clients
         return (
             <View>
-                <ProviderSetClientInfo providerClients={providerClients}/>
+                <ProviderSetClientInfo providerClients={providerClients} onInputChange={handleClientInfoChange} inputValuesParent={inputValues} />
             </View>
         )
     }
     const renderBookingInfo = () => {
         const serviceData = findProviderInfo()
         return (
-            <ScrollView>
-                <ProviderSetClientForBooking serviceData={serviceData} fulDate={fulDate} />
-            </ScrollView>
+            <ProviderSetClientForBooking
+                serviceData={serviceData}
+                fulDate={fulDate}
+                totalPrice={totalPrice}
+                setTotalPrice={setTotalPrice}
+                resDetail={resDetail}
+                setResDetail={setResDetail}
+            />
         )
     }
     const renderPaymentDetail = () => {
+        const serviceData = findProviderInfo()
         return (
             <View>
-                <ProviderSetPaymentForClient />
+                <ProviderSetPaymentForClient
+                    paymentPolicy={serviceData?.[0]?.paymentPolicy}
+                    serviceId={serviceData?.[0]?.service_id}
+                    userId={userId}
+                    totalPrice={totalPrice}
+                    date={fulDate}
+                    resDetails={resDetail}
+                />
             </View>
         )
     }
 
-    const nextPress = () => {
-        if (bookStatus) {
-            setPaymentStatus(true)
-            setClient(false)
-            setBooking(false)
-            setPayment(true)
-        } else {
-            setBookStatus(true)
-            setClient(false)
-            setBooking(true)
-            setPayment(false)
+    const checkAllDetails = () => {
+        const serviceData = findProviderInfo()?.[0]
+
+        if (typeof totalPrice !== 'number' || totalPrice <= 0) {
+            showMessage("Please choose proper services.");
+            return false;
         }
-    }
+
+        if (!serviceData || !serviceData._id) {
+            showMessage("Invalid service data.");
+            return false;
+        }
+
+        if (!Array.isArray(resDetail) || resDetail.length === 0) {
+            showMessage("Please provide reservation details.");
+            return false;
+        }
+
+        for (const detail of resDetail) {
+            if (!detail.reservationDate || !detail.startingTime || !detail.EndTime ||
+                detail.numOfInviters === null || !Array.isArray(detail.subDetailId) ||
+                !Array.isArray(detail.offerId) || (detail.subDetailId.length === 0 &&
+                    detail.offerId.length === 0)) {
+                showMessage("Please fill all reservation details.");
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const nextPress = async () => {
+        if (client) {
+            checkIfNew();
+        }
+        else if (booking) {
+            if (checkAllDetails()) {
+                proceedToNextStep();
+            } else {
+                showMessage("Please fill in all required booking details.");
+            }
+        }
+        else {
+            proceedToNextStep();
+        }
+    };
+
+    const checkIfNew = async () => {
+        const { name, phone, email, location } = inputValues;
+
+        if (!name || !phone || !email || !location) {
+            showMessage("Please fill in all fields before proceeding.");
+            return;
+        }
+
+        try {
+            // Call API to check if the user exists in the database
+            const userExistsResponse = await checkUserExists({ phone, email });
+            console.log("userExistsResponse", userExistsResponse);
+
+            if (userExistsResponse?.exists) {
+                const existingUserId = userExistsResponse?.user?.USER_ID; // Assuming `userId` is part of the response
+                setUserId(existingUserId);
+                proceedToNextStep(); // User exists, move to the next screen directly
+            } else {
+                // User not found, prompt to create a new user
+                Alert.alert(
+                    "User Not Found",
+                    "This user does not exist in the database. Would you like to add them?",
+                    [
+                        {
+                            text: "No",
+                            style: "cancel",
+                            onPress: () => {
+                                setUserId("unknown"); // Set ID to "unknown" if the user is not created
+                                proceedToNextStep();
+                            },
+                        },
+                        {
+                            text: "Yes",
+                            onPress: async () => {
+                                const newUser = await createNewUser(inputValues); // Create new user if confirmed
+                                if (newUser?.userId) {
+                                    setUserId(newUser.userId); // Save the new user's ID
+                                    proceedToNextStep();
+                                } else {
+                                    setUserId("unknown"); // Handle case where user creation fails
+                                    showMessage("User creation failed. Proceeding with unknown user.");
+                                    proceedToNextStep();
+                                }
+                            },
+                        },
+                    ]
+                );
+            }
+        } catch (error) {
+            console.error("Error checking user existence:", error);
+            showMessage("Error checking user existence. Please try again.");
+        }
+    };
+    const generateRandomPassword = (length = 8) => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+=';
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * chars.length);
+            password += chars[randomIndex];
+        }
+        return password;
+    };
+    const createNewUser = async (userData) => {
+        try {
+            const pass = generateRandomPassword()
+            const AddNewUser = {
+                User_name: inputValues.name,
+                UserPhone: inputValues.phone,
+                Email: inputValues.email,
+                UserCity: inputValues.location,
+                Password: pass,
+                PasswordConfirmation: pass
+            };
+            const newUser = await addUser(AddNewUser, images.profileMalePicture);
+            if (newUser) showMessage("User created successfully!");
+        } catch (error) {
+            showMessage("Error creating user. Please try again.");
+            console.error("User creation error:", error);
+        }
+    };
+    const proceedToNextStep = () => {
+        if (bookStatus) {
+            setPaymentStatus(true);
+            setClient(false);
+            setBooking(false);
+            setPayment(true);
+        } else {
+            setBookStatus(true);
+            setClient(false);
+            setBooking(true);
+            setPayment(false);
+        }
+    };
+
     const backPress = () => {
         if (paymentStatus) {
             setPaymentStatus(false)
@@ -164,11 +325,11 @@ const ProviderSetNewBooking = (props) => {
     const footer = () => {
         return (
             <View style={styles.btnView}>
-                {!payment && <TouchableOpacity style={styles.btnNext} onPress={nextPress}>
-                    <Text style={styles.nextText}>التالي</Text>
+                {!payment && <TouchableOpacity style={AppStyles.next} onPress={nextPress}>
+                    <Text style={AppStyles.nextText}>التالي</Text>
                 </TouchableOpacity>}
-                <TouchableOpacity style={styles.btnBack} onPress={backPress}>
-                    <Text style={styles.backText}>رجوع</Text>
+                <TouchableOpacity style={AppStyles.back} onPress={backPress}>
+                    <Text style={AppStyles.backText}>رجوع</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -179,10 +340,9 @@ const ProviderSetNewBooking = (props) => {
         <View style={styles.container}>
 
             {header()}
-            {footer()}
             {renderHeadLines()}
             {screenBody()}
-           
+            {footer()}
         </View >
     )
 }
@@ -249,6 +409,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignSelf: 'center',
         backgroundColor: 'white',
+        paddingBottom: 100
 
     },
     headItem: {
@@ -313,8 +474,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderWidth: 1,
+        // borderWidth: 1,
         // marginTop: 50
+        marginTop: '10%'
+
     },
     btnNext: {
         width: '50%',
@@ -341,6 +504,6 @@ const styles = StyleSheet.create({
         // color: colors.puprble,
         fontWeight: 'bold'
     },
-  
-   
+
+
 })

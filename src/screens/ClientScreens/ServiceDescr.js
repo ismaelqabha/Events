@@ -46,10 +46,10 @@ const ServiceDescr = (props) => {
     const [currentDate, setCurrentDate] = useState(new Date())
     const [serviseVisit, setServiceVisit] = useState(data.visits[0].accessPoint)
 
-
+    console.log("hello 123");
+    
     useEffect(() => {
         checkVisit('view')
-        // Cleanup function to reset resDetail when component unmounts or re-renders
         return () => {
             resetResDetail();
         };
@@ -76,7 +76,6 @@ const ServiceDescr = (props) => {
 
         const res = !!result
         if (!res) {
-            console.log("in");
             addVisit(type)
         }
     }

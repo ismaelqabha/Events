@@ -8,9 +8,11 @@ import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import moment from "moment";
 import SearchContext from '../../../store/SearchContext';
+import Recipt from './recipt';
+import { calculateTotalPrice } from '../../resources/Functions';
 
 const ProviderSetClientForBooking = (props) => {
-    const { serviceData, fulDate } = props
+    const { serviceData, fulDate, totalPrice, setTotalPrice, resDetail, setResDetail } = props
 
     const { campInfo, setCampInfo } = useContext(SearchContext);
 
@@ -21,12 +23,22 @@ const ProviderSetClientForBooking = (props) => {
     const [mode, setMode] = useState('time');
     const [showStart, setShowStart] = useState(false);
     const [showEnd, setShowEnd] = useState(false);
+    const [numOfInviters, setNumOfInviters] = useState(''); // Visitor count as a string for input handling
+
 
     const [selectedSupDet, setSelectedSupDet] = useState([]);
     const [multiSelected, setMultiSelected] = useState(false)
     const [bgColorDate, setColorDate] = useState('white');
     const [isCampaign, setIsCampaign] = useState(true)
     const [isOfferContOpen, setIsOfferContOpen] = useState(false)
+
+    const [requestedDate, setRequestedDate] = useState(fulDate); // Set requested date
+
+    const [showDetailRecipt, setShowDetailRecipt] = useState(false); // Control receipt visibility
+
+    useEffect(() => {
+        calculateTotalPrice(resDetail, requestedDate, serviceData?.[0], setTotalPrice);
+    }, [resDetail, requestedDate, serviceData]);
 
     const [offer, setOffer] = useState();
 
@@ -87,7 +99,7 @@ const ProviderSetClientForBooking = (props) => {
         setMode(currentMode);
     }
     const onStartTimeChange = (event, selectedDate) => {
-        setShowStart(false)
+        setShowStart(false);
         const currentDate = selectedDate || date;
         setDate(currentDate);
 
@@ -95,21 +107,32 @@ const ProviderSetClientForBooking = (props) => {
         let startTime = tempDate.getHours() + ':' + tempDate.getMinutes();
         setstartTimeText(startTime);
 
-    }
+        setResDetail(prevState => {
+            const updatedResDetail = [...prevState];
+            updatedResDetail[0] = { ...updatedResDetail[0], startingTime: startTime };
+            return updatedResDetail;
+        });
+    };
     const onEndTimeChange = (event, selectedDate) => {
-        setShowEnd(false)
+        setShowEnd(false);
         const currentDate = selectedDate || date1;
         setDate(currentDate);
 
         let tempDate = new Date(currentDate);
         let endTime = tempDate.getHours() + ':' + tempDate.getMinutes();
+
         if (endTime > startTimeText) {
             setendTimeText(endTime);
 
+            setResDetail(prevState => {
+                const updatedResDetail = [...prevState];
+                updatedResDetail[0] = { ...updatedResDetail[0], EndTime: endTime };
+                return updatedResDetail;
+            });
         } else {
             console.log("Not valid time");
         }
-    }
+    };
     const renderReservStartingTime = () => {
         return <View>
             <TouchableOpacity onPress={() => checkStartTime()}>
@@ -168,58 +191,84 @@ const ProviderSetClientForBooking = (props) => {
             });
         }
     };
-    const whenSupDetailPress = (SubId) => {
-        if (!SubId) {
-            return
-        }
-    }
+    const toggleSubDetail = (subId) => {
+
+        console.log("subId", subId)
+        setSelectedSupDet(prevSelected => {
+            const updatedSelected = prevSelected.includes(subId)
+                ? prevSelected.filter(id => id !== subId)
+                : [...prevSelected, subId];
+
+            setResDetail(prevState => {
+                const updatedResDetail = [...prevState];
+                updatedResDetail[0].subDetailId = updatedSelected;
+                return updatedResDetail;
+            });
+            return updatedSelected;
+        });
+    };
     const renderServiceDetail = () => {
-        const detail = serviceData[0].additionalServices
-        return detail.map(element => {
-            return (<View>
+        const detail = serviceData[0].additionalServices;
+
+        return detail.map(element => (
+            <View key={element.id}>
                 <View style={styles.detailItem}>
                     <Text style={styles.detailText}>{element.detailTitle}</Text>
                 </View>
                 {element.subDetailArray.map(item => {
-                    // console.log("item.id", item.id);
-                    const found = selectedSupDet?.find((det) => det === item.id)
+
+                    const isSelected = selectedSupDet.includes(item.subDetail_Id);
                     return (
-                        <View style={styles.subDetail}>
+                        <View key={item.subDetail_Id} style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
-                            <TouchableOpacity style={styles.subPressable} onPress={() => whenSupDetailPress(item.id)}>
-                                {found && <Entypo
+                            <TouchableOpacity
+                                style={styles.subPressable}
+                                onPress={() => toggleSubDetail(item.subDetail_Id)}
+                            >
+                                {isSelected && <Entypo
                                     style={{ alignSelf: 'center', position: 'absolute' }}
                                     name={"check"}
                                     color={colors.puprble}
-                                    size={25} />}
+                                    size={25}
+                                />}
                             </TouchableOpacity>
                         </View>
-                    )
-                })
-                }
+                    );
+                })}
             </View>
-            )
-        })
-    }
+        ));
+    };
     const renderCampaighn = () => {
         const CampData = campInfo || [];
 
-        const campArray = CampData?.map((camp, index) => {
-            var found = offer?.find((det) => det === camp?.CampId)
-
-            return <TouchableOpacity key={index} onPress={() => onCampPress(camp?.CampId || index)} style={!found ? styles.campaignView : styles.campaignViewSelected}>
-
-                {renderCampaighnHeader(camp, index)}
-                {renderCampaighnSubHeader(camp)}
-
-            </TouchableOpacity >
+        return CampData.map((camp, index) => {
+            const isSelected = offer.includes(camp.CampId);
+            return (
+                <TouchableOpacity
+                    key={index}
+                    onPress={() => toggleOffer(camp.CampId)}
+                    style={isSelected ? styles.campaignViewSelected : styles.campaignView}
+                >
+                    {renderCampaighnHeader(camp, index)}
+                    {renderCampaighnSubHeader(camp)}
+                </TouchableOpacity>
+            );
         });
-        return campArray;
+    };
+    const toggleOffer = (offerId) => {
+        setOffer(prevOffer => {
+            const updatedOffer = prevOffer.includes(offerId)
+                ? prevOffer.filter(id => id !== offerId)
+                : [...prevOffer, offerId];
 
-    }
-    const onCampPress = (campId) => {
-
-    }
+            setResDetail(prevState => {
+                const updatedResDetail = [...prevState];
+                updatedResDetail[0].offerId = updatedOffer;
+                return updatedResDetail;
+            });
+            return updatedOffer;
+        });
+    };
     const renderCampaighnHeader = (camp, index) => {
 
         return (
@@ -348,7 +397,7 @@ const ProviderSetClientForBooking = (props) => {
     const getSerSubDet = (id) => {
         const data = getServiceDetail(id)
         const subDetInfo = data[0].subDetailArray.filter(item => {
-            return item.id === id
+            return item.subDetail_Id === id
         })
         return subDetInfo
     }
@@ -424,11 +473,34 @@ const ProviderSetClientForBooking = (props) => {
                     style={styles.input}
                     keyboardType='numeric'
                     placeholder='عدد الزوار'
-                    value={{}}
-                    onChangeText={{}} />
+                    value={numOfInviters}
+                    onChangeText={onInvitersInputChange}
+                />
             </View>
         )
     }
+
+    const onInvitersInputChange = (val) => {
+        // Ensure the value is not empty and is a valid number
+        if (val === '') {
+            setNumOfInviters('');
+            setResDetail(prevState => {
+                const updatedResDetail = [...prevState];
+                updatedResDetail[0] = { ...updatedResDetail[0], numOfInviters: null }; // Clear the value in resDetail
+                return updatedResDetail;
+            });
+        } else {
+            const intValue = parseInt(val);
+            if (!isNaN(intValue)) {
+                setNumOfInviters(intValue.toString()); // Set the state as a string for TextInput compatibility
+                setResDetail(prevState => {
+                    const updatedResDetail = [...prevState];
+                    updatedResDetail[0] = { ...updatedResDetail[0], numOfInviters: intValue }; // Update numOfInviters in resDetail
+                    return updatedResDetail;
+                });
+            }
+        }
+    };
 
     const renderBiookingFields = () => {
         return (<View>
@@ -446,6 +518,14 @@ const ProviderSetClientForBooking = (props) => {
             </View>
             {renderHallInfoForBooking()}
             {campInfo && renderReservationDet()}
+            <Recipt
+                totalPrice={totalPrice}            // Total price for the booking
+                requestedDate={requestedDate}      // Date of the booking
+                resDetail={resDetail}              // Reservation details (additional services)
+                showDetailRecipt={showDetailRecipt} // Control for showing detailed receipt
+                setShowDetailRecipt={setShowDetailRecipt} // Toggle function for detail view
+                data={serviceData?.[0]}                 // Additional service data
+            />
         </View>)
     }
     return (
@@ -469,7 +549,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10
     },
-    dateView:{
+    dateView: {
         flexDirection: 'row',
         alignSelf: 'center',
         width: '100%',
@@ -656,11 +736,11 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         marginLeft: 20
     },
-    contView: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'flex-end', 
-        marginRight: 30 
+    contView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginRight: 30
     }
 
 })
