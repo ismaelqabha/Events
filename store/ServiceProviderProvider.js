@@ -60,7 +60,6 @@ const ProviderProvider = props => {
   const [editprice, setEditprice] = useState(false);
   const [editDescrItem, setEditDescrItem] = useState(false);
   const [editNumofRequest, setEditNumofRequest] = useState(false);
-  const [editServiceDetail, setEditServiceDetail] = useState(false);
   const [addSocilMedia, setAddSocilMedia] = useState(false);
   const [addNewDesc, setAddNewDesc] = useState(false);
   const [addNewDetail, setAddNewDetail] = useState(false);
@@ -170,8 +169,7 @@ const ProviderProvider = props => {
         setEditDescrItem,
         editNumofRequest,
         setEditNumofRequest,
-        editServiceDetail,
-        setEditServiceDetail,
+        
         addSocilMedia,
         setAddSocilMedia,
         addNewDesc,

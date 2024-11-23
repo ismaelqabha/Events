@@ -41,13 +41,10 @@ const ProviderHome = props => {
     addNewDesc, setAddNewDesc,
     editprice, setEditprice,
     editNumofRequest, setEditNumofRequest,
-    editServiceDetail, setEditServiceDetail,
     addSocilMedia, setAddSocilMedia,
     addNewDetail, setAddNewDetail, showSubDetailModal, setShowSubDetailModal,
     showDetailModal, setShowDetailModal, detailId, setDetailId } = useContext(ServiceProviderContext);
 
-
-  const [servicePhotos, setservicePhotos] = useState();
   const [showMenuModal, setShowMenuModal] = useState(false);
   const language = strings.arabic.ProviderScreens.ProviderCreateListing;
 
@@ -61,18 +58,11 @@ const ProviderHome = props => {
   const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
   const [serviceSocialMedia, setServiceSocialMedia] = useState(serviceData[0].socialMedia)
   const [providerDetail, setProviderDetail] = useState(serviceData[0].additionalServices);
-  // console.log(serviceData[0].additionalServices);
-  // console.log("mmmm", providerDetail);
-  const [socialItem, setSocialItem] = useState();
-  const [socialIndex, setSocialIndex] = useState();
-  const [descriptionItem, setDescriptionItem] = useState();
-  const [isOptional, setIsOptioal] = useState(false);
 
   const [editProviderServiceItem, setEditProviderServiceItem] = useState(false);
   const [deleteProviderServiceItem, setDeleteProviderServiceItem] = useState(false);
   const [showSubDetail, setShowSubDetail] = useState(false);
 
-  // const [detailId, setDetailId] = useState();
   const [detailItem, setDetailItem] = useState();
   const [DetailType, setDetailType] = useState();
   const [serviceItemInclude, setServiceItemInclude] = useState();
@@ -141,6 +131,7 @@ const ProviderHome = props => {
     setAddNewDetail(true)
     setEditProviderServiceItem(false)
     setShowDetailModal(true)
+    setShowSubDetail(false)
   }
   const assin = (detail_Id, title, type, includedType, subDetail) => {
     setDetailId(detail_Id)
@@ -155,15 +146,34 @@ const ProviderHome = props => {
     setEditProviderServiceItem(true)
     setAddNewDetail(false)
     setShowMenuModal(false)
+    setShowSubDetail(false)
   }
   const deleteSerDetailItem = () => {
     setDeleteProviderServiceItem(true)
     setShowMenuModal(false)
+    Alert.alert(
+      "تأكيد",
+      "هل انت مـتأكد من عملية الحذف ؟ ",
+      [
+        {
+          text: "اٍلغاء",
+          // onPress: () => setShowMenuModal(false),
+          style: "cancel",
+        },
+        {
+          text: "تأكيد",
+          onPress: () => deleteDetItem(),
+        },
+      ]
+    );
   }
   const supDetailShowPress = () => {
+    setShowDetailModal(false)
     setShowSubDetailModal(true)
     setShowMenuModal(false)
     setShowSubDetail(true)
+    setAddNewDetail(false)
+    setEditProviderServiceItem(false)
   }
 
   const renderSupDetailShow = () => {
@@ -172,6 +182,9 @@ const ProviderHome = props => {
         serviceID={isFirst}
         showSubDetail={showSubDetail}
         sub_DetailArr={sub_DetailArr}
+        detailItem={detailItem}
+        DetailType={DetailType}
+        serviceItemInclude={serviceItemInclude}
       />
     )
   }
@@ -180,10 +193,6 @@ const ProviderHome = props => {
     const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
 
     const item = providerDetail.filter(elme => elme.detail_Id !== detailId)
-
-    console.log("PPPP", item);
-    // setProviderDetail(item)
-
     const newData = {
       service_id: isFirst,
       additionalServices: item,
@@ -209,7 +218,7 @@ const ProviderHome = props => {
 
   const renderEditServiceDetailInfo = () => {
     if (deleteProviderServiceItem) {
-      deleteDetItem()
+     
     }
     if (editProviderServiceItem) {
 
@@ -275,16 +284,16 @@ const ProviderHome = props => {
           setSelectedImage(selectedImage);
 
           Alert.alert(
-            "Confirm Changes",
-            "Would you like to confirm or discard the new image?",
+            "تأكيد",
+            "هل ترغب في تغيير صورة البروفايل ؟ ",
             [
               {
-                text: "Discard",
+                text: "اٍلغاء",
                 onPress: () => discardChanges(),
                 style: "cancel",
               },
               {
-                text: "Confirm",
+                text: "تأكيد",
                 onPress: () => confirmChanges(response),
               },
             ]
@@ -811,30 +820,30 @@ const ProviderHome = props => {
         onRequestClose={() => setShowDescModal(index, false)}>
         <View style={styles.centeredDescView}>
           <View style={styles.detailModal}>
-            <View>
-              <Pressable onPress={() => closeModalPress(index, setShowDescModal)} style={styles.modalHeader}>
-                <Feather
-                  name={'more-horizontal'}
-                  color={colors.puprble}
-                  size={25} />
-              </Pressable>
-            </View>
-            <View style={{ justifyContent: 'flex-end', height: '100%' }}>
+
+            <TouchableOpacity onPress={() => closeModalPress(index, setShowDescModal)} style={styles.modalHeader}>
+              <Feather
+                name={'more-horizontal'}
+                color={colors.puprble}
+                size={25} />
+            </TouchableOpacity>
+
+            <View style={{ justifyContent: 'center', height: '50%' }}>
               <View style={styles.modalMenu}>
-                <Pressable style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal, index)}>
+                <TouchableOpacity style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal, index)}>
                   <Feather
                     name={'edit'}
                     color={colors.gray}
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
-                </Pressable>
-                <Pressable style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal, index)}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal, index)}>
                   <AntDesign
                     name={'delete'}
                     color={colors.gray}
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>حذف</Text>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -844,7 +853,6 @@ const ProviderHome = props => {
   }
 
   // Service detail and sub detail
-
 
   const selectMandatoryDetail = () => {
     const data = filterService();
@@ -1186,32 +1194,32 @@ const ProviderHome = props => {
       >
         <View style={styles.centeredView}>
           <View style={styles.detailModal}>
-            <View>
-              <Pressable onPress={() => closeSMmodalPress(setShowModal, index)} style={styles.modalHeader}>
-                <Feather
-                  style={styles.menuIcon}
-                  name={'more-horizontal'}
-                  color={colors.puprble}
-                  size={25} />
-              </Pressable>
-            </View>
-            <View style={{ justifyContent: 'flex-end', height: '100%' }}>
+
+            <TouchableOpacity onPress={() => closeSMmodalPress(setShowModal, index)} style={styles.modalHeader}>
+              <Feather
+                style={styles.menuIcon}
+                name={'more-horizontal'}
+                color={colors.puprble}
+                size={25} />
+            </TouchableOpacity>
+
+            <View style={{ justifyContent: 'center', height: '50%' }}>
               <View style={styles.modalMenu}>
-                <Pressable style={styles.modalItem}
+                <TouchableOpacity style={styles.modalItem}
                   onPress={() => socialMediaitemEditPress(item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal, index)}>
                   <Feather
                     name={'edit'}
                     color={colors.gray}
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>تعديل</Text>
-                </Pressable>
-                <Pressable style={styles.modalItem} onPress={() => deleteSocialMediaItem(item, setShowModal, index)}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalItem} onPress={() => deleteSocialMediaItem(item, setShowModal, index)}>
                   <AntDesign
                     name={'delete'}
                     color={colors.gray}
                     size={25} />
                   <Text style={styles.modalHeaderTxt}>حذف</Text>
-                </Pressable>
+                </TouchableOpacity>
               </View>
             </View>
           </View>

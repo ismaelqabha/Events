@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput, ToastAndroid, Modal, Alert } from 'react-native'
+import { StyleSheet, Text, View, Image, Pressable, ScrollView, TextInput, ToastAndroid, Modal, Alert, TouchableOpacity } from 'react-native'
 import React, { useContext, useState, useEffect } from 'react'
 import SearchContext from '../../../store/SearchContext';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
@@ -9,10 +9,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../assets/AppColors';
-import { uodateCampaignsById } from '../../resources/API';
+import { uodateCampaignsById, updateCampPhoto } from '../../resources/API';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { showMessage } from '../../resources/Functions';
 
 const ProviderOfferDesc = (props) => {
     const { data } = props.route?.params || {}
@@ -51,7 +52,7 @@ const ProviderOfferDesc = (props) => {
 
 
     const selectedOfferIndex = campInfo?.findIndex(item => item.CampId === data.CampId)
-    
+
     const today = moment(date, "YYYY-MM-DD")
     let day = today.format('D')
     let month = today.format('M')
@@ -68,7 +69,7 @@ const ProviderOfferDesc = (props) => {
         const data = filterServiceInfo()
         const serviceData = data[0].additionalServices.filter(element => {
             return element.subDetailArray.find(itemId => {
-                return itemId.id === id
+                return itemId.subDetail_Id === id
             })
         })
         return serviceData
@@ -77,7 +78,7 @@ const ProviderOfferDesc = (props) => {
     const getSerSubDet = (id) => {
         const data = getServiceDetail(id)
         const subDetInfo = data[0].subDetailArray.filter(item => {
-            return item.id === id
+            return item.subDetail_Id === id
         })
         return subDetInfo
     }
@@ -152,7 +153,6 @@ const ProviderOfferDesc = (props) => {
         setShowContentModal(true)
     }
     const editOthContPress = (item, setShowOthContModal, setEditOtherContItem) => {
-
         setOtherContentItem(item)
         setEditOtherContItem(true)
         setShowOthContModal(false)
@@ -422,20 +422,123 @@ const ProviderOfferDesc = (props) => {
             console.log('error source isnt legable, source is :', source);
         }
     };
+    // const renderOfferImage = () => {
+    //     return (
+    //         <View>
+    //             <View style={styles.imagView}>
+    //                 <View style={styles.offerImg}>
+    //                     <Image style={styles.img} source={editImg ? { uri: offerImg } : { uri: data.campImag }} />
+    //                 </View>
+    //                 <Pressable style={styles.editImg} onPress={onAddImgPress}>
+    //                     <Entypo name={'camera'} color={colors.puprble} size={25} />
+    //                 </Pressable>
+    //             </View>
+    //         </View>
+    //     );
+    // }
+
+
     const renderOfferImage = () => {
+        const [offerImage, setOfferImage] = useState(data.campImag);
+        const [selectedImage, setSelectedImage] = useState(null);
+
+        const openGallery = () => {
+            const options = {
+                mediaType: 'photo',
+                quality: 1,
+            };
+
+            launchImageLibrary(options, (response) => {
+                if (response.didCancel) {
+                    console.log('User cancelled image picker');
+                } else if (response.errorMessage) {
+                    console.log('ImagePicker Error: ', response.errorMessage);
+                } else if (response.assets && response.assets.length > 0) {
+                    const selectedImage = response.assets[0].uri;
+                    setSelectedImage(selectedImage);
+
+                    Alert.alert(
+                        "تأكيد",
+                        "هل ترغب في تغيير صورة الحملة الاعلانية ؟ ",
+                        [
+                            {
+                                text: "اٍلغاء",
+                                onPress: () => discardChanges(),
+                                style: "cancel",
+                            },
+                            {
+                                text: "تأكيد",
+                                onPress: () => confirmChanges(response),
+                            },
+                        ]
+                    );
+                }
+            });
+        };
+
+        const confirmChanges = (response) => {
+            const imageUri = response.assets[0].uri;
+            setOfferImage(imageUri);
+            setSelectedImage(null);
+
+            const formData = new FormData();
+            formData.append('CampId', data.CampId);
+            formData.append('offerImage', {
+                uri: response.assets[0].uri,
+                type: response.assets[0].type,
+                name: response.assets[0].fileName,
+            });
+
+            updateCampPhoto(formData)
+                .then((resJson) => {
+                    console.log(resJson.message);
+                    if (resJson.message === 'Image updated successfully') {
+                        const updatedCamp = {
+                            ...data[0],
+                            campImag: resJson.images,
+                        };
+
+                        setCampInfo((prevState) => {
+                            const campIndex = prevState.findIndex(
+                                (camp) => camp.CampId === updatedCamp.CampId
+                            );
+
+                            if (serviceIndex > -1) {
+                                const updatedCampiangns = [...prevState];
+                                updatedCampiangns[campIndex] = updatedCampiangns;
+                                return updatedCampiangns;
+                            }
+
+                            return prevState;
+                        });
+                        showMessage('Logo updated successfully');
+                    } else {
+                        showMessage('Failed to update logo');
+                    }
+                })
+                .catch((error) => {
+                    console.log('Error uploading logo:', error);
+                    showMessage('Error updating logo');
+                });
+        };
+
+        const discardChanges = () => {
+            setSelectedImage(null);
+        };
+
         return (
             <View>
                 <View style={styles.imagView}>
                     <View style={styles.offerImg}>
-                        <Image style={styles.img} source={editImg ? { uri: offerImg } : { uri: data.campImag }} />
+                        <Image style={styles.img} source={{ uri: selectedImage || offerImage }} />
                     </View>
-                    <Pressable style={styles.editImg} onPress={onAddImgPress}>
+                    <Pressable style={styles.editImg} onPress={openGallery}>
                         <Entypo name={'camera'} color={colors.puprble} size={25} />
                     </Pressable>
                 </View>
             </View>
         );
-    }
+    };
 
     //// Expire Date
     const editEpireDate = () => {
@@ -566,17 +669,34 @@ const ProviderOfferDesc = (props) => {
 
 
     // Content from sub Detail
+    const renderAddSDfromContentFirstTime = () => {
+        return (
+            <View>
+                <TouchableOpacity style={styles.newContitem} onPress={contentItemEditPress}>
+                    <Text style={styles.Infotxt}>اضافة جديد</Text>
+                    <View style={styles.IconView}>
+                        <Entypo
+                            style={styles.icon}
+                            name={'plus'}
+                            color={colors.puprble}
+                            size={25}
+                        />
+                    </View>
+                </TouchableOpacity>
+            </View>
+        )
+    }
     const renderOfferContent = () => {
         return (
             <View>
-                <Pressable style={styles.editView} onPress={contentItemEditPress}>
+                <TouchableOpacity style={styles.editView} onPress={contentItemEditPress}>
                     <Feather
                         name={'edit'}
                         color={colors.BGScereen}
                         size={25} />
-                </Pressable>
+                </TouchableOpacity>
                 {OfferContentItems()}
-                {contentModal()}
+
             </View>
         )
     }
@@ -627,18 +747,18 @@ const ProviderOfferDesc = (props) => {
                         <Text style={styles.headerTxt}>{item.detailTitle}</Text>
                     </View>
                     {item.subDetailArray.map(sub => {
-                        const [selectedSubDetail, setselectedSubDetail] = useState(checkContentPressed(sub.id));
+                        const [selectedSubDetail, setselectedSubDetail] = useState(checkContentPressed(sub.subDetail_Id));
                         return (
                             <View style={styles.subDetView}>
                                 <Text style={styles.subTxt}>{sub.detailSubtitle}</Text>
-                                <Pressable style={styles.checkView} onPress={() => whenSubDetailPress(sub.id, setselectedSubDetail, selectedSubDetail)}>
+                                <TouchableOpacity style={styles.checkView} onPress={() => whenSubDetailPress(sub.subDetail_Id, setselectedSubDetail, selectedSubDetail)}>
                                     {selectedSubDetail &&
                                         <Entypo
                                             style={{ alignSelf: 'center' }}
                                             name={"check"}
                                             color={colors.puprble}
                                             size={25} />}
-                                </Pressable>
+                                </TouchableOpacity>
                             </View>)
                     })}
 
@@ -672,16 +792,47 @@ const ProviderOfferDesc = (props) => {
     }
 
     /// Other content offer
+    const confirmDelete = (item) => {
+        Alert.alert(
+            "تأكيد",
+            "هل ترغب في حذف المحتوى ؟ ",
+            [
+                {
+                    text: "اٍلغاء",
+                    // onPress: () => discardChanges(),
+                    style: "cancel",
+                },
+                {
+                    text: "تأكيد",
+                    onPress: () => deleteOtherContItem(item),
+                },
+            ]
+        );
+    }
+
+    const deleteOtherContItem = (contentItem) => {
+        const item = otherContent.filter(elme => elme !== contentItem)
+        console.log(item);
+        setOtherContent(item);
+
+        const newData = {
+            CampId: data.CampId,
+            campContents: item
+        }
+        updateFunction(newData)
+        setShowOthContModal(false)
+    }
+
     const editOtherContentItem = (item, setEditOtherContItem) => {
         return (
             <View style={styles.itemView}>
                 <View style={styles.editTitleView}>
-                    <Pressable onPress={() => updateOtherContentItem(item, setEditOtherContItem)} style={styles.itemFooter}>
+                    <TouchableOpacity onPress={() => updateOtherContentItem(item, setEditOtherContItem)} style={styles.itemFooter}>
                         <Feather
                             name={'save'}
                             color={colors.BGScereen}
                             size={20} />
-                    </Pressable>
+                    </TouchableOpacity>
                     <TextInput
                         style={styles.input}
                         keyboardType='default'
@@ -700,7 +851,7 @@ const ProviderOfferDesc = (props) => {
             return (<View>
                 <Text style={styles.titletxt}>محتويات العرض الاضافية</Text>
                 <View style={styles.content}>
-                    {addNewContent ? addContentForm() : <Pressable style={styles.newContitem} onPress={addNewContentPress}
+                    {addNewContent ? addContentForm() : <TouchableOpacity style={styles.newContitem} onPress={addNewContentPress}
                     >
                         <Text style={styles.Infotxt}>اضافة جديد</Text>
                         <View style={styles.IconView}>
@@ -711,7 +862,7 @@ const ProviderOfferDesc = (props) => {
                                 size={25}
                             />
                         </View>
-                    </Pressable>}
+                    </TouchableOpacity>}
                     {renderOfferOtherContent()}
                 </View>
             </View>
@@ -722,12 +873,12 @@ const ProviderOfferDesc = (props) => {
         return (
             <View style={styles.itemView}>
                 <View style={styles.editTitleView}>
-                    <Pressable  style={styles.itemFooter} onPress={addOtherContentItem}>
+                    <TouchableOpacity style={styles.itemFooter} onPress={addOtherContentItem}>
                         <Feather
                             name={'save'}
                             color={colors.BGScereen}
                             size={20} />
-                    </Pressable>
+                    </TouchableOpacity>
                     <TextInput
                         style={styles.input}
                         keyboardType='default'
@@ -745,13 +896,13 @@ const ProviderOfferDesc = (props) => {
                 {editOtherContItem ? editOtherContentItem(item, setEditOtherContItem) :
                     <View style={styles.itemOffer}>
                         <View style={styles.item}>
-                            <Pressable onPress={() => setShowOthContModal(true)}>
+                            <TouchableOpacity onPress={() => setShowOthContModal(true)}>
                                 <Feather
                                     style={styles.menuIcon}
                                     name={'more-vertical'}
                                     color={colors.BGScereen}
                                     size={25} />
-                            </Pressable>
+                            </TouchableOpacity>
                             <View>
                                 <Text style={styles.Infotxt}>{item}</Text>
                             </View>
@@ -769,7 +920,6 @@ const ProviderOfferDesc = (props) => {
         setShowOthContModal(false)
     }
     const renderOtherContentModal = (item, setEditOtherContItem, showOthContModal, setShowOthContModal) => {
-
         return (
             <Modal
                 transparent
@@ -779,31 +929,31 @@ const ProviderOfferDesc = (props) => {
                 <View style={styles.centeredView}>
                     <View style={styles.detailModal}>
                         <View>
-                            <Pressable onPress={() => closeModal(setShowOthContModal)} style={styles.modalHeader}>
+                            <TouchableOpacity onPress={() => closeModal(setShowOthContModal)} style={styles.modalHeader}>
                                 <Feather
                                     style={styles.menuIcon}
                                     name={'more-horizontal'}
                                     color={colors.puprble}
                                     size={25} />
-                            </Pressable>
+                            </TouchableOpacity>
                         </View>
-                        <View style={{ justifyContent: 'flex-end', height: '100%' }}>
+                        <View style={{ justifyContent: 'flex-end', height: '50%' }}>
                             <View style={styles.modalMenu}>
-                                <Pressable style={styles.modalItem} onPress={() => editOthContPress(item, setShowOthContModal, setEditOtherContItem)}>
+                                <TouchableOpacity style={styles.modalItem} onPress={() => editOthContPress(item, setShowOthContModal, setEditOtherContItem)}>
                                     <Feather
                                         name={'edit'}
                                         color={colors.gray}
                                         size={25} />
                                     <Text style={styles.modalHeaderTxt}>تعديل</Text>
-                                </Pressable>
-                                <Pressable style={styles.modalItem} //onPress={() => deleteDescItemPress(item, setShowDescModal)}
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.modalItem} onPress={() => confirmDelete(item)}
                                 >
                                     <AntDesign
                                         name={'delete'}
                                         color={colors.gray}
                                         size={25} />
                                     <Text style={styles.modalHeaderTxt}>حذف</Text>
-                                </Pressable>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
@@ -936,7 +1086,7 @@ const ProviderOfferDesc = (props) => {
                 </View>
                 <Text style={styles.titletxt}>محتويات العرض من خدماتي</Text>
                 <View style={styles.content}>
-                    {renderOfferContent()}
+                    {subDetContent.length > 0 ? renderOfferContent() : renderAddSDfromContentFirstTime()}
                 </View>
                 {isOtherContent()}
                 <Text style={styles.titletxt}>أماكن العمل</Text>
@@ -944,7 +1094,7 @@ const ProviderOfferDesc = (props) => {
                     {renderOfferRegion()}
                 </View>
                 <View style={{ width: '100%', height: 50 }}></View>
-
+                {contentModal()}
             </ScrollView>
         </View>
     )
@@ -1124,8 +1274,8 @@ const styles = StyleSheet.create({
         top: 0,
     },
     detailModal: {
-        width: '90%',
-        height: '90%',
+        width: '95%',
+        height: '15%',
         backgroundColor: '#ffffff',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
@@ -1231,13 +1381,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginTop: 10
     },
-    // detailModal: {
-    //     width: '100%',
-    //     height: '15%',
-    //     backgroundColor: '#ffffff',
-    //     borderTopLeftRadius: 20,
-    //     borderTopRightRadius: 20
-    // },
+
     centeredView: {
         flex: 1,
         justifyContent: 'flex-end',
@@ -1245,19 +1389,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#00000099',
     },
     modalHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
         width: '100%',
         paddingHorizontal: 20,
         alignItems: 'center',
-        marginVertical: 10
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        // height: 50,
-        // borderWidth: 1
-        // marginBottom: 30,
-        // position: 'absolute',
-        // top: 0
+        marginVertical: 10,
     },
     modalMenu: {
         // borderWidth: 1,

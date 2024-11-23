@@ -222,10 +222,16 @@ export const uodateCampaignsById = async (body) => {
   const url = 'Campaigns/updateCamp'
   return await AppFetch(url, 'PATCH', body)
 }
+export const updateCampPhoto = async (body) => {
+  const url = 'Campaigns/updateCampPhoto';
+  const headers = {
+    'Content-Type': 'multipart/form-data',
+  }
+  return await AppFetch(url, 'PATCH', body, headers);
+};
+
 export const createNewOffer = async (AddNewOffer, offerImg) => {
   const url = 'Campaigns/createCamp'
-  //console.log("AddNewOffer", AddNewOffer);
-  //console.log("offerImg", offerImg);
   try {
     const formData = new FormData();
     formData.append("OfferPhoto", {
@@ -238,7 +244,7 @@ export const createNewOffer = async (AddNewOffer, offerImg) => {
     const headers = {
       'Content-Type': 'multipart/form-data',
     }
-    console.log("form data ", formData);
+   // console.log("form data ", formData);
     return await AppFetch(url, 'POST', formData, headers)
   } catch (error) {
 

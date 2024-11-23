@@ -6,6 +6,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import Feather from 'react-native-vector-icons/Feather';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -20,9 +21,10 @@ const EditServiceDetails = (props) => {
     const { serviceID, detailItem, DetailType, sub_DetailArr, serviceItemInclude, editProviderServiceItem, showSubDetail } = props
 
     const { serviceInfoAccorUser, setServiceInfoAccorUser,
-        editServiceDetail, setEditServiceDetail,
         addNewDetail, setAddNewDetail, setShowSubDetailModal,
         setShowDetailModal, detailId } = useContext(ServiceProviderContext);
+
+
 
 
     const [serviceDetail, setServiceDetail] = useState(null);
@@ -39,12 +41,14 @@ const EditServiceDetails = (props) => {
     const [noPerTableUpdated, setNoPerTableUpdated] = useState(null);
     const [serSubDetail, setSerSubDetail] = useState(sub_DetailArr);
 
+    const [subID, setSubID] = useState();
     const [newSDTitle, setNewSDTitle] = useState(null);
     const [newSDPrice, setNewSDPrice] = useState(null);
     const [subDetailImg, setSubDetailImg] = useState(null);
 
     const [updatedSDTitle, setUpdatedSDTitle] = useState(null);
     const [updatedSDPrice, setUpdatedSDPrice] = useState(null);
+    const [updatedSDImg, setUpdatedSDImg] = useState(null);
 
 
     const [addNewSubDetItem, setaddNewSubDetItem] = useState(false);
@@ -54,10 +58,12 @@ const EditServiceDetails = (props) => {
     const [showSubDetModal, setShowSubDetModal] = useState(false);
     const [SDEditAllowed, setSDEditAllowed] = useState(true);
     const [SDEditPress, setSDEditPress] = useState(false);
+    const [collabesAddEditPart, setCollabesAddEditPart] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const [isOther, setIsOther] = useState(false);
-
+    const [isNewSD, setIsNewSD] = useState(true);
+   
     const getServiceInfo = () => {
         return serviceInfoAccorUser?.filter(item => {
             return item.service_id === serviceID;
@@ -182,16 +188,33 @@ const EditServiceDetails = (props) => {
             console.log('User tapped custom Button ', response.customButton);
         } else {
             let imageUri = response.uri || response.assets?.[0]?.uri;
-            SaveImg(imageUri);
+            console.log(">>", isNewSD);
+            if (isNewSD) {
+                addNewImg(imageUri);
+            } else {
+                editImg(imageUri)
+            }
         }
     };
-    const SaveImg = source => {
+    const addNewImg = source => {
         if (source) {
             const newImage = {
                 imgId: uuidv4(),
                 uri: source,
             };
             setSubDetailImg(newImage);
+
+        } else {
+            console.log('Error: Source is not valid.');
+        }
+    };
+    const editImg = source => {
+        if (source) {
+            const newImage = {
+                imgId: uuidv4(),
+                uri: source,
+            };
+            setUpdatedSDImg(newImage)
         } else {
             console.log('Error: Source is not valid.');
         }
@@ -201,11 +224,9 @@ const EditServiceDetails = (props) => {
         addNewSDRecord()
         handleSave(() => setaddNewSubDetItem(false));
     }
-
     const updateSubDet = (setEditSubDetItem) => {
         handleSave(() => setEditSubDetItem(false));
     }
-
     const handleSave = async (callback) => {
         setLoading(true);
         try {
@@ -216,6 +237,8 @@ const EditServiceDetails = (props) => {
             console.error('Error while saving:', error);
         }
     };
+
+
     const checkSaveSDRecord = () => {
         if (newSDTitle !== null && newSDPrice !== null && subDetailImg) {
             addNewSDRecord()
@@ -264,12 +287,12 @@ const EditServiceDetails = (props) => {
         setSerSubDetail([...SubDetData])
         setNewSDTitle()
         setNewSDPrice()
-        setSubDetailImg(null)
     }
     const addNewSDRecord = () => {
+        // console.log("newSDTitle", newSDTitle);
         const findRecord = serSubDetail.find(item => item.detailSubtitle === newSDTitle)
-
-        if (!(!!findRecord)) {
+        // console.log(!!findRecord);
+         if (!(!!findRecord)) {
             const newSubRecord = {
                 subDetail_Id: uuidv4(),
                 detailSubtitle: newSDTitle,
@@ -279,7 +302,7 @@ const EditServiceDetails = (props) => {
             const SubDetData = serSubDetail
             SubDetData.push(newSubRecord)
             setSerSubDetail([...SubDetData])
-        }
+         }
 
         const itemIndex = providerDetail.findIndex(elme => elme.detail_Id === detailId)
         const itemDetail = providerDetail
@@ -287,16 +310,274 @@ const EditServiceDetails = (props) => {
         if (itemIndex > -1) {
             itemDetail[itemIndex].subDetailArray = serSubDetail
         }
-        setProviderDetail(itemDetail[itemIndex]);
+        setProviderDetail([...itemDetail]);
 
         const newData = {
             service_id: serviceID,
             additionalServices: providerDetail
         }
+        setaddNewSubDetItem(false)
+        setCollabesAddEditPart(true)
         updateInfo(newData)
+        setSubDetailImg(null)
+        setSDEditAllowed(true)
     }
+
     const updateSDRecord = () => {
+        const subIndex = serSubDetail.findIndex(elme => elme.subDetail_Id === subID)
+        const itemSubDetail = serSubDetail
+
+        if (subIndex > -1) {
+            itemSubDetail[subIndex].detailSubtitle = updatedSDTitle
+            itemSubDetail[subIndex].detailSubtitleCost = updatedSDPrice
+
+            if (isNewSD) {
+                itemSubDetail[subIndex].subDetailPhoto = subDetailImg
+            } else {
+                itemSubDetail[subIndex].subDetailPhoto = updatedSDImg
+            }
+        }
+
+        setSerSubDetail([...itemSubDetail]);
+
+        const editedSubData = {
+            detail_Id: detailId,
+            detailTitle: serviceDetailUpdated,
+            necessity: detailTypeUpdated,
+            additionType: priceIncludeUpdated,
+            numberPerTable: noPerTableUpdated,
+            subDetailArray: serSubDetail
+        }
+
+        const itemIndex = providerDetail.findIndex(elme => elme.detail_Id === detailId)
+        const itemDetail = providerDetail
+
+        if (itemIndex > -1) {
+            itemDetail[itemIndex] = editedSubData
+        }
+        setProviderDetail([...itemDetail]);
+        const newData = {
+            service_id: serviceID,
+            additionalServices: providerDetail
+        }
+        updateInfo(newData)
+        setCollabesAddEditPart(false)
         setSDEditPress(false)
+    }
+    const deleteSDConfirmation = () => {
+        deleteSDRecord()
+    }
+    const deleteSDRecord = () => {
+        const item = serSubDetail.filter(elme => elme.subDetail_Id !== subID)
+
+        const editedSubData = {
+            detail_Id: detailId,
+            detailTitle: serviceDetailUpdated,
+            necessity: detailTypeUpdated,
+            additionType: priceIncludeUpdated,
+            numberPerTable: noPerTableUpdated,
+            subDetailArray: item
+        }
+        const itemIndex = providerDetail.findIndex(elme => elme.detail_Id === detailId)
+        const itemDetail = providerDetail
+
+        if (itemIndex > -1) {
+            itemDetail[itemIndex] = editedSubData
+        }
+        setSerSubDetail([...item])
+        setProviderDetail([...itemDetail]);
+        const newData = {
+            service_id: serviceID,
+            additionalServices: providerDetail
+        }
+
+        updateInfo(newData)
+        setShowSubDetModal(false)
+    }
+
+
+
+    const renderAddSubDet = () => {
+        return (
+            <View>
+                {addNewSubDetItem ? (
+                    <View style={styles.addSubDetView}>
+                        <Pressable style={styles.addNImg} onPress={onAddImgPress}>
+                            {subDetailImg ?
+                                <Image source={subDetailImg} style={styles.addImgView} />
+                                :
+                                <MaterialIcons style={{ alignSelf: 'center' }} name={"add-photo-alternate"} color={colors.silver} size={100} />
+                            }
+                        </Pressable>
+                        <View style={styles.infoDetView}>
+                            <TextInput
+                                style={styles.titleInput}
+                                placeholder={'ادخل تفاصيل الخدمة'}
+                                keyboardType="default"
+                                maxLength={60}
+                                onChangeText={setNewSDTitle} />
+
+                            <View style={styles.addViewR3}>
+
+                                {loading ? (
+                                    <ActivityIndicator size="large" color={colors.puprble} />
+                                ) : (
+                                    <TouchableOpacity onPress={checkSaveSDRecord} style={styles.btnStyle}>
+                                        <Text style={styles.btnAddText}>حفظ</Text>
+                                        <Feather name={'save'} color={colors.puprble} size={20} />
+                                    </TouchableOpacity>
+                                )}
+                                <TouchableOpacity style={styles.btnStyle} onPress={checkAddMoreSDRecord}>
+                                    <Text style={styles.btnAddText}>أضافة المزيد</Text>
+                                    <Entypo name={'plus'} color={colors.puprble} size={20} />
+                                </TouchableOpacity>
+
+                                <TextInput
+                                    style={styles.priceInput}
+                                    placeholder={'السعر'}
+                                    keyboardType="numeric"
+                                    onChangeText={setNewSDPrice} />
+                            </View>
+                        </View>
+                    </View>
+                ) : (
+                    <TouchableOpacity style={styles.addsubDetailView} onPress={() => {
+                        setaddNewSubDetItem(true) 
+                        setSDEditAllowed(false)
+                        setIsNewSD(true)
+                        setCollabesAddEditPart(true)
+                    }}>
+                        <Text style={styles.itemText}>اضافة جديد</Text>
+                        <View style={styles.IconView}>
+                            <Entypo name={'plus'} color={colors.puprble} size={25} />
+                        </View>
+                    </TouchableOpacity>
+                )}
+            </View>
+        )
+    }
+    const renderEditSubDet = () => {
+        return (
+            <View style={styles.addSubDetView}>
+                <View style={styles.changeImg}>
+                    <View style={styles.subImg} >
+                        {subDetailImg ?
+                            <Image source={subDetailImg} style={styles.addImgView} />
+                            :
+                            <Image source={{ uri: updatedSDImg }} style={styles.addImgView} />
+                        }
+                    </View>
+                    <TouchableOpacity style={styles.addImg} onPress={onAddImgPress}>
+                        <Ionicons name={"add-circle"} color={colors.puprble} size={35} />
+                    </TouchableOpacity>
+                </View>
+
+
+                <View style={styles.infoDetView}>
+
+                    <TextInput
+                        style={styles.titleInput}
+                        value={updatedSDTitle}
+                        keyboardType="default"
+                        maxLength={60}
+                        onChangeText={val => setUpdatedSDTitle(val)} />
+
+                    <View style={styles.addViewR3}>
+
+                        {loading ? (
+                            <ActivityIndicator size="large" color={colors.puprble} />
+                        ) : (
+                            <TouchableOpacity onPress={updateSDRecord}
+                                style={styles.btnStyle}>
+                                <Text style={styles.btnAddText}>حفظ</Text>
+                                <Feather name={'save'} color={colors.puprble} size={20} />
+                            </TouchableOpacity>
+                        )}
+
+                        <TextInput
+                            style={styles.priceInput}
+                            value={updatedSDPrice}
+                            keyboardType="numeric"
+                            onChangeText={val => setUpdatedSDPrice(val)} />
+                    </View>
+                </View>
+            </View>
+        )
+    }
+    const renderSubDetail = () => {
+        return serSubDetail?.map(sub => {
+            const [recordSelected, setRecordSelected] = useState(false)
+            
+            return (
+                <ScrollView>
+                    <View style={[recordSelected ? styles.subDetailItemViewSelected : styles.subDetailItemView]}>
+
+                        <Pressable onPress={() => subDetEditPress(setRecordSelected, sub.detailSubtitle, sub.subDetail_Id, sub.subDetailPhoto.imgId, sub.subDetailPhoto.uri, sub.detailSubtitleCost)} style={{ width: '10%' }}>
+                            {SDEditAllowed && <Feather name={'more-vertical'} color={colors.puprble} size={25} />}
+                        </Pressable>
+                        <View style={styles.subDetPart}>
+                            <View>
+                                <Text style={styles.itemText}>{sub.detailSubtitle}</Text>
+                                <Text style={styles.itemText}>{sub.detailSubtitleCost + ' ₪'}</Text>
+                            </View>
+
+                            <View style={styles.subDetImgView}>
+                                <Image style={styles.subDetailImg} source={{ uri: sub.subDetailPhoto.uri }} />
+                            </View>
+                        </View>
+                    </View>
+
+                </ScrollView>
+            )
+        })
+    }
+    const subDetModal = () => {
+        return (
+            <Modal
+                transparent
+                visible={showSubDetModal}
+                animationType="slide"
+                onRequestClose={() => setShowSubDetModal(false)}>
+                <View style={styles.subDetModal}>
+                    <View style={styles.bodyModal}>
+                        <Pressable //onPress={closeModalPress} 
+                            style={styles.modalHeader}>
+                            <Feather name={'more-horizontal'} color={colors.puprble} size={25} />
+                        </Pressable>
+                        <View style={{ justifyContent: 'flex-end', height: '100%' }}>
+                            <View style={styles.modalMenu}>
+                                <Pressable style={styles.modalItem} onPress={() => {
+                                    setSDEditPress(true)
+                                    setShowSubDetModal(false)
+                                    setIsNewSD(false)
+                                    setCollabesAddEditPart(true)
+                                }}>
+                                    <Feather name={'edit'} color={colors.gray} size={25} />
+                                    <Text style={styles.modalHeaderTxt}>تعديل</Text>
+                                </Pressable>
+                                <Pressable style={styles.modalItem} onPress={deleteSDConfirmation}>
+                                    <AntDesign name={'delete'} color={colors.gray} size={25} />
+                                    <Text style={styles.modalHeaderTxt}>اِلغاء</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+    const subDetEditPress = (setRecordSelected, itemTitle, itemId, itemImgId, itemImg, itemCost) => {
+        setSubID(itemId)
+        setUpdatedSDPrice(itemCost)
+        setUpdatedSDTitle(itemTitle)
+        setShowSubDetModal(true)
+        setRecordSelected(true)
+        const imagArray = {
+            imgId: itemImgId,
+            uri: itemImg
+        }
+        // console.log("imagArray", imagArray);
+        setUpdatedSDImg(itemImg)
     }
 
 
@@ -317,7 +598,6 @@ const EditServiceDetails = (props) => {
     }
     const addNewServiceDetailPress = () => {
         return (
-
             <View style={styles.editDetailView}>
 
                 <View style={styles.modalHead}>
@@ -348,17 +628,6 @@ const EditServiceDetails = (props) => {
                             placeholder={'أدخل اسم الخدمة'}
                             onChangeText={setOtherDetail}
                         />}
-
-                    {/* <View style={styles.list}>
-                        <SelectList
-                            data={mandoteryOptions}
-                            setSelected={val => { setDetailType(mandoteryOptions[val].alt) }}
-                            placeholder={'أختر نوع الخدمة'}
-                            boxStyles={styles.dropdownDetailType}
-                            inputStyles={styles.droptext}
-                            dropdownTextStyles={styles.dropstyle}
-                        />
-                    </View> */}
                 </View>
 
                 <View style={styles.modalfooter}>
@@ -425,21 +694,6 @@ const EditServiceDetails = (props) => {
                 <View style={styles.modalfooter}>
                     {renderIncludedType()}
                 </View>
-
-                {/* <View style={styles.subDetailView}>
-                        {renderAddSubDet()}
-                        {renderSubDetail()}
-                    </View> */}
-
-                {/* <View style={styles.itemFooter}>
-                        {loading ? (
-                            <ActivityIndicator size="large" color={colors.puprble} />
-                        ) : (
-                            <Pressable onPress={() => handleSave(updateServiceDetail)}>
-                                <Text style={styles.itemText}>حفظ</Text>
-                            </Pressable>
-                        )}
-                    </View> */}
             </View>
         )
     }
@@ -451,182 +705,16 @@ const EditServiceDetails = (props) => {
                     {header()}
                 </View>
 
-                <View style={{ borderWidth: 1, height: '40%' }}>
+                <View style={[collabesAddEditPart ? { borderWidth: 1, height: '40%' }: { borderWidth: 1, height: '10%' }]}>
                     {SDEditPress ? renderEditSubDet() : renderAddSubDet()}
                 </View>
 
-                <View style={{ borderWidth: 1, height: '52%' }}>
+                <View style={[collabesAddEditPart ? { borderWidth: 1, height: '52%' }: { borderWidth: 1,paddingVertical: 10, height: '82%' }]}>
                     {renderSubDetail()}
                 </View>
 
             </View>
         )
-    }
-
-    const renderAddSubDet = () => {
-        return (
-            <View>
-                {addNewSubDetItem ? (
-                    <View style={styles.addSubDetView}>
-                        <Pressable style={styles.subImg} onPress={onAddImgPress}>
-                            {subDetailImg ?
-                                <Image source={subDetailImg} style={styles.addImgView} />
-                                :
-                                <MaterialIcons style={{ alignSelf: 'center' }} name={"add-photo-alternate"} color={colors.silver} size={100} />
-                            }
-                        </Pressable>
-                        <View style={styles.infoDetView}>
-                            <TextInput
-                                style={styles.titleInput}
-                                placeholder={'ادخل تفاصيل الخدمة'}
-                                keyboardType="default"
-                                maxLength={60}
-                                onChangeText={setNewSDTitle} />
-
-                            <View style={styles.addViewR3}>
-
-                                {loading ? (
-                                    <ActivityIndicator size="large" color={colors.puprble} />
-                                ) : (
-                                    <TouchableOpacity onPress={checkSaveSDRecord} style={styles.btnStyle}>
-                                        <Text style={styles.btnAddText}>حفظ</Text>
-                                        <Feather name={'save'} color={colors.puprble} size={20} />
-                                    </TouchableOpacity>
-                                )}
-                                <TouchableOpacity style={styles.btnStyle} onPress={checkAddMoreSDRecord}>
-                                    <Text style={styles.btnAddText}>أضافة المزيد</Text>
-                                    <Entypo name={'plus'} color={colors.puprble} size={20} />
-                                </TouchableOpacity>
-
-                                <TextInput
-                                    style={styles.priceInput}
-                                    placeholder={'السعر'}
-                                    keyboardType="numeric"
-                                    onChangeText={setNewSDPrice} />
-                            </View>
-                        </View>
-                    </View>
-                ) : (
-                    <TouchableOpacity style={styles.addsubDetailView} onPress={() => {
-                        setaddNewSubDetItem(true)
-                        setSDEditAllowed(false)
-                    }}>
-                        <Text style={styles.itemText}>اضافة جديد</Text>
-                        <View style={styles.IconView}>
-                            <Entypo name={'plus'} color={colors.puprble} size={25} />
-                        </View>
-                    </TouchableOpacity>
-                )}
-            </View>
-        )
-    }
-    const renderEditSubDet = () => {
-        return (
-            <View style={styles.addSubDetView}>
-                <Pressable style={styles.subImg} onPress={onAddImgPress}>
-                    {subDetailImg ?
-                        <Image source={{uri : subDetailImg}} style={styles.addImgView} />
-                        :
-                        <MaterialIcons style={{ alignSelf: 'center' }} name={"add-photo-alternate"} color={colors.silver} size={100} />
-                    }
-                </Pressable>
-
-                <View style={styles.infoDetView}>
-
-                    <TextInput
-                        style={styles.titleInput}
-                        value={updatedSDTitle}
-                        keyboardType="default"
-                        maxLength={60}
-                        onChangeText={val => setUpdatedSDTitle(val)} />
-
-                    <View style={styles.addViewR3}>
-
-                        {loading ? (
-                            <ActivityIndicator size="large" color={colors.puprble} />
-                        ) : (
-                            <TouchableOpacity onPress={updateSDRecord}
-                                style={styles.btnStyle}>
-                                <Text style={styles.btnAddText}>حفظ</Text>
-                                <Feather name={'save'} color={colors.puprble} size={20} />
-                            </TouchableOpacity>
-                        )}
-
-                        <TextInput
-                            style={styles.priceInput}
-                            value={updatedSDPrice}
-                            keyboardType="numeric"
-                            onChangeText={val => setUpdatedSDPrice(val)} />
-                    </View>
-                </View>
-            </View>
-        )
-    }
-    const renderSubDetail = () => {
-        return serSubDetail?.map(sub => {
-            return (
-                <ScrollView>
-                    <View style={styles.subDetailItemView}>
-                        {SDEditAllowed &&
-                            <Pressable onPress={() => subDetEditPress(sub.detailSubtitle, sub.subDetail_Id, sub.subDetailPhoto.uri, sub.detailSubtitleCost)} style={{ width: '10%' }}>
-                                <Feather name={'more-vertical'} color={colors.puprble} size={25} />
-                            </Pressable>}
-                        <View style={styles.subDetPart}>
-                            <View>
-                                <Text style={styles.itemText}>{sub.detailSubtitle}</Text>
-                                <Text style={styles.itemText}>{sub.detailSubtitleCost + ' ₪'}</Text>
-                            </View>
-
-                            <View style={styles.subDetImgView}>
-                                <Image style={styles.subDetailImg} source={{ uri: sub.subDetailPhoto.uri }} />
-                            </View>
-                        </View>
-                    </View>
-                    {subDetModal()}
-                </ScrollView>
-            )
-        })
-    }
-    const subDetModal = () => {
-        return (
-            <Modal
-                transparent
-                visible={showSubDetModal}
-                animationType="slide"
-                onRequestClose={() => setShowSubDetModal(false)}>
-                <View style={styles.subDetModal}>
-                    <View style={styles.bodyModal}>
-                        <Pressable //onPress={closeModalPress} 
-                            style={styles.modalHeader}>
-                            <Feather name={'more-horizontal'} color={colors.puprble} size={25} />
-                        </Pressable>
-                        <View style={{ justifyContent: 'flex-end', height: '100%' }}>
-                            <View style={styles.modalMenu}>
-                                <Pressable style={styles.modalItem} onPress={() => {
-                                    setSDEditPress(true)
-                                    setShowSubDetModal(false)
-                                }}>
-                                    <Feather name={'edit'} color={colors.gray} size={25} />
-                                    <Text style={styles.modalHeaderTxt}>تعديل</Text>
-                                </Pressable>
-                                <Pressable style={styles.modalItem}>
-                                    <AntDesign name={'delete'} color={colors.gray} size={25} />
-                                    <Text style={styles.modalHeaderTxt}>اِلغاء</Text>
-                                </Pressable>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-        )
-    }
-
-    const subDetEditPress = (itemTitle, itemId, itemImg, itemCost) => {
-        console.log(itemTitle, itemId, itemImg, itemCost);
-        setUpdatedSDPrice(itemCost)
-        setUpdatedSDTitle(itemTitle)
-        setSubDetailImg(itemImg)
-        setShowSubDetModal(true)
     }
 
     //// update database
@@ -748,6 +836,7 @@ const EditServiceDetails = (props) => {
     return (
         <View>
             {renderSelectedEdit()}
+            {subDetModal()}
         </View>
     )
 }
@@ -786,19 +875,27 @@ const styles = StyleSheet.create({
     subDetailItemView: {
         borderWidth: 1,
         width: '95%',
-        // height: '100%',
-        // padding: 5,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
         alignSelf: 'center',
-        // margin: 10
+    },
+    subDetailItemViewSelected: {
+        width: '95%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        // justifyContent: 'space-between',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        elevation: 10,
+        marginVertical: 5,
+        borderRadius: 10
     },
     subDetPart: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        width: '90%'
+        width: '90%',
     },
     subDetailView: {
         borderWidth: 1,
@@ -829,8 +926,6 @@ const styles = StyleSheet.create({
         elevation: 10,
         borderRadius: 10,
         alignSelf: 'center',
-        // marginRight: 10,
-        marginBottom: 20
     },
     perPersoneView: {
         flexDirection: 'row',
@@ -935,7 +1030,15 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 15,
         borderBottomLeftRadius: 15
     },
-    subImg: {
+    changeImg: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '85%',
+        height: '50%',
+        alignSelf: 'flex-end',
+    },
+    addNImg: {
         borderWidth: 3,
         borderColor: colors.silver,
         width: '50%',
@@ -944,6 +1047,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'center',
+    },
+    subImg: {
+        borderWidth: 3,
+        borderColor: colors.silver,
+        width: '60%',
+        height: '100%',
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    addImg: {
+        borderColor: colors.silver,
+        width: '20%',
+        height: '100%',
+        borderRadius: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     addImgView: {
         flex: 1,
