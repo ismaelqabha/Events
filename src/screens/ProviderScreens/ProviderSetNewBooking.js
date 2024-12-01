@@ -340,9 +340,10 @@ const ProviderSetNewBooking = (props) => {
         <View style={styles.container}>
 
             {header()}
+            {footer()}
             {renderHeadLines()}
             {screenBody()}
-            {footer()}
+            {/* {footer()} */}
         </View >
     )
 }
@@ -352,6 +353,8 @@ export default ProviderSetNewBooking
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        // backgroundColor: "red"
+
     },
     title: {
         flexDirection: 'row',
@@ -476,7 +479,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         // borderWidth: 1,
         // marginTop: 50
-        marginTop: '10%'
+        // marginTop: '10%'
 
     },
     btnNext: {

@@ -129,10 +129,7 @@ const ProviderProfile = props => {
       <View>
         <Pressable
           style={styles.item}
-          // onPress={() =>
-          //   props.navigation.navigate(ScreenNames.ProviderClientScreen)
-          // }
-          >
+          onPress={() => props.navigation.navigate(ScreenNames.ProviderSales)}>
           <View>
             <Text style={styles.basicInfo}>المبيعات</Text>
           </View>

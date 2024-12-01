@@ -198,7 +198,7 @@ export default ProviderClientScreen
 
 const styles = StyleSheet.create({
     container: {
-
+        flex: 1
     },
     header: {
         alignItems: 'center',

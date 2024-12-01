@@ -79,6 +79,7 @@ import AdminTapNav from "./AdminTapNav";
 import AdminHome from "../src/screens/adminScreens/AdminHome";
 import AdminClients from "../src/screens/adminScreens/AdminClients";
 import AdminVisits from "../src/screens/adminScreens/AdminVisits";
+import ProviderSales from "../src/screens/ProviderScreens/ProviderSales";
 
 
 
@@ -182,6 +183,7 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderPhotosPrview} component={ProviderPhotosPrview} />
                 <Stack.Screen name={ScreenNames.ProviderUsersView} component={ProviderUsersView} />
                 <Stack.Screen name={ScreenNames.ProviderSetNewBooking} component={ProviderSetNewBooking} />
+                <Stack.Screen name={ScreenNames.ProviderSales} component={ProviderSales} />
                 
                 <Stack.Screen name={ScreenNames.AdminHome} component={AdminHome} />
                 <Stack.Screen name={ScreenNames.AdminClients} component={AdminClients} />

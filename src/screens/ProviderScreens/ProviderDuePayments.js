@@ -114,17 +114,18 @@ const ProviderDuePayments = (props) => {
 
     const renderPayments = () => {
         const reqData = filterRequestAccordingPayment()
-
+//console.log("reqData",y)
         return reqData.map(item => {
             const selectedRequest = selectedRequestDataAccselectedPayment(item.requestInfo.RequestId)
             //console.log("selectedRequest", selectedRequest);
             return item.requestInfo.paymentInfo.map(elem => {
                 const amount = calculatePersentage(item.requestInfo.Cost, elem.pers)
                 const ID = elem.id
+               // console.log("item.userInfo[0]?.User_name",reqData[0].userInfo[0]?.User_name);
                 return (
                     <View style={styles.paymentItem}>
                         <View style={styles.titleView}>
-                            <Text style={{ fontSize: 20, color: colors.puprble }}>{item.userInfo[0].User_name}</Text>
+                            <Text style={{ fontSize: 20, color: colors.puprble }}>{item.userInfo[0]?.User_name}</Text>
                         </View>
 
                         {item.requestInfo.reservationDetail > 1 ?
