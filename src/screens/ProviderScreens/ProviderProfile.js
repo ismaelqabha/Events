@@ -73,6 +73,7 @@ const ProviderProfile = props => {
 
   const getRequestInfo = () => {
     getRequestByServiceId({ ReqServId: isFirst }).then(res => {
+      // console.log("res", res);
       setRequestInfoByService(res)
     })
   }

@@ -8,7 +8,7 @@ import { colors } from '../../assets/AppColors';
 const PaymentDetail = (props) => {
     const { payments, paymentOwner } = props.route?.params || {}
 
-    console.log("paymentOwner", paymentOwner);
+   // console.log("paymentOwner", paymentOwner);
     const onBackHandler = () => {
         props.navigation.goBack();
     }

@@ -1,12 +1,17 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
 import moment from "moment";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Entypo from "react-native-vector-icons/Entypo"
+import SearchContext from '../../../store/SearchContext';
+import { ScreenNames } from '../../../route/ScreenNames';
 
 const ProviderSales = (props) => {
+    const { requestInfoByService } = useContext(SearchContext);
+
+    const [requestAccUserSelect, setRequestAccUserSelect] = useState([])
     const [selectedSpacificDate, setSelectedSpacificDate] = useState("YYYY/MM/DD")
 
     const [date, setDate] = useState(new Date());
@@ -14,7 +19,7 @@ const ProviderSales = (props) => {
     const [show, setShow] = useState(false);
 
     const [spacificDate, setspacificDate] = useState(false)
-    const [month, setMonth] = useState(false)
+    const [month, setMonth] = useState(true)
     const [year, setYear] = useState(false)
 
     const onPressHandler = () => {
@@ -37,39 +42,140 @@ const ProviderSales = (props) => {
         )
     }
 
+    useEffect(() => {
+        var todayDate = new Date();
+        todayDate.setHours(0);
+        todayDate.setMinutes(0);
+        todayDate.setSeconds(0);
+        todayDate.setMilliseconds(0);
+        filterReqAccMonth(todayDate)
+    }, [])
+
     const spacificDatePress = () => {
         setspacificDate(true)
         setMonth(false)
         setYear(false)
-        // setSelectedSpacificDate("YYYY/MM/DD")
+        filterReqAccDate()
     }
     const monthPress = () => {
         setspacificDate(false)
         setMonth(true)
         setYear(false)
+        filterReqAccMonth(selectedSpacificDate)
 
     }
     const yearPress = () => {
         setspacificDate(false)
         setMonth(false)
         setYear(true)
+        filterReqAccYear(selectedSpacificDate)
 
     }
 
+    const filterReqAccDate = () => {
+        const filterData = requestInfoByService.filter(item => {
+            const resDetail = item.requestInfo.reservationDetail
+            return resDetail.find(elem => {
+                // console.log(elem.reservationDate , selectedSpacificDate, elem.reservationDate == selectedSpacificDate);
+                return elem.reservationDate == selectedSpacificDate
+            })
+        })
+        setRequestAccUserSelect(filterData)
+    }
+    const filterReqAccMonth = (Date) => {
+        const SelectedDate = moment(Date, "YYYY-MM-DD")
+        const selectMonth = SelectedDate.format('M')
+        const selectYear = SelectedDate.format('YYYY')
+
+        var requestBookingDate = ''
+        var requestMonth = ''
+        var requestYear = ''
+
+        const reqInfo = requestInfoByService.filter(req => {
+            const resDetail = req.requestInfo.reservationDetail
+            const multiReqInfo = resDetail.find(multiItem => {
+
+                requestBookingDate = moment(multiItem.reservationDate, "YYYY-MM-DD")
+                requestMonth = requestBookingDate.format('M')
+                requestYear = requestBookingDate.format('YYYY')
+
+                return requestMonth === selectMonth && requestYear === selectYear
+            })
+            return multiReqInfo
+
+        })
+        setRequestAccUserSelect(reqInfo)
+    }
+    const filterReqAccYear = (Date) => {
+        const SelectedDate = moment(Date, "YYYY-MM-DD")
+        const selectYear = SelectedDate.format('YYYY')
+
+        var requestBookingDate = ''
+        var requestYear = ''
+
+        const reqInfo = requestInfoByService.filter(req => {
+            const resDetail = req.requestInfo.reservationDetail
+            const multiReqInfo = resDetail.find(multiItem => {
+
+                requestBookingDate = moment(multiItem.reservationDate, "YYYY-MM-DD")
+                requestYear = requestBookingDate.format('YYYY')
+
+                return requestYear === selectYear
+            })
+            return multiReqInfo
+
+        })
+        setRequestAccUserSelect(reqInfo)
+    }
+
+    const filterAllRequest = () => {
+        const filterData = requestAccUserSelect.filter(item => {
+            return item.requestInfo.ReqStatus === 'partially paid'
+                || item.requestInfo.ReqStatus === 'completed' || item.requestInfo.ReqStatus === 'paid'
+        })
+        return filterData
+    }
+    const filterPaidRequest = () => {
+        const filterData = requestAccUserSelect.filter(item => {
+            return item.requestInfo.ReqStatus === 'completed' || item.requestInfo.ReqStatus === 'paid'
+        })
+        return filterData
+    }
+    const filterUnpaidAllRequest = () => {
+        const filterData = requestAccUserSelect.filter(item => {
+            return item.requestInfo.ReqStatus === 'partially paid'
+        })
+        return filterData
+    }
+
+    const whenDealPress = (data , label) => {
+        if(data.length > 0){
+            props.navigation.navigate(ScreenNames.ProviderSalesShow, { data, label })
+        }
+       
+    }
+
     const allSales = () => {
+        const data = filterAllRequest()
+        var sum = 0
+        data.forEach(element => {
+            sum = sum + element.requestInfo.Cost
+        });
+        var label = 'كل الصفقات'
+
         return (
             <View style={styles.detailView}>
                 <View style={styles.detailRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >3</Text>
+                        <Text style={styles.textStyle} >{data.length}</Text>
                     </View>
-                    <View style={styles.detailLabel}>
+                    <TouchableOpacity onPress={() => whenDealPress(data, label)} style={styles.detailLabel}>
                         <Text style={styles.textStyle}>العدد الكلي</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.detailRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >65435</Text>
+                        <Text style={styles.textStyle} >{sum}</Text>
                     </View>
                     <View style={styles.detailLabel}>
                         <Text style={styles.textStyle}>المجموع</Text>
@@ -79,19 +185,25 @@ const ProviderSales = (props) => {
         )
     }
     const completeSalesPaid = () => {
+        const data = filterPaidRequest()
+        var sum = 0
+        data.forEach(element => {
+            sum = sum + element.requestInfo.Cost
+        });
+        var label = 'الصفقات المكتملة الدفع'
         return (
             <View style={styles.detailView}>
                 <View style={styles.detailRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >2</Text>
+                        <Text style={styles.textStyle} >{data.length}</Text>
                     </View>
-                    <View style={styles.detailLabel}>
+                    <TouchableOpacity onPress={() => whenDealPress(data, label)} style={styles.detailLabel}>
                         <Text style={styles.textStyle}>مكتمل الدفع</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.detailRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >65435</Text>
+                        <Text style={styles.textStyle} >{sum}</Text>
                     </View>
                     <View style={styles.detailLabel}>
                         <Text style={styles.textStyle}>المجموع</Text>
@@ -102,19 +214,42 @@ const ProviderSales = (props) => {
         )
     }
     const unCompleteSalesPaid = () => {
+        const data = filterUnpaidAllRequest()
+
+        var paidSum = 0
+        var unPaidSum = 0
+
+        data.forEach(element => {
+            const payment = element.requestInfo.paymentInfo
+            payment.forEach(itemPay => {
+                const reqCost = element.requestInfo.Cost
+                const paymentPers = itemPay.pers
+
+                const fact = reqCost * paymentPers;
+                const realAmount = fact / 100;
+
+                if (itemPay.paymentStutes === 'paid') {
+                    paidSum = paidSum + realAmount
+                }
+                if (itemPay.paymentStutes === 'not paid') {
+                    unPaidSum = unPaidSum + realAmount
+                }
+            });
+        });
+        var label = 'الصفقات غير مكتملة الدفع'
         return (
             <View style={styles.unCompletView}>
                 <View style={styles.unCompletRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >1</Text>
+                        <Text style={styles.textStyle} >{data.length}</Text>
                     </View>
-                    <View style={styles.detailLabel}>
+                    <TouchableOpacity onPress={() => whenDealPress(data, label)} style={styles.detailLabel}>
                         <Text style={styles.textStyle}>غير مكتمل الدفع</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.unCompletRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >65435</Text>
+                        <Text style={styles.textStyle} >{paidSum}</Text>
                     </View>
                     <View style={styles.detailLabel}>
                         <Text style={styles.textStyle}>المدفوع</Text>
@@ -122,7 +257,7 @@ const ProviderSales = (props) => {
                 </View>
                 <View style={styles.unCompletRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >65435</Text>
+                        <Text style={styles.textStyle} >{unPaidSum}</Text>
                     </View>
                     <View style={styles.detailLabel}>
                         <Text style={styles.textStyle}>بانتظار الدفع</Text>
@@ -151,7 +286,15 @@ const ProviderSales = (props) => {
         let tempDate = new Date(currentDate);
         let fDate = tempDate.getFullYear() + '-' + (tempDate.getMonth() + 1) + '-' + tempDate.getDate();
         setSelectedSpacificDate(fDate);
-        // onSearchSpicaficDatePress()
+        if (spacificDate) {
+            filterReqAccDate()
+        }
+        if (month) {
+            filterReqAccMonth(fDate)
+        }
+        if (year) {
+            filterReqAccYear(fDate)
+        }
     }
     const showMode = (currentMode) => {
         setShow(true);
@@ -227,7 +370,7 @@ const styles = StyleSheet.create({
         color: colors.puprble,
         fontFamily: 'Cairo-VariableFont_slnt,wght',
     },
-    detail:{
+    detail: {
         width: '100%',
     },
     detailView: {
@@ -252,7 +395,8 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: colors.silver,
         justifyContent: 'center',
-        paddingRight: 10
+        paddingRight: 10,
+        backgroundColor: 'white',
     },
     detailValue: {
         width: '50%',
@@ -260,7 +404,8 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: colors.silver,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: 'white',
     },
 
     unCompletView: {
@@ -340,10 +485,10 @@ const styles = StyleSheet.create({
     filtertxt: {
         color: colors.silver,
         fontSize: 20
-      },
-      filtertxtPress: {
+    },
+    filtertxtPress: {
         color: colors.puprble,
         fontSize: 20
-      },
+    },
 
 })
