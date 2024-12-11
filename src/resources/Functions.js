@@ -1,4 +1,4 @@
-import { Alert } from "react-native";
+import { Alert, Image } from "react-native";
 import { ToastAndroid } from "react-native";
 import { Platform } from "react-native";
 import { addService, addServiceImages } from "./API";
@@ -9,7 +9,7 @@ import { images } from "../assets/photos/images";
 const showMessage = (msg) => {
   Platform.OS === 'android'
     ? ToastAndroid.show(msg, ToastAndroid.SHORT)
-    : Alert.IOS.alert(msg);
+    : Alert.alert(msg);
 };
 const onPublishPress = async (allData) => {
   await addService(allData)
@@ -152,6 +152,23 @@ const getProfileImageSource = (profilePhoto, userGender) => {
         : images.profileMalePicture;
   }
 };
+const getProfileImageURI = (profilePhoto, userGender) => {
+  if (profilePhoto) {
+    return { uri: profilePhoto }; // Handle cases where an external URI is provided
+  } else {
+    // Resolve the correct local image asset
+    const localImage =
+      userGender === 'ذكر'
+        ? images.profileMalePicture
+        : userGender === 'أنثى'
+        ? images.profileFemalePicture
+        : images.profileMalePicture;
+
+    const resolvedAsset = Image.resolveAssetSource(localImage);
+
+    return resolvedAsset.uri;
+  }
+};
 
 export {
   asyncFunctions,
@@ -159,5 +176,6 @@ export {
   onPublishPress,
   calculateTotalPrice,
   getProfileImageSource,
-  filterSubDetails
+  filterSubDetails,
+  getProfileImageURI
 }

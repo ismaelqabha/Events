@@ -8,22 +8,28 @@ import {
   TouchableOpacity,
   I18nManager,
 } from 'react-native';
-import React, { useState, useContext, useEffect } from 'react';
-import { colors } from '../../assets/AppColors';
+import React, {useState, useContext, useEffect} from 'react';
+import {colors} from '../../assets/AppColors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { AppStyles } from '../../assets/res/AppStyles';
-import { ScreenNames } from '../../../route/ScreenNames';
+import {AppStyles} from '../../assets/res/AppStyles';
+import {ScreenNames} from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
-import { addUser } from '../../resources/API';
+import {addUser, checkUserExists, getUserData} from '../../resources/API';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
-import { getProfileImageSource, showMessage } from '../../resources/Functions';
-import { passwordRegex } from '../../resources/Regex';
+import {
+  asyncFunctions,
+  getProfileImageSource,
+  getProfileImageURI,
+  showMessage,
+} from '../../resources/Functions';
+import {passwordRegex} from '../../resources/Regex';
 import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
 const CreatePassword = props => {
-  const { userId } = useContext(SearchContext);
-
+  const {userId} = useContext(SearchContext);
+  const navigation = useNavigation()
   const {
     password,
     setPassword,
@@ -41,6 +47,8 @@ const CreatePassword = props => {
     createUserRegion,
     userSpecialDate,
     profilePhoto,
+    setuserId,
+    setUserName
   } = useContext(UsersContext);
 
   const [firstPasswordError, setFirstPasswordError] = useState();
@@ -63,12 +71,27 @@ const CreatePassword = props => {
     }
   };
 
-  const chickIfExist = () => {
-
-    const isChecked = userInfo.user.find(item => item.Email === userEmail);
-    console.log(!!isChecked);
-    return !!isChecked;
+  const checkIfExist = async () => {
+    try {
+      const isChecked = await checkUserExists({
+        email: userEmail,
+        phone: userPhone,
+      });
+      console.log('User exists:', isChecked);
+      return isChecked;
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      return true; // Default to `true` if there's an error to avoid proceeding with account creation
+    }
   };
+
+  const getUserInfo = () => {
+    getUserData({ Email: userEmail }).then(res => {
+        setUserInfo(res)
+        setuserId(res.user[0].USER_ID)
+        setUserName(res.user[0].User_name)
+    })
+}
 
   const addNewUser = () => {
     const AddNewUser = {
@@ -84,45 +107,58 @@ const CreatePassword = props => {
       UserCity: userCity,
       Userstatus: userStatus,
       SpecialDates: userSpecialDate,
-      Userstatus: userStatus,
     };
-    addUser(AddNewUser, getProfileImageSource(profilePhoto, userGender)).then(res => {
-      setUserInfo([...UsersArr]);
-      let UsersArr = userInfo || [];
-      if (res.message === 'User Created') {
-        UsersArr.push(AddNewUser);
-        ToastAndroid.showWithGravity(
-          'تم اٍنشاء المستخدم بنجاح',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-        );
-        props.navigation.navigate(ScreenNames.ClientHomeAds);
-      } else {
-        ToastAndroid.showWithGravity(
-          'there has been an error' + res.message,
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM,
-        );
-      }
-    });
+  
+    const photo = getProfileImageURI(profilePhoto, userGender);
+  
+    addUser(AddNewUser, photo)
+      .then(res => {
+        if (res.message === 'User Created') {
+          showMessage('تم اٍنشاء المستخدم بنجاح');
+  
+          const userInfo = {
+            Email: userEmail,
+            Password: password,
+          };
+  
+          asyncFunctions.setItem("userInfo", JSON.stringify(userInfo))
+            .then(() => {
+              setPassword("");
+  
+              getUserInfo();
+              navigation.navigate(ScreenNames.Splash, { signIn: true });
+            })
+            .catch(error => {
+              showMessage('Failed to save user info: ' + error.message);
+            });
+        } else {
+          showMessage('There has been an error: ' + res.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error adding user:', error);
+        showMessage('حدث خطأ أثناء إنشاء المستخدم');
+      });
   };
+  
   const passwordRegCheck = () => {
-    return passwordRegex.test(password)
-  }
+    return passwordRegex.test(password);
+  };
 
-  const onCreateUser = () => {
+  const onCreateUser = async () => {
     if (passwordRegCheck()) {
       if (checkPassword()) {
-        if (!chickIfExist()) {
+        const userExists = await checkIfExist();
+        if (!userExists) {
           addNewUser();
         } else {
-          showMessage('لديك حساب مسبقا')
+          showMessage('لديك حساب مسبقا');
         }
       } else {
-        showMessage('لا يوجد تطابق بين كلمات المرور المكتوبة')
+        showMessage('لا يوجد تطابق بين كلمات المرور المكتوبة');
       }
     } else {
-      showMessage('كلمة المرور يجب أن تحتوي على الأقل 7 أحرف وأرقام')
+      showMessage('كلمة المرور يجب أن تحتوي على الأقل 7 أحرف وأرقام');
     }
   };
 
@@ -185,8 +221,8 @@ const CreatePassword = props => {
     checkStrings(confirmPassword) ? showMissingConfirmPassword() : null;
   };
 
-  const showMissingPasswrd = () => { };
-  const showMissingConfirmPassword = () => { };
+  const showMissingPasswrd = () => {};
+  const showMissingConfirmPassword = () => {};
 
   useEffect(() => {
     setFirstPasswordError(!checkStrings(password));
@@ -194,7 +230,6 @@ const CreatePassword = props => {
   }, [password, confirmPassword]);
 
   const renderPassword = () => {
-
     return (
       <View>
         <View style={styles.inputView}>
@@ -207,10 +242,17 @@ const CreatePassword = props => {
             secureTextEntry={!isPasswordVisible}
           />
           <TouchableOpacity
-            style={[styles.icon, isRTL ? { left: 30, right: "auto" } : { right: 30, left: "auto" }, firstPasswordError ? { top: "45%" } : { top: "28%" }]}
-            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-          >
-            <Icon name={isPasswordVisible ? 'eye' : 'eye-off'} size={24} color="gray" />
+            style={[
+              styles.icon,
+              isRTL ? {left: 30, right: 'auto'} : {right: 30, left: 'auto'},
+              firstPasswordError ? {top: '45%'} : {top: '28%'},
+            ]}
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+            <Icon
+              name={isPasswordVisible ? 'eye' : 'eye-off'}
+              size={24}
+              color="gray"
+            />
           </TouchableOpacity>
         </View>
         <View style={styles.inputView}>
@@ -222,10 +264,17 @@ const CreatePassword = props => {
             secureTextEntry={!isConPasswordVisible}
           />
           <TouchableOpacity
-            style={[styles.icon, isRTL ? { left: 30, right: "auto" } : { right: 30, left: "auto" }, secondPasswordError ? { top: "45%" } : { top: "28%" }]}
-            onPress={() => setIsConPasswordVisible(!isConPasswordVisible)}
-          >
-            <Icon name={isConPasswordVisible ? 'eye' : 'eye-off'} size={24} color="gray" />
+            style={[
+              styles.icon,
+              isRTL ? {left: 30, right: 'auto'} : {right: 30, left: 'auto'},
+              secondPasswordError ? {top: '45%'} : {top: '28%'},
+            ]}
+            onPress={() => setIsConPasswordVisible(!isConPasswordVisible)}>
+            <Icon
+              name={isConPasswordVisible ? 'eye' : 'eye-off'}
+              size={24}
+              color="gray"
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -306,6 +355,6 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   icon: {
-    position: "absolute",
-  }
+    position: 'absolute',
+  },
 });
