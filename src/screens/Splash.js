@@ -24,6 +24,7 @@ export default function Splash(props) {
             webClientId: '789188949169-djr193kf3io9steeo3u90cle8ennp5po.apps.googleusercontent.com',
             offlineAccess: true,
             forceCodeForRefreshToken: true,
+            iosClientId: '789188949169-djr193kf3io9steeo3u90cle8ennp5po.apps.googleusercontent.com',
         });
     }, []);
 
