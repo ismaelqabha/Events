@@ -226,7 +226,7 @@ const ProviderSetNewBooking = (props) => {
             console.log("userExistsResponse", userExistsResponse);
 
             if (userExistsResponse?.exists) {
-                const existingUserId = userExistsResponse?.user?.USER_ID; // Assuming `userId` is part of the response
+                const existingUserId = userExistsResponse?.user?.USER_ID; 
                 setUserId(existingUserId);
                 proceedToNextStep(); // User exists, move to the next screen directly
             } else {
@@ -338,7 +338,6 @@ const ProviderSetNewBooking = (props) => {
 
     return (
         <View style={styles.container}>
-
             {header()}
             {renderHeadLines()}
             {screenBody()}
