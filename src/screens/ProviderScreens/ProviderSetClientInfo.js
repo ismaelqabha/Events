@@ -7,6 +7,7 @@ import {
   I18nManager,
   KeyboardAvoidingView,
   Keyboard,
+  Image,
 } from 'react-native';
 import React, {useState, useContext, useEffect} from 'react';
 import {SelectList} from 'react-native-dropdown-select-list';
@@ -32,9 +33,6 @@ const ProviderSetClientInfo = props => {
   useEffect(() => {
     getRegionsfromApi();
   }, []);
-
-
-  
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -108,10 +106,12 @@ const ProviderSetClientInfo = props => {
   };
 
   const handleSelectUser = user => {
+    
     setInputValues({
       name: user.userInfo.User_name,
       phone: user.userInfo.UserPhone.toString(),
       email: user.userInfo.Email,
+      location: user.userInfo.UserCity || ""
     });
     setSelectedUser(user);
     setSearchResults([]);
@@ -131,6 +131,7 @@ const ProviderSetClientInfo = props => {
           boxStyles={styles.dropdown}
           inputStyles={styles.droptext}
           dropdownTextStyles={styles.dropstyle}
+          defaultOption={{ key: inputValues.location, value: inputValues.location }}
         />
       </View>
     );
@@ -183,7 +184,8 @@ const ProviderSetClientInfo = props => {
                   ? '75%'
                   : '50%',
             }
-          : {position: 'relative'}]}
+          : {position: 'relative'},
+      ]}
       renderItem={({item}) => {
         const isClient = providerClients.some(
           client => client === item.userInfo.USER_ID,
@@ -194,19 +196,31 @@ const ProviderSetClientInfo = props => {
             onPress={() => handleSelectUser(item)}
             activeOpacity={1} // Keeps the touchable fully active
           >
-            <Text style={styles.resultText}>{item.userInfo.User_name}</Text>
-            <Text style={styles.resultText}>
-              Phone: {item.userInfo.UserPhone}
-            </Text>
-            <Text style={styles.resultText}>Email: {item.userInfo.Email}</Text>
-            <Text style={styles.resultText}>Area: {item.userInfo.UserRegion} </Text>
-            <Text
-              style={[
-                styles.statusText,
-                isClient ? styles.client : styles.generalUser,
-              ]}>
-              {isClient ? 'Client' : 'User'}
-            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <Image
+                style={styles.photo}
+                source={{uri: item?.userInfo?.UserPhoto}}
+              />
+              <View>
+                <Text style={styles.resultText}>{item.userInfo.User_name}</Text>
+                <Text style={styles.resultText}>
+                  Phone: {item.userInfo.UserPhone}
+                </Text>
+                <Text style={styles.resultText}>
+                  Email: {item.userInfo.Email}
+                </Text>
+                <Text style={styles.resultText}>
+                  Area: {item.userInfo.UserRegion}{' '}
+                </Text>
+                <Text
+                  style={[
+                    styles.statusText,
+                    isClient ? styles.client : styles.generalUser,
+                  ]}>
+                  {isClient ? 'Client' : 'User'}
+                </Text>
+              </View>
+            </View>
           </TouchableOpacity>
         );
       }}
@@ -218,7 +232,7 @@ const ProviderSetClientInfo = props => {
 
   return (
     <KeyboardAvoidingView style={{flex: 1}} behavior="padding">
-      <View style={{flex: 1 }}>
+      <View style={{flex: 1}}>
         {renderClientName()}
         {renderClientInfo()}
         {renderClientAddress()}
@@ -252,7 +266,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
   },
-  dropdown: {    // maxWidth: '80%',
+  dropdown: {
+    // maxWidth: '80%',
     // minWidth: '80%',
     // alignSelf: 'center',
     // backgroundColor: 'lightgray',
@@ -274,7 +289,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     alignSelf: 'center',
-    width: 300,
+    width: 325,
     marginHorizontal: 5,
   },
   resultText: {
@@ -285,7 +300,7 @@ const styles = StyleSheet.create({
     maxHeight: 200,
     alignSelf: 'center',
     width: '90%',
-    marginTop:100
+    marginTop: 100,
   },
   statusText: {
     fontSize: 13,
@@ -297,5 +312,12 @@ const styles = StyleSheet.create({
   },
   generalUser: {
     color: 'gray',
+  },
+  photo: {
+    width: 50,
+    height: 50,
+    alignSelf: 'center',
+    borderRadius: 15,
+    marginRight: 5,
   },
 });
