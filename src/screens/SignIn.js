@@ -10,6 +10,7 @@ import UsersContext from '../../store/UsersContext';
 import { asyncFunctions, showMessage } from '../resources/Functions';
 import { emailVerification, passwordRegex, phoneNumberRegex } from '../resources/Regex';
 import GoogleSignInButton from '../components/Login/GoogleSignInButton';
+import { Platform } from 'react-native';
 
 
 const SignIn = (props) => {
@@ -114,7 +115,8 @@ const SignIn = (props) => {
                 />
                 <TextInput
                     style={styles.input}
-                    keyboardType="visible-password"
+                    keyboardType={Platform.OS === 'ios' ? 'default' : 'visible-password'}
+                    secureTextEntry={Platform.OS === 'ios' ? true : false}
                     placeholder='كلمة المرور'
                     onChangeText={(value) => setPassword(value)}
                 />

@@ -57,6 +57,7 @@ const ScrollWrapper = ({ amountDots, dotPlace, onNextPress,onPressBack, children
                 scrollEventThrottle={16}
                 contentContainerStyle={{ paddingBottom: 130 }}
                 keyboardShouldPersistTaps="handled"
+                bounces={false}
             >
                 {React.Children.map(children, (child) =>
                     React.cloneElement(child)
