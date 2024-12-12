@@ -225,7 +225,7 @@ const ProviderSetNewBooking = (props) => {
             const userExistsResponse = await checkUserExists({ phone, email });
             console.log("userExistsResponse", userExistsResponse);
 
-            if (userExistsResponse?.exists) {
+            if (userExistsResponse) {
                 const existingUserId = userExistsResponse?.user?.USER_ID; 
                 setUserId(existingUserId);
                 proceedToNextStep(); // User exists, move to the next screen directly
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignSelf: 'center',
         backgroundColor: 'white',
-        paddingBottom:50
+        // height:600
     },
     headItem: {
         alignItems: 'center',
@@ -476,7 +476,6 @@ const styles = StyleSheet.create({
         // borderWidth: 1,
         // marginTop: 50
         marginTop: '10%',
-        backgroundColor:"red"
 
     },
     btnNext: {
