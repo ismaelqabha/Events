@@ -17,6 +17,7 @@ import UsersContext from '../../../store/UsersContext';
 import {showMessage} from '../../resources/Functions';
 import SearchContext from '../../../store/SearchContext';
 import {TouchableOpacity} from 'react-native';
+import { images } from '../../assets/photos/images';
 
 const ProviderSetClientInfo = props => {
   const {providerClients, onInputChange, inputValuesParent} = props;
@@ -132,6 +133,7 @@ const ProviderSetClientInfo = props => {
           inputStyles={styles.droptext}
           dropdownTextStyles={styles.dropstyle}
           defaultOption={{ key: inputValues.location, value: inputValues.location }}
+          onDropDownOpen
         />
       </View>
     );
@@ -179,10 +181,10 @@ const ProviderSetClientInfo = props => {
               position: 'absolute',
               bottom:
                 activeField === 'name'
-                  ? '40%'
+                  ? '20%'
                   : activeField === 'phone'
-                  ? '75%'
-                  : '50%',
+                  ? '55%'
+                  : '30%',
             }
           : {position: 'relative'},
       ]}
@@ -230,9 +232,30 @@ const ProviderSetClientInfo = props => {
     />
   );
 
+  const renderClientPhoto = () => {
+    const defaultImage = images.profileMalePicture
+    const userPhoto = selectedUser?.userInfo?.UserPhoto;
+  
+    return (
+      <View style={styles.photoContainer}>
+        <Image
+          style={styles.clientPhoto}
+          source={
+            userPhoto ? { uri: userPhoto } : defaultImage // Check for user photo or use default
+          }
+        />
+        {/* <Text style={styles.clientPhotoText}>
+          {selectedUser ? selectedUser.userInfo.User_name : 'No Client Selected'}
+        </Text> */}
+      </View>
+    );
+  };
+  
+
   return (
     <KeyboardAvoidingView style={{flex: 1}} behavior="padding">
       <View style={{flex: 1}}>
+        {renderClientPhoto()}
         {renderClientName()}
         {renderClientInfo()}
         {renderClientAddress()}
@@ -319,5 +342,22 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderRadius: 15,
     marginRight: 5,
+  },
+  photoContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  clientPhoto: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    // borderWidth: 1.5,
+    borderColor: colors.silver,
+  },
+  clientPhotoText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: 'black',
+    textAlign: 'center',
   },
 });
