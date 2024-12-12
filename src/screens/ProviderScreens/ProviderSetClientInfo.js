@@ -199,6 +199,7 @@ const ProviderSetClientInfo = props => {
               Phone: {item.userInfo.UserPhone}
             </Text>
             <Text style={styles.resultText}>Email: {item.userInfo.Email}</Text>
+            <Text style={styles.resultText}>Area: {item.userInfo.UserRegion} </Text>
             <Text
               style={[
                 styles.statusText,
