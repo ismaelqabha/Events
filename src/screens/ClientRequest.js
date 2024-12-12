@@ -385,7 +385,11 @@ const ClientRequest = (props) => {
     /// request information and reservation detail
     const renderRequestInfo = () => {
         return <View style={styles.requestDetailView}>
-            <RequestDetail {...data} isfromClientShowRequest={isfromClientShowRequest} selectedDate={selectedDate} setSelectedDate={setSelectedDate} handleScrollToPosition={handleScrollToPosition} pressed={pressed} setPressed={setPressed} />
+            <RequestDetail {...data} isfromClientShowRequest={isfromClientShowRequest} 
+            selectedDate={selectedDate} 
+            setSelectedDate={setSelectedDate} 
+            handleScrollToPosition={handleScrollToPosition} 
+            pressed={pressed} setPressed={setPressed} />
         </View>
     }
 

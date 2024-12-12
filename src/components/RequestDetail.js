@@ -5,6 +5,7 @@ import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
+import Fontisto from "react-native-vector-icons/Fontisto";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const RequestDetail = (props) => {
@@ -27,6 +28,7 @@ const RequestDetail = (props) => {
     const [mode, setMode] = useState('time');
     const [showStart, setShowStart] = useState(false);
     const [showEnd, setShowEnd] = useState(false);
+    const [isOfferContOpen, setIsOfferContOpen] = useState(false)
 
 
     const [selectTime, setSelectTime] = useState(true);
@@ -35,6 +37,7 @@ const RequestDetail = (props) => {
     const [endTimeText, setendTimeText] = useState()
     const [invitersValue, setInvitersValue] = useState('');
     const [offer, setOffer] = useState();
+    const [campaignData, setCampaignData] = useState();
 
     const [similarity, setSimilarity] = useState(false);
     const [multiSelected, setMultiSelected] = useState(false)
@@ -536,7 +539,6 @@ const RequestDetail = (props) => {
         }
         updateReservationDet(SubId, 'subDetail')
     }
-
     const renderServiceDetail = () => {
         const detail = props.additionalServices
         return detail.map(element => {
@@ -546,11 +548,11 @@ const RequestDetail = (props) => {
                 </View>
                 {element.subDetailArray.map(item => {
                     // console.log("item.id", item.id);
-                    const found = selectedSupDet?.find((det) => det === item.id)
+                    const found = selectedSupDet?.find((det) => det === item.subDetail_Id)
                     return (
                         <View style={styles.subDetail}>
                             <Text style={styles.subDetText}>{item.detailSubtitle}</Text>
-                            <TouchableOpacity style={styles.subPressable} onPress={() => whenSupDetailPress(item.id)}>
+                            <TouchableOpacity style={styles.subPressable} onPress={() => whenSupDetailPress(item.subDetail_Id)}>
                                 {found && <Entypo
                                     style={{ alignSelf: 'center', position: 'absolute' }}
                                     name={"check"}
@@ -626,7 +628,7 @@ const RequestDetail = (props) => {
     const getServiceDetail = (id) => {
         const serviceData = additionalServices.filter(element => {
             return element.subDetailArray.find(itemId => {
-                return itemId.id === id
+                return itemId.subDetail_Id === id
             })
         })
         return serviceData
@@ -634,39 +636,204 @@ const RequestDetail = (props) => {
     const getSerSubDet = (id) => {
         const data = getServiceDetail(id)
         const subDetInfo = data[0].subDetailArray.filter(item => {
-            return item.id === id
+            return item.subDetail_Id === id
         })
         return subDetInfo
     }
 
     ///// descripe the the service campighns
 
-    const onCampPress = (campId) => {
-        updateReservationDet(campId, 'offerId');
+    // const onCampPress = (campId) => {
+    //     updateReservationDet(campId, 'offerId');
 
-    }
+    // }
+    // const renderCampaighnHeader = (camp, index) => {
+     //    var found = offer?.find((det) => det === camp?.CampId)
+    //     return (
+    //         <Pressable onPress={() => onCampPress(camp?.CampId || index)} style={!found ? styles.offerTitle : styles.offerTitleSelected}>
+    //             <Text style={styles.campText}>{camp.campTitle}</Text>
+    //             {camp.priceInclude == 'حسب الشخص' ?
+    //                 <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
+    //                 <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
+    //         </Pressable>
+    //     );
+    // }
+    // const renderCampaighnSubHeader = () => {
+    //     return (
+    //         <View style={styles.offerContentView}>
+    //             <Text style={styles.campText}>محتويات العرض</Text>
+    //             <View style={styles.IconView}>
+    //                 <MaterialCommunityIcons
+    //                     style={{ alignSelf: 'center' }}
+    //                     name={"table-of-contents"}
+    //                     color={colors.puprble}
+    //                     size={30} />
+    //             </View>
+    //         </View>
+    //     )
+    // }
+    // const renderCampaighnContentFromSub = (camp) => {
+    //     return (
+    //         camp.contentFromSubDet.map(itemID => {
+    //             const titleInfo = getSerSubDet(itemID)
+    //             return (
+    //                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+    //                     <Text style={styles.subDetText}>{titleInfo[0].detailSubtitle}</Text>
+    //                     <Feather
+    //                         style={{ alignSelf: 'center' }}
+    //                         name={"corner-down-left"}
+    //                         color={colors.puprble}
+    //                         size={30} />
+    //                 </View>
+    //             )
+    //         })
+
+    //     )
+    // }
+    // const renderCampaighnContent = (camp) => {
+    //     return (
+    //         camp.campContents.map(elment => {
+    //             return (
+    //                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+    //                     <Text style={styles.subDetText}>{elment}</Text>
+    //                     <Feather
+    //                         style={{ alignSelf: 'center' }}
+    //                         name={"corner-down-left"}
+    //                         color={colors.puprble}
+    //                         size={30} />
+    //                 </View>
+    //             )
+    //         })
+    //     )
+    // }
+    // const renderCampaighn = () => {
+    //     const CampData = relatedCamp || [];
+
+    //     const campArray = CampData?.map((camp, index) => {
+
+    //         return <View key={index} style={styles.campaignView}>
+    //             {renderCampaighnHeader(camp, index)}
+    //             {renderCampaighnSubHeader()}
+
+    //             {renderCampaighnContentFromSub(camp)}
+    //             {renderCampaighnContent(camp)}
+
+    //         </View >
+    //     });
+    //     return campArray;
+
+    // }
+
+    const renderCampaighn = () => {
+        const CampData = relatedCamp || [];
+
+        return CampData.map((camp, index) => {
+            // const isSelected = campaignData.includes(camp.CampId);
+            return (
+                <TouchableOpacity
+                    key={index}
+                    // onPress={() => toggleOffer(camp.CampId)}
+                    style={true ? styles.campaignViewSelected : styles.campaignView}
+                >
+                    {renderCampaighnHeader(camp, index)}
+                    {renderCampaighnSubHeader(camp)}
+                </TouchableOpacity>
+            );
+        });
+    };
+    const toggleOffer = (offerId) => {
+        setCampaignData(prevOffer => {
+            const updatedOffer = prevOffer.includes(offerId)
+                ? prevOffer.filter(id => id !== offerId)
+                : [...prevOffer, offerId];
+
+            setResDetail(prevState => {
+                const updatedResDetail = [...prevState];
+                updatedResDetail[0].offerId = updatedOffer;
+                return updatedResDetail;
+            });
+            return updatedOffer;
+        });
+    };
+
     const renderCampaighnHeader = (camp, index) => {
-        var found = offer?.find((det) => det === camp?.CampId)
+
         return (
-            <Pressable onPress={() => onCampPress(camp?.CampId || index)} style={!found ? styles.offerTitle : styles.offerTitleSelected}>
-                <Text style={styles.campText}>{camp.campTitle}</Text>
-                {camp.priceInclude == 'حسب الشخص' ?
-                    <Text style={styles.campText}>{camp.campCost + '₪  للشخص الواحد '}</Text> :
-                    <Text style={styles.campText}>{camp.campCost + '₪  لكل طاولة '}</Text>}
-            </Pressable>
+            <View style={styles.offerTitle}>
+                <View style={styles.includeView}>
+                    <Text style={styles.campText}>{camp.campTitle}</Text>
+                    <Image style={styles.offerImg} source={{ uri: camp.campImag }} />
+                </View>
+
+                <View style={{ marginRight: 20 }}>
+                    {camp.priceInclude == 'perPerson' &&
+                        <View style={styles.includeView}>
+                            <Text style={styles.campText}>{'السعر للشخص ' + '(₪' + camp.campCost + ')'}</Text>
+                            <View style={styles.IconView}>
+                                <Fontisto
+                                    style={{ alignSelf: 'center' }}
+                                    name={"person"}
+                                    color={colors.puprble}
+                                    size={30} />
+                            </View>
+                        </View>
+                    }
+                    {camp.priceInclude == 'perRequest' &&
+                        <View style={styles.includeView}>
+                            <Text style={styles.campText}>{'السعر شامل ' + '(₪' + camp.campCost + ')'}</Text>
+                            <View style={styles.IconView}>
+                                <MaterialCommunityIcons
+                                    style={{ alignSelf: 'center' }}
+                                    name={"all-inclusive"}
+                                    color={colors.puprble}
+                                    size={30} />
+                            </View>
+                        </View>
+                    }
+                    {camp.priceInclude == 'perTable' &&
+                        <View style={styles.includeView}>
+                            <Text style={styles.campText}>{'السعر للطاولة ' + '(₪' + camp.campCost + ')'}</Text>
+                            <View style={styles.IconView}>
+                                <MaterialCommunityIcons
+                                    style={{ alignSelf: 'center' }}
+                                    name={"table-furniture"}
+                                    color={colors.puprble}
+                                    size={30} />
+                            </View>
+                        </View>
+                    }
+                </View>
+
+            </View>
         );
     }
-    const renderCampaighnSubHeader = () => {
+    const onOfferContentPress = () => {
+        setIsOfferContOpen(!isOfferContOpen)
+    }
+    const renderCampaighnSubHeader = (camp) => {
         return (
-            <View style={styles.offerContentView}>
-                <Text style={styles.campText}>محتويات العرض</Text>
-                <View style={styles.IconView}>
-                    <MaterialCommunityIcons
-                        style={{ alignSelf: 'center' }}
-                        name={"table-of-contents"}
-                        color={colors.puprble}
-                        size={30} />
-                </View>
+            <View>
+                <TouchableOpacity style={styles.offerContentView} onPress={onOfferContentPress}>
+                    <Text style={styles.campText}>محتويات العرض</Text>
+                    <View style={styles.IconView}>
+                        <MaterialCommunityIcons
+                            style={{ alignSelf: 'center' }}
+                            name={"table-of-contents"}
+                            color={colors.puprble}
+                            size={30} />
+                    </View>
+                </TouchableOpacity>
+
+                {isOfferContOpen && allCampighnContent(camp)}
+            </View>
+        )
+    }
+
+    const allCampighnContent = (camp) => {
+        return (
+            <View>
+                {renderCampaighnContentFromSub(camp)}
+                {renderCampaighnContent(camp)}
             </View>
         )
     }
@@ -675,7 +842,7 @@ const RequestDetail = (props) => {
             camp.contentFromSubDet.map(itemID => {
                 const titleInfo = getSerSubDet(itemID)
                 return (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
+                    <View style={styles.contView}>
                         <Text style={styles.subDetText}>{titleInfo[0].detailSubtitle}</Text>
                         <Feather
                             style={{ alignSelf: 'center' }}
@@ -692,8 +859,8 @@ const RequestDetail = (props) => {
         return (
             camp.campContents.map(elment => {
                 return (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 5 }}>
-                        <Text style={styles.subDetText}>{elment.contentItem}</Text>
+                    <View style={styles.contView}>
+                        <Text style={styles.subDetText}>{elment}</Text>
                         <Feather
                             style={{ alignSelf: 'center' }}
                             name={"corner-down-left"}
@@ -704,23 +871,7 @@ const RequestDetail = (props) => {
             })
         )
     }
-    const renderCampaighn = () => {
-        const CampData = relatedCamp || [];
 
-        const campArray = CampData?.map((camp, index) => {
-
-            return <View key={index} style={styles.campaignView}>
-                {renderCampaighnHeader(camp, index)}
-                {renderCampaighnSubHeader()}
-
-                {renderCampaighnContentFromSub(camp)}
-                {renderCampaighnContent(camp)}
-
-            </View >
-        });
-        return campArray;
-
-    }
 
     // this function will be show when there are some similer offers detail 
     const renderCheckSelectedOffer = () => {
@@ -1066,16 +1217,26 @@ const styles = StyleSheet.create({
     campaignView: {
         width: '100%',
         alignSelf: 'center',
+        padding: 10,
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: colors.silver,
+        borderRadius: 10
+    },
+    campaignViewSelected: {
+        width: '100%',
+        alignSelf: 'center',
         padding: 5,
         marginTop: 10,
-        //borderWidth: 1
+        borderWidth: 3,
+        borderColor: colors.puprble
     },
     offerTitle: {
-        width: '90%',
-        borderRadius: 10,
-        alignSelf: 'center',
-        backgroundColor: colors.silver,
-        alignItems: 'center'
+        // width: '90%',
+        // borderRadius: 10,
+        // alignSelf: 'center',
+        // backgroundColor: colors.silver,
+        // alignItems: 'center'
     },
     offerTitleSelected: {
         width: '90%',
@@ -1090,7 +1251,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-end',
-        marginVertical: 10
+        marginVertical: 5,
+        marginRight: 20
+        // borderWidth: 1
     },
     campText: {
         fontSize: 18,
@@ -1102,8 +1265,8 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     IconView: {
-        width: 40,
-        height: 40,
+        width: 50,
+        height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'lightgray',
@@ -1118,6 +1281,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 10,
         marginTop: 10
+    },
+    includeView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginBottom: 10
+    },
+    offerImg: {
+        width: 80,
+        height: 80,
+        borderRadius: 50,
+        marginLeft: 20
+    },
+    contView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginRight: 30
     }
 
 })

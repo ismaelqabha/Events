@@ -192,8 +192,6 @@ const ProviderSetClientForBooking = (props) => {
         }
     };
     const toggleSubDetail = (subId) => {
-
-        console.log("subId", subId)
         setSelectedSupDet(prevSelected => {
             const updatedSelected = prevSelected.includes(subId)
                 ? prevSelected.filter(id => id !== subId)
@@ -240,14 +238,13 @@ const ProviderSetClientForBooking = (props) => {
     };
     const renderCampaighn = () => {
         const CampData = campInfo || [];
-
-        return CampData.map((camp, index) => {
-            const isSelected = offer.includes(camp.CampId);
+               return CampData.map((camp, index) => {
+            // const isSelected = offer.includes(camp.CampId);
             return (
                 <TouchableOpacity
                     key={index}
-                    onPress={() => toggleOffer(camp.CampId)}
-                    style={isSelected ? styles.campaignViewSelected : styles.campaignView}
+                    // onPress={() => toggleOffer(camp.CampId)}
+                    style={true ? styles.campaignViewSelected : styles.campaignView}
                 >
                     {renderCampaighnHeader(camp, index)}
                     {renderCampaighnSubHeader(camp)}
@@ -374,7 +371,7 @@ const ProviderSetClientForBooking = (props) => {
             camp.campContents.map(elment => {
                 return (
                     <View style={styles.contView}>
-                        <Text style={styles.subDetText}>{elment.contentItem}</Text>
+                        <Text style={styles.subDetText}>{elment}</Text>
                         <Feather
                             style={{ alignSelf: 'center' }}
                             name={"corner-down-left"}
@@ -389,7 +386,7 @@ const ProviderSetClientForBooking = (props) => {
     const getServiceDetail = (id) => {
         const serData = serviceData[0].additionalServices.filter(element => {
             return element.subDetailArray.find(itemId => {
-                return itemId.id === id
+                return itemId.subDetail_Id === id
             })
         })
         return serData
