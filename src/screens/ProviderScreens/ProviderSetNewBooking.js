@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, Alert, Platform } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react'
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { colors } from '../../assets/AppColors';
@@ -337,7 +337,7 @@ const ProviderSetNewBooking = (props) => {
 
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container , Platform.OS === 'ios' ? {marginTop:40} : null]}>
             {header()}
             {renderHeadLines()}
             {screenBody()}
@@ -409,8 +409,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignSelf: 'center',
         backgroundColor: 'white',
-        paddingBottom: 100
-
+        paddingBottom:50
     },
     headItem: {
         alignItems: 'center',
@@ -476,7 +475,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         // borderWidth: 1,
         // marginTop: 50
-        marginTop: '10%'
+        marginTop: '10%',
+        backgroundColor:"red"
 
     },
     btnNext: {
