@@ -64,7 +64,7 @@ const CreatePassword = props => {
   };
 
   const chickIfExist = () => {
-
+// console.log("userInfo", userInfo);
     const isChecked = userInfo.user.find(item => item.Email === userEmail);
     console.log(!!isChecked);
     return !!isChecked;
@@ -86,9 +86,11 @@ const CreatePassword = props => {
       SpecialDates: userSpecialDate,
       Userstatus: userStatus,
     };
+    //console.log("add", AddNewUser);
     addUser(AddNewUser, getProfileImageSource(profilePhoto, userGender)).then(res => {
       setUserInfo([...UsersArr]);
       let UsersArr = userInfo || [];
+      console.log(">>", res.message);
       if (res.message === 'User Created') {
         UsersArr.push(AddNewUser);
         ToastAndroid.showWithGravity(
@@ -113,11 +115,11 @@ const CreatePassword = props => {
   const onCreateUser = () => {
     if (passwordRegCheck()) {
       if (checkPassword()) {
-        if (!chickIfExist()) {
+        // if (!chickIfExist()) {
           addNewUser();
-        } else {
-          showMessage('لديك حساب مسبقا')
-        }
+        // } else {
+        //   showMessage('لديك حساب مسبقا')
+        // }
       } else {
         showMessage('لا يوجد تطابق بين كلمات المرور المكتوبة')
       }

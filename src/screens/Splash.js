@@ -76,11 +76,11 @@ export default function Splash(props) {
                     if (res.message === 'Authentication succeeded') {
                         showMessage('تم تسجيل الدخول بنجاح');
                         getUserInfo();
-                        
+                       // console.log("userType", res.userType);
                         if (res.userType !== 'admin') {
                             props.navigation.replace('Drawr')
                         } else {
-                            console.log("userType", res.userType);
+                           
                             props.navigation.replace('AdminTapNav')
                         }
                         

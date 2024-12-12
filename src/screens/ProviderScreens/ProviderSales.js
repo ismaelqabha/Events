@@ -167,7 +167,7 @@ const ProviderSales = (props) => {
             <View style={styles.detailView}>
                 <View style={styles.detailRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >{data.length}</Text>
+                        <Text style={styles.textStyle} >{data.length > 0 ? data.length : 'لا يوجد'}</Text>
                     </View>
                     <TouchableOpacity onPress={() => whenDealPress(data, label)} style={styles.detailLabel}>
                         <Text style={styles.textStyle}>العدد الكلي</Text>
@@ -195,7 +195,7 @@ const ProviderSales = (props) => {
             <View style={styles.detailView}>
                 <View style={styles.detailRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >{data.length}</Text>
+                        <Text style={styles.textStyle} >{data.length > 0 ? data.length : 'لا يوجد'}</Text>
                     </View>
                     <TouchableOpacity onPress={() => whenDealPress(data, label)} style={styles.detailLabel}>
                         <Text style={styles.textStyle}>مكتمل الدفع</Text>
@@ -241,7 +241,7 @@ const ProviderSales = (props) => {
             <View style={styles.unCompletView}>
                 <View style={styles.unCompletRow}>
                     <View style={styles.detailValue}>
-                        <Text style={styles.textStyle} >{data.length}</Text>
+                        <Text style={styles.textStyle} >{data.length > 0 ? data.length : 'لا يوجد'}</Text>
                     </View>
                     <TouchableOpacity onPress={() => whenDealPress(data, label)} style={styles.detailLabel}>
                         <Text style={styles.textStyle}>غير مكتمل الدفع</Text>
