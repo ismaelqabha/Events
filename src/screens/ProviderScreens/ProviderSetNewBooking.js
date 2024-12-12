@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     },
     body: {
         width: '100%',
-        height: 500,
+        height: 600,
         alignSelf: 'center',
         // borderWidth: 1
     },
@@ -406,6 +406,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     bodyTaps: {
+        flex:1,
         width: '100%',
         alignSelf: 'center',
         backgroundColor: 'white',
