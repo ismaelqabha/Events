@@ -601,6 +601,7 @@ const ProviderSetClientForBooking = props => {
           showDetailRecipt={showDetailRecipt} // Control for showing detailed receipt
           setShowDetailRecipt={setShowDetailRecipt} // Toggle function for detail view
           data={serviceData?.[0]} // Additional service data
+          campInfo={campInfo}
         />
       </View>
     );
