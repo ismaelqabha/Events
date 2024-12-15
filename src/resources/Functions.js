@@ -127,10 +127,11 @@ const calculateTotalPrice = (resDetail, requestedDate, data, setTotalPrice) => {
 };
 
 const filterSubDetails = (data, subDetailId) => {
+  
   return data.additionalServices?.map(service => {
     // Filter sub details based on whether their id exists in subDetailId array
-    const filteredSubDetailArray = service.subDetailArray.filter(subDetail =>
-      subDetailId.includes(subDetail.id)
+    const filteredSubDetailArray = service?.subDetailArray.filter(subDetail =>
+      subDetailId.includes(subDetail.subDetail_Id)
     );
 
     // Return the service object with modified subDetailArray

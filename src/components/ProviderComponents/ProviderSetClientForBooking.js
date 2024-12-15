@@ -53,13 +53,10 @@ const ProviderSetClientForBooking = props => {
   const [showDetailRecipt, setShowDetailRecipt] = useState(false); // Control receipt visibility
 
   useEffect(() => {
-    calculateTotalPrice(
-      resDetail,
-      requestedDate,
-      serviceData?.[0],
-      setTotalPrice,
-    );
-  }, [resDetail, requestedDate, serviceData]);
+    if (resDetail && requestedDate && serviceData?.[0]) {
+      calculateTotalPrice(resDetail, requestedDate, serviceData?.[0], setTotalPrice);
+    }
+  }, [resDetail, requestedDate, serviceData, setTotalPrice]);
 
   const [offer, setOffer] = useState();
 
@@ -222,8 +219,8 @@ const ProviderSetClientForBooking = props => {
       });
     }
   };
-  const toggleSubDetail = subId => {
-    console.log('subId', subId);
+  const toggleSubDetail = subId => {    
+    
     setSelectedSupDet(prevSelected => {
       const updatedSelected = prevSelected.includes(subId)
         ? prevSelected.filter(id => id !== subId)
@@ -233,19 +230,19 @@ const ProviderSetClientForBooking = props => {
         const updatedResDetail = [...prevState];
         updatedResDetail[0].subDetailId = updatedSelected;
         return updatedResDetail;
-      });
+      });    
       return updatedSelected;
     });
   };
   const renderServiceDetail = () => {
     const detail = serviceData[0].additionalServices;
-
+    
     return detail.map(element => (
       <View key={element.id}>
         <View style={styles.detailItem}>
           <Text style={styles.detailText}>{element.detailTitle}</Text>
         </View>
-        {element.subDetailArray.map(item => {
+        {element.subDetailArray.map(item => {            
           const isSelected = selectedSupDet.includes(item.subDetail_Id);
           return (
             <View key={item.subDetail_Id} style={styles.subDetail}>
