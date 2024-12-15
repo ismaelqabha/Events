@@ -54,11 +54,16 @@ const ProviderSetClientForBooking = props => {
 
   useEffect(() => {
     if (resDetail && requestedDate && serviceData?.[0]) {
-      calculateTotalPrice(resDetail, requestedDate, serviceData?.[0], setTotalPrice);
+      calculateTotalPrice(
+        resDetail,
+        requestedDate,
+        serviceData?.[0],
+        setTotalPrice,
+      );
     }
   }, [resDetail, requestedDate, serviceData, setTotalPrice]);
 
-  const [offer, setOffer] = useState();
+  const [offer, setOffer] = useState([]);
 
   const scrollViewRef = useRef(null);
   const firstPageRef = useRef(null);
@@ -219,8 +224,7 @@ const ProviderSetClientForBooking = props => {
       });
     }
   };
-  const toggleSubDetail = subId => {    
-    
+  const toggleSubDetail = subId => {
     setSelectedSupDet(prevSelected => {
       const updatedSelected = prevSelected.includes(subId)
         ? prevSelected.filter(id => id !== subId)
@@ -230,19 +234,19 @@ const ProviderSetClientForBooking = props => {
         const updatedResDetail = [...prevState];
         updatedResDetail[0].subDetailId = updatedSelected;
         return updatedResDetail;
-      });    
+      });
       return updatedSelected;
     });
   };
   const renderServiceDetail = () => {
     const detail = serviceData[0].additionalServices;
-    
+
     return detail.map(element => (
       <View key={element.id}>
         <View style={styles.detailItem}>
           <Text style={styles.detailText}>{element.detailTitle}</Text>
         </View>
-        {element.subDetailArray.map(item => {            
+        {element.subDetailArray.map(item => {
           const isSelected = selectedSupDet.includes(item.subDetail_Id);
           return (
             <View key={item.subDetail_Id} style={styles.subDetail}>
@@ -268,20 +272,22 @@ const ProviderSetClientForBooking = props => {
   const renderCampaighn = () => {
     const CampData = campInfo || [];
 
-    return CampData.map((camp, index) => {
-      const isSelected = offer.includes(camp.CampId);
-      return (
-        <TouchableOpacity
-          key={index}
-          onPress={() => toggleOffer(camp.CampId)}
-          style={
-            isSelected ? styles.campaignViewSelected : styles.campaignView
-          }>
-          {renderCampaighnHeader(camp, index)}
-          {renderCampaighnSubHeader(camp)}
-        </TouchableOpacity>
-      );
-    });
+    return (
+      CampData?.map((camp, index) => {
+        const isSelected = offer?.includes(camp.CampId);
+        return (
+          <TouchableOpacity
+            key={index}
+            onPress={() => toggleOffer(camp.CampId)}
+            style={
+              isSelected ? styles.campaignViewSelected : styles.campaignView
+            }>
+            {renderCampaighnHeader(camp, index)}
+            {renderCampaighnSubHeader(camp)}
+          </TouchableOpacity>
+        );
+      }) || null
+    );
   };
   const toggleOffer = offerId => {
     setOffer(prevOffer => {
@@ -409,7 +415,7 @@ const ProviderSetClientForBooking = props => {
     return camp.campContents.map(elment => {
       return (
         <View style={styles.contView}>
-          <Text style={styles.subDetText}>{elment.contentItem}</Text>
+          <Text style={styles.subDetText}>{elment}</Text>
           <Feather
             style={{alignSelf: 'center'}}
             name={'corner-down-left'}
@@ -424,17 +430,18 @@ const ProviderSetClientForBooking = props => {
   const getServiceDetail = id => {
     const serData = serviceData[0].additionalServices.filter(element => {
       return element.subDetailArray.find(itemId => {
-        return itemId.id === id;
+        return itemId.subDetail_Id === id;
       });
     });
     return serData;
   };
   const getSerSubDet = id => {
     const data = getServiceDetail(id);
-    const subDetInfo = data[0].subDetailArray.filter(item => {
+    const subDetInfo = data[0]?.subDetailArray.filter(item => {
       return item.subDetail_Id === id;
     });
-    return subDetInfo;
+
+    return subDetInfo || null;
   };
 
   const renderCheckSelectedOffer = () => {
@@ -520,7 +527,7 @@ const ProviderSetClientForBooking = props => {
               }}>
               <View style={[styles.serviceOfferBooking]}>
                 {pressed === 1 && renderCampaighn()}
-                {multiSelected && renderCheckSelectedOffer()}
+                {/* {multiSelected && renderCheckSelectedOffer()} */}
               </View>
             </View>
           )}
