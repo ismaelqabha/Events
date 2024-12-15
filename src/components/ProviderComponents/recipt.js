@@ -89,7 +89,6 @@ const Recipt = ({
     }
 
     const renderMainReciptDetails = (details) => {
-        console.log("details ", details);
         
         return (
             details.filteredSubDetials ?
@@ -233,7 +232,6 @@ const Recipt = ({
         }
 
         const { subDetailId, numOfInviters } = resDetail[detailIndex];
-        console.log("subDetailID",subDetailId);
         
         const filteredSubDetials = filterSubDetails(data, subDetailId);
         const showList = filteredSubDetials?.some(item => item.subDetailArray && item.subDetailArray.length > 0);
