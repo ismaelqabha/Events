@@ -54,14 +54,18 @@ const ProviderSetClientForBooking = props => {
 
   useEffect(() => {
     if (resDetail && requestedDate && serviceData?.[0]) {
-      calculateTotalPrice(
+      const newTotal = calculateTotalPrice(
         resDetail,
         requestedDate,
         serviceData?.[0],
-        setTotalPrice,
+        campInfo,
       );
+      if (newTotal != totalPrice) {
+        setTotalPrice(newTotal)
+      }
     }
-  }, [resDetail, requestedDate, serviceData, setTotalPrice]);
+  }, [resDetail, requestedDate, serviceData, totalPrice, campInfo]);
+  
 
   const [offer, setOffer] = useState([]);
 
