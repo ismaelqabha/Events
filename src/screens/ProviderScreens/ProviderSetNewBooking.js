@@ -9,10 +9,9 @@ import ProviderSetPaymentForClient from '../../components/ProviderComponents/Pro
 import ProviderSetClientInfo from './ProviderSetClientInfo';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { showMessage } from '../../resources/Functions';
-import { addUser, checkUserExists } from '../../resources/API';
+import { addUser, checkUserExists, addNewRequest, createNewPayment } from '../../resources/API';
 import { images } from '../../assets/photos/images';
-
-
+import {ScreenNames} from '../../../route/ScreenNames'
 const ProviderSetNewBooking = (props) => {
     const { fulDate } = props.route?.params || {}
     const { isFirst } = useContext(SearchContext);
@@ -38,9 +37,20 @@ const ProviderSetNewBooking = (props) => {
 
     const [inputValues, setInputValues] = useState({ name: '', phone: '', email: '', location: '' });
 
-    const handleClientInfoChange = (newValues) => {
+    // State to hold payment data array from ProviderSetPaymentForClient
+    const [paymentDataArray, setPaymentDataArray] = useState([]);
+    const [paymentPolicy, setPaymentPolicy] = useState(null); // Will store the policy from the service
+    const [isPaymentValid, setIsPaymentValid] = useState(false); 
+    // This will track if the payment conditions are met (e.g., totalPercentage=100%, first payment paid if needed)
+
+    const handleClientInfoChange = (newValues) => {            
+        if (newValues.userId) {
+            setUserId(newValues.userId);
+            console.log("Updated userId:", newValues.userId);
+        }
         setInputValues(newValues);
     };
+    
 
     const onPressHandler = () => {
         props.navigation.goBack();
@@ -54,9 +64,11 @@ const ProviderSetNewBooking = (props) => {
     }
 
     useEffect(() => {
-
-    }, [])
-
+        const data = findProviderInfo()
+        if (data && data[0]) {
+            setPaymentPolicy(data[0].paymentPolicy);
+        }
+    }, []);
 
     const header = () => {
         return (
@@ -72,7 +84,6 @@ const ProviderSetNewBooking = (props) => {
             </View>
         )
     }
-
 
     const renderHeadLines = () => {
         return (
@@ -107,6 +118,7 @@ const ProviderSetNewBooking = (props) => {
             </View>
         )
     }
+
     const screenBody = () => {
         return (
             <View style={styles.body}>
@@ -127,7 +139,6 @@ const ProviderSetNewBooking = (props) => {
         )
     }
 
-
     const renderClientInfo = () => {
         const data = findProviderInfo()
         const providerClients = data[0].clients
@@ -137,6 +148,7 @@ const ProviderSetNewBooking = (props) => {
             </View>
         )
     }
+
     const renderBookingInfo = () => {
         const serviceData = findProviderInfo()
         return (
@@ -150,6 +162,13 @@ const ProviderSetNewBooking = (props) => {
             />
         )
     }
+
+    // Callback to receive payment data and validity from ProviderSetPaymentForClient
+    const handlePaymentDataChange = (paymentData, isValid) => {
+        setPaymentDataArray(paymentData);
+        setIsPaymentValid(isValid);
+    };
+
     const renderPaymentDetail = () => {
         const serviceData = findProviderInfo()
         return (
@@ -161,6 +180,7 @@ const ProviderSetNewBooking = (props) => {
                     totalPrice={totalPrice}
                     date={fulDate}
                     resDetails={resDetail}
+                    onPaymentDataChange={handlePaymentDataChange} 
                 />
             </View>
         )
@@ -198,19 +218,88 @@ const ProviderSetNewBooking = (props) => {
 
     const nextPress = async () => {
         if (client) {
+            // Step 1: Client info
             checkIfNew();
-        }
-        else if (booking) {
+        } else if (booking) {
+            // Step 2: Booking info
             if (checkAllDetails()) {
                 proceedToNextStep();
             } else {
                 showMessage("Please fill in all required booking details.");
             }
-        }
-        else {
+        } else if (payment) {
+            // Step 3: Payment step (final step)
+            // Now we handle the final reservation creation and payment records
+            await finalizeReservation();
+        } else {
             proceedToNextStep();
         }
     };
+
+
+const finalizeReservation = async () => {
+    if (!isPaymentValid && paymentPolicy !== 'post') {
+        showMessage("الدفعات غير مكتملة أو لم يتم الدفع بشكل صحيح.");
+        return;
+    }    
+
+    try {
+        const serviceData = findProviderInfo()?.[0];
+        const firstPaymentStatus = paymentDataArray[0]?.paymentStutes || 'not paid';
+        const reqStatus = firstPaymentStatus === 'paid' ? 'partially paid' : 'waiting pay';
+        
+        const requestBody = {
+            ReqServId: serviceData?.service_id,
+            ReqUserId: inputValues.userId || "unknown",
+            ReqStatus: reqStatus,
+            ReqDate: new Date().toISOString(),
+            Cost: totalPrice,
+            reservationDetail: resDetail,
+            paymentInfo: paymentDataArray,
+        };
+
+        const requestResponse = await addNewRequest(requestBody);
+
+        if (requestResponse?.message === 'Request Created') {
+            showMessage('تم إنشاء الطلب بنجاح!');
+            const createdRequestId = requestResponse?.savedRequest?._id;
+
+            for (const installment of paymentDataArray) {
+              if (installment.paymentStutes === 'paid') {
+                const paymentToCreate = {
+                  ReqId: createdRequestId,
+                  PaymentAmount: installment.amount,
+                  PaymentDate: new Date().toISOString(), 
+                  userPay: inputValues.userId, 
+                  PaymentMethod: installment.paymentMethod || 'Cash', 
+                  discountPercentage: 0,
+                  cardHolderName: '', 
+                  cardHolderId: '',
+                  creditCardNum: '',
+                  verfiyCode: '',
+                  expirMonth: '',
+                  expirYear: ''
+                };
+
+                const paymentResponse = await createNewPayment(paymentToCreate);
+                if (paymentResponse?.message === 'Payment Created') {
+                  showMessage(`دفعة بمبلغ ${installment.amount} سجلت بنجاح!`);
+                } else {
+                  showMessage('حدث خطأ أثناء تسجيل الدفع.');
+                }
+              }
+            }
+
+            props.navigation.navigate(ScreenNames.ClientHomeAds);
+        } else {
+            showMessage('حدث خطأ أثناء إنشاء الطلب. الرجاء المحاولة مرة أخرى.');
+        }
+    } catch (error) {
+        console.error('Error during finalizing reservation:', error);
+        showMessage('حدث خطأ أثناء معالجة الطلب. الرجاء المحاولة مرة أخرى.');
+    }
+};
+
 
     const checkIfNew = async () => {
         const { name, phone, email, location } = inputValues;
@@ -221,14 +310,12 @@ const ProviderSetNewBooking = (props) => {
         }
 
         try {
-            // Call API to check if the user exists in the database
             const userExistsResponse = await checkUserExists({ phone, email });
-            console.log("userExistsResponse", userExistsResponse);
 
             if (userExistsResponse) {
                 const existingUserId = userExistsResponse?.user?.USER_ID; 
                 setUserId(existingUserId);
-                proceedToNextStep(); // User exists, move to the next screen directly
+                proceedToNextStep(); // User exists, move to the next screen
             } else {
                 // User not found, prompt to create a new user
                 Alert.alert(
@@ -239,19 +326,19 @@ const ProviderSetNewBooking = (props) => {
                             text: "No",
                             style: "cancel",
                             onPress: () => {
-                                setUserId("unknown"); // Set ID to "unknown" if the user is not created
+                                setUserId("unknown"); // If not created
                                 proceedToNextStep();
                             },
                         },
                         {
                             text: "Yes",
                             onPress: async () => {
-                                const newUser = await createNewUser(inputValues); // Create new user if confirmed
+                                const newUser = await createNewUser(inputValues);
                                 if (newUser?.userId) {
-                                    setUserId(newUser.userId); // Save the new user's ID
+                                    setUserId(newUser.userId);
                                     proceedToNextStep();
                                 } else {
-                                    setUserId("unknown"); // Handle case where user creation fails
+                                    setUserId("unknown");
                                     showMessage("User creation failed. Proceeding with unknown user.");
                                     proceedToNextStep();
                                 }
@@ -265,6 +352,7 @@ const ProviderSetNewBooking = (props) => {
             showMessage("Error checking user existence. Please try again.");
         }
     };
+
     const generateRandomPassword = (length = 8) => {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+=';
         let password = '';
@@ -274,6 +362,7 @@ const ProviderSetNewBooking = (props) => {
         }
         return password;
     };
+
     const createNewUser = async (userData) => {
         try {
             const pass = generateRandomPassword()
@@ -286,19 +375,25 @@ const ProviderSetNewBooking = (props) => {
                 PasswordConfirmation: pass
             };
             const newUser = await addUser(AddNewUser, images.profileMalePicture);
-            if (newUser) showMessage("User created successfully!");
+            if (newUser && newUser?.userId) {
+                showMessage("User created successfully!");
+                return newUser; 
+            }
         } catch (error) {
             showMessage("Error creating user. Please try again.");
             console.error("User creation error:", error);
         }
     };
+
     const proceedToNextStep = () => {
         if (bookStatus) {
+            // Move to payment step
             setPaymentStatus(true);
             setClient(false);
             setBooking(false);
             setPayment(true);
         } else {
+            // Move from client to booking step
             setBookStatus(true);
             setClient(false);
             setBooking(true);
@@ -328,13 +423,15 @@ const ProviderSetNewBooking = (props) => {
                 {!payment && <TouchableOpacity style={AppStyles.next} onPress={nextPress}>
                     <Text style={AppStyles.nextText}>التالي</Text>
                 </TouchableOpacity>}
+                {payment && <TouchableOpacity style={AppStyles.next} onPress={nextPress}>
+                    <Text style={AppStyles.nextText}>حجز</Text>
+                </TouchableOpacity>}
                 <TouchableOpacity style={AppStyles.back} onPress={backPress}>
                     <Text style={AppStyles.backText}>رجوع</Text>
                 </TouchableOpacity>
             </View>
         )
     }
-
 
     return (
         <View style={[styles.container , Platform.OS === 'ios' ? {marginTop:40} : null]}>
@@ -365,17 +462,14 @@ const styles = StyleSheet.create({
     },
     headTitle: {
         flexDirection: 'row',
-        // alignItems: 'center',
         justifyContent: 'space-around',
         height: '50%',
-        //   borderWidth: 1
     },
     headShape: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         height: '50%',
-        // borderWidth: 1
     },
     head: {
         width: '90%',
@@ -390,7 +484,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 600,
         alignSelf: 'center',
-        // borderWidth: 1
     },
     bodyTitle: {
         width: '50%',
@@ -409,7 +502,6 @@ const styles = StyleSheet.create({
         width: '100%',
         alignSelf: 'center',
         backgroundColor: 'white',
-        // height:600
     },
     headItem: {
         alignItems: 'center',
@@ -468,31 +560,10 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 60,
         alignSelf: 'center',
-        // position: 'absolute',
-        // bottom: 0,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        // borderWidth: 1,
-        // marginTop: 50
         marginTop: '10%',
-
-    },
-    btnNext: {
-        width: '50%',
-        height: 40,
-        backgroundColor: colors.silver,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 5
-    },
-    btnBack: {
-        width: '20%',
-        height: 40,
-        backgroundColor: colors.silver,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 5
     },
     nextText: {
         fontSize: 18,
@@ -500,9 +571,6 @@ const styles = StyleSheet.create({
     },
     backText: {
         fontSize: 15,
-        // color: colors.puprble,
         fontWeight: 'bold'
     },
-
-
 })

@@ -14,65 +14,71 @@ import {
   import FontAwesome from 'react-native-vector-icons/FontAwesome';
   import {v4 as uuidv4} from 'uuid';
   import {showMessage} from '../../resources/Functions';
-  import {addNewRequest} from '../../resources/API';
   
   const ProviderSetPaymentForClient = ({
     paymentPolicy,
     totalPrice,
-    date, // Event date (passed from props)
+    date,
     serviceId,
     userId,
     resDetails,
+    onPaymentDataChange // New callback prop
   }) => {
     const [paymentDataArray, setPaymentDataArray] = useState([]);
-    const [creditCard, setCreditCard] = useState(false);
-    const [cash, setCash] = useState(false);
-    const [checks, setChecks] = useState(false);
-    const [initialPaymentAmount, setInitialPaymentAmount] = useState(0);
     const [selectedPaymentIndex, setSelectedPaymentIndex] = useState(null);
     const [showPaymentModal, setShowPaymentModal] = useState(false); 
     const [selectedMethod, setSelectedMethod] = useState(null); 
     const [continuePay, setContinuePay] = useState(false);
   
-    // Convert the passed event date (string) into a Date object for accurate comparison
+    // Convert the passed event date (string) into a Date object
     const eventDateObj = new Date(date);
-    eventDateObj.setHours(0, 0, 0, 0); // Normalize to midnight to avoid time discrepancies
+    eventDateObj.setHours(0, 0, 0, 0);
   
     useEffect(() => {
-      calculateInitialPaymentAmount();
-    }, [paymentPolicy, totalPrice]);
+      // Whenever paymentDataArray changes, check if it meets the conditions
+      validatePaymentData();
+    }, [paymentDataArray]);
   
-    /** 
-     * Determines the initial required payment amount based on the payment policy.
-     */
-    const calculateInitialPaymentAmount = () => {
-      let initialAmount = 0;
-      switch (paymentPolicy) {
-        case 'pre':
-          initialAmount = totalPrice;
-          break;
-        case 'prePost':
-          initialAmount = totalPrice;
-          break;
-        case 'post':
-          initialAmount = 0;
-          break;
-        default:
-          initialAmount = 0;
+    const validatePaymentData = () => {
+      // Check if totalPercentage = 100%
+      const totalPercentage = checkSumPersentage();
+      if (paymentPolicy === 'post') {
+        // For post, no need to ensure first payment is paid or totalPercentage == 100%, 
+        // but let's say we still require 100% plan defined.
+        const isValid = totalPercentage === 100;
+        onPaymentDataChange(paymentDataArray, isValid);
+        return;
       }
-      setInitialPaymentAmount(initialAmount);
+  
+      // For pre or prePost:
+      // Ensure totalPercentage = 100
+      // If pre: full amount must be paid (first payment 'paid')
+      // If prePost: at least first payment is 'paid', and totalPercentage = 100
+      const isFullPercentage = totalPercentage === 100;
+  
+      let isFirstPaymentPaid = true;
+      if (paymentDataArray.length > 0) {
+        const firstPaymentStatus = paymentDataArray[0]?.paymentStutes || 'not paid';
+        if (firstPaymentStatus !== 'paid') {
+          isFirstPaymentPaid = false;
+        }
+      } else {
+        isFirstPaymentPaid = false; // No payments defined
+      }
+  
+      let isValid = false;
+      if (paymentPolicy === 'pre') {
+        // Must be fully paid before event: firstPaymentPaid and 100%
+        isValid = isFullPercentage && isFirstPaymentPaid;
+      } else if (paymentPolicy === 'prePost') {
+        // At least first payment is paid before event, 100% defined
+        // The rest can be after event, but we still require a full plan of 100%
+        isValid = isFullPercentage && isFirstPaymentPaid;
+      }
+  
+      onPaymentDataChange(paymentDataArray, isValid);
     };
   
-    /**
-     * Opens the payment modal to confirm payment method.
-     */
-    const togglePaymentStatus = () => {
-      setShowPaymentModal(true);
-    };
-  
-    /**
-     * Adds a new payment data entry with a unique ID and default values.
-     */
     const addPaymentData = () => {
       const newPaymentItem = {
         id: uuidv4(),
@@ -85,9 +91,6 @@ import {
       setPaymentDataArray([...paymentDataArray, newPaymentItem]);
     };
   
-    /**
-     * Renders the "Add Payment Detail" button.
-     */
     const renderAddButton = () => {
       return (
         <TouchableOpacity style={styles.item} onPress={addPaymentData}>
@@ -99,9 +102,6 @@ import {
       );
     };
   
-    /**
-     * Renders all payment fields that have been added.
-     */
     const renderPaymentFeilds = () => {
       return paymentDataArray.map((val, index) => (
         <TouchableOpacity
@@ -120,20 +120,12 @@ import {
       ));
     };
   
-    /**
-     * Removes a payment entry by its index.
-     */
     const removePaymentItem = (index) => {
       const newArray = [...paymentDataArray];
       newArray.splice(index, 1);
       setPaymentDataArray(newArray);
     };
   
-    /**
-     * Updates the payment data array at a given index.
-     * @param {object} data - Payment data object.
-     * @param {number} index - Index of the payment to update.
-     */
     const updateArray = (data, index) => {
       setPaymentDataArray((prevArray) => {
         const newArray = [...prevArray];
@@ -142,10 +134,6 @@ import {
       });
     };
   
-    /**
-     * Component representing each payment's input fields and actions.
-     * Handles date selection, amount/percentage calculation, and payment status.
-     */
     const PaymentComponent = (props) => {
       const { val, index, updateArray } = props;
   
@@ -158,12 +146,8 @@ import {
       const [mode, setMode] = useState('date');
       const [show, setShow] = useState(false);
   
-      // Using parent totalPrice for calculations
       const ReqPrice = totalPrice;
   
-      /**
-       * Sums up all percentages in the payment array.
-       */
       const checkSumPersentage = () => {
         let sumPers = 0;
         paymentDataArray.forEach((element) => {
@@ -173,9 +157,6 @@ import {
         return sumPers;
       };
   
-      /**
-       * Calculates the amount from a given percentage and updates state and parent array.
-       */
       const calculateAmountFromPersentage = (pers) => {
         const currentTotal = checkSumPersentage() - parseFloat(paymentDataArray[index]?.pers || 0);
         const maxAllowed = 100 - currentTotal;
@@ -206,9 +187,6 @@ import {
         );
       };
   
-      /**
-       * Calculates the percentage from a given amount and updates state and parent array.
-       */
       const calculatePersentageFromAmount = (amou) => {
         const inputAmount = parseFloat(amou) || 0;
         const currentTotalPercentage = checkSumPersentage() - parseFloat(paymentDataArray[index]?.pers || 0);
@@ -240,23 +218,17 @@ import {
         );
       };
   
-      /**
-       * Handler for the DateTimePicker change event.
-       * Ensures the chosen date meets the payment policy conditions.
-       */
       const onChange = (event, chosenDate) => {
         setShow(false);
         const newDate = chosenDate || selectedDate;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
   
-        // Disallow past dates
         if (newDate < today) {
           showMessage('لا يمكن اختيار تاريخ في الماضي.');
           return;
         }
   
-        // Compare using eventDateObj (a proper Date object)
         if (paymentPolicy === 'pre' && newDate >= eventDateObj) {
           showMessage('التاريخ يجب أن يكون قبل تاريخ الحدث وفقًا لسياسة الدفع المسبق.');
           return;
@@ -285,9 +257,6 @@ import {
         setMode(currentMode);
       };
   
-      /**
-       * Confirms payment with a selected method and updates status.
-       */
       const confirmPaymentWithMethod = (method) => {
         const newStatus = 'paid';
         setPaymentStatus(newStatus);
@@ -307,9 +276,6 @@ import {
         );
       };
   
-      /**
-       * Reverts the payment status to 'not paid'.
-       */
       const revertPayment = () => {
         setPaymentStatus('not paid');
         setSelectedMethod(null);
@@ -328,52 +294,6 @@ import {
         );
       };
   
-      /**
-       * Modal to select the payment method (Cash, Visa, Checks).
-       */
-      const renderPaymentMethodModal = () => (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showPaymentModal}
-          onRequestClose={() => setShowPaymentModal(false)}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Select Payment Method</Text>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => confirmPaymentWithMethod('Cash')}>
-                <Text style={styles.modalButtonText}>Cash</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => confirmPaymentWithMethod('Visa')}>
-                <Text style={styles.modalButtonText}>Visa</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={() => confirmPaymentWithMethod('Checks')}>
-                <Text style={styles.modalButtonText}>Checks</Text>
-              </TouchableOpacity>
-  
-              {paymentStatus === 'paid' && (
-                <TouchableOpacity
-                  style={[styles.modalButton, {backgroundColor: 'red'}]}
-                  onPress={revertPayment}>
-                  <Text style={styles.modalButtonText}>Revert Payment</Text>
-                </TouchableOpacity>
-              )}
-  
-              <TouchableOpacity
-                style={[styles.modalButton, {backgroundColor: 'grey'}]}
-                onPress={() => setShowPaymentModal(false)}>
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      );
-  
       useEffect(() => {
         if (val) {
           setPaymentDate(val?.PayDate);
@@ -381,6 +301,9 @@ import {
           setPaymentStatus(val?.paymentStutes || 'not paid');
         }
       }, [val]);
+  
+      // Removed modal step logic here since it's now handled in the parent
+      // This component only manages payment data.
   
       return (
         <View key={index} style={styles.mediaItem}>
@@ -444,7 +367,7 @@ import {
             </View>
           </View>
           {index === 0 && (
-            <TouchableOpacity style={styles.toggleButton} onPress={togglePaymentStatus}>
+            <TouchableOpacity style={styles.toggleButton} onPress={() => setShowPaymentModal(true)}>
               <Text
                 style={[
                   styles.toggleButtonText,
@@ -457,14 +380,52 @@ import {
             </TouchableOpacity>
           )}
   
-          {renderPaymentMethodModal()}
+          {/* Payment Method Modal */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showPaymentModal}
+            onRequestClose={() => setShowPaymentModal(false)}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Select Payment Method</Text>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => confirmPaymentWithMethod('Cash')}>
+                  <Text style={styles.modalButtonText}>Cash</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => confirmPaymentWithMethod('Visa')}>
+                  <Text style={styles.modalButtonText}>Visa</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={() => confirmPaymentWithMethod('Checks')}>
+                  <Text style={styles.modalButtonText}>Checks</Text>
+                </TouchableOpacity>
+  
+                {paymentStatus === 'paid' && (
+                  <TouchableOpacity
+                    style={[styles.modalButton, {backgroundColor: 'red'}]}
+                    onPress={revertPayment}>
+                    <Text style={styles.modalButtonText}>Revert Payment</Text>
+                  </TouchableOpacity>
+                )}
+  
+                <TouchableOpacity
+                  style={[styles.modalButton, {backgroundColor: 'grey'}]}
+                  onPress={() => setShowPaymentModal(false)}>
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+  
         </View>
       );
     };
   
-    /**
-     * Renders text related to the payment policy and event date.
-     */
     const renderPaymentPolicyText = () => {
       switch (paymentPolicy) {
         case 'pre':
@@ -478,9 +439,6 @@ import {
       }
     };
   
-    /**
-     * Renders request details and total price.
-     */
     const renderRequestDetail = () => {
       const paymentPolicyText = renderPaymentPolicyText();
       return (
@@ -497,9 +455,6 @@ import {
       );
     };
   
-    /**
-     * Renders the section where multiple payments can be defined.
-     */
     const determineNumOfPayment = () => {
       return (
         <View style={styles.paymentQuntView}>
@@ -510,9 +465,6 @@ import {
       );
     };
   
-    /**
-     * Sums all percentages from paymentDataArray to ensure they reach 100%.
-     */
     const checkSumPersentage = () => {
       let sumPers = 0;
       paymentDataArray.forEach((element) => {
@@ -522,124 +474,11 @@ import {
       return sumPers;
     };
   
-    /**
-     * Handlers for payment method selection at the final payment confirmation stage.
-     */
-    const creditCardPress = () => {
-      setCreditCard(true);
-      setCash(false);
-      setChecks(false);
-    };
-    const cashPress = () => {
-      setCreditCard(false);
-      setCash(true);
-      setChecks(false);
-    };
-    const checksPress = () => {
-      setCreditCard(false);
-      setCash(false);
-      setChecks(true);
-    };
-  
-    /**
-     * Shows the amount of the currently selected payment section (if any).
-     */
-    const renderPayAmount = () => {
-      if (selectedPaymentIndex !== null) {
-        const selectedPayment = paymentDataArray[selectedPaymentIndex];
-        return (
-          <View style={styles.amountView}>
-            <Text style={styles.amountTxt}>{selectedPayment.amount || 0}</Text>
-          </View>
-        );
-      }
-      return null;
-    };
-  
-    /**
-     * Renders the final "Confirm Payment" button to create the request.
-     */
-    const renderPayButton = () => {
-      return (
-        <TouchableOpacity style={styles.payView} onPress={onPaymentPress}>
-          <Text style={styles.buttonText}>تأكيد الدفع</Text>
-        </TouchableOpacity>
-      );
-    };
-  
-    /**
-     * Final payment confirmation logic.
-     */
-    const onPaymentPress = async () => {
-      const totalPercentage = checkSumPersentage();
-      const totalAmount = paymentDataArray.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
-  
-      if (totalPercentage < 100 || totalAmount < totalPrice) {
-        showMessage('الدفعات غير مكتملة. تأكد من أن النسبة الإجمالية تصل إلى 100%.');
-        return;
-      }
-  
-      try {
-        const firstPaymentStatus = paymentDataArray[0]?.paymentStutes || 'not paid';
-        const reqStatus = firstPaymentStatus === 'paid' ? 'partially paid' : 'waiting pay';
-  
-        const requestBody = {
-          ReqServId: serviceId,
-          ReqUserId: userId,
-          ReqStatus: reqStatus,
-          ReqDate: new Date().toISOString(),
-          Cost: totalPrice,
-          reservationDetail: resDetails,
-          paymentInfo: paymentDataArray,
-        };
-  
-        const requestResponse = await addNewRequest(requestBody);
-  
-        if (requestResponse?.message === 'Request Created') {
-          showMessage('تم إنشاء الطلب بنجاح!');
-        } else {
-          showMessage('حدث خطأ أثناء إنشاء الطلب. الرجاء المحاولة مرة أخرى.');
-        }
-      } catch (error) {
-        console.error('Error during payment process:', error);
-        showMessage('حدث خطأ أثناء معالجة الدفع. الرجاء المحاولة مرة أخرى.');
-      }
-    };
-  
-    /**
-     * Renders payment method selection buttons.
-     */
-    const creatPaymentProviderSide = () => {
-      return (
-        <View style={styles.payMethodView}>
-          <TouchableOpacity
-            style={[styles.methodItem, cash ? styles.methodItemPress : null]}
-            onPress={cashPress}>
-            <Text style={styles.methodText}>كاش</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.methodItem, checks ? styles.methodItemPress : null]}
-            onPress={checksPress}>
-            <Text style={styles.methodText}>شيكات</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.methodItem, creditCard ? styles.methodItemPress : null]}
-            onPress={creditCardPress}>
-            <Text style={styles.methodText}>بطاقة ائتمان</Text>
-          </TouchableOpacity>
-        </View>
-      );
-    };
-  
-    /**
-     * Renders the final payment confirmation section if continuePay is true.
-     */
     const makePayment = () => {
       return (
         <View style={styles.paymentQuntView}>
-          {continuePay && renderPayAmount()}
-          {continuePay && creatPaymentProviderSide()}
-          {continuePay && renderPayButton()}
+          {/* Removed the old code that displayed payment method selection here
+              since we now finalize everything in the parent */}
         </View>
       );
     };
@@ -755,57 +594,6 @@ import {
       width: '100%',
       height: '50%',
     },
-    amountView: {
-      width: '80%',
-      height: 70,
-      alignItems: 'center',
-      justifyContent: 'center',
-      alignSelf: 'center',
-      borderWidth: 0.6,
-      borderColor: colors.silver,
-      borderRadius: 5,
-      marginVertical: 20,
-    },
-    amountTxt: {
-      fontSize: 20,
-      color: colors.darkGold,
-    },
-    payView: {
-      width: '60%',
-      alignSelf: 'flex-start',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginTop: 30,
-      borderColor: colors.silver,
-      borderWidth: 3,
-    },
-    buttonText: {
-      fontSize: 20,
-      color: colors.puprble,
-    },
-    payMethodView: {
-      width: '90%',
-      height: 100,
-      alignSelf: 'center',
-      padding: 10,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    methodItem: {
-      marginVertical: 5,
-      width: '31%',
-      height: 60,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: colors.gold,
-      borderRadius: 10,
-      elevation: 5,
-    },
-    methodItemPress: {
-      borderWidth: 3,
-      borderColor: colors.puprble,
-    },
     selectedMediaItem: {
       borderWidth: 2,
       borderColor: colors.puprble,
@@ -814,20 +602,6 @@ import {
       marginVertical: 10,
       width: '90%',
       alignSelf: 'center',
-    },
-    methodText: {
-      fontSize: 18,
-      color: colors.puprble,
-    },
-    toggleButton: {
-      marginTop: 10,
-      padding: 10,
-      backgroundColor: colors.puprble,
-      borderRadius: 5,
-      alignItems: 'center',
-    },
-    toggleButtonText: {
-      fontWeight: 'bold',
     },
     modalContainer: {
       flex: 1,
@@ -858,6 +632,16 @@ import {
     modalButtonText: {
       color: 'white',
       fontSize: 18,
+      fontWeight: 'bold',
+    },
+    toggleButton: {
+      marginTop: 10,
+      padding: 10,
+      backgroundColor: colors.puprble,
+      borderRadius: 5,
+      alignItems: 'center',
+    },
+    toggleButtonText: {
       fontWeight: 'bold',
     },
   });
