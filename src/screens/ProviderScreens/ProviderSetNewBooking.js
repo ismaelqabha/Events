@@ -305,10 +305,11 @@ const ProviderSetNewBooking = (props) => {
   const ensurePublicEvent = async () => {
     const eventBody = {
       eventName: "public event",
-      createdBy: inputValues.userId || 'unknown',
+      userId: inputValues.userId || 'unknown',
+      eventDate:fulDate,
+      eventCost:resDetail[0].price
     };
     const eventResponse = await createNewEvent(eventBody);
-    console.log("eventResponse ",eventResponse);
     
     if (eventResponse && eventResponse.message === 'Event Created' ) {
       return eventResponse.savedEvent._id;
