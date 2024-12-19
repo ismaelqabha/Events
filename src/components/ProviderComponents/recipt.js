@@ -16,6 +16,7 @@ import { filterSubDetails } from '../../resources/Functions';
  * @param showDetailRecipt - Boolean state indicating whether to show the receipt details.
  * @param setShowDetailRecipt - state function to change the value of showDetailRecipt.
  * @param data - Additional data used in rendering the receipt.
+ * @param campInfo - Additional campaign data used in rendering the receipt.
  * @returns The rendered receipt component.
  */
 const Recipt = ({
@@ -24,9 +25,17 @@ const Recipt = ({
     resDetail,           // Details of the reservation
     showDetailRecipt,    // Boolean indicating whether to show the receipt details
     setShowDetailRecipt, // State functions to change the value of showDetialRecipt  
-    data                 // Additional data used in rendering the receipt
+    data,                // Additional data used in rendering the receipt
+    campInfo             // Campaign info
 }) => {
-    const renderSubDetRecipt = (subArray) => {
+    // console.log("Expanded Recipt Props:", {
+    //     totalPrice,
+    //     requestedDate,
+    //     resDetail: JSON.stringify(resDetail, null, 2),
+    //     showDetailRecipt,
+    //     data: JSON.stringify(data, null, 2),
+    // });     
+       const renderSubDetRecipt = (subArray) => {
         return (
             <View style={styles.reciptLabel}>
                 {subDetReciptHeader()}
@@ -82,6 +91,7 @@ const Recipt = ({
     }
 
     const renderMainReciptDetails = (details) => {
+        
         return (
             details.filteredSubDetials ?
                 details.filteredSubDetials.map((subDetail, index) => {
@@ -95,7 +105,7 @@ const Recipt = ({
     const renderSingleReciptService = (subDetail, index, details) => {
         const additionType = subDetail.additionType ? subDetail.additionType : subDetail?.isPerPerson ? 'perPerson' : 'perRequest';
         let price = 0;
-        subDetail.subDetailArray.forEach((detail) => price += parseInt(detail.detailSubtitleCost));
+        subDetail.subDetailArray.forEach((detail) => price += parseInt(detail.detailSubtitleCost));        
         return (
             <React.Fragment key={index}>
                 <View style={styles.reciptDetailItem}>
@@ -163,6 +173,7 @@ const Recipt = ({
     };
 
     const renderDeals = (campaigns, numOfInviters) => {
+
         return (
             <View style={styles.reciptDetail}>
                 {renderDealsHeader()}
@@ -224,18 +235,20 @@ const Recipt = ({
         }
 
         const { subDetailId, numOfInviters } = resDetail[detailIndex];
+        
         const filteredSubDetials = filterSubDetails(data, subDetailId);
         const showList = filteredSubDetials?.some(item => item.subDetailArray && item.subDetailArray.length > 0);
-        const campaigns = resDetail[detailIndex].campaigns || [];
+        const campaigns = resDetail[detailIndex].offerId || [];
         const showCamp = campaigns && campaigns.length > 0 ? true : false;
-
+        
+        const filteredCampaings = campInfo?.filter((camp)=> campaigns?.includes(camp?.CampId)) || false;
         const details = {
             setShowSupDetRecipt: setShowSupDetRecipt,
             showSupDetRecipt: showSupDetRecipt,
             filteredSubDetials: showList ? filteredSubDetials : false,
             numOfInviters: numOfInviters,
         };
-
+        
         return (
             <View key={index}>
                 {!(showList === false && showCamp === false) && renderReciptDate(date)}
@@ -243,7 +256,7 @@ const Recipt = ({
                     {showList && renderReciptServices()}
                     {renderMainReciptDetails(details)}
                 </View>
-                {showCamp && renderDeals(campaigns, numOfInviters)}
+                {showCamp && renderDeals(filteredCampaings, numOfInviters)}
             </View>
         );
     }
