@@ -25,6 +25,8 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { onPublishPress, showMessage } from '../../resources/Functions';
 import { addService, addServiceImages } from '../../resources/API';
 import UsersContext from '../../../store/UsersContext';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
@@ -38,6 +40,11 @@ const ProviderAddServiceDetail = props => {
   const [other, setOther] = useState(false);
   const [editedDetailId, setEditedDetailId] = useState('');
 
+  const [PerPackage, setPerPackage] = useState(false);
+  const [PerPerson, setPerPerson] = useState(false);
+  const [PerTable, setPerTable] = useState(false);
+
+  const [priceInclude, setPriceInclude] = useState(null);
   const {
     serviceAddress,
     price,
@@ -89,6 +96,33 @@ const ProviderAddServiceDetail = props => {
       onPress: () => onPublishPress(allData),
     },
   };
+
+  const Package = () => {
+    setPerPackage(true)
+    setPerPerson(false)
+    setPerTable(false)
+    setAdditionType('perRequest')
+    setPriceInclude('perRequest')
+    // setPriceIncludeUpdated('perRequest')
+  }
+
+  const Person = () => {
+    setPerPackage(false)
+    setPerPerson(true)
+    setPerTable(false)
+    setPriceInclude('perPerson')
+    setAdditionType('perPerson')
+    // setPriceIncludeUpdated('perPerson')
+  }
+
+  const Table = () => {
+    setPerPackage(false)
+    setPerPerson(false)
+    setPerTable(true)
+    setPriceInclude('perTable')
+    setAdditionType('perTable')
+    // setPriceIncludeUpdated('perTable')
+  }
 
 
   const modalSavePress = () => {
@@ -273,33 +307,48 @@ const ProviderAddServiceDetail = props => {
 
           />
         </View>
-        {renderIsPerPerson()}
+        {/* {renderIsPerPerson()} */}
+        {renderIncludedType()}
       </View>
     );
   };
 
-  const setType = (type) => {
-    setAdditionType(type)
-  }
+ 
+  const renderIncludedType = () => {
 
-  const renderIsPerPerson = () => {
     return (
-      <View style={styles.perPersoneView}>
-        <Text style={styles.perPersoneText}>ما هو نوع تحديد السعر لهذة الخدمة ؟</Text>
-        <View style={{ alignItems: 'flex-end' }}>
+      <View >
+        <Text style={styles.perPersoneText}>السعر يشمل </Text>
+        <View style={styles.perPersoneView}>
+          <TouchableOpacity style={[PerPackage ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Package}>
 
-          <Pressable style={[additionType === 'perTable' ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={() => setType('perTable')}>
-            <Text style={styles.perPersoneText}>حسب الطاولة</Text>
-          </Pressable>
+            <MaterialCommunityIcons
+              style={{ alignSelf: 'center' }}
+              name={"all-inclusive"}
+              color={colors.puprble}
+              size={30} />
+            <Text style={styles.perPersoneText}>لكل الحجز</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity style={[PerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Person}>
 
-          <Pressable style={[additionType === 'perPerson' ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={() => setType('perPerson')}>
-            <Text style={styles.perPersoneText}>حسب الشخص</Text>
-          </Pressable>
+            <Fontisto
+              style={{ alignSelf: 'center' }}
+              name={"person"}
+              color={colors.puprble}
+              size={30} />
+            <Text style={styles.perPersoneText}>للشخص</Text>
+          </TouchableOpacity>
 
-          <Pressable style={[additionType === 'perRequest' ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={() => setType('perRequest')}>
-            <Text style={styles.perPersoneText}>شامل لكل الحجز</Text>
-          </Pressable>
+          <TouchableOpacity style={[PerTable ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Table}>
+
+            <MaterialCommunityIcons
+              style={{ alignSelf: 'center' }}
+              name={"table-furniture"}
+              color={colors.puprble}
+              size={30} />
+            <Text style={styles.perPersoneText}>للطاولة</Text>
+          </TouchableOpacity>
         </View>
         <View style={{ alignItems: 'center' }}>
           {additionType === 'perTable' &&
@@ -317,6 +366,8 @@ const ProviderAddServiceDetail = props => {
       </View>
     )
   }
+
+ 
   const RenderButtons = () => {
     return (
       <View style={styles.Modalbtn}>
@@ -623,29 +674,34 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   perPersoneView: {
-    marginTop: 20,
-    width: '80%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: colors.silver,
+    elevation: 5,
+    marginVertical: 10
   },
+
   itemPersonView: {
-    borderWidth: 4,
+    borderWidth: 2,
     borderColor: '#dcdcdc',
-    width: '50%',
-    height: 40,
+    width: '30%',
+    height: '80%',
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 5,
     borderRadius: 5,
-    marginTop: 10,
-
   },
   itemPersonViewPressed: {
-    borderWidth: 4,
+    borderWidth: 3,
     borderColor: colors.puprble,
-    width: '50%',
-    height: 40,
+    width: '30%',
+    height: '80%',
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 5,
     borderRadius: 5,
-    marginTop: 10,
+
   },
   perPersoneText: {
     fontSize: 18,
