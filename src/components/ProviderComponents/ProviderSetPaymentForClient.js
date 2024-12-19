@@ -477,8 +477,6 @@ import {
     const makePayment = () => {
       return (
         <View style={styles.paymentQuntView}>
-          {/* Removed the old code that displayed payment method selection here
-              since we now finalize everything in the parent */}
         </View>
       );
     };
