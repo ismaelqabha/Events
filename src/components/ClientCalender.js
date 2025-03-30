@@ -1,104 +1,239 @@
-import React, { useContext, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { ScreenNames } from '../../../route/ScreenNames';
-import { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, StyleSheet, Text, Pressable } from 'react-native';
+import { Calendar } from 'react-native-calendars';
+import moment from 'moment';
 import SearchContext from '../../store/SearchContext';
 import { colors } from '../assets/AppColors';
+import { getProviderRequests } from '../resources/API';
 
-const ClientCalender = (props) => {
-    const {selectDateforSearch, setselectDateforSearch} = useContext(SearchContext);
-    const [selected, setSelected] = useState('')
-    const [date, setDate] = useState(new Date())
+const ClientCalendar = (props) => {
+    const {
+        setselectDateforSearch,
+        selectDateforSearch,
+        periodDatesforSearch,
+        setperiodDatesforSearch,
+        dateFromCalender,
+        setDateFromCalender,
+        ProviderRequests, setProviderRequests
+    } = useContext(SearchContext);
 
+    const [selected, setSelected] = useState('');
+    const [date, setDate] = useState(new Date());
+    const [selectedPeriod, setSelectedPeriod] = useState(0); // 0: zero, 1: one day, 3: three days, etc.
 
-    useEffect(()=> {
-         setselectDateforSearch(null)   
-    },[])
-    
-    return (
-        <View style={styles.container}>
-            <Calendar
-                
-                style={{
+    const todayDate = new Date().setHours(0, 0, 0, 0);
 
-                    borderColor: 'gray',
-                    height: 250,
-                    width: 300,
-                    borderRadius: 20,
-                    //padding: 10,
-                    backgroundColor: 'white',
-                    // elevation: 5,
-
-                }}
-                theme={{
-                    backgroundColor: '#ffffff',
-                    calendarBackground: '#ffffff',
-                    textSectionTitleColor: '#b6c1cd',
-                    selectedDayBackgroundColor: colors.puprble,
-                    selectedDayTextColor: '#ffffff',
-                    todayTextColor: '#00adf5',
-                    dayTextColor: 'red',
-                    textDisabledColor: '#d9e1e8',
-                    dotColor: 'red',
-                    selectedDotColor: '#ffffff',
-                    arrowColor: colors.puprble,
-                    monthTextColor: 'black',
-                    textDayFontFamily: 'monospace',
-                    textMonthFontFamily: 'monospace',
-                    textDayHeaderFontFamily: 'monospace',
-                    textDayFontSize: 20,
-                    textMonthFontSize: 20,
-                    textDayHeaderFontSize: 14,
-                    width: 200
-                }}
-
-                minDate={date}
-                maxDate='2023-12-31'
-                onDayPress={day => {
-                    setselectDateforSearch(day.dateString);
-                    setSelected(day.dateString)
-                   console.log('selected da **', day.dateString);
-                }}
-                markedDates={{
-                    [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' }
-                }}
+    var reqDate
 
 
-                // Handler which gets executed on day long press. Default = undefined
-                onDayLongPress={day => {
-                    // console.log('selected day', day);
-                }}
-                // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
-                monthFormat={'MM yyyy'}
-                // Handler which gets executed when visible month changes in calendar. Default = undefined
-                onMonthChange={month => {
-                    console.log('month changed', month);
-                }}
-                // Do not show days of other months in month page. Default = false
-                hideExtraDays={false}
-                // day from another month that is visible in calendar page. Default = false
-                disableMonthChange={true}
-                // Handler which gets executed when press arrow icon left. It receive a callback can go back month
-                onPressArrowLeft={subtractMonth => subtractMonth()}
-                // Handler which gets executed when press arrow icon right. It receive a callback can go next month
-                onPressArrowRight={addMonth => addMonth()}
-                // Disable all touch events for disabled days. can be override with disableTouchEvent in markedDates
-                disableAllTouchEventsForDisabledDays={true}
-                // Enable the option to swipe between months. Default = false
-                enableSwipeMonths={false}
-            />
+    useEffect(() => {
+        onScreenLoad();
+    }, []);
+
+    const onScreenLoad = () => {
+        setSelectedPeriod(0);
+    };
+
+    const handlePeriodPress = (period) => {
+        setSelectedPeriod(period);
+        setperiodDatesforSearch(period);
+    };
+
+    const renderPeriod = () => (
+        <View style={styles.dayView}>
+            <View style={styles.rowView}>
+                {renderPeriodButton(0, 'بدون')}
+                {renderPeriodButton(1, '1 ايام')}
+                {renderPeriodButton(3, '3 ايام')}
+            </View>
+            <View style={styles.rowView}>
+                {renderPeriodButton(7, '7 ايام')}
+                {renderPeriodButton(14, '14 يوم')}
+            </View>
         </View>
     );
-}
+
+    const renderPeriodButton = (period, label) => (
+        <Pressable
+            style={[styles.dayRange, selectedPeriod === period && styles.dayRangeSelected]}
+            onPress={() => handlePeriodPress(period)}>
+
+            {period != 0 && <View style={{ alignItems: 'center' }}>
+                <Text style={{ fontSize: 20, lineHeight: 20, color: colors.puprble }}>+</Text>
+                <Text style={{ fontSize: 20, lineHeight: 12, color: colors.puprble }}>-</Text>
+            </View>}
+
+            <Text style={{ fontSize: 16, color: colors.puprble }}>{label}</Text>
+        </Pressable>
+    );
+
+    const selectDate = (day) => {
+        //console.log("day has been pressed");
+        setselectDateforSearch(day.dateString);
+        setSelected(day.dateString);
+        const availableDates = checkDateIsAvailable(day.dateString);
+        setDateFromCalender(availableDates);
+    };
+
+
+    const checkDateIsAvailable = (selectedDate) => {
+        // const allRequests = props.serviceRequests || [];
+        const SerID = props.service_id || ''
+        const serviceDates = props.dates || [];
+        const maxNumOfReq = props.maxNumberOFRequest || 0;
+        const requestedDate = moment(selectedDate, "YYYY-MM-DD");
+
+        let day = requestedDate.format('D')
+        let month = requestedDate.format('M')
+        let year = requestedDate.format('YYYY')
+        let completeDate = year + '-' + month + '-' + day
+
+        if (periodDatesforSearch < 1) {
+            if (checkDate(completeDate, serviceDates, SerID, maxNumOfReq)) {
+                return completeDate
+            }
+        } else {
+            const datesWithinPeriod = getDatesWithinPeriod(requestedDate, serviceDates, SerID, maxNumOfReq);
+            if (datesWithinPeriod.length > 0) {
+                return datesWithinPeriod
+            }
+        }
+    };
+    const getDatesWithinPeriod = (requestedDate, serviceDates, SerID, maxNumOfReq) => {
+        const datesWithinPeriod = [];
+        let period = (periodDatesforSearch * 2) + 1;
+        let day = requestedDate.date();
+        let month = requestedDate.month() + 1;
+        let year = requestedDate.year();
+
+        for (let i = -periodDatesforSearch; i <= periodDatesforSearch; i++) {
+            const currentDate = new Date(year, month - 1, day + i);
+            const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+
+            if (checkDate(formattedDate, serviceDates, SerID, maxNumOfReq) && new Date(formattedDate) > todayDate) {
+                datesWithinPeriod.push(formattedDate);
+            }
+        }
+        return datesWithinPeriod;
+    };
+
+
+    const getProividerRequestsForDate = (servicId, dataforReservation) => {
+        const queryInfo = {
+            ReqServId: servicId,
+            reservationDetail: [{ reservationDate: dataforReservation }]
+        }
+        getProviderRequests(queryInfo).then(res => {
+            // console.log(res);
+            if (res.message !== 'No Request') {
+                // setProviderRequests(res)
+            }
+        })
+
+    }
+    const countAllRequestDates = (SerID, date) => {
+
+        getProividerRequestsForDate(SerID, date)
+        const countAllReq = ProviderRequests.length
+        return countAllReq
+    }
+
+    const countAllRequestDates1 = (allRequests, date) => {
+        return allRequests.reduce((count, request) =>
+            count + request.reservationDetail.filter(detail => detail.reservationDate === date).length, 0);
+    };
+
+    const checkDate = (date, serviceDates, SerID, maxNumOfReq) => {
+        const countAllDates = countAllRequestDates(SerID, date);
+        if (countAllDates < maxNumOfReq) {
+            const dateFiltered = serviceDates[0]?.dates.find(dat =>
+                dat.time === date && (dat.status === 'full' || dat.status === 'holiday'));
+            if (dateFiltered) {
+                return false
+            }
+        }
+        return true;
+    };
+
+    return (
+        <View style={styles.container}>
+            {renderPeriod()}
+            <View>
+                <Calendar
+                    style={styles.calendar}
+                    theme={calendarTheme}
+                    minDate={date.toString()}
+                    onDayPress={(day) => selectDate(day)}
+                    markedDates={{ [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' } }}
+                    hideExtraDays={false}
+                    disableMonthChange={true}
+                    onPressArrowLeft={subtractMonth => subtractMonth()}
+                    onPressArrowRight={addMonth => addMonth()}
+                    disableAllTouchEventsForDisabledDays={true}
+                    enableSwipeMonths={false}
+                />
+            </View>
+        </View>
+    );
+};
+
+const calendarTheme = {
+    backgroundColor: '#ffffff',
+    calendarBackground: colors.silver,
+    textSectionTitleColor: '#b6c1cd',
+    selectedDayBackgroundColor: colors.puprble,
+    selectedDayTextColor: colors.silver,
+    todayTextColor: 'black',
+    dayTextColor: colors.puprble,
+    textDisabledColor: 'gray',
+    dotColor: 'red',
+    selectedDotColor: 'red',
+    arrowColor: colors.puprble,
+    monthTextColor: colors.puprble,
+    textDayFontFamily: 'monospace',
+    textMonthFontFamily: 'monospace',
+    textDayHeaderFontFamily: 'monospace',
+    textDayFontSize: 20,
+    textMonthFontSize: 20,
+    textDayHeaderFontSize: 14,
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        //justifyContent: 'center',
         alignItems: 'center',
-
     },
-})
+    dayRange: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        borderWidth: 1,
+        borderColor: 'lightgray',
+        alignItems: 'center',
+        width: 90,
+        height: 40,
+        borderRadius: 15,
+        marginHorizontal: 5,
+    },
+    dayRangeSelected: {
+        borderWidth: 2,
+        borderColor: colors.puprble,
+    },
+    dayView: {
+        width: '100%',
+    },
+    rowView: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        marginTop: 3,
+    },
+    calendar: {
+        borderColor: 'gray',
+        height: 300,
+        width: 300,
+        borderRadius: 20,
+        backgroundColor: 'white',
+    },
+});
 
-export default ClientCalender;
+export default ClientCalendar;

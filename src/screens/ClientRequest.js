@@ -1,335 +1,434 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { View, StyleSheet, Text, Image, Pressable, ScrollView, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, ScrollView } from 'react-native';
 import SearchContext from '../../store/SearchContext';
-import { ScreenNames } from '../../route/ScreenNames';
+import UsersContext from '../../store/UsersContext';
 import moment from 'moment';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { addNewRequest, deleteRequestbyId, getServiceImages } from '../resources/API';
-import DetailComp from '../components/DetailComp';
-import { v4 as uuidv4 } from 'uuid';
-
-
+import { addNewRequest, updateEvent, updateRequest } from '../resources/API';
+import { colors } from '../assets/AppColors';
+import RequestDetail from '../components/RequestDetail';
+import { calculateTotalPrice, showMessage } from '../resources/Functions'
+import Recipt from '../components/ProviderComponents/recipt';
+import SetEventForRequest from '../components/SetEventForRequest';
+import { ScreenNames } from '../../route/ScreenNames';
 
 
 const ClientRequest = (props) => {
-    const { data } = props?.route.params
-    const { sType, userId, ServiceImages, setServiceImages, requestedDate, TimeText, setTimeText,
-        setisFromRequestScreen, requestInfo, setRequestInfo, detailIdState, setRequestIdState } = useContext(SearchContext);
-    const [textValue, setTextValue] = useState('');
-    const [selectTime, setSelectTime] = useState(false);
-    const [detailViewPressed, setDetailViewPressed] = useState(false);
-    const [campaignViewPressed, setCampaignViewPressed] = useState(false);
-    const idReq = uuidv4()
-
-
+    const { data, isfromClientShowRequest } = props?.route.params
+    const { userId } = useContext(UsersContext);
+    const {
+        requestedDate, setrequestedDate, setRequestInfoAccUser, requestInfoAccUser,
+        resDetail,
+        eventInfo, setEventInfo,
+        eventTypeInfo, totalPrice, setTotalPrice,
+        evTiltleId, EVENTID, updatedEventDate, eventTotalCost, fileEventName, setResDetail
+    } = useContext(SearchContext);
+    const [showDetailRecipt, setShowDetailRecipt] = useState(false)
+    const [selectTime, setSelectTime] = useState(true);
     const [date, setDate] = useState(new Date());
-    const [mode, setMode] = useState('time');
-    const [show, setShow] = useState(false);
-
-
-    const showMode = (currentMode) => {
-        setShow(true);
-        setMode(currentMode);
-    }
-    const onChange = (event, selectedDate) => {
-        setShow(false)
-        const currentDate = selectedDate || date;
-        setDate(currentDate);
-
-        let tempDate = new Date(currentDate);
-        let fTime = tempDate.getHours() + ':' + tempDate.getMinutes();
-        setTimeText(fTime);
-
-    }
-
-    const onPressRequest = () => {
-        props.navigation.navigate(ScreenNames.ClientEvents, { data: { ...data }, isFromAddEventClick: true })
-    }
-
-    const onPressHandler = () => {
-        setisFromRequestScreen(false)
-        removeRequest()
-        props.navigation.goBack();
-    }
-    const removeRequest = () => {
-        deleteRequestbyId({ RequestId: idReq }).then(res => {
-            setRequestInfo(res)
-            console.log("Request Deleted");
-        })
-    }
-    const getImagesfromApi = () => {
-        getServiceImages({ serviceID: data?.service_id }).then(res => {
-            setServiceImages(res)
-
-        })
-    }
-    const creatNewRequest = () => {
-        setRequestIdState(idReq)
-        const newRequestItem = {
-            RequestId: idReq,
-            ReqServId: data?.service_id,
-            ReqUserId: userId,
-            ReqStatus: 'false',
-            ReqDate: moment(date).format('L'),
-            reservationDate: moment(requestedDate).format('L')
-        }
-        addNewRequest(newRequestItem).then(res => {
-            const req = requestInfo || [];
-            req.push(newRequestItem)
-            setRequestInfo([...req])
-            console.log("Request Created");
-        })
-    }
-
-    const checkavailblity = () => {
-        showMode('time')
-        if (TimeText != "00:00") {
-            setSelectTime(true)
-        } else {
-            Alert.alert(
-                'تنبية',
-                'الرجاء اختيار الوقت الزمني للحجز',
-                [
-                    {
-                        text: 'Ok',
-                        style: 'cancel',
-                    },
-                ],
-                { cancelable: false } // Prevent closing the alert by tapping outside
-            );
-        }
-    }
+    const [selectedDate, setSelectedDate] = useState()
+    const [pressed, setPressed] = useState([])
+    const [IveEvent, setIveEvent] = useState(false);
+    const scrollViewRef = useRef();
+    const targetComponentRef = useRef();
+    let eventItemIndex
 
     useEffect(() => {
-        getImagesfromApi()
-        setisFromRequestScreen(true)
-        creatNewRequest()
+        //console.log(">>>", isfromClientShowRequest);
+        if (isfromClientShowRequest) {
+            const dates = data.reservationDetail.map((res) => res.reservationDate)
+            setrequestedDate([...dates])
+            setSelectedDate(requestedDate[0])
+            setResDetail([...data.reservationDetail])
+        }
     }, [])
 
-    const queryImg = () => {
-        return ServiceImages?.filter(photo => {
-            return photo.coverPhoto == true
-        });
+    const onPressHandler = () => {
+        props.navigation.goBack();
+    }
+
+    const getEventsfromApi = () => {
+        if (eventInfo.message == 'No Event') {
+            setIveEvent(false)
+        } else {
+            setIveEvent(true)
+        }
+    }
+
+    const handleScrollToPosition = () => {
+        if (targetComponentRef.current) {
+            targetComponentRef.current.measureLayout(
+                scrollViewRef.current,
+                (x, y) => {
+                    // Scroll to the position of the component
+                    scrollViewRef.current.scrollTo({ x: 0, y, animated: true });
+                }
+            );
+        }
+    };
+    const checkAllDetails = () => {
+        if (typeof totalPrice !== 'number' || totalPrice <= 0) {
+            showMessage("Please choose proper services.");
+            return false;
+        }
+
+        if (!data || !data._id) {
+            showMessage("Invalid service data.");
+            return false;
+        }
+
+        if (!userId) {
+            showMessage("Invalid user ID.");
+            return false;
+        }
+
+        if (!Array.isArray(resDetail) || resDetail.length === 0) {
+            showMessage("Please provide reservation details.");
+            return false;
+        }
+
+        // Iterate through each reservation detail and perform checks
+        for (const detail of resDetail) {
+            if (!detail.reservationDate || !detail.startingTime || !detail.EndTime ||
+                detail.numOfInviters === null || !Array.isArray(detail.subDetailId) ||
+                !Array.isArray(detail.offerId) || (detail.subDetailId.length === 0 &&
+                    detail.offerId.length === 0)) {
+                showMessage("Please fill all reservation details.");
+                return false;
+            }
+        }
+
+        return true;
     };
 
-    const renderServiceImage = () => {
-        const logo = queryImg();
-        const coverphoto = logo.map(img => {
-            return <Image
-                source={{ uri: img.image }}
-                style={styles.img}
-            />
-        })
-
-        return coverphoto
+    const filterRequestAccService = () => {
+        if (requestInfoAccUser.message !== "no Request") {
+            const searchReq = requestInfoAccUser.filter(item => {
+                return item.serviceData.find(element => {
+                    return element.service_id === data.service_id
+                })
+            })
+            return searchReq
+        } else {
+            return []
+        }
     }
 
-    const renderServiceinfo = () => {
-        return <View style={styles.DateView}><View style={styles.imgTitle}>
-            <View style={{ margin: 10, alignItems: 'flex-end' }}>
-                <Text style={styles.text}>{data?.title}</Text>
-                <Text style={styles.text}>{data?.address}</Text>
-                <Text style={{}}>5★</Text>
-            </View>
-            {/* {renderServiceImage()} */}
-        </View></View>;
-    }
+    const updateRequestInfoState = (requestBody) => {
 
-    const renderDateTime = () => {
-        return <View style={styles.DateView}>
-            <Text style={styles.t1}> الزمان </Text>
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-                <Text style={styles.t3}>{moment(requestedDate).format('LL')}</Text>
-                <Text style={styles.t3}>{moment(requestedDate).format('dddd')}</Text>
-            </View>
-            <Pressable onPress={() => checkavailblity()} >
-                <View style={styles.viewDate}>
-                    <Text style={styles.text}>{TimeText || "00:00"}</Text>
-                    <Image
-                        style={styles.icoon}
-                        source={require('../assets/photos/time.png')}
-                    />
-                </View>
-            </Pressable>
-            {show && (
-                <DateTimePicker
-                    testID='dateTimePicker'
-                    value={date}
-                    mode={mode}
-                    is24Hour={true}
-                    display='clock'
-                    onChange={onChange}
-                />
-            )}
-        </View>
-    }
-    const detailPress = () => {
-        setDetailViewPressed(true)
-        setCampaignViewPressed(false)
-    }
-    const campaignPress = () => {
-        setDetailViewPressed(false)
-        setCampaignViewPressed(true)
-    }
-    const handleClosePress = () => {
-        setDetailViewPressed(false)
-        setCampaignViewPressed(false)
-    }
+        const searchReq = filterRequestAccService()
+        //console.log("searchReq", searchReq);
 
-    const renderDetail = () => {
-        return (
-            <View style={[styles.detailView, detailViewPressed ? styles.detailView : styles.pressDetailView]}>
-                <TouchableOpacity onPress={detailPress}>
-                    <Text style={styles.detailViewText}>تحديد التفاصيل</Text>
-                </TouchableOpacity>
-                {detailViewPressed &&
-                    <View style={{ flex: 1 }}>
-                        <View style={{ alignItems: 'center', marginTop: 30 }}>
-                            <ScrollView>
-                                <DetailComp service_id={data.service_id} />
-                            </ScrollView>
-                        </View>
-                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
-            </View>
-        )
-    }
-    const renderCampaighn = () => {
-        return (
-            <View style={[styles.detailView, campaignViewPressed ? styles.detailView : styles.pressDetailView]}>
-                <TouchableOpacity onPress={campaignPress}>
-                    <Text style={styles.detailViewText}>اختيار احد العروض</Text>
-                </TouchableOpacity>
-                {campaignViewPressed &&
-                    <View style={{ flex: 1 }}>
-                        <View style={{ alignItems: 'center', marginTop: 30 }}>
+        const RequestsArray = []
+        const requestsinfo = []
+        const serviceBookingDates = data.dates
+        const servicePhotos = data.images
+        const serviceCampiagns = data.relatedCamp
+        const serviceInfo = {
+            service_id: data.service_id,
+            userID: data.userID,
+            servType: data.servType,
+            title: data.title,
+            subTitle: data.subTitle,
+            desc: data.desc,
+            region: data.region,
+            address: data.address,
+            serviceLocation: data.serviceLocation,
+            servicePrice: data.servicePrice,
+            workingRegion: data.workingRegion,
+            maxCapasity: data.maxCapasity,
+            hallType: data.hallType,
+            additionalServices: data.additionalServices,
+            socialMedia: data.socialMedia,
+            eventWorkWith: data.eventWorkWith,
+            servicePhone: data.servicePhone,
+            serviceEmail: data.serviceEmail,
+            clients: data.clients,
+            serviceStutes: data.serviceStutes,
+            paymentPolicy: data.paymentPolicy,
+            maxNumberOFRequest: data.maxNumberOFRequest
+        }
 
-                        </View>
-                        <TouchableOpacity onPress={handleClosePress} style={styles.closeView}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>اغلاق</Text>
-                        </TouchableOpacity>
-                    </View>
-                }
-            </View>
-        )
-    }
-    const renderServiceDetail = () => {
-        return <View style={styles.HallView}>
-            <Text style={styles.desc1}>تفاصيل الحجز</Text>
-            <View style={{}}>
-                {checkType()}
-                {renderDetail()}
-                {renderCampaighn()}
-            </View>
-        </View>
-    }
-    const CatOfService = {
-        'قاعات': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد المدعوين',
-        }],
-        'تصوير': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد الكاميرات',
-        }],
-        'Makeup': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد الايام',
-        }],
-        'شيف': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد الايام',
-        }],
-        'تصفيف شعر': [{
-            style: styles.input,
-            placeholder: 'ادخل عدد الايام',
-        }],
-        'بطاقات دعوة': [
-            {
-                style: styles.input,
-                placeholder: 'ادخل عدد النسخ',
-            },
-            {
-                style: styles.input,
-                placeholder: 'نص البطاقة',
+
+        if (searchReq.length > 0) {
+            const requestInfo = searchReq[0].requestInfo
+            const requestStateIndex = requestInfoAccUser?.findIndex(item => item.serviceData[0].service_id === data.service_id)
+            if (requestInfo.length > 0) {
+                requestInfo.forEach(element => {
+                    requestsinfo.push(element)
+                });
             }
-        ],
-        'حلويات': [{
-            style: styles.input,
-            placeholder: 'ادخل الكمية',
-        }]
-    }
-    const renderInput = () => {
-        return CatOfService[sType].map(type => {
-            return (<TextInput
-                {...type}
-                value={textValue}
-                onChangeText={setTextValue} />)
-        })
-    }
 
-    const checkType = () => {
+            const serRequests = {
+                serviceRequest: [requestBody],
+                requestPayment: []
+            }
+            requestsinfo.push(serRequests)
+
+            const req = requestInfoAccUser || [];
+            if (requestStateIndex > -1) {
+                req[requestStateIndex].requestInfo = requestsinfo;
+            }
+            //console.log("req", req);
+            setRequestInfoAccUser([...req])
+
+        } else {
+            // const requestInfo = []
+            const serRequests = {
+                serviceRequest: [requestBody],
+                requestPayment: []
+            }
+            requestsinfo.push(serRequests)
+
+            const allRequestdata = {
+                requestInfo: requestsinfo,
+                BookDates: serviceBookingDates,
+                serviceCamp: serviceCampiagns,
+                serviceData: [serviceInfo],
+                serviceImage: servicePhotos,
+            }
+            if (requestInfoAccUser.length > 0) {
+                requestInfoAccUser.forEach(element => {
+                    RequestsArray.push(element)
+                });
+            }
+            RequestsArray.push(allRequestdata)
+            //console.log("RequestsArray", RequestsArray);
+            setRequestInfoAccUser([...RequestsArray])
+        }
+
+
+    }
+    const UpdateEventInfo = () => {
+
+        eventItemIndex = eventInfo?.findIndex(item => item.EventId === EVENTID && item.userId === userId)
+
+        // console.log(EVENTID, userId);
+        const newEventItem = {
+            EventId: EVENTID,
+            eventName: fileEventName,
+            eventCost: eventTotalCost,
+            eventDate: updatedEventDate,
+            eventTitleId: evTiltleId,
+            userId: userId
+        }
+
+        //console.log("newEventItem", newEventItem);
+        updateEvent(newEventItem).then(res => {
+
+            const ev = eventInfo || [];
+            if (eventItemIndex > -1) {
+                ev[eventItemIndex] = newEventItem;
+            }
+
+            if (res.message === 'Updated Sucessfuly') {
+                setEventInfo([...ev])
+                showMessage("تم التعديل")
+            } else {
+                showMessage("لم يتم التعديل")
+            }
+
+        }).catch((E) => {
+            console.error("error creating request E:", E);
+        })
+
+    }
+    const onServiceRequest = () => {
+        if (!checkAllDetails()) {
+            return;
+        }
+        delete resDetail["campaigns"];
+
+        const requestBody = {
+            ReqDate: moment(date).format('YYYY-MM-DD, h:mm a'),
+            ReqStatus: 'waiting reply',
+            ReqEventId: EVENTID,
+            Cost: totalPrice,
+            ReqServId: data?.service_id,
+            ReqUserId: userId,
+            ReqEventTypeId: evTiltleId,
+            reservationDetail: resDetail,
+            paymentInfo: []
+        };
+
+        if (isfromClientShowRequest) {
+            requestBody.RequestId = data.RequestId
+            updateRequest(requestBody).then((res) => {
+                if (res.message === 'Updated Successfully') {
+                    updateRequestInfoState(res?.request);
+                    showMessage("Request updated successfully");
+                    UpdateEventInfo();
+                } else {
+                    showMessage("Failed to update request");
+                    return;
+                }
+            }).catch((E) => {
+                console.error("Error updating request:", E);
+                return;
+            });
+        } else {
+            addNewRequest(requestBody).then((res) => {
+                if (res.message === 'Request Created') {
+                    updateRequestInfoState(res?.request);
+                    showMessage("Request created successfully");
+                    UpdateEventInfo();
+                } else {
+                    showMessage("Failed to create request");
+                    return;
+                }
+            }).catch((E) => {
+                console.error("Error creating request:", E);
+                return;
+            });
+        }
+
+        props.navigation.navigate(ScreenNames.ClientEvents);
+    };
+
+
+    useEffect(() => {
+        getEventsfromApi()
+    }, [])
+
+    useEffect(() => {
+        setSelectedDate(requestedDate[0])
+    }, [])
+
+
+
+    const renderHeader = () => {
         return (
-            <View style={styles.VHall}>
-                {renderInput()}
+            <View style={styles.header}>
+                <Pressable onPress={onPressHandler}
+                >
+                    <Ionicons
+                        style={styles.icon}
+                        name={"arrow-back"}
+                        color={"black"}
+                        size={25} />
+                </Pressable>
+                <Text style={styles.txt}>طلب حجز</Text>
             </View>
         )
     }
-    const pricingPress = () => {
-        props.navigation.navigate(ScreenNames.ServiceDetail, { data: { ...data } })
-    }
+    const renderFoter = () => {
+        var buttonText = isfromClientShowRequest ? "تحديث الطلب" : "ارسال طلب"
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.title}>
-                    <Pressable onPress={onPressHandler}
-                    >
-                        <Ionicons
-                            style={styles.icon}
-                            name={"arrow-back"}
-                            color={"black"}
-                            size={25} />
-                    </Pressable>
-                    <Text style={styles.txt}>Request</Text>
-                </View>
-
-            </View>
-
-            <ScrollView contentContainerStyle={styles.home}>
-                {renderServiceinfo()}
-
-                {renderDateTime()}
-
-                {renderServiceDetail()}
-
-                {/* <View style={styles.body}>
-                    <Pressable style={styles.priceView} onPress={pricingPress}>
-                        <Text style={styles.descText}>تحديد الرزمة</Text>
-                    </Pressable>
-                </View> */}
-
-                <View style={styles.body}>
-                    <Text style={styles.t1}>سياسة الغاء الحجز</Text>
-
-                </View>
-                <View style={styles.body}>
-                    <Text style={styles.t1}>لن يتم تأكيد الحجز حتى يقوم صاحب الخدمة بقبول الطلب خلال 24 ساعة</Text>
-
-                </View>
-            </ScrollView>
+        return (
             <View style={styles.foter}>
-                <Pressable onPress={() => onPressRequest()}
+                <Pressable onPress={() => onServiceRequest()}
                     disabled={selectTime ? false : true}
                     style={[styles.btnview, selectTime ? styles.btnview : styles.btnRequestApproved]}
                 >
-                    <Text style={styles.btntext}>ارسال طلب</Text>
+                    <Text style={styles.btntext}>{buttonText}</Text>
                 </Pressable>
             </View>
+        )
+    }
+
+    // render service logo and title
+    const renderServiceinfo = () => {
+        return <View >
+            <View style={styles.titleView}>
+                <View style={{ margin: 10, alignItems: 'flex-end' }}>
+                    <Text style={styles.titleText}>{data?.title}</Text>
+                    <Text style={styles.titleText}>{data?.address}</Text>
+                    <Text style={styles.titleText}>5★</Text>
+                </View>
+                {renderServiceImage()}
+            </View>
+        </View>;
+    }
+    const renderServiceImage = () => {
+        const index = data.images[0].logoArray?.findIndex((val) => val === true)
+        const image = data.images[0]?.serviceImages[index]
+        return <Image
+            source={{ uri: image }}
+            style={styles.img}
+        />
+    }
+
+
+    // render reservation Dates
+    const handleDatePress = (item) => {
+        setSelectedDate(item)
+    }
+    const renderDate = (item, index) => {
+        return (
+            <Pressable ref={targetComponentRef} onPress={() => handleDatePress(item)} key={index} style={selectedDate === item ? styles.dateItemPressed : styles.dateItem}
+            >
+                <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
+                    {moment(item).format('dddd')}</Text>
+                <Text style={selectedDate === item ? styles.dateTxtPressed : styles.dateTxt}>
+                    {moment(item).format('L')}
+                </Text>
+            </Pressable>
+        )
+    }
+    const renderRequestedDates = () => {
+        if (Array.isArray(requestedDate)) {
+            return requestedDate.map((item, index) => {
+                return (
+                    renderDate(item, index)
+                )
+            })
+        } else {
+            return (
+                <View style={styles.dateItem1}>
+                    <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('dddd')}</Text>
+                    <Text style={styles.dateTxtPressed}>{moment(requestedDate).format('L')}</Text>
+                </View>
+            )
+        }
+    }
+
+    /// request information and reservation detail
+    const renderRequestInfo = () => {
+        return <View style={styles.requestDetailView}>
+            <RequestDetail {...data} isfromClientShowRequest={isfromClientShowRequest} 
+            selectedDate={selectedDate} 
+            setSelectedDate={setSelectedDate} 
+            handleScrollToPosition={handleScrollToPosition} 
+            pressed={pressed} setPressed={setPressed} />
+        </View>
+    }
+
+    // Call the function to calculate the initial total price
+
+    useEffect(() => {
+        calculateTotalPrice(resDetail, requestedDate, data, setTotalPrice);
+    }, [requestedDate, resDetail]);
+
+    return (
+        <View style={styles.container}>
+            {renderHeader()}
+
+            <ScrollView ref={scrollViewRef} contentContainerStyle={styles.home}>
+                {renderServiceinfo()}
+                <View style={styles.DateView}>
+                    <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
+                        {renderRequestedDates()}
+                    </ScrollView>
+                </View>
+                {renderRequestInfo()}
+
+                <View style={styles.eventView}>
+                    <SetEventForRequest serviceType={data?.servType} isfromClientShowRequest={isfromClientShowRequest || false} selectedEvent={data.eventData} />
+                </View>
+
+                <Recipt
+                    totalPrice={totalPrice}
+                    requestedDate={requestedDate}
+                    resDetail={resDetail}
+                    showDetailRecipt={showDetailRecipt}
+                    setShowDetailRecipt={setShowDetailRecipt}
+                    data={data}
+                />
+                <View style={styles.body}>
+                    <Text style={styles.text}>لن يتم تأكيد الحجز حتى يقوم صاحب الخدمة بقبول الطلب خلال 24 ساعة</Text>
+                </View>
+                {renderFoter()}
+            </ScrollView>
         </View>
     );
 }
@@ -337,211 +436,181 @@ const ClientRequest = (props) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#dcdcdc',
-    },
-    VHall: {
-        flexDirection: 'row',
-        alignSelf: 'center',
-        marginBottom: 10,
-    },
-    HallView: {
-        backgroundColor: 'white',
-        height: 730,
-        borderRadius: 5,
-        margin: 5,
-
-    },
-    DateView: {
-        backgroundColor: 'white',
-        height: 200,
-        justifyContent: 'center',
-        borderRadius: 5,
-        margin: 5,
-    },
-    descText: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: 'black',
-    },
-    detailViewText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        margin: 10,
-        position: 'absolute',
-        right: 0,
-        top: 0
-    },
-    detailView: {
-        width: '90%',
-        height: 500,
-        backgroundColor: 'snow',
-        elevation: 5,
-        borderRadius: 8,
-        margin: 10,
-        alignSelf: 'center',
-
-    },
-    pressDetailView: {
-        width: 350,
-        height: 60,
-        backgroundColor: 'snow',
-        elevation: 5,
-        borderRadius: 8,
-        margin: 10,
-        alignSelf: 'center',
-    },
-    closeView: {
-        height: 30,
-        width: 80,
-        borderRadius: 5,
-        backgroundColor: '#ffff',
-        elevation: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
-        margin: 10,
-        position: 'absolute',
-        bottom: 0,
-        right: 0
-    },
-
-    priceView: {
-        backgroundColor: 'snow',
-        height: 50,
-        width: 200,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 5,
-        elevation: 5
-    },
-
-    t1: {
-        fontSize: 20,
-        //marginTop: 10,
-        marginRight: 20,
-        color: 'black',
-        fontWeight: 'bold',
-    },
-    t2: {
-        fontSize: 15,
-        //marginTop: 10,
-        marginRight: 20,
-        color: 'black',
-        fontWeight: 'bold',
-    },
-    t3: {
-        fontSize: 15,
-        color: 'black',
-        margin: 10
-    },
-    viewDate: {
-        flexDirection: 'row',
-        alignSelf: 'center',
-        width: 200,
-        height: 50,
-        borderRadius: 5,
-        alignItems: 'center',
-        backgroundColor: 'snow',
-        justifyContent: 'space-evenly',
-        elevation: 5
-    },
-    icoon: {
-        width: 35,
-        height: 35,
-    },
-    text: {
-        fontSize: 20,
-        color: 'black'
-    },
-    txt: {
-        fontSize: 20,
-        marginLeft: 120
+        backgroundColor: colors.silver,
     },
     header: {
         backgroundColor: 'white',
-        //height: 200,
-        // marginBottom: 10,
+        flexDirection: 'row',
+        width: '100%',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
+    titleView: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        backgroundColor: 'white',
+        marginVertical: 5,
+        width: '95%',
+        height: 150,
+        alignSelf: 'center',
+        alignItems: 'center',
+        paddingRight: 10,
+        borderRadius: 15
+    },
+    DateView: {
+        backgroundColor: 'white',
+        justifyContent: 'flex-start',
+        marginBottom: 5,
+        width: "95%",
+        height: 80,
+        alignItems: 'center',
+        alignSelf: 'center',
+        borderRadius: 15,
+        //borderWidth: 1
+    },
+
+    dateItem: {
+        width: 120,
+        height: 50,
+        marginHorizontal: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        borderWidth: 2,
+        borderColor: 'lightgray',
+        marginRight: 20,
+        borderRadius: 5,
+    },
+    dateItemPressed: {
+        width: 120,
+        height: 50,
+        marginHorizontal: 3,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        borderWidth: 2,
+        borderColor: colors.puprble,
+        marginRight: 20,
+        borderRadius: 5,
+    },
+    dateItem1: {
+        borderRadius: 5,
+        width: 120,
+        height: 50,
+        alignSelf: 'center',
+        borderWidth: 2,
+        borderColor: colors.silver,
+    },
+    dateTxt: {
+        fontSize: 15,
+        color: colors.puprble,
+        textAlign: 'center'
+    },
+    dateTxtPressed: {
+        fontSize: 15,
+        color: colors.puprble,
+        textAlign: 'center'
+    },
+
+    requestDetailView: {
+        width: '95%',
+        alignSelf: 'center',
+        borderRadius: 10,
+        marginBottom: 5,
+    },
+
+    detailText: {
+        fontSize: 20,
+        color: colors.puprble,
+        marginRight: 20
+    },
+    titleText: {
+        fontSize: 16,
+        color: colors.puprble,
+
+    },
+    eventView: {
+        backgroundColor: 'white',
+        marginBottom: 5,
+        width: '95%',
+        paddingRight: 10,
+        paddingVertical: 10,
+        alignSelf: 'center',
+        borderRadius: 15
+    },
+
+    myEvents: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: "70%",
+        height: 60,
+        alignSelf: 'center',
+        marginVertical: 5,
+        backgroundColor: 'lightgray',
+        elevation: 5,
+        borderRadius: 10
+    },
+
+    text: {
+        fontSize: 15,
+        marginRight: 10,
+        color: colors.puprble
+    },
+    txt: {
+        fontSize: 20,
+        marginRight: 20,
+        color: colors.puprble
+    },
+
     body: {
         backgroundColor: 'white',
+        width: '95%',
         height: 100,
-        margin: 5,
-
-        borderRadius: 5,
-        margin: 5,
-        //alignItems: 'center',
-
+        marginBottom: 5,
+        paddingHorizontal: 5,
+        alignSelf: 'center',
+        borderRadius: 15,
+        justifyContent: 'center'
     },
-    title: {
-        flexDirection: 'row',
-        marginTop: 20,
-    },
+
     icon: {
-        alignSelf: 'flex-start',
         marginLeft: 10,
     },
     img: {
         width: 150,
         height: 120,
         borderRadius: 15,
-        backgroundColor: 'black',
         justifyContent: 'flex-end'
     },
-    imgTitle: {
-        flexDirection: 'row',
-        //marginTop: 20,
-        justifyContent: 'space-around'
-    },
 
-    desc1: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
-        marginRight: 20,
-        marginTop: 10,
-    },
-    input: {
-        textAlign: 'center',
-        height: 50,
-        width: 200,
-        borderWidth: 1,
-        borderRadius: 10,
-        borderColor: 'black',
-        fontSize: 15,
-        fontWeight: 'bold',
-        marginTop: 20,
-        marginRight: 10,
-        color: 'black',
-        backgroundColor: '#fffaf0',
-    },
     foter: {
-        height: 80,
-        justifyContent: 'center',
         alignItems: 'flex-end',
-        backgroundColor: '#fffaf0',
+        width: '100%'
     },
     btntext: {
         fontSize: 20,
-        fontWeight: 'bold',
-        color: 'black',
+        color: 'white',
     },
     btnview: {
-        backgroundColor: '#f0ffff',
+        backgroundColor: colors.puprble,
         width: 150,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
-        marginRight: 20,
-        elevation: 5
+        elevation: 5,
+        margin: 10
     },
     btnRequestApproved: {
-        backgroundColor: '#f0ffff',
+        backgroundColor: colors.puprble,
         width: 150,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
-        marginRight: 20,
+        margin: 10,
         elevation: 5,
         opacity: 0.3
     },

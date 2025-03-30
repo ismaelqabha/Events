@@ -1,12 +1,12 @@
 const strings = {
   cardtxt1: 'على استعداد لتلبية جميع مناسباتكم',
   arabic: {
-    ProviderComps:{
-      ProviderSocialMediaScreen:{
-        Phone:"رقم الهاتف ",
+    ProviderComps: {
+      ProviderSocialMediaScreen: {
+        Phone: "رقم الهاتف ",
         mail: "Example@gmail.com",
         socialType: 'نوع الشبكة الاجتماعية',
-        wrongEmail:"بريد إلكتروني خاطئ"
+        wrongEmail: "بريد إلكتروني خاطئ"
       }
     },
     ProviderScreens: {
@@ -27,7 +27,7 @@ const strings = {
       },
       ProviderAddInfo: {
         HeadText: ' إنشاء خدمة جديدة',
-        title: 'أسم الخدمة',
+        title: 'أسم المصلحة',
         subTitle: 'العنوان الترويجي',
         description: 'الوصف ',
         LocationHeadText: 'قم بأضافة تفاصيل الموقع :',
@@ -39,15 +39,15 @@ const strings = {
         cancelButton: 'البقاء',
         confirmButton: 'الخروج',
         SubHeader: ' عنوان الخدمة خاصتك؟',
-        HeaderTitle:'املئ التفاصيل التالية:',
+        HeaderTitle: 'املئ التفاصيل التالية:',
         chooseLocation: 'أختر المدينة',
         address: 'المنطقة',
-        titleRequired:'*',
-        titleLengthError:' تم وصول الحد الاقصى* ',
-        SuTitleRequired : '* العنوان الفرعي الزامي',
-        descriptionRequired:'* الوصف  الزامي ',
-        HallHeadText:'قم باضافة تفاصيل القاعة :',
-        HallType:"نوع القاعة",
+        titleRequired: '*',
+        titleLengthError: ' تم وصول الحد الاقصى* ',
+        SuTitleRequired: '* العنوان الفرعي الزامي',
+        descriptionRequired: '* الوصف  الزامي ',
+        HallHeadText: 'قم باضافة تفاصيل القاعة :',
+        HallType: "نوع القاعة",
         HallCapacity: 'القدرة الاستيعابية'
 
       },
@@ -79,7 +79,7 @@ const strings = {
         Answer3: 'حسب  تفاصيل الخدمات المقدمة',
         what: 'ما هذا ؟'
       },
-      ProviderInitialWithDetailPrice:{
+      ProviderInitialWithDetailPrice: {
         Header: 'تحديد الاسعار ',
         Back: 'رجوع',
         addServDetailes: 'أضافة تفاصيل الخدمات',
@@ -91,28 +91,30 @@ const strings = {
         CreateButton: 'انشاء جديد',
         Cancel: 'الغاء',
         Save: 'حفظ',
-        Title: 'أدخل اسم الخدمة',
+        editSave: 'تعديل',
+        Title: ' الخدمة',
         Next: 'معاينة ثم حفظ ونشر',
         Back: 'رجوع',
         mandotryText: 'الخدمات الاجبارية',
         optionalText: 'الخدمات الاختيارية',
-        dropdownText: 'خدمة اجبارية'
+        dropdownText: 'اختيار نوع الخدمة'
       },
       ProviderSubDetail: {
-        Header: 'ما هي تفاصيل الخدمات التي تقدمها ؟',
+        Header: 'ما هو مبنى تفاصيل الخدمة ؟',
         CreateNew: 'انشاء جديد',
         Back: 'رجوع',
         Save: 'حفظ',
+        editSave: 'تعديل',
         Cancel: 'الغاء',
         ServDetailes: 'تفاصيل الخدمة',
-        Price: 'السعر المقترح',
+        Price: 'السعر',
         ModalHeader: 'أدخل تفاصيل الخدمة',
       },
       ProviderSocialMediaScreen: {
         Next: 'التالي',
         Header: 'اضف معلومات الاتصال الخاصة بالخدمة'
       },
-      ProviderContantPrice:{
+      ProviderContantPrice: {
         Header: 'ما هو السعر الثابت مقابل الخدمة',
         setPrice: 'تحديد السعر',
         Next: 'معاينة ثم حفظ ونشر',

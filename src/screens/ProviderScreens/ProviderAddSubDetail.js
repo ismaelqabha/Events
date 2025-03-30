@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,28 +8,63 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Image,
+  Alert
 } from 'react-native';
 import SearchContext from '../../../store/SearchContext';
+import { launchImageLibrary } from 'react-native-image-picker';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProviderSubDetailComp from '../../components/ProviderComponents/ProviderSubDetailComp';
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { colors } from '../../assets/AppColors';
 
 const ProviderAddSubDetail = props => {
-  const {data} = props?.route.params;
+  const { data } = props?.route.params;
   const [showModal, setShowModal] = useState(false);
   const [SDtitle, setSDTitle] = useState('');
   const [SPricetitle, setSPricetitle] = useState('');
-  const {additionalServices, setAdditionalServices} = useContext(
+  const [subDetailImg, setSubDetailImg] = useState();
+  const [isEdit, setIsEdit] = useState(false);
+  const [editedSubDetailId, setEditedSubDetailId] = useState('');
+  const { additionalServices, setAdditionalServices } = useContext(
     ServiceProviderContext,
   );
   const langauge = strings.arabic.ProviderScreens.ProviderSubDetail;
 
   let SubDid = uuidv4();
+  const saveEdited = () => {
+    if (SDtitle.trim().length > 0 && SPricetitle.trim().length > 0) {
+      const editedSubDetail = {
+        subDetail_Id: editedSubDetailId, // Assuming you have this state variable to track the edited subDetail_Id
+        detailSubtitle: SDtitle,
+        detailSubtitleCost: SPricetitle,
+        subDetailPhoto: subDetailImg
+      };
 
+      const updatedServices = additionalServices.map(service => {
+        if (service.detail_Id === data.detail_Id) {
+          const updatedSubDetailArray = service.subDetailArray.map(item => {
+            if (item.subDetail_Id === editedSubDetailId) {
+              return editedSubDetail;
+            }
+            return item;
+          });
+          return { ...service, subDetailArray: updatedSubDetailArray };
+        }
+        return service;
+      });
+
+      setAdditionalServices(updatedServices);
+      setSDTitle('');
+      setSPricetitle('');
+      setSubDetailImg(null);
+      setShowModal(false);
+    }
+  };
   const modalSavePress = () => {
     if (SDtitle.trim().length > 0 && SPricetitle.trim().length > 0) {
       if (doesntExists()) {
@@ -38,6 +73,7 @@ const ProviderAddSubDetail = props => {
           id: SubDid,
           detailSubtitle: SDtitle,
           detailSubtitleCost: SPricetitle,
+          subDetailPhoto: subDetailImg
         };
         const temp = additionalServices;
         let index = temp.findIndex(val => val.detail_Id === data.detail_Id);
@@ -47,6 +83,9 @@ const ProviderAddSubDetail = props => {
         setSPricetitle('');
       }
     }
+    setSubDetailImg()
+    setSDTitle('')
+    setSPricetitle('')
     setShowModal(false);
   };
 
@@ -60,17 +99,55 @@ const ProviderAddSubDetail = props => {
     setShowModal(false);
   };
   const onStartPress = () => {
+    setIsEdit(false)
     setShowModal(true);
   };
   const onBackPress = () => {
     props.navigation.goBack();
   };
-
+  
+  const deleteItem = (subDetail_Id) => {
+    // Show an alert to confirm the delete
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this item?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            // If user confirms, proceed with delete
+            const updatedServices = additionalServices.map(service => {
+              if (service.detail_Id === data.detail_Id) {
+                const updatedSubDetailArray = service.subDetailArray.filter(item => item.subDetail_Id !== subDetail_Id);
+                return { ...service, subDetailArray: updatedSubDetailArray };
+              }
+              return service;
+            });
+            setAdditionalServices(updatedServices);
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+  const openEdit = (allData) => {
+    setEditedSubDetailId(allData.subDetail_Id)
+    setSDTitle(allData.detailSubtitle)
+    setSPricetitle(allData.detailSubtitleCost)
+    setSubDetailImg(allData.subDetailPhoto)
+    setIsEdit(true)
+    setShowModal(true);
+  }
   const renderService = () => {
     let index = additionalServices.findIndex(val => val.detail_Id === data.detail_Id);
     const additions = additionalServices[index].subDetailArray;
     const cardsArray = additions.map(card => {
-      return <ProviderSubDetailComp {...card} />;
+      return <ProviderSubDetailComp key={card.subDetail_Id} {...card} openEdit={openEdit} deleteItem={deleteItem} />;
     });
     return cardsArray;
   };
@@ -85,24 +162,17 @@ const ProviderAddSubDetail = props => {
   const RenderCreateNew = () => {
     return (
       <TouchableOpacity style={styles.AddButton} onPress={onStartPress}>
-      <View style={styles.textView}>
-        <Text style={styles.footText}>{langauge.CreateNew}</Text>
-      </View>
-      <View style={styles.iconView}>
-        <Entypo
-          name="plus"
-          color={colors.puprble}
-          size={30}
-        />
-      </View>
-    </TouchableOpacity>
-      // <TouchableOpacity style={styles.AddButton} onPress={onStartPress}>
-      //   <AntDesign
-      //     name="plussquareo"
-      //     style={{fontSize: 30, alignSelf: 'center', marginRight: 30}}
-      //   />
-      //   <Text style={styles.footText}>{langauge.CreateNew}</Text>
-      // </TouchableOpacity>
+        <View style={styles.textView}>
+          <Text style={styles.footText}>{langauge.CreateNew}</Text>
+        </View>
+        <View style={styles.iconView}>
+          <Entypo
+            name="plus"
+            color={colors.puprble}
+            size={30}
+          />
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -137,9 +207,61 @@ const ProviderAddSubDetail = props => {
       </View>
     );
   };
+  const onAddImgPress = async () => {
+    try {
+      let options = {
+        mediaType: 'photo',
+        includeBase64: false,
+      };
+
+      launchImageLibrary(options, response => GalleryImageResponse(response));
+    }
+    catch (error) {
+      console.error(error);
+    }
+  };
+
+  const GalleryImageResponse = response => {
+    if (response.didCancel) {
+      console.log('User Cancelled');
+    } else if (response.error) {
+      console.log('Gallery Error : ', response.error);
+    } else if (response.customButton) {
+      console.log('User tapped custom Button ', response.customButton);
+    } else {
+      let imageUri = response.uri || response.assets?.[0]?.uri;
+      SaveImg(imageUri);
+    }
+  };
+  const SaveImg = source => {
+    if (source) {
+      const newImage = {
+        imgId: uuidv4(),
+        uri: source,
+      };
+      setSubDetailImg(newImage);
+    } else {
+      console.log('Error: Source is not valid.');
+    }
+  };
   const RenderInputDetailes = () => {
     return (
       <View style={styles.body}>
+        <View style={styles.subImg}>
+          <Pressable style={{ width: '100%', alignItems: 'center', justifyContent: 'center', height: '100%' }} onPress={onAddImgPress}>
+            {subDetailImg ?
+              <Image
+                source={subDetailImg}
+                style={{ flex: 1, width: '100%', height: '100%', resizeMode: 'stretch', borderRadius: 10 }}
+              />
+              :
+              <MaterialIcons
+                style={{ alignSelf: 'center' }}
+                name={"add-photo-alternate"}
+                color={'#dcdcdc'}
+                size={100} />}
+          </Pressable>
+        </View>
         <TextInput
           style={styles.titleInput}
           placeholder={langauge.ServDetailes}
@@ -148,6 +270,7 @@ const ProviderAddSubDetail = props => {
           onChangeText={value => {
             setSDTitle(value);
           }}
+          value={SDtitle}
         />
         <TextInput
           style={styles.titleInput}
@@ -156,6 +279,7 @@ const ProviderAddSubDetail = props => {
           onChangeText={value => {
             setSPricetitle(value);
           }}
+          value={SPricetitle}
         />
       </View>
     );
@@ -177,11 +301,12 @@ const ProviderAddSubDetail = props => {
   };
   const RenderSaveButton = () => {
     return (
-      <Pressable onPress={() => modalSavePress()}>
-        <Text style={styles.text}>{langauge.Save}</Text>
+      <Pressable onPress={() => isEdit ? saveEdited() : modalSavePress()}>
+        <Text style={styles.text}>{isEdit ? langauge.editSave : langauge.Save}</Text>
       </Pressable>
     );
   };
+
   return (
     <View style={styles.container}>
       {RenderHeader()}
@@ -267,7 +392,7 @@ const styles = StyleSheet.create({
   },
   detailModal: {
     width: '100%',
-    height: 300,
+    height: 450,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -297,20 +422,36 @@ const styles = StyleSheet.create({
   Modalbtn: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 60,
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 10,
+    width: '100%'
+    //marginTop: 60,
   },
   titleInput: {
     textAlign: 'right',
     height: 50,
-    width: 315,
+    width: '80%',
     borderWidth: 2,
-    borderRadius: 15,
+    borderRadius: 10,
     borderColor: '#dcdcdc',
     fontSize: 18,
     color: 'black',
     backgroundColor: 'white',
     marginBottom: 20,
   },
+  subImg: {
+    borderWidth: 1,
+    borderColor: '#dcdcdc',
+    width: '60%',
+    height: 150,
+    borderRadius: 10,
+    marginBottom: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // aspectRatio:1
+  },
+
 });
 
 export default ProviderAddSubDetail;

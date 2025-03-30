@@ -1,42 +1,28 @@
 import React, { useState } from 'react';
-import { favoritesList, fileFavorites, Events, Request, Payment, serviceDetail, subDetail, subDetailData, servicesData, ServiceImages, Users } from '../src/resources/data';
 import SearchContext from '../store/SearchContext';
 
 
 const SearchProvider = props => {
 
   //user
-  const [userId, setuserId] = useState(1);
-  // const [userInfo, setUserInfo] = useState([]);
-  // const [userName, setUserName] = useState(null);
-  // const [userEmail, setUserEmail] = useState(null);
-  // const [userPhone, setUserPhone] = useState(null);
-  // const [userBD, setUserBD] = useState(null);
-  // const [userGender, setUserGender] = useState(null);
-  // const [userStatus, setUserStatus] = useState(null);
-  // const [userCity, setUserCity] = useState(null);
-  // const [createUserRegion, setCreateUserRegion] = useState(null);
-  // const [userSpecialDate, setUserSpecialDate] = useState([]);
-  // const [password, setPassword] = useState(null);
-  // const [confirmPassword, setconfirmPassword] = useState(null);
-  // const [profilePhoto, setProfilePhoto] = useState(null);
 
-
+ 
   const [cat, setCat] = useState('');
-  const [isFirst, setIsfirst] = useState ()
-  const [serviceTitle, setserviceTitle] = useState ()
+  const [isFirst, setIsfirst] = useState()
+  const [serviceTitle, setserviceTitle] = useState()
   const [serviceCat, setServiceCat] = useState();
   const [sType, setSType] = useState();
-  const [ServId, setServId] = useState('');
-
-
+  // const [ServId, setServId] = useState('');
 
   // Data service favorites
-  const [userFavorates, setUserFavorates] = useState([])
-  const [fileFavoriteState, setFileFavoriteState] = useState([])
+  const [favorites, setFavorites] = useState([])
+  const [allServicesFavorites, setAllServicesFavorites] = useState([])
+  // const [userFavorates, setUserFavorates] = useState([])
+  // const [fileFavoriteState, setFileFavoriteState] = useState([])
 
   // service Info
   const [ServiceDataInfo, setServiceDataInfo] = useState([])
+  const [ServiceInfoById, setServiceInfoById] = useState([])
   const [ServiceImages, setServiceImages] = useState([])
   const [ServiceDatesforBooking, setServiceDatesforBooking] = useState([])
   const [datesforBooking, setDatesforBooking] = useState([])
@@ -44,102 +30,101 @@ const SearchProvider = props => {
   // campighin
   const [campInfo, setCampInfo] = useState([])
   const [campiegnsAccordingServiceId, setCampiegnsAccordingServiceId] = useState([])
-  const [reachCampaignfrom, setReachCampaignfrom] = useState('fromHome')
 
   // Service Descrption Request
   const [detailOfServ, setDetailOfServ] = useState([])
-  const [town, setTown] = useState([])
   const [serviceSubDetail, setserviceSubDetail] = useState([])
   const [detailIdState, setdetailIdState] = useState();
 
   // Request
-  const [requestInfo, setRequestInfo] = useState([])
+  const [requestInfoByService, setRequestInfoByService] = useState([])
+  const [requestInfoAccUser, setRequestInfoAccUser] = useState([])
+  const [resDetail, setResDetail] = useState([])
+  const [totalPrice, setTotalPrice] = useState(0)
+  const [evTiltleId, setEvTiltleId] = useState()
+  const [EVENTID, setEVENTID] = useState()
+  const [updatedEventDate, setUpdatedEventDate] = useState()
+  const [eventTotalCost, setEventTotalCost] = useState()
+  const [fileEventName, setfileEventName] = useState();
+  const [ProviderRequests, setProviderRequests] = useState([]);
+
+
+
   const [orderSubdetail, setOrderSubdetail] = useState([])
-  const [isFromRequestScreen, setisFromRequestScreen] = useState()
-  const [RequestIdState, setRequestIdState] = useState();
-  const [TimeText, setTimeText] = useState()
 
   // Event 
   const [eventInfo, setEventInfo] = useState([])
+  const [eventTypeInfo, setEventTypeInfo] = useState([]);
 
   // ClientSearch
   const [cityselected, setcityselected] = useState("");
   const [regionselect, setregionselect] = useState("");
   const [selectDateforSearch, setselectDateforSearch] = useState();
-  const [selectMonthforSearch, setselectMonthforSearch] = useState();
+  // const [selectMonthforSearch, setselectMonthforSearch] = useState();
+  const [dateFromCalender, setDateFromCalender] = useState();
   const [Categorychozen, setCategorychozen] = useState(false)
   const [userRegion, setUserRegion] = useState('المثلث الشمالي');
-  const [requestedDate, setrequestedDate] = useState()
-
+  const [requestedDate, setrequestedDate] = useState([])
+  const [periodDatesforSearch, setperiodDatesforSearch] = useState(0)
+  const [regionData, setRegionData] = useState([])
 
   //Booking
 
-  const [userPayment, setUserPayment] = useState(Payment || [])
+  const [userPayment, setUserPayment] = useState([])
   const [serviceImg, setserviceImg] = useState([])
-  const [ImgOfServeice, setImgOfServeice] = useState()
+  //const [ImgOfServeice, setImgOfServeice] = useState()
   const [isDateAvailable, setisDateAvailable] = useState(false)
 
+  // query Dates
+  const [bookingDates, setBookingDates] = useState([])
 
-
-
+  //invetation 
+  const [invitationData, setInvitationData] = useState([]);
 
   return (
     <SearchContext.Provider
       value={{
-        userId,
-        setuserId,
-        // userName, 
-        // setUserName,
-        // userEmail, 
-        // setUserEmail,
-        // userPhone, 
-        // setUserPhone,
-        // userBD, 
-        // setUserBD,
-        // userInfo,
-        // setUserInfo,
-        // userGender, 
-        // setUserGender,
-        // userStatus, 
-        // setUserStatus,
-        // userCity, 
-        // setUserCity,
-        // createUserRegion, 
-        // setCreateUserRegion,
-        // userSpecialDate, 
-        // setUserSpecialDate,
-        // password, 
-        // setPassword,
-        // confirmPassword, 
-        // setconfirmPassword,
-        // profilePhoto, 
-        // setProfilePhoto,
+
         cat,
         setCat,
         isFirst,
         setIsfirst,
         serviceTitle,
         setserviceTitle,
-        serviceCat, 
+        serviceCat,
         setServiceCat,
         sType,
         setSType,
-        // Service: Service,
-        // setService,
-        // city: city,
-        // setCity,
-        // fId,
-        // setFId,
-         ServId,
-         setServId,
-        userFavorates,
-        setUserFavorates,
-        fileFavoriteState,
-        setFileFavoriteState,
-        requestInfo,
-        setRequestInfo,
-        ImgOfServeice,
-        setImgOfServeice,
+        // enableInvetEditing, 
+        // setEnableInvetEditing,
+        // ServId,
+        // setServId,
+        favorites,
+        setFavorites,
+        allServicesFavorites,
+        setAllServicesFavorites,
+        // userFavorates,
+        // setUserFavorates,
+        // fileFavoriteState,
+        // setFileFavoriteState,
+        requestInfoByService,
+        setRequestInfoByService,
+        requestInfoAccUser,
+        setRequestInfoAccUser,
+        resDetail,
+        setResDetail,
+        evTiltleId, 
+        setEvTiltleId,
+        EVENTID, 
+        setEVENTID,
+        updatedEventDate, 
+        setUpdatedEventDate,
+        eventTotalCost, 
+        setEventTotalCost,
+        fileEventName, 
+        setfileEventName,
+        // ImgOfServeice,
+        // setImgOfServeice,
         userPayment,
         setUserPayment,
         isDateAvailable,
@@ -150,28 +135,32 @@ const SearchProvider = props => {
         setserviceSubDetail,
         ServiceDataInfo,
         setServiceDataInfo,
+        ServiceInfoById,
+        setServiceInfoById,
         detailIdState,
         setdetailIdState,
-        RequestIdState,
-        setRequestIdState,
+        // RequestIdState,
+        // setRequestIdState,
         serviceImg,
         setserviceImg,
         campInfo,
         setCampInfo,
         userRegion,
         setUserRegion,
-        town,
-        setTown,
         cityselected,
         setcityselected,
         regionselect,
         setregionselect,
         selectDateforSearch,
         setselectDateforSearch,
-        selectMonthforSearch,
-        setselectMonthforSearch,
+        // selectMonthforSearch,
+        // setselectMonthforSearch,
+        dateFromCalender,
+        setDateFromCalender,
         datesforBooking,
         setDatesforBooking,
+        periodDatesforSearch,
+        setperiodDatesforSearch,
         ServiceImages,
         setServiceImages,
         ServiceDatesforBooking,
@@ -180,19 +169,19 @@ const SearchProvider = props => {
         setrequestedDate,
         Categorychozen,
         setCategorychozen,
-        isFromRequestScreen,
-        setisFromRequestScreen,
         orderSubdetail,
         setOrderSubdetail,
         eventInfo,
         setEventInfo,
-        TimeText,
-        setTimeText,
+        eventTypeInfo,
+        setEventTypeInfo,
         campiegnsAccordingServiceId,
         setCampiegnsAccordingServiceId,
-        reachCampaignfrom,
-        setReachCampaignfrom,
-       
+        regionData, setRegionData,
+        totalPrice, setTotalPrice,
+        bookingDates, setBookingDates,
+        ProviderRequests, setProviderRequests,
+        invitationData, setInvitationData
 
       }}>
       {props.children}

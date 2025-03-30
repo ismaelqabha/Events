@@ -1,18 +1,24 @@
 import { StyleSheet, Text, View, ScrollView, Pressable, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import moment from "moment";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames';
+import { colors } from '../../assets/AppColors';
+import SearchContext from '../../../store/SearchContext';
 
 const CalenderDayCard = (props) => {
+
+    const { bookingDates, requestInfoByService } = useContext(SearchContext);
     const [date, setDate] = useState(new Date())
     const [currentMonth, setcurrentMonth] = useState(date.getMonth() + 1)
     const [currentYear, setcurrentYear] = useState(date.getFullYear())
 
 
+    var isDayFull = false
+    var numBooking = 0
     const navigation = useNavigation();
-   
     const daysInMonth = moment(currentYear + '-' + currentMonth).daysInMonth()
 
     const pressNextMonth = () => {
@@ -32,13 +38,11 @@ const CalenderDayCard = (props) => {
             setcurrentMonth(currentMonth - 1)
         }
     }
-
     const fillMonthDays = () => {
         const fullDate = []
 
         for (var day = 1; day <= daysInMonth; day++) {
-            //day = day + 1
-            const completeDate = day + '-' + currentMonth + '-' + currentYear
+            const completeDate = currentYear + '-' + currentMonth + '-' + day
 
             fullDate.push(
                 {
@@ -55,22 +59,85 @@ const CalenderDayCard = (props) => {
 
     const oneDay = fillMonthDays();
 
+    useEffect(() => {
+    }, [])
+
+
     const onDayPress = (fulDate) => {
-        navigation.navigate(ScreenNames.ProviderBookingRequest,  {fulDate})
-        
+        navigation.navigate(ScreenNames.ProviderBookingRequest, { fulDate, bookingDates })
     }
+
+    ///// get how many reservation per date 
+    const getBookingInfo = () => {
+        if (requestInfoByService.message !== "no Request") {
+            const reqInfo = requestInfoByService.filter(item => {
+                return item.requestInfo.ReqStatus === 'partally paid'
+            })
+            return reqInfo
+        } else {
+            return []
+        }
+    }
+    const getNumOfBooking = (fDate) => {
+        const data = getBookingInfo()
+        const reqNum = data.filter(item => {
+            if (item.requestInfo.reservationDetail.length > 1) {
+                //if reservation detail has more than one date
+                let result = item.requestInfo.reservationDetail.find(multiItem => {
+                    return multiItem.reservationDate == fDate
+                })
+                return result
+
+            } else {
+
+                //if reservation detail has one date
+                return item.requestInfo.reservationDetail[0].reservationDate == fDate
+            }
+        })
+        return reqNum
+    }
+
+    //// return which date is full and not 
+    const filterBookingDate = (fDate) => {
+        if (bookingDates.length !== 0) {
+            
+            const numBookingResult = getNumOfBooking(fDate)
+            numBooking = numBookingResult.length
+    
+            const bookDate = bookingDates[0].dates.filter(element => {
+                return element.time == fDate
+            })
+    
+            if (bookDate.length >= 1) {
+                isDayFull = true
+            } else {
+                isDayFull = false
+            }
+        }
+       
+    }
+
+
     const renderDaysInMonth = ({ item }) => (
+
         <Pressable
-            style={({ pressed }) => [styles.card, pressed ? styles.monthcardPress : styles.card]}
+            style={styles.card}
             onPress={() => onDayPress(item.wholeDate)}
         >
+            {bookingDates && filterBookingDate(item.wholeDate)}
+            <View style={[styles.head, isDayFull ? styles.closeDayHead : styles.head]}>
+                <Text style={styles.datetxt}>
+                    {item.dayInWord}
+                </Text>
+            </View>
+
             <View style={styles.body}>
                 <Text style={styles.text}>
                     {item.currentDay}
                 </Text>
-                <Text style={styles.text}>
-                    {item.dayInWord}
-                </Text>
+            </View>
+            <View style={styles.footer}>
+                <Text style={styles.resText}>{"(" + numBooking + ")"}</Text>
             </View>
         </Pressable>
     )
@@ -83,7 +150,7 @@ const CalenderDayCard = (props) => {
                 <AntDesign
                     style={styles.iconNext}
                     name={"left"}
-                    color={"black"}
+                    color={"gray"}
                     size={25} /></Pressable>
             <Pressable style={{ flexDirection: 'row' }}>
                 <Text style={styles.txtYear}>{currentMonth + '/'}</Text>
@@ -95,7 +162,7 @@ const CalenderDayCard = (props) => {
                 <AntDesign
                     style={styles.iconBack}
                     name={"right"}
-                    color={"black"}
+                    color={"gray"}
                     size={25} />
             </Pressable>
         </View>);
@@ -127,7 +194,7 @@ const styles = StyleSheet.create({
     card: {
         width: 85,
         height: 85,
-        backgroundColor: 'snow',
+        // backgroundColor: 'snow',
         borderRadius: 8,
         elevation: 5,
         margin: 5
@@ -135,7 +202,7 @@ const styles = StyleSheet.create({
     monthcardPress: {
         width: 85,
         height: 85,
-        backgroundColor: '#00bfff',
+        backgroundColor: 'red',
         borderRadius: 8,
         elevation: 5,
         margin: 5
@@ -143,12 +210,46 @@ const styles = StyleSheet.create({
     title: {
         backgroundColor: 'snow',
     },
+    head: {
+        alignItems: 'center',
+        backgroundColor: 'green',
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+        height: '30%'
+    },
+    closeDayHead: {
+        alignItems: 'center',
+        backgroundColor: 'red',
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+        height: '30%'
+    },
     body: {
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: colors.silver,
+        height: '40%',
+        justifyContent: 'center',
+        //borderWidth: 1
+    },
+    footer: {
+        alignItems: 'flex-end',
+        backgroundColor: colors.silver,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        height: '30%'
+        //borderWidth: 1
     },
     text: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    resText: {
         fontSize: 15,
-        color: 'black',
+    },
+    datetxt: {
+        fontSize: 15,
+        color: 'white',
+        fontWeight: 'bold'
     },
     iconNext: {
         //marginRight: 20,
@@ -159,7 +260,7 @@ const styles = StyleSheet.create({
     txtYear: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#00bfff'
+        color: colors.puprble
     },
     viewYear: {
         //backgroundColor: 'white'

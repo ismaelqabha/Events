@@ -1,538 +1,1482 @@
-import { StyleSheet, Text, View, ScrollView, Pressable, Image } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  Modal, ToastAndroid, Dimensions, Image,
+  Alert,
+  TouchableOpacity
+} from 'react-native';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import SearchContext from '../../../store/SearchContext';
-import AntDesign from "react-native-vector-icons/AntDesign";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
-import { ScreenNames } from '../../../route/ScreenNames';
 import strings from '../../assets/res/strings';
-import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../assets/AppColors';
-import Entypo from "react-native-vector-icons/Entypo";
-import Feather from "react-native-vector-icons/Feather";
-import { getServiceImages } from '../../resources/API';
+import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { updateService, updateServiceLogo } from '../../resources/API';
 import { BackgroundImage } from '@rneui/base';
+import EditServiceInfo from '../../components/ProviderComponents/EditServiceInfo';
+import EditServiceDetails from '../../components/ProviderComponents/EditServiceDetails';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { ScreenNames } from '../../../route/ScreenNames';
+import { showMessage } from '../../resources/Functions';
 
-const ProviderHome = (props) => {
-    const { isFirst, setserviceTitle } = useContext(SearchContext);
-    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
-    const [servicePhotos, setservicePhotos] = useState()
-    const language = strings.arabic.ProviderScreens.ProviderCreateListing
-    const navigation = useNavigation();
+const ProviderHome = props => {
+  const { isFirst, setserviceTitle } = useContext(SearchContext);
+  const { serviceInfoAccorUser, setServiceInfoAccorUser,
+    editTitle, seteditTitle,
+    editSubTitle, seteditSubTitle,
+    editCity, seteditCity,
+    locationEdit, setlocationEdit,
+    editHallType, seteditHallType,
+    editHallcapasity, seteditHallcapasity,
+    editphone, seteditphone,
+    editEmail, setEditEmail,
+    addNewDesc, setAddNewDesc,
+    editprice, setEditprice,
+    editNumofRequest, setEditNumofRequest,
+    addSocilMedia, setAddSocilMedia,
+    addNewDetail, setAddNewDetail, showSubDetailModal, setShowSubDetailModal,
+    showDetailModal, setShowDetailModal, detailId, setDetailId } = useContext(ServiceProviderContext);
 
+  const [showMenuModal, setShowMenuModal] = useState(false);
+  const language = strings.arabic.ProviderScreens.ProviderCreateListing;
 
-    const seprator = () => {
-        return (
-            <View style={styles.seprater}></View>
-        )
+  const filterService = () => {
+    return serviceInfoAccorUser?.filter(item => {
+      return item.service_id === isFirst;
+    });
+  }
+  const serviceData = filterService()
+
+  const [serviceDescr, setServiceDescr] = useState(serviceData[0].desc);
+  const [serviceSocialMedia, setServiceSocialMedia] = useState(serviceData[0].socialMedia)
+  const [providerDetail, setProviderDetail] = useState(serviceData[0].additionalServices);
+
+  const [editProviderServiceItem, setEditProviderServiceItem] = useState(false);
+  const [deleteProviderServiceItem, setDeleteProviderServiceItem] = useState(false);
+  const [showSubDetail, setShowSubDetail] = useState(false);
+
+  const [detailItem, setDetailItem] = useState();
+  const [DetailType, setDetailType] = useState();
+  const [serviceItemInclude, setServiceItemInclude] = useState();
+  const [sub_DetailArr, setSub_DetailArr] = useState();
+
+  useEffect(() => {
+
+  }, []);
+
+  const onPressHandler = () => {
+    props.navigation.goBack();
+  };
+
+  const titleEditPress = () => {
+    seteditTitle(true)
+  }
+  const subTitleEditPress = () => {
+    seteditSubTitle(true)
+  }
+  const cityEditPress = () => {
+    seteditCity(true)
+  }
+  const locationEditPress = () => {
+    setlocationEdit(true)
+  }
+  const HallTypeEditPress = () => {
+    seteditHallType(true)
+  }
+  const hallCapasityEditPress = () => {
+    seteditHallcapasity(true)
+  }
+  const phoneEditPress = () => {
+    seteditphone(true)
+  }
+  const emailEditPress = () => {
+    setEditEmail(true)
+  }
+  const socialMediaitemEditPress = (item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal, index) => {
+    setEditSocialMedia(index, !editSocialMedia)
+    setShowModal(index, false)
+  }
+  const priceEditPress = () => {
+    setEditprice(true)
+  }
+  const editDescrPress = (item, setEditDescrItem, setShowDescModal, index) => {
+    setEditDescrItem(index, true)
+    setShowDescModal(index, false)
+  }
+  const numofRequestEditPress = () => {
+    setEditNumofRequest(true)
+  }
+  const addNewSocialMediaPress = () => {
+    setAddSocilMedia(true)
+  }
+  const addNewDescr = () => {
+    setAddNewDesc(true)
+  }
+  const closeModalPress = (index, setShowDescModal) => {
+    setShowDetailModal(index, false)
+  }
+  const closeSMmodalPress = (setShowModal, index) => {
+    setShowModal(index, false)
+  }
+  const addNewDetailPress = (type) => {
+    setDetailType(type)
+    setAddNewDetail(true)
+    setEditProviderServiceItem(false)
+    setShowDetailModal(true)
+    setShowSubDetail(false)
+  }
+  const assin = (detail_Id, title, type, includedType, subDetail) => {
+    setDetailId(detail_Id)
+    setDetailItem(title)
+    setDetailType(type)
+    setServiceItemInclude(includedType)
+    setSub_DetailArr(subDetail)
+    setShowMenuModal(true)
+  }
+  const serviceDetailEditPress = () => {
+    setShowDetailModal(true)
+    setEditProviderServiceItem(true)
+    setAddNewDetail(false)
+    setShowMenuModal(false)
+    setShowSubDetail(false)
+  }
+  const deleteSerDetailItem = () => {
+    setDeleteProviderServiceItem(true)
+    setShowMenuModal(false)
+    Alert.alert(
+      "تأكيد",
+      "هل انت مـتأكد من عملية الحذف ؟ ",
+      [
+        {
+          text: "اٍلغاء",
+          // onPress: () => setShowMenuModal(false),
+          style: "cancel",
+        },
+        {
+          text: "تأكيد",
+          onPress: () => deleteDetItem(),
+        },
+      ]
+    );
+  }
+  const supDetailShowPress = () => {
+    setShowDetailModal(false)
+    setShowSubDetailModal(true)
+    setShowMenuModal(false)
+    setShowSubDetail(true)
+    setAddNewDetail(false)
+    setEditProviderServiceItem(false)
+  }
+
+  const renderSupDetailShow = () => {
+    return (
+      <EditServiceDetails
+        serviceID={isFirst}
+        showSubDetail={showSubDetail}
+        sub_DetailArr={sub_DetailArr}
+        detailItem={detailItem}
+        DetailType={DetailType}
+        serviceItemInclude={serviceItemInclude}
+      />
+    )
+  }
+
+  const deleteDetItem = () => {
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst)
+
+    const item = providerDetail.filter(elme => elme.detail_Id !== detailId)
+    const newData = {
+      service_id: isFirst,
+      additionalServices: item,
+    };
+
+    const data = [...serviceInfoAccorUser];
+
+    updateService(newData).then(res => {
+      if (res.message === 'Updated Sucessfuly') {
+        if (selectedServiceIndex > -1) {
+          data[selectedServiceIndex] = { ...data[selectedServiceIndex], ...newData };
+        }
+        setServiceInfoAccorUser(data)
+        setDeleteProviderServiceItem(false)
+        ToastAndroid.showWithGravity(
+          'تم التعديل بنجاح',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
+      }
+    })
+  }
+
+  const renderEditServiceDetailInfo = () => {
+    if (deleteProviderServiceItem) {
+     
     }
-    const getImagesfromApi = () => {
-        getServiceImages({ serviceID: isFirst }).then(res => {
-            setservicePhotos(res)
+    if (editProviderServiceItem) {
+
+      return (
+        <EditServiceDetails
+          editProviderServiceItem={editProviderServiceItem}
+          detailItem={detailItem}
+          DetailType={DetailType}
+          serviceItemInclude={serviceItemInclude}
+          sub_DetailArr={sub_DetailArr}
+          serviceID={isFirst}
+        />
+      )
+    }
+    if (addNewDetail) {
+      return (
+        <EditServiceDetails
+          DetailType={DetailType}
+          serviceID={isFirst}
+        />
+      )
+    }
+
+  }
+
+
+  const header = () => {
+    return (
+      <View style={styles.header}>
+        <Pressable onPress={onPressHandler}>
+          <AntDesign
+            style={styles.icon}
+            name={'left'}
+            color={'black'}
+            size={20}
+          />
+        </Pressable>
+        <Text style={styles.headerTxt}>خدماتي</Text>
+      </View>
+    )
+  }
+  const renderServiceLogo = () => {
+    const data = filterService();
+
+    const index = data[0].logoArray?.findIndex((val) => val === true);
+    const [image, setImage] = useState(data[0]?.serviceImages[index]);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+
+    const openGallery = () => {
+      const options = {
+        mediaType: 'photo',
+        quality: 1,
+      };
+
+      launchImageLibrary(options, (response) => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.errorMessage) {
+          console.log('ImagePicker Error: ', response.errorMessage);
+        } else if (response.assets && response.assets.length > 0) {
+          const selectedImage = response.assets[0].uri;
+          setSelectedImage(selectedImage);
+
+          Alert.alert(
+            "تأكيد",
+            "هل ترغب في تغيير صورة البروفايل ؟ ",
+            [
+              {
+                text: "اٍلغاء",
+                onPress: () => discardChanges(),
+                style: "cancel",
+              },
+              {
+                text: "تأكيد",
+                onPress: () => confirmChanges(response),
+              },
+            ]
+          );
+        }
+      });
+    };
+
+    const confirmChanges = (response) => {
+      const imageUri = response.assets[0].uri;
+      setImage(imageUri);
+      setSelectedImage(null);
+
+      const formData = new FormData();
+      formData.append('serviceID', data[0].service_id);
+      formData.append('images', {
+        uri: response.assets[0].uri,
+        type: response.assets[0].type,
+        name: response.assets[0].fileName,
+      });
+
+      updateServiceLogo(formData)
+        .then((resJson) => {
+          if (resJson.message === 'Logo updated successfully') {
+            const updatedService = {
+              ...data[0],
+              serviceImages: resJson.images,
+              logoArray: resJson.logoArray
+            };
+
+            setServiceInfoAccorUser((prevState) => {
+              const serviceIndex = prevState.findIndex(
+                (service) => service.service_id === updatedService.service_id
+              );
+
+              if (serviceIndex > -1) {
+                const updatedServices = [...prevState];
+                updatedServices[serviceIndex] = updatedService;
+                return updatedServices;
+              }
+
+              return prevState;
+            });
+            showMessage('Logo updated successfully');
+          } else {
+            showMessage('Failed to update logo');
+          }
         })
-    }
-
-    const getLogoImg = () => {
-        return servicePhotos?.filter(photo => {
-            return photo.coverPhoto == true
+        .catch((error) => {
+          console.log('Error uploading logo:', error);
+          showMessage('Error updating logo');
         });
     };
-    const getServiceImgs = () => {
-        return servicePhotos?.filter(photo => {
-            return photo.coverPhoto == false
-        });
+
+    const discardChanges = () => {
+      setSelectedImage(null);
     };
-
-    useEffect(() => {
-        getImagesfromApi()
-    }, [])
-
-    const filterService = () => {
-        return serviceInfoAccorUser?.filter(item => {
-            return item.service_id === isFirst
-        })
-    }
-    const renderServiceLogo = () => {
-        // const data = getLogoImg()
-        // const serviceLogo = data?.map(item => {
-        return (
-            <View>
-                <BackgroundImage style={styles.logoview} source={require('../../assets/photos/backgroundPart.png')}>
-                    <View style={styles.logoImg}>
-
-                    </View>
-                    <Pressable style={styles.editImg}>
-                        <Entypo
-                            name={"camera"}
-                            color={colors.puprble}
-                            size={25} />
-                    </Pressable>
-                </BackgroundImage>
-            </View>
-        )
-        // })
-        // return serviceLogo
-    }
-    const renderServiceType = () => {
-        const data = filterService()
-        const serviceType = data?.map(item => {
-            setserviceTitle(item.title)
-            return (
-                <View>
-                    <View style={styles.iconview}>
-                        <Text style={styles.txt}>تصنيف الخدمة</Text>
-                        <View style={styles.IconView}>
-                            <AntDesign
-                                name={"checkcircleo"}
-                                color={colors.puprble}
-                                size={30} />
-                        </View>
-                    </View>
-                    <View style={styles.servicetype}>
-                        <Text style={styles.basicInfo}>{item.servType}</Text>
-                    </View>
-                </View>
-            )
-        })
-        return serviceType
-    }
-    const renderServiceTitle = () => {
-        const data = filterService()
-        const serviceTitle = data?.map(item => {
-            return (
-                <View>
-                    <View style={styles.iconview}>
-                        <View><Text style={styles.txt}>الخطوط العريضة</Text></View>
-                        <View style={styles.IconView}>
-                            <AntDesign
-                                name={"checkcircleo"}
-                                color={colors.puprble}
-                                size={30} />
-                        </View>
-                    </View>
-                    <View style={styles.servicetitle}>
-                        <View style={{}}>
-                            <Text style={styles.basicInfoTitle}>العنوان الرئيسي</Text>
-                        </View>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}>{item.title}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.servicetitle}>
-                        <View style={{}}>
-                            <Text style={styles.basicInfoTitle}>العنوان الترويجي</Text>
-                        </View>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}>{item.subTitle}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.servicetitle}>
-                        <View style={{}}>
-                            <Text style={styles.basicInfoTitle}>الوصف</Text>
-                        </View>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}>{item.desc}</Text>
-                        </View>
-                    </View>
-                </View>
-            )
-        })
-        return serviceTitle
-    }
-    const renderServiceAddress = () => {
-        const data = filterService()
-        const serviceType = data?.map(item => {
-            return (
-                <View>
-                    <View style={styles.iconview}>
-                        <View><Text style={styles.txt}>العنوان</Text></View>
-                        <View style={styles.IconView}>
-                            <Entypo
-                                name={"location-pin"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        <Text style={styles.basicInfoTitle}>المنطقة</Text>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}>{item.region}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        <Text style={styles.basicInfoTitle}>المدينة</Text>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}>{item.address}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        <Text style={styles.basicInfoTitle}>Location</Text>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}></Text>
-                        </View>
-                    </View>
-                </View>
-            )
-        })
-        return serviceType
-    }
-    const renderServicePhotos = () => {
-        const data = filterService()
-        const serviceType = data?.map(item => {
-            return (
-                <View>
-                    <View style={styles.iconview}>
-                        <View><Text style={styles.txt}>الصور (9)</Text></View>
-                        <View style={styles.IconView}>
-                            <Entypo
-                                name={"images"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
-                    </View>
-                </View>
-            )
-        })
-        return serviceType
-    }
-    const renderServicePrice = () => {
-        const data = filterService()
-        const servicePrice = data?.map(item => {
-            return (
-                <View>
-                    <View style={styles.iconview}>
-                        <View><Text style={styles.txt}>السعر المبدئي</Text></View>
-                        <View style={styles.IconView}>
-                            <Entypo
-                                name={"price-tag"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        <Text style={styles.basicInfoTitle}>السعر</Text>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}>{item.servicePrice}</Text>
-                        </View>
-                    </View>
-                </View>
-            )
-        })
-        return servicePrice
-    }
-    const renderHallInfo = () => {
-        const data = filterService()
-        const servicePrice = data?.map(item => {
-            return (
-                <View>
-                    <View style={styles.iconview}>
-                        <View><Text style={styles.txt}>معلومات</Text></View>
-                        <View style={styles.IconView}>
-                            <Entypo
-                                name={"info"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        <Text style={styles.basicInfoTitle}>نوع القاعة</Text>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}>{item.hallType}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        <Text style={styles.basicInfoTitle}>القدرة الاستيعابية</Text>
-                        <View style={styles.mainTit}>
-                            <Text style={styles.basicInfo}>{item.maxCapasity}</Text>
-                        </View>
-                    </View>
-                </View>
-            )
-        })
-        return servicePrice
-    }
-    const renderworkingReigon = () => {
-        const data = filterService()
-        const serviceWorking = data?.map((item, i) => {
-            return (
-                <View>
-                    <View style={styles.iconview}>
-                        <View><Text style={styles.txt}>مناطق العمل</Text></View>
-                        <View style={styles.IconView}>
-                            <Entypo
-                                name={"info"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        {item.workingRegion.map(itemRegion => {
-                            return (
-                                <View style={styles.regionTit}>
-                                    <Text style={styles.basicInfo}>{itemRegion}</Text>
-                                    <AntDesign
-                                        style={{ alignSelf: 'center' }}
-                                        name={"check"}
-                                        color={colors.puprble}
-                                        size={25} />
-                                </View>
-                            )
-                        })}
-
-                    </View>
-                </View>
-            )
-        })
-        return serviceWorking
-    }
-    const renderDetail = () => {
-        const data = filterService()
-        const serviceDetail = data?.map((item, i) => {
-            return (
-                <View>
-                    <View style={styles.iconview}>
-                        <View><Text style={styles.txt}>تفاصيل الخدمات</Text></View>
-                        <View style={styles.IconView}>
-                            <MaterialIcons
-                                name={"details"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        <Text style={styles.basicInfoTitle}>الخدمات الاجبارية</Text>
-                        {item.additionalServices.map(itemDetail => {
-                            return (<View>
-                                <View style={styles.regionTit}>
-                                    <Text style={styles.basicInfo}>{itemDetail.detailTitle}</Text>
-                                    <AntDesign
-                                        style={{ alignSelf: 'center' }}
-                                        name={"check"}
-                                        color={colors.puprble}
-                                        size={25} />
-                                </View>
-                                {itemDetail.subDetailArray.map(subDItem => {
-                                    return (
-                                        <View style={styles.detailView}>
-                                            <Text style={styles.basicInfo}>{subDItem.detailSubtitle}</Text>
-                                            <Feather
-                                                style={{ alignSelf: 'center' }}
-                                                name={"corner-down-left"}
-                                                color={colors.puprble}
-                                                size={25} />
-                                        </View>
-                                    )
-                                })}
-                            </View>
-                            )
-                        })}
-
-                    </View>
-                    <View style={styles.serviceaddress}>
-                        <Text style={styles.basicInfoTitle}>الخدمات الاختيارية</Text>
-                        <View style={styles.regionTit}>
-                            <Text style={styles.basicInfo}>{item.additionalServices + '   '}</Text>
-                            <AntDesign
-                                style={{ alignSelf: 'center' }}
-                                name={"check"}
-                                color={colors.puprble}
-                                size={25} />
-                        </View>
-                    </View>
-                </View>
-            )
-        })
-        return serviceDetail
-    }
-
-
-    const onPressHandler = () => {
-        props.navigation.goBack();
-    }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Pressable onPress={onPressHandler}
-                >
-                    <AntDesign
-                        style={styles.icon}
-                        name={"left"}
-                        color={"black"}
-                        size={20} />
+      <View>
+        <BackgroundImage style={styles.logoview} source={require('../../assets/photos/backgroundPart.png')}>
+          <Image style={styles.logoImg} source={{ uri: selectedImage || image }} />
+          <Pressable style={styles.editImg} onPress={openGallery}>
+            <Entypo name={'camera'} color={colors.puprble} size={25} />
+          </Pressable>
+        </BackgroundImage>
+      </View>
+    );
+  };
+  const renderServiceType = () => {
+    const data = filterService();
+    const serviceType = data?.map(item => {
+      setserviceTitle(item.title);
+      return (
+        <View style={styles.servicetype}>
+          <Text style={styles.basicInfo}>{item.servType}</Text>
+        </View>
+      );
+    });
+    return serviceType;
+  };
+  const renderServiceTitle = () => {
+    const data = filterService();
+    const serviceTitle = data?.map(item => {
+      return (
+        <View>
+          {item.title && (
+            <View>
+              {editTitle ?
+                <EditServiceInfo serviceID={isFirst} /> :
+                <View style={styles.itemService}>
+                  <View style={styles.itemSM}>
+                    <Pressable onPress={titleEditPress}>
+                      <Feather
+                        style={styles.menuIcon}
+                        name={'edit'}
+                        color={colors.BGScereen}
+                        size={25} />
+                    </Pressable>
+                    <View>
+                      <Text style={styles.basicInfo}>{item.title}</Text>
+                      <Text style={styles.basicInfoTitle}>العنوان الرئيسي</Text>
+                    </View>
+                  </View>
+                  <View style={styles.IconView}>
+                    <MaterialIcons name={'title'} color={colors.puprble} size={25} />
+                  </View>
+                </View>}
+            </View>
+          )}
 
+          {item.subTitle && (
+            <View>
+              {editSubTitle ?
+                <EditServiceInfo serviceID={isFirst} /> :
+                <View style={styles.itemService}>
+                  <View style={styles.itemSM}>
+                    <Pressable onPress={subTitleEditPress}>
+                      <Feather
+                        style={styles.menuIcon}
+                        name={'edit'}
+                        color={colors.BGScereen}
+                        size={25} />
+                    </Pressable>
+                    <View>
+                      <Text style={styles.basicInfo}>{item.subTitle}</Text>
+                      <Text style={styles.basicInfoTitle}>العنوان الترويجي</Text>
+                    </View>
+                  </View>
+                  <View style={styles.IconView}>
+                    <MaterialIcons name={'subtitles'} color={colors.puprble} size={25} />
+                  </View>
+                </View>}
+            </View>
+          )}
+        </View>
+      );
+    });
+    return serviceTitle;
+  };
+  const renderServiceAddress = () => {
+    const data = filterService();
+    const serviceType = data?.map(item => {
+      return (
+        <View>
+          {editCity ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View>
+              {item.region && (
+                <View style={styles.itemService}>
+                  <View>
+                    <Text style={styles.basicInfoTitle}>المنطقة</Text>
+                    <Text style={styles.basicInfo}>{item.region}</Text>
+                  </View>
+                  <View style={styles.IconView}>
+                    <Entypo name={'address'} color={colors.puprble} size={25} />
+                  </View>
+                </View>
+              )}
+              {item.address && (
+                <View style={styles.itemService}>
+                  <View style={styles.itemSM}>
+                    <Pressable onPress={cityEditPress}>
+                      <Feather
+                        style={styles.menuIcon}
+                        name={'edit'}
+                        color={colors.BGScereen}
+                        size={25} />
+                    </Pressable>
+                    <View>
+                      <Text style={styles.basicInfoTitle}>المدينة</Text>
+                      <Text style={styles.basicInfo}>{item.address}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.IconView}>
+                    <FontAwesome5 name={'city'} color={colors.puprble} size={20} />
+                  </View>
+                </View>
+              )}
+            </View>}
+          {locationEdit ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View>
+              {item.serviceLocation && (
+                <View style={styles.itemService}>
+                  <View style={styles.itemSM}>
+                    <Pressable onPress={locationEditPress}>
+                      <Feather
+                        style={styles.menuIcon}
+                        name={'edit'}
+                        color={colors.BGScereen}
+                        size={25} />
+                    </Pressable>
+                    <View>
+                      <Text style={styles.basicInfoTitle}>الموقع</Text>
+                      <Text style={styles.basicInfo}>{item.serviceLocation}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.IconView}>
+                    <Entypo name={'location-pin'} color={colors.puprble} size={25} />
+                  </View>
+                </View>
+              )}
+            </View>}
+        </View>
+      );
+    });
+    return serviceType;
+  };
+  const renderServicePhotos = () => {
+    const data = filterService();
+    const serviceType = data?.map(item => {
+      return (
+        < View >
+          <Pressable style={styles.itemService} onPress={() => props.navigation.navigate(ScreenNames.ProviderPhotosPrview, { serviceID: data[0].service_id, serviceImages: data[0].serviceImages, logoArray: data[0].logoArray })}>
+            <View>
+              <Text style={styles.basicInfo}>مشاهدة الصور ({data?.[0]?.serviceImages?.length - 1 || ''})</Text>
+            </View>
+            <View style={styles.IconView}>
+              <Entypo name={'images'} color={colors.puprble} size={25} />
+            </View>
+          </Pressable>
+        </View >
+      );
+    });
+    return serviceType;
+  };
+  const istherePrice = () => {
+    const data = filterService();
+    if (data[0].servicePrice !== null) {
+      return (
+        <View>
+          <Text style={styles.sectionTitletxt}>السعر</Text>
+          <View style={styles.content}>{renderServicePrice()}</View>
+        </View>)
+    }
+  }
+  const renderServicePrice = () => {
+    const data = filterService();
+    const servicePrice = data?.map(item => {
+      return (
+        <View>
+          {editprice ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View style={styles.itemService}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={priceEditPress}>
+                  <Feather
+                    style={styles.menuIcon}
+                    name={'edit'}
+                    color={colors.BGScereen}
+                    size={25} />
                 </Pressable>
-                <Text style={styles.headerTxt}>خدماتي</Text>
+                <View>
+                  <Text style={styles.basicInfo}>{item.servicePrice}</Text>
+                  <Text style={styles.basicInfoTitle}>السعر</Text>
+                </View>
+              </View>
+              <View style={styles.IconView}>
+                <Entypo name={'price-tag'} color={colors.puprble} size={25} />
+              </View>
+            </View>}
+        </View>
+      );
+    });
+    return servicePrice;
+  };
+  const isHall = () => {
+    const data = filterService();
+    if (data[0].servType == 'قاعات') {
+      return (
+        <View>
+          <Text style={styles.sectionTitletxt}>معلومات القاعة</Text>
+          <View style={styles.content}>{renderHallInfo()}</View>
+        </View>)
+    }
+  }
+  const renderHallInfo = () => {
+    const data = filterService();
+    const servicePrice = data?.map(item => {
+      return (
+        <View>
+          {editHallType ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View style={styles.itemService}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={HallTypeEditPress}>
+                  <Feather
+                    style={styles.menuIcon}
+                    name={'edit'}
+                    color={colors.BGScereen}
+                    size={25} />
+                </Pressable>
+                <View>
+                  <Text style={styles.basicInfo}>{item.hallType}</Text>
+                  <Text style={styles.basicInfoTitle}>نوع القاعة</Text>
+                </View>
+              </View>
+              <View style={styles.IconView}>
+                <Entypo name={'info'} color={colors.puprble} size={25} />
+              </View>
+            </View>}
+          {editHallcapasity ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View style={styles.itemService}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={hallCapasityEditPress}>
+                  <Feather
+                    style={styles.menuIcon}
+                    name={'edit'}
+                    color={colors.BGScereen}
+                    size={25} />
+                </Pressable>
+                <View>
+                  <Text style={styles.basicInfo}>{item.maxCapasity}</Text>
+                  <Text style={styles.basicInfoTitle}>القدرة الاستيعابية</Text>
+                </View>
+              </View>
+              <View style={styles.IconView}>
+                <Entypo name={'info'} color={colors.puprble} size={25} />
+              </View>
+            </View>}
+        </View>
+      );
+    });
+    return servicePrice;
+  };
+  const renderServiceNumofRequest = () => {
+    const data = filterService();
+    const serviceType = data?.map(item => {
+      return (
+        <View>
+          {editNumofRequest ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View style={styles.itemService}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={numofRequestEditPress}>
+                  <Feather
+                    style={styles.menuIcon}
+                    name={'edit'}
+                    color={colors.BGScereen}
+                    size={25} />
+                </Pressable>
+                <Text style={styles.basicInfo}>{item.maxNumberOFRequest}</Text>
+              </View>
+              <View style={styles.IconView}>
+                <Entypo name={'info'} color={colors.puprble} size={25} />
+              </View>
+            </View>}
+        </View>
+
+      );
+    });
+    return serviceType;
+  };
+  const renderContactInfo = () => {
+    const data = filterService()
+    return data.map(item => {
+      return (
+        <View>
+          {editphone ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View>
+              <View style={styles.item}>
+                <View style={styles.itemSM}>
+                  <Pressable onPress={phoneEditPress}>
+                    <Feather
+                      style={styles.menuIcon}
+                      name={'edit'}
+                      color={colors.BGScereen}
+                      size={25} />
+                  </Pressable>
+                  <View>
+                    <Text style={styles.basicInfo}>{item.servicePhone}</Text>
+                    <Text style={styles.basicInfoTitle}>الموبايل</Text>
+                  </View>
+                </View>
+                <View style={styles.IconView}>
+                  <Ionicons
+                    style={styles.icon}
+                    name={'call'}
+                    color={colors.puprble}
+                    size={25}
+                  />
+                </View>
+              </View>
+            </View>}
+          {editEmail ?
+            <EditServiceInfo serviceID={isFirst} /> :
+            <View>
+              <View style={styles.item}>
+                <View style={styles.itemSM}>
+                  <Pressable onPress={emailEditPress}>
+                    <Feather
+                      style={styles.menuIcon}
+                      name={'edit'}
+                      color={colors.BGScereen}
+                      size={25} />
+                  </Pressable>
+                  <View>
+                    <Text style={styles.basicInfo}>{item.serviceEmail}</Text>
+                    <Text style={styles.basicInfoTitle}>Email</Text>
+                  </View>
+                </View>
+                <View style={styles.IconView}>
+                  <Entypo
+                    style={styles.icon}
+                    name={'email'}
+                    color={colors.puprble}
+                    size={25}
+                  />
+                </View>
+              </View>
+            </View>}
+        </View >
+      );
+    })
+  };
+
+  const deleteDescItemPress = (item, setShowDescModal, index) => {
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst);
+    const lastUpdate = serviceDescr.filter(ser => ser.descItem !== item);
+    setServiceDescr(lastUpdate);
+
+    const newData = {
+      service_id: isFirst,
+      desc: lastUpdate,
+    };
+
+    updateService(newData).then(res => {
+      if (res.message === 'Updated Sucessfuly') {
+        const updatedData = [...serviceInfoAccorUser];
+        if (selectedServiceIndex > -1) {
+          updatedData[selectedServiceIndex] = { ...updatedData[selectedServiceIndex], ...newData };
+        }
+        setServiceInfoAccorUser(updatedData);
+        setShowDescModal(index, false);
+        ToastAndroid.showWithGravity('تم الحذف بنجاح', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+      }
+    });
+  };
+  const renderAddDescription = () => {
+    return (
+      <View>
+        <Pressable style={styles.item} onPress={addNewDescr}>
+          <Text style={styles.basicInfo}>اضافة جديد</Text>
+          <View style={styles.IconView}>
+            <Entypo
+              style={styles.icon}
+              name={'plus'}
+              color={colors.puprble}
+              size={25}
+            />
+          </View>
+        </Pressable>
+        <View>{addNewDesc && <EditServiceInfo serviceID={isFirst} />}</View>
+        {renderDescription()}
+      </View>
+    )
+  }
+  const renderDescription = () => {
+    const data = useMemo(() => filterService(), [serviceInfoAccorUser]);
+    const [editDescrItemArray, setEditDescrItemArray] = useState([]);
+    const [showDescModalArray, setShowDescModalArray] = useState([]);
+    const setEditDescrItem = (index, value) => {
+      setEditDescrItemArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    const setShowDescModal = (index, value) => {
+      setShowDescModalArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+    useEffect(() => {
+      if (data[0]?.desc && data[0].desc.length !== editDescrItemArray.length) {
+        const initialEditArray = data[0].desc.map(() => false);
+        const initialModalArray = data[0].desc.map(() => false);
+        setEditDescrItemArray(initialEditArray);
+        setShowDescModalArray(initialModalArray);
+      }
+    }, [data]);
+
+    return data[0]?.desc.map((element, index) => {
+      const editDescrItem = editDescrItemArray[index] || false;
+      const showDescModal = showDescModalArray[index] || false;
+
+      return (
+        <View key={index}>
+          {editDescrItem ? (
+            <EditServiceInfo
+              descriptionItem={element.descItem}
+              editDescrItem={editDescrItem}
+              setEditDescrItem={(value) => setEditDescrItem(index, value)}
+              serviceID={isFirst}
+            />
+          ) : (
+            <View style={styles.itemService}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={() => setShowDescModal(index, true)}>
+                  <Feather style={styles.menuIcon} name={'more-vertical'} color={colors.BGScereen} size={25} />
+                </Pressable>
+                <View>
+                  <Text style={styles.basicInfo}>{element.descItem}</Text>
+                </View>
+              </View>
+              <View style={styles.IconView}>
+                <AntDesign name={'checkcircle'} color={colors.puprble} size={25} />
+              </View>
+            </View>
+          )}
+          {renderDescrModal(element.descItem, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal, index)}
+        </View>
+      );
+    });
+  };
+  const renderDescrModal = (item, setEditDescrItem, editDescrItem, setShowDescModal, showDescModal, index) => {
+    return (
+      <Modal
+        transparent
+        visible={showDescModal}
+        animationType='fade'
+        onRequestClose={() => setShowDescModal(index, false)}>
+        <View style={styles.centeredDescView}>
+          <View style={styles.detailModal}>
+
+            <TouchableOpacity onPress={() => closeModalPress(index, setShowDescModal)} style={styles.modalHeader}>
+              <Feather
+                name={'more-horizontal'}
+                color={colors.puprble}
+                size={25} />
+            </TouchableOpacity>
+
+            <View style={{ justifyContent: 'center', height: '50%' }}>
+              <View style={styles.modalMenu}>
+                <TouchableOpacity style={styles.modalItem} onPress={() => editDescrPress(item, setEditDescrItem, setShowDescModal, index)}>
+                  <Feather
+                    name={'edit'}
+                    color={colors.gray}
+                    size={25} />
+                  <Text style={styles.modalHeaderTxt}>تعديل</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalItem} onPress={() => deleteDescItemPress(item, setShowDescModal, index)}>
+                  <AntDesign
+                    name={'delete'}
+                    color={colors.gray}
+                    size={25} />
+                  <Text style={styles.modalHeaderTxt}>حذف</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+
+  // Service detail and sub detail
+
+  const selectMandatoryDetail = () => {
+    const data = filterService();
+    return data[0].additionalServices.filter(item => {
+      return item.necessity === 'Mandatory'
+    })
+  }
+  const renderMandatoryDetail = () => {
+    const [isMandetoryItemOpen, setIsMandetoryItemOpen] = useState(false)
+    const data = selectMandatoryDetail()
+    const serviceDetailInfo = data.map((itemDetail, index) => {
+      // console.log(">>", itemDetail.detail_Id, itemDetail.subDetailArray);
+      return (
+        <View >
+          <View style={styles.itemService}>
+            <View style={styles.itemSM}>
+              <TouchableOpacity
+                onPress={() => assin(itemDetail.detail_Id, itemDetail.detailTitle, itemDetail.necessity, itemDetail.additionType, itemDetail.subDetailArray)}>
+                <Feather
+                  style={styles.menuIcon}
+                  name={'more-vertical'}
+                  color={colors.puprble}
+                  size={25} />
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setIsMandetoryItemOpen(!isMandetoryItemOpen)}>
+                <Text style={styles.detailtxt}>{itemDetail.detailTitle}</Text>
+              </TouchableOpacity>
 
             </View>
-            <ScrollView>
-                <View style={styles.content}>
-                    {renderServiceLogo()}
-                </View>
-                <View style={styles.content}>
-                    {renderServiceType()}
-                </View>
-                {seprator()}
-                <View style={styles.content}>
-                    {renderServiceTitle()}
-                </View>
-                {seprator()}
-                <View style={styles.content}>
-                    {renderServiceAddress()}
-                </View>
-                {seprator()}
-                <View style={styles.content}>
-                    {renderServicePhotos()}
-                </View>
-                {seprator()}
-                <View style={styles.content}>
-                    {renderServicePrice()}
-                </View>
-                {seprator()}
-                <View style={styles.content}>
-                    {renderDetail()}
-                </View>
-                {seprator()}
-                <View style={styles.content}>
-                    {renderHallInfo()}
-                </View>
-                {seprator()}
-                <View style={styles.content}>
-                    {renderworkingReigon()}
-                </View>
 
-            </ScrollView>
+            <View style={styles.IconView}>
+              <Entypo name={'info'} color={colors.puprble} size={25} />
+            </View>
+          </View>
+          {itemDetail.subDetailArray.map(subDItem => {
+            return (<View>
+              {isMandetoryItemOpen && <View style={styles.detailView}>
+                <Text style={styles.basicInfo}>
+                  {subDItem.detailSubtitle}
+                </Text>
+                <Feather
+                  style={{ alignSelf: 'center', marginLeft: 10 }}
+                  name={'corner-down-left'}
+                  color={colors.puprble}
+                  size={25}
+                />
+              </View>}
+            </View>
+            );
+          })}
+
         </View>
+      );
+    })
+    return serviceDetailInfo
+  }
+  const selectOptionalDetail = () => {
+    const data = filterService();
+    return data[0].additionalServices.filter(item => {
+      return item.necessity == 'Optional'
+    })
+  }
+  const renderOptionalDetail = () => {
+    const [isOptionalItemOpen, setIsOptionalItemOpen] = useState(false)
+    const data = selectOptionalDetail()
+    const serviceDetailInfo = data.map((itemDetail) => {
+      return (
+        <View >
+          <View style={styles.itemService}>
+            <View style={styles.itemSM}>
+              <TouchableOpacity
+                onPress={() => assin(itemDetail.detail_Id, itemDetail.detailTitle, itemDetail.necessity, itemDetail.additionType, itemDetail.subDetailArray)}>
+                <Feather
+                  style={styles.menuIcon}
+                  name={'more-vertical'}
+                  color={colors.puprble}
+                  size={25} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsOptionalItemOpen(!isOptionalItemOpen)}>
+                <Text style={styles.basicInfo}>{itemDetail.detailTitle}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.IconView}>
+              <Entypo name={'info'} color={colors.puprble} size={25} />
+            </View>
+          </View>
+          {itemDetail.subDetailArray.map(subDItem => {
+            return (<View>
+              {isOptionalItemOpen && <View style={styles.detailView}>
+                <Text style={styles.basicInfo}>
+                  {subDItem.detailSubtitle}
+                </Text>
+                <Feather
+                  style={{ alignSelf: 'center' }}
+                  name={'corner-down-left'}
+                  color={colors.puprble}
+                  size={25}
+                />
+              </View>}
+            </View>
+            );
+          })}
+        </View>
+      );
+    })
+    return serviceDetailInfo
+  }
+  const renderOptional = () => {
+    const optional = selectOptionalDetail()
+    if (optional) {
+      return (
+        <View>
+          <Text style={styles.sectionTitletxt}>الخدمات الاختيارية</Text>
+          <View style={styles.content}>
+            <TouchableOpacity style={styles.item} onPress={() => {
+              addNewDetailPress('Optional')
+              // setIsOptioal(true)
+            }}>
+              <Text style={styles.basicInfo}>اضافة جديد</Text>
+              <View style={styles.IconView}>
+                <Entypo
+                  style={styles.icon}
+                  name={'plus'}
+                  color={colors.puprble}
+                  size={25}
+                />
+              </View>
+            </TouchableOpacity>
+            {renderOptionalDetail()}</View>
+        </View>
+      )
+    }
+  };
+  const renderMandotory = () => {
+    const mandotory = selectMandatoryDetail()
+    if (mandotory) {
+      return (
+        <View>
+          <Text style={styles.sectionTitletxt}>الخدمات الاجبارية</Text>
+          <View style={styles.content}>
+            <TouchableOpacity style={styles.item} onPress={() => {
+              addNewDetailPress('Mandatory')
+              // setIsOptioal(false)
+            }}>
+              <Text style={styles.basicInfo}>اضافة جديد</Text>
+              <View style={styles.IconView}>
+                <Entypo
+                  style={styles.icon}
+                  name={'plus'}
+                  color={colors.puprble}
+                  size={25}
+                />
+              </View>
+            </TouchableOpacity>
+            {renderMandatoryDetail()}
+          </View>
+        </View>
+      )
+    }
+  };
+  const renderDetailModal = () => {
+    return (
+      <Modal
+        transparent
+        visible={showDetailModal}
+        animationType="slide"
+        onRequestClose={() => setShowDetailModal(false)}>
+        <View style={styles.servDetailModal}>
+          <View style={styles.bodyModal}>
+            {renderEditServiceDetailInfo()}
+          </View>
+        </View>
+      </Modal>
     )
-}
+  }
+  const renderEditingMenu = () => {
+    return (
+      <Modal
+        transparent
+        visible={showMenuModal}
+        animationType="slide"
+        onRequestClose={() => setShowMenuModal(false)}>
+        <View style={styles.menuModal}>
+          <View style={styles.menuBodyModal}>
 
-export default ProviderHome
+            <Pressable style={styles.modalHeader}>
+              <Feather name={'more-horizontal'} color={colors.puprble} size={25} />
+            </Pressable>
+
+            <View style={styles.modalMenu}>
+              <TouchableOpacity style={styles.modalItem} onPress={supDetailShowPress}>
+                <Entypo name={'list'} color={colors.gray} size={25} />
+                <Text style={styles.modalHeaderTxt}>تفاصيل</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalItem} onPress={serviceDetailEditPress}>
+                <Feather name={'edit'} color={colors.gray} size={25} />
+                <Text style={styles.modalHeaderTxt}>تعديل</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalItem} onPress={deleteSerDetailItem}>
+                <AntDesign name={'delete'} color={colors.gray} size={25} />
+                <Text style={styles.modalHeaderTxt}>اِلغاء</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+  const renderSubDetailModal = () => {
+    return (
+      <Modal
+        transparent
+        visible={showSubDetailModal}
+        animationType="slide"
+        onRequestClose={() => setShowSubDetailModal(false)}>
+        <View style={styles.servDetailModal}>
+          <View style={styles.SubDetbodyModal}>
+            {renderSupDetailShow()}
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+
+  //Social Media
+  const deleteSocialMediaItem = (Socialitem, setShowModal, index) => {
+    const selectedServiceIndex = serviceInfoAccorUser?.findIndex(item => item.service_id === isFirst);
+    const lastUpdate = serviceSocialMedia.filter(ser => ser.social !== Socialitem);
+    setServiceSocialMedia(lastUpdate);
+
+    const newData = {
+      service_id: isFirst,
+      socialMedia: lastUpdate,
+    };
+
+    updateService(newData).then(res => {
+      if (res.message === 'Updated Sucessfuly') {
+        const updatedData = [...serviceInfoAccorUser];
+        if (selectedServiceIndex > -1) {
+          updatedData[selectedServiceIndex] = { ...updatedData[selectedServiceIndex], ...newData };
+        }
+        setServiceInfoAccorUser(updatedData);
+        setShowModal(index, false);
+        ToastAndroid.showWithGravity('تم الحذف بنجاح', ToastAndroid.SHORT, ToastAndroid.BOTTOM);
+      }
+    });
+  };
+  const renderSoialMedia = () => {
+    return (
+      <View>
+        <Pressable style={styles.item} onPress={addNewSocialMediaPress}>
+          <Text style={styles.basicInfo}>اضافة</Text>
+          <View style={styles.IconView}>
+            <Entypo
+              style={styles.icon}
+              name={'plus'}
+              color={colors.puprble}
+              size={25}
+            />
+          </View>
+        </Pressable>
+        <View>{addSocilMedia && <EditServiceInfo serviceID={isFirst} />}</View>
+        {renderSocialItems()}
+      </View>
+    );
+  };
+  const renderSocialItems = () => {
+    const data = useMemo(() => filterService(), [serviceInfoAccorUser]);
+    const [editSocialMediaArray, setEditSocialMediaArray] = useState([]);
+    const [showModalArray, setShowModalArray] = useState([]);
+    const setEditSocialMedia = (index, value) => {
+      setEditSocialMediaArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+
+    const setShowModal = (index, value) => {
+      setShowModalArray(prevState =>
+        prevState.map((item, i) => (i === index ? value : item))
+      );
+    };
+    useEffect(() => {
+      if (data[0]?.socialMedia && data[0].socialMedia.length !== editSocialMediaArray.length) {
+        const initialEditArray = data[0].socialMedia.map(() => false);
+        const initialModalArray = data[0].socialMedia.map(() => false);
+        setEditSocialMediaArray(initialEditArray);
+        setShowModalArray(initialModalArray);
+      }
+    }, [data]);
+
+    return data[0]?.socialMedia.map((element, index) => {
+      const editSocialMedia = editSocialMediaArray[index];
+      const showModal = showModalArray[index];
+
+      return (
+        <View key={index}>
+          {editSocialMedia ? (
+            <EditServiceInfo
+              serviceID={isFirst}
+              editSocialMedia={editSocialMedia}
+              setEditSocialMedia={() => setEditSocialMedia(index, false)}
+              socialItem={element.social}
+              socialLink={element.link}
+            />
+          ) : (
+            <View style={styles.item}>
+              <View style={styles.itemSM}>
+                <Pressable onPress={() => setShowModal(index, true)}>
+                  <Feather style={styles.menuIcon} name={'more-vertical'} color={colors.BGScereen} size={25} />
+                </Pressable>
+                <View>
+                  <Text style={styles.basicInfo}>{element.social}</Text>
+                </View>
+              </View>
+              <View style={styles.IconView}>
+                <Entypo
+                  style={styles.icon}
+                  name={element.social}
+                  color={colors.puprble}
+                  size={25}
+                />
+              </View>
+            </View>
+          )}
+          {renderSocialModal(element.social, element.link, editSocialMedia, setEditSocialMedia, showModal, setShowModal, index)}
+        </View>
+      );
+    });
+  };
+  const renderSocialModal = (item, itemLink, editSocialMedia, setEditSocialMedia, showModal, setShowModal, index) => {
+    return (
+      <Modal
+        transparent
+        visible={showModal}
+        animationType="slide"
+        onRequestClose={() => setShowModal(index, false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.detailModal}>
+
+            <TouchableOpacity onPress={() => closeSMmodalPress(setShowModal, index)} style={styles.modalHeader}>
+              <Feather
+                style={styles.menuIcon}
+                name={'more-horizontal'}
+                color={colors.puprble}
+                size={25} />
+            </TouchableOpacity>
+
+            <View style={{ justifyContent: 'center', height: '50%' }}>
+              <View style={styles.modalMenu}>
+                <TouchableOpacity style={styles.modalItem}
+                  onPress={() => socialMediaitemEditPress(item, itemLink, editSocialMedia, setEditSocialMedia, setShowModal, index)}>
+                  <Feather
+                    name={'edit'}
+                    color={colors.gray}
+                    size={25} />
+                  <Text style={styles.modalHeaderTxt}>تعديل</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalItem} onPress={() => deleteSocialMediaItem(item, setShowModal, index)}>
+                  <AntDesign
+                    name={'delete'}
+                    color={colors.gray}
+                    size={25} />
+                  <Text style={styles.modalHeaderTxt}>حذف</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+
+  return (
+    <View style={styles.container}>
+      {header()}
+      <ScrollView>
+        {renderServiceLogo()}
+        <Text style={styles.sectionTitletxt}>تصنيف المصلحة</Text>
+        <View style={styles.content}>{renderServiceType()}</View>
+
+        <Text style={styles.sectionTitletxt}>العناوين الرئيسية</Text>
+        <View style={styles.content}>{renderServiceTitle()}</View>
+
+        <Text style={styles.sectionTitletxt}>العنوان</Text>
+        <View style={styles.content}>{renderServiceAddress()}</View>
+
+        <Text style={styles.sectionTitletxt}>معلومات التواصل </Text>
+        <View style={styles.content}>{renderContactInfo()}</View>
+
+        <Text style={styles.sectionTitletxt}>الشبكات الاجتماعية</Text>
+        <View style={styles.content}>{renderSoialMedia()}</View>
+
+        <Text style={styles.sectionTitletxt}>الصور</Text>
+        <View style={styles.content}>{renderServicePhotos()}</View>
+
+        <Text style={styles.sectionTitletxt}>الوصف</Text>
+        <View style={styles.content}>{renderAddDescription()}</View>
+
+        <Text style={styles.sectionTitletxt}>الحد الاقصى لاستقبال طلبات حجز</Text>
+        <View style={styles.content}>{renderServiceNumofRequest()}</View>
+
+        {isHall()}
+        {istherePrice()}
+        {renderMandotory()}
+        {renderOptional()}
+        {renderDetailModal()}
+        {renderEditingMenu()}
+        {renderSubDetailModal()}
+
+        <View style={{ height: 100 }}></View>
+      </ScrollView>
+
+    </View>
+  );
+};
+
+export default ProviderHome;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.BGScereen
-    },
-    basicInfoTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'right'
-    },
-    seprater: {
-        borderColor: colors.puprble,
-        borderWidth: 0.2,
-        width: '80%',
-        alignSelf: 'center',
-        marginTop: 20,
-        marginBottom: 20
-    },
-    txt: {
-        fontSize: 20,
-        color: colors.puprble,
-        //marginRight: 20,
-        fontWeight: 'bold'
-    },
-    content: {
-        marginVertical: 20,
-        padding: 10
-    },
-    iconview: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center'
-    },
-    servicetype: {
-        alignItems: 'center',
-        alignSelf: 'center',
-        justifyContent: 'center',
-        marginTop: 10,
-        backgroundColor: 'lightgray',
-        width: '60%',
-        borderRadius: 9,
-    },
-    basicInfo: {
-        fontSize: 18,
-        color: colors.puprble,
-        fontWeight: 'bold',
-        margin: 7,
-        textAlign: 'right'
-    },
+  container: {
+    flex: 1,
+    backgroundColor: colors.BGScereen,
+  },
+  basicInfoTitle: {
+    fontSize: 14,
+    textAlign: 'right',
+  },
+  txt: {
+    fontSize: 20,
+    color: colors.puprble,
+    fontWeight: 'bold',
+  },
+  detailtxt: {
+    fontSize: 18,
+    color: colors.puprble,
+    fontWeight: 'bold',
+  },
+  sectionTitletxt: {
+    fontSize: 20,
+    color: colors.puprble,
+    fontWeight: 'bold',
+    marginRight: 20,
+    marginTop: 10
+  },
+  content: {
+    padding: 5,
+    backgroundColor: 'lightgray',
+    width: '95%',
+    alignSelf: 'center',
+    borderRadius: 15,
+    elevation: 5,
+    marginVertical: 5
+  },
+  iconview: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  servicetype: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  basicInfo: {
+    fontSize: 18,
+    color: colors.puprble,
+    textAlign: 'right',
+  },
 
-    header: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10
-    },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+  },
 
-    headerTxt: {
-        fontSize: 18,
-        marginRight: 20,
-        color: colors.puprble,
-        fontFamily: 'Cairo-VariableFont_slnt,wght',
-    },
-    servicetitle: {
-        alignSelf: 'center',
-        width: '90%',
-        marginVertical: 10
-    },
-    mainTit: {
-        justifyContent: 'center',
-        width: "100%",
-        backgroundColor: 'lightgray',
-        borderRadius: 5
-    },
-    regionTit: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        width: "100%",
-        backgroundColor: 'lightgray',
-        borderRadius: 5,
-        margin: 5
-    },
-    serviceaddress: {
-        alignSelf: 'center',
-        width: '90%',
-        marginVertical: 10
-    },
-    IconView: {
-        width: 40,
-        height: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'lightgray',
-        borderRadius: 30,
-        marginLeft: 15
-    },
-    logoview: {
-        width: '100%',
-        height: 200,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    logoImg: {
-        width: '60%',
-        height: '80%',
-        backgroundColor: 'white',
-        borderRadius: 20
-    },
-    editImg: {
-        width: 40,
-        height: 40,
-        borderRadius: 50,
-        backgroundColor: 'lightgray',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: 'white',
-        position: 'absolute',
-        right: 65,
-        bottom: 10,
-    },
-    detailView: {
-        width: '80%',
-        alignSelf: 'center',
-        flexDirection: 'row',
-        justifyContent: 'flex-end'
-    }
-})
+  headerTxt: {
+    fontSize: 18,
+    color: colors.puprble,
+    fontFamily: 'Cairo-VariableFont_slnt,wght',
+  },
+  itemService: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    alignSelf: 'center',
+    width: '100%',
+    marginVertical: 10,
+    // borderWidth: 1
+  },
+  IconView: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderRadius: 30,
+    marginLeft: 10,
+  },
+  logoview: {
+    width: '100%',
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoImg: {
+    width: Dimensions.get("screen").width * 0.6,
+    height: 160,
+    backgroundColor: 'red',
+    borderRadius: 20,
+  },
+  editImg: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    backgroundColor: 'lightgray',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
+    position: 'absolute',
+    right: 65,
+    bottom: 10,
+  },
+  detailView: {
+    width: '90%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginVertical: 5,
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+
+  },
+  itemSM: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '85%',
+
+  },
+  detailModal: {
+    width: '100%',
+    height: '15%',
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: '#00000099',
+  },
+  centeredDescView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: '#00000099',
+  },
+  Modalbtn: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    position: 'absolute',
+    bottom: 10,
+    width: '100%'
+  },
+  servDetailModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#00000099',
+  },
+  bodyModal: {
+    width: '95%',
+    height: '60%',
+    backgroundColor: '#ffffff',
+    borderRadius: 10
+  },
+  SubDetbodyModal: {
+    width: '95%',
+    height: '95%',
+    backgroundColor: colors.silver,
+    borderRadius: 10
+  },
+  modalHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: 50,
+  },
+  modalHeaderTxt: {
+    fontSize: 18
+  },
+
+
+  modalMenu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  modalItem: {
+    alignItems: 'center'
+  },
+
+  menuModal: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: '#00000099',
+  },
+  menuBodyModal: {
+    width: '100%',
+    height: '15%',
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20
+  },
+
+});

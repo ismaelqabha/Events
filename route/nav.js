@@ -1,15 +1,8 @@
 import React from "react";
 import { ScreenNames } from "../route/ScreenNames";
 import SignIn from "../src/screens/SignIn";
-import SignUp from "../src/screens/SignUp";
-
-import ClientHomeAds from "../src/screens/ClientHomeAds";
-import ClientBook from "../src/screens/ClientBook";
-import ServiceDescr from "../src/screens/ServiceDescr";
-
 import ClientRequest from "../src/screens/ClientRequest";
-import Favorites from "../src/screens/Favorites";
-import ClientSearch from "../src/screens/ClientSearch";
+
 
 import ProviderChooseService from '../src/screens/ProviderScreens/ProviderChooseService';
 import ProviderSetPhotos from "../src/screens/ProviderScreens/ProviderSetPhotos";
@@ -19,8 +12,8 @@ import ProviderAddSubDetail from "../src/screens/ProviderScreens/ProviderAddSubD
 import ProviderAddServiceDetail from "../src/screens/ProviderScreens/ProviderAddServiceDetail";
 import ProviderSetPrice from "../src/screens/ProviderScreens/ProviderSetPrice";
 
-import FileFavorites from "../src/screens/FileFavorites";
-import ClientEvents from "../src/screens/ClientEvents";
+import FileFavorites from "../src/screens/ClientScreens/FileFavorites";
+
 
 import { NavigationContainer, StackActions } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -30,11 +23,8 @@ import { Easing } from "react-native";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 import HomeNavigator from "./HomeNavigator";
 import Splash from "../src/screens/Splash";
-import Results from "../src/screens/Results";
-import SearchServcies from "../src/screens/SearchServcies";
 
 import SubDetailPrices from "../src/screens/SubDetailPrices";
-import ServiceDetail from "../src/screens/ServiceDetail";
 import Campaigns from "../src/screens/Campaigns";
 import ProviderCalender from "../src/screens/ProviderScreens/ProviderCalender";
 import ProviderBookingRequest from "../src/screens/ProviderScreens/ProviderBookingRequest";
@@ -49,6 +39,52 @@ import CreatePassword from "../src/screens/Signup/CreatePassword";
 import SetUserAddress from "../src/screens/Signup/SetUserAddress";
 import SetUserStatus from "../src/screens/Signup/SetUserStatus";
 import ProviderCreateOffer from "../src/screens/ProviderScreens/ProviderCreateOffer";
+import ProviderSetEventType from "../src/screens/ProviderScreens/ProviderSetEventType";
+import UserProfile from "../src/screens/UserProfile";
+import ProviderNotification from "../src/screens/ProviderScreens/ProviderNotification";
+import ProviderClientScreen from "../src/screens/ProviderScreens/ProviderClientScreen";
+
+
+import ProviderShowOffers from "../src/screens/ProviderScreens/ProviderShowOffers";
+import ProviderOfferDesc from "../src/screens/ProviderScreens/ProviderOfferDesc";
+
+import ProviderShowRequest from "../src/screens/ProviderScreens/ProviderShowRequest";
+import ClientShowRequest from "../src/screens/ClientShowRequest";
+import ForgotPassword from "../src/screens/ForgotPassword";
+import ProviderDuePayments from "../src/screens/ProviderScreens/ProviderDuePayments";
+import ClientDuePayments from "../src/screens/ClientScreens/ClientDuePayments";
+import ClientPayment from "../src/screens/ClientScreens/ClientPayment";
+import ClientOldEvents from "../src/screens/ClientScreens/ClientOldEvents";
+import ClientRelations from "../src/screens/ClientScreens/ClientRelations";
+import RequestDuePaymentsShow from "../src/screens/Payment Screens/RequestDuePaymentsShow";
+import PaymentDetail from "../src/screens/Payment Screens/PaymentDetail";
+import MakePayment from "../src/screens/Payment Screens/MakePayment";
+import ClientBook from "../src/screens/ClientScreens/ClientBook";
+import ClientSpecialDates from "../src/screens/ClientScreens/ClientSpecialDates";
+import ReviewsScreen from "../src/screens/ReviewsScreen";
+import ClientSearch from "../src/screens/ClientScreens/ClientSearch";
+import Results from "../src/screens/ClientScreens/Results";
+import ServiceDescr from "../src/screens/ClientScreens/ServiceDescr";
+import SearchServcies from "../src/screens/ClientScreens/SearchServcies";
+import ClientIncomingRelation from "../src/screens/ClientScreens/ClientIncomingRelation";
+import Favorites from "../src/screens/ClientScreens/Favorites";
+import CreateInvetation from "../src/screens/ClientScreens/CreateInvetation";
+import MyInvetationsCards from "../src/screens/ClientScreens/MyInvetationsCards";
+import InvetationShow from "../src/screens/ClientScreens/InvetationShow";
+import InvetationOutboxShow from "../src/screens/ClientScreens/InvetationOutboxShow";
+import ProviderPhotosPrview from "../src/screens/ProviderScreens/ProviderPhotosPrview";
+import ProviderUsersView from "../src/screens/ProviderScreens/ProviderUsersView";
+import ProviderSetNewBooking from "../src/screens/ProviderScreens/ProviderSetNewBooking";
+import AdminTapNav from "./AdminTapNav";
+import AdminHome from "../src/screens/adminScreens/AdminHome";
+import AdminClients from "../src/screens/adminScreens/AdminClients";
+import AdminVisits from "../src/screens/adminScreens/AdminVisits";
+import ProviderSales from "../src/screens/ProviderScreens/ProviderSales";
+import ProviderSalesShow from "../src/screens/ProviderScreens/ProviderSalesShow";
+
+
+
+
 
 
 
@@ -91,11 +127,11 @@ const MainNavigation = (props) => {
                 <Stack.Screen name="Tap" component={TabNavigator} />
                 <Stack.Screen name="TapNoti" component={TopTapNotificaNavig} />
                 <Stack.Screen name="TapProvider" component={ProviderTapNav} />
+                <Stack.Screen name="AdminTapNav" component={AdminTapNav} />
                 <Stack.Screen name={ScreenNames.Splash} component={Splash} />
                 <Stack.Screen name={ScreenNames.SignIn} component={SignIn} />
+                <Stack.Screen name={ScreenNames.ForgotPassword} component={ForgotPassword} />
 
-
-               
 
                 <Stack.Screen name={ScreenNames.ClientBook} component={ClientBook} />
                 <Stack.Screen name={ScreenNames.ServiceDescr} component={ServiceDescr} />
@@ -104,13 +140,26 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ClientRequest} component={ClientRequest} />
                 <Stack.Screen name={ScreenNames.Results} component={Results} />
                 <Stack.Screen name={ScreenNames.SearchServcies} component={SearchServcies} />
-                <Stack.Screen name={ScreenNames.ServiceDetail} component={ServiceDetail} />
                 <Stack.Screen name={ScreenNames.SubDetailPrices} component={SubDetailPrices} />
                 <Stack.Screen name={ScreenNames.Campaigns} component={Campaigns} />
-                
-                
+                <Stack.Screen name={ScreenNames.UserProfile} component={UserProfile} />
+                <Stack.Screen name={ScreenNames.ReviewsScreen} component={ReviewsScreen} />
+                <Stack.Screen name={ScreenNames.ClientSpecialDates} component={ClientSpecialDates} />
+                <Stack.Screen name={ScreenNames.ClientRelations} component={ClientRelations} />
+                <Stack.Screen name={ScreenNames.ClientShowRequest} component={ClientShowRequest} />
+                <Stack.Screen name={ScreenNames.ClientDuePayments} component={ClientDuePayments} />
+                <Stack.Screen name={ScreenNames.ClientPayment} component={ClientPayment} />
+                <Stack.Screen name={ScreenNames.ClientIncomingRelation} component={ClientIncomingRelation} />
+                <Stack.Screen name={ScreenNames.ClientOldEvents} component={ClientOldEvents} />
+                <Stack.Screen name={ScreenNames.RequestDuePaymentsShow} component={RequestDuePaymentsShow} />
+                <Stack.Screen name={ScreenNames.PaymentDetail} component={PaymentDetail} />
+                <Stack.Screen name={ScreenNames.MakePayment} component={MakePayment} />
+                <Stack.Screen name={ScreenNames.CreateInvetation} component={CreateInvetation} />
+                <Stack.Screen name={ScreenNames.MyInvetationsCards} component={MyInvetationsCards} />
+                <Stack.Screen name={ScreenNames.InvetationShow} component={InvetationShow} />
+                <Stack.Screen name={ScreenNames.InvetationOutboxShow} component={InvetationOutboxShow} />
 
-               
+
                 <Stack.Screen name={ScreenNames.ProviderChooseService} component={ProviderChooseService} />
                 <Stack.Screen name={ScreenNames.ProviderAddInfo} component={ProviderAddInfo} />
                 <Stack.Screen name={ScreenNames.ProviderSetPhotos} component={ProviderSetPhotos} />
@@ -121,11 +170,27 @@ const MainNavigation = (props) => {
                 <Stack.Screen name={ScreenNames.ProviderSetPrice} component={ProviderSetPrice} />
                 <Stack.Screen name={ScreenNames.ProviderCalender} component={ProviderCalender} />
                 <Stack.Screen name={ScreenNames.ProviderBookingRequest} component={ProviderBookingRequest} />
-                <Stack.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing}/>
+                <Stack.Screen name={ScreenNames.ProviderCreateListing} component={ProviderCreateListing} />
                 <Stack.Screen name={ScreenNames.ProviderInitialWithDetailPrice} component={ProviderInitialWithDetailPrice} />
                 <Stack.Screen name={ScreenNames.ProviderContantPrice} component={ProviderContantPrice} />
                 <Stack.Screen name={ScreenNames.ProviderCreateOffer} component={ProviderCreateOffer} />
+                <Stack.Screen name={ScreenNames.ProviderSetEventType} component={ProviderSetEventType} />
+                <Stack.Screen name={ScreenNames.ProviderNotification} component={ProviderNotification} />
+                <Stack.Screen name={ScreenNames.ProviderClientScreen} component={ProviderClientScreen} />
+                <Stack.Screen name={ScreenNames.ProviderShowOffers} component={ProviderShowOffers} />
+                <Stack.Screen name={ScreenNames.ProviderOfferDesc} component={ProviderOfferDesc} />
+                <Stack.Screen name={ScreenNames.ProviderDuePayments} component={ProviderDuePayments} />
+                <Stack.Screen name={ScreenNames.ProviderShowRequest} component={ProviderShowRequest} />
+                <Stack.Screen name={ScreenNames.ProviderPhotosPrview} component={ProviderPhotosPrview} />
+                <Stack.Screen name={ScreenNames.ProviderUsersView} component={ProviderUsersView} />
+                <Stack.Screen name={ScreenNames.ProviderSetNewBooking} component={ProviderSetNewBooking} />
+                <Stack.Screen name={ScreenNames.ProviderSales} component={ProviderSales} />
+                <Stack.Screen name={ScreenNames.ProviderSalesShow} component={ProviderSalesShow} />
                 
+                <Stack.Screen name={ScreenNames.AdminHome} component={AdminHome} />
+                <Stack.Screen name={ScreenNames.AdminClients} component={AdminClients} />
+                <Stack.Screen name={ScreenNames.AdminVisits} component={AdminVisits} />
+
                 <Stack.Screen name={ScreenNames.CreateUpersonalInfo} component={CreateUpersonalInfo} />
                 <Stack.Screen name={ScreenNames.CreatePassword} component={CreatePassword} />
                 <Stack.Screen name={ScreenNames.SetUserAddress} component={SetUserAddress} />

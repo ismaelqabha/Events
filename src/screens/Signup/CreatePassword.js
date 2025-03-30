@@ -1,20 +1,37 @@
-import { StyleSheet, Text, View, Pressable, TextInput, ToastAndroid } from 'react-native'
-import React, { useState, useContext, useEffect } from 'react'
-import { colors } from '../../assets/AppColors'
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { AppStyles } from '../../assets/res/AppStyles';
-import { ScreenNames } from '../../../route/ScreenNames';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  TextInput,
+  ToastAndroid,
+  TouchableOpacity,
+  I18nManager,
+} from 'react-native';
+import React, {useState, useContext, useEffect} from 'react';
+import {colors} from '../../assets/AppColors';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {AppStyles} from '../../assets/res/AppStyles';
+import {ScreenNames} from '../../../route/ScreenNames';
 import SearchContext from '../../../store/SearchContext';
-import { addUser } from '../../resources/API';
+import {addUser, checkUserExists, getUserData} from '../../resources/API';
 import ScrollWrapper from '../../components/ProviderComponents/ScrollView/ScrollWrapper';
 import UsersContext from '../../../store/UsersContext';
+import {
+  asyncFunctions,
+  getProfileImageSource,
+  getProfileImageURI,
+  showMessage,
+} from '../../resources/Functions';
+import {passwordRegex} from '../../resources/Regex';
+import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
-
-const CreatePassword = (props) => {
-
-  const { userId } = useContext(SearchContext);
-
-  const { password,
+const CreatePassword = props => {
+  const {userId} = useContext(SearchContext);
+  const navigation = useNavigation()
+  const {
+    password,
     setPassword,
     confirmPassword,
     setconfirmPassword,
@@ -28,27 +45,54 @@ const CreatePassword = (props) => {
     userStatus,
     userCity,
     createUserRegion,
-    userSpecialDate, profilePhoto } = useContext(UsersContext);
+    userSpecialDate,
+    profilePhoto,
+    setuserId,
+    setUserName
+  } = useContext(UsersContext);
 
-  const [firstPasswordError, setFirstPasswordError] = useState()
-  const [secondPasswordError, setSecondPasswordError] = useState()
+  const [firstPasswordError, setFirstPasswordError] = useState();
+  const [secondPasswordError, setSecondPasswordError] = useState();
+
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConPasswordVisible, setIsConPasswordVisible] = useState(false);
+
+  const isRTL = I18nManager.isRTL;
 
   const onPressBack = () => {
     props.navigation.goBack();
-  }
+  };
 
   const checkPassword = () => {
     if (password === confirmPassword) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
-  }
+  };
 
-  const chickIfExist = () => {
-    const isChecked = userInfo.find(item => item.Email === userEmail)
-    return !!isChecked;
-  }
+  const checkIfExist = async () => {
+    try {
+      const isChecked = await checkUserExists({
+        email: userEmail,
+        phone: userPhone,
+      });
+      console.log('User exists:', isChecked);
+      return isChecked;
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      return true; // Default to `true` if there's an error to avoid proceeding with account creation
+    }
+  };
+
+  const getUserInfo = () => {
+    getUserData({ Email: userEmail }).then(res => {
+        setUserInfo(res)
+        setuserId(res.user[0].USER_ID)
+        setUserName(res.user[0].User_name)
+    })
+}
+
   const addNewUser = () => {
     const AddNewUser = {
       Email: userEmail,
@@ -63,91 +107,105 @@ const CreatePassword = (props) => {
       UserCity: userCity,
       Userstatus: userStatus,
       SpecialDates: userSpecialDate,
-      
-      //UserLocation: req.body.UserLocation,
-      Userstatus: userStatus,
-      // UserPhoto: profilePhoto,
-      // SpecialDates: userSpecialDate,
-      // UserRelations: ''
-    }
-    addUser(AddNewUser , profilePhoto).then(res => {
-      let UsersArr = userInfo || [];
-      UsersArr.push(AddNewUser);
-      setUserInfo([...UsersArr])
-      console.log("UsersArr", UsersArr);
-      ToastAndroid.showWithGravity('تم اٍنشاء المستخدم بنجاح',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
-      )
-    })
-  }
+    };
+  
+    const photo = getProfileImageURI(profilePhoto, userGender);
+  
+    addUser(AddNewUser, photo)
+      .then(res => {
+        if (res.message === 'User Created') {
+          showMessage('تم اٍنشاء المستخدم بنجاح');
+  
+          const userInfo = {
+            Email: userEmail,
+            Password: password,
+          };
+  
+          asyncFunctions.setItem("userInfo", JSON.stringify(userInfo))
+            .then(() => {
+              setPassword("");
+  
+              getUserInfo();
+              navigation.navigate(ScreenNames.Splash, { signIn: true });
+            })
+            .catch(error => {
+              showMessage('Failed to save user info: ' + error.message);
+            });
+        } else {
+          showMessage('There has been an error: ' + res.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error adding user:', error);
+        showMessage('حدث خطأ أثناء إنشاء المستخدم');
+      });
+  };
+  
+  const passwordRegCheck = () => {
+    return passwordRegex.test(password);
+  };
 
-  const onCreateUser = () => {
-    if (checkPassword()) {
-      if (!chickIfExist()) {
-        addNewUser()
+  const onCreateUser = async () => {
+    if (passwordRegCheck()) {
+      if (checkPassword()) {
+        const userExists = await checkIfExist();
+        if (!userExists) {
+          addNewUser();
+        } else {
+          showMessage('لديك حساب مسبقا');
+        }
       } else {
-        ToastAndroid.showWithGravity('لديك حساب مسبقا',
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM
-        )
+        showMessage('لا يوجد تطابق بين كلمات المرور المكتوبة');
       }
     } else {
-      ToastAndroid.showWithGravity('لا يوجد تطابق بين كلمات المرور المكتوبة',
-        ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
-      )
+      showMessage('كلمة المرور يجب أن تحتوي على الأقل 7 أحرف وأرقام');
     }
-
-  }
-
-
-  const RenderFooter = () => {
-    return (
-      <View style={AppStyles.footer}>
-        {renderDots()}
-        <View style={AppStyles.footerPart}>
-          {RenderBackButton()}
-          {RenderNextButton()}
-        </View>
-
-
-      </View>);
   };
-  const renderDots = () => {
-    return (
-      <View style={AppStyles.createuserDots}>
-        <View style={AppStyles.dots}></View>
-        <View style={AppStyles.dots}></View>
-        <View style={AppStyles.dots}></View>
-        <View style={AppStyles.pressDot}></View>
-      </View>
-    )
-  }
-  const RenderNextButton = () => {
-    return (
-      <Pressable
-        style={AppStyles.createUserNext}
-        onPress={() => onNextPress()}
-      >
-        <Text style={AppStyles.createUserNextTxt}>تم</Text>
-      </Pressable>
-    );
-  };
-  const RenderBackButton = () => {
-    return (
-      <Pressable
-        style={AppStyles.createUserBack}
-        onPress={() => onPressBack()}>
-        <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
-      </Pressable>
-    );
-  };
+
+  // const RenderFooter = () => {
+  //   return (
+  //     <View style={AppStyles.footer}>
+  //       {renderDots()}
+  //       <View style={AppStyles.footerPart}>
+  //         {RenderBackButton()}
+  //         {RenderNextButton()}
+  //       </View>
+
+  //     </View>);
+  // };
+  // const renderDots = () => {
+  //   return (
+  //     <View style={AppStyles.createuserDots}>
+  //       <View style={AppStyles.dots}></View>
+  //       <View style={AppStyles.dots}></View>
+  //       <View style={AppStyles.dots}></View>
+  //       <View style={AppStyles.pressDot}></View>
+  //     </View>
+  //   )
+  // }
+  // const RenderNextButton = () => {
+  //   return (
+  //     <Pressable
+  //       style={AppStyles.createUserNext}
+  //       onPress={() => onNextPress()}
+  //     >
+  //       <Text style={AppStyles.createUserNextTxt}>تم</Text>
+  //     </Pressable>
+  //   );
+  // };
+  // const RenderBackButton = () => {
+  //   return (
+  //     <Pressable
+  //       style={AppStyles.createUserBack}
+  //       onPress={() => onPressBack()}>
+  //       <Text style={AppStyles.createUserBackTxt}>رجوع</Text>
+  //     </Pressable>
+  //   );
+  // };
 
   const onNextPress = () => {
     true ? onCreateUser() : missingData();
   };
-
 
   const checkStrings = val => {
     if (!val) {
@@ -163,60 +221,86 @@ const CreatePassword = (props) => {
     checkStrings(confirmPassword) ? showMissingConfirmPassword() : null;
   };
 
-  const showMissingPasswrd = () => { };
-  const showMissingConfirmPassword = () => { };
+  const showMissingPasswrd = () => {};
+  const showMissingConfirmPassword = () => {};
 
   useEffect(() => {
     setFirstPasswordError(!checkStrings(password));
     setSecondPasswordError(!checkStrings(confirmPassword));
-
   }, [password, confirmPassword]);
 
   const renderPassword = () => {
-    return (<View>
-      <View style={styles.inputView}>
-        {firstPasswordError && (
-          <Text style={styles.textRequired}>*</Text>
-        )}
-        <TextInput
-          style={styles.input}
-          keyboardType='visible-password'
-          placeholder='كلمة المرور'
-          onChangeText={setPassword}
-        />
+    return (
+      <View>
+        <View style={styles.inputView}>
+          {firstPasswordError && <Text style={styles.textRequired}>*</Text>}
+          <TextInput
+            style={styles.input}
+            placeholder="كلمة المرور"
+            onChangeText={setPassword}
+            value={password}
+            secureTextEntry={!isPasswordVisible}
+          />
+          <TouchableOpacity
+            style={[
+              styles.icon,
+              isRTL ? {left: 30, right: 'auto'} : {right: 30, left: 'auto'},
+              firstPasswordError ? {top: '45%'} : {top: '28%'},
+            ]}
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+            <Icon
+              name={isPasswordVisible ? 'eye' : 'eye-off'}
+              size={24}
+              color="gray"
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputView}>
+          {secondPasswordError && <Text style={styles.textRequired}>*</Text>}
+          <TextInput
+            style={styles.input}
+            placeholder="تأكيد كلمة المرور"
+            onChangeText={setconfirmPassword}
+            secureTextEntry={!isConPasswordVisible}
+          />
+          <TouchableOpacity
+            style={[
+              styles.icon,
+              isRTL ? {left: 30, right: 'auto'} : {right: 30, left: 'auto'},
+              secondPasswordError ? {top: '45%'} : {top: '28%'},
+            ]}
+            onPress={() => setIsConPasswordVisible(!isConPasswordVisible)}>
+            <Icon
+              name={isConPasswordVisible ? 'eye' : 'eye-off'}
+              size={24}
+              color="gray"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.inputView}>
-        {secondPasswordError && (
-          <Text style={styles.textRequired}>*</Text>
-        )}
-        <TextInput
-          style={styles.input}
-          keyboardType='visible-password'
-          placeholder='تأكيد كلمة المرور'
-          onChangeText={setconfirmPassword}
-        />
-      </View>
-    </View>)
-
-  }
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.head}>
         <Text style={styles.titleTxt}>اٍنشاء الحساب</Text>
       </View>
-      <ScrollWrapper onNextPress={onNextPress} dotPlace={3} amountDots={4}
-      >
+      <ScrollWrapper
+        onNextPress={onNextPress}
+        onPressBack={onPressBack}
+        dotPlace={3}
+        amountDots={4}>
         <View style={styles.body}>
           <Text style={styles.titleText}>تعيين كلمة المرور</Text>
           {renderPassword()}
         </View>
       </ScrollWrapper>
     </View>
-  )
-}
+  );
+};
 
-export default CreatePassword
+export default CreatePassword;
 
 const styles = StyleSheet.create({
   container: {
@@ -230,7 +314,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.puprble,
     fontWeight: 'bold',
-    marginRight: 20
+    marginRight: 20,
   },
   body: {
     marginVertical: 50,
@@ -247,7 +331,7 @@ const styles = StyleSheet.create({
     width: 123,
     position: 'absolute',
     top: -13,
-    right: 10
+    right: 10,
   },
   input: {
     alignSelf: 'center',
@@ -270,4 +354,7 @@ const styles = StyleSheet.create({
     marginRight: 40,
     color: 'red',
   },
-})
+  icon: {
+    position: 'absolute',
+  },
+});

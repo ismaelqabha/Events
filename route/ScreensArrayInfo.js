@@ -1,5 +1,4 @@
-import ClientNotification from "../src/screens/ClientNotification";
-import ClientPayment from "../src/screens/ClientPayment";
+
 import LogOut from "../src/screens/LogOut";
 import Security from "../src/screens/Security";
 import Settings from "../src/screens/Settings";
@@ -9,6 +8,8 @@ import { ScreenNames } from "./ScreenNames";
 import TabNavigator from "./tabNavigator";
 import { Icons } from "../src/components/Icons"
 import PersonalInfo from "../src/screens/PersonalInfo";
+import ClientPayment from "../src/screens/ClientScreens/ClientPayment";
+import ClientNotification from "../src/screens/ClientScreens/ClientNotification";
 
 
 export const SharedScreen = [
@@ -23,7 +24,7 @@ export const SharedScreen = [
         route: ScreenNames.PersonalInfo,
         label: 'المعلومات الشخصية',
         type: Icons.AntDesign,
-        icon: 'profile',
+        icon: 'user',
         component: PersonalInfo,
     },
     {
@@ -48,7 +49,7 @@ export const SharedScreen = [
         component: Support,
     },
     {
-        route: 'ProviderHome',
+        route: 'ProviderHomeTab',
         label: 'خدماتي كمزود',
         type: Icons.Fontisto,
         icon: 'indent',
@@ -77,9 +78,9 @@ export const ClientScreen = [
         type: Icons.AntDesign,
         icon: 'notification',
         component: ClientNotification,
-    },  
+    },
 ]
 
-export const ProviderScreen =[
+export const ProviderScreen = [
 
 ]

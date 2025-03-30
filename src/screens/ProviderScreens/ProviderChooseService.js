@@ -69,7 +69,7 @@ const ProviderChooseService = props => {
   const onBackPress = () => {
     selectServiceType
       ? RenderConfirmationBox()
-      : props.navigation.navigate(ScreenNames.ProviderCreateListing, {
+      : props.navigation.goBack({
         data: { ...props },
       });
   };
@@ -122,15 +122,15 @@ const ProviderChooseService = props => {
       address: serviceAddress,
       servicePrice: price,
       workingAreas: workAreas,
-      photoArray:photoArray,
+      photoArray: photoArray,
       additionalServices: additionalServices,
-      socialMedia:socialMediaArray,
-      ID:draftID
+      socialMedia: socialMediaArray,
+      ID: draftID
     };
-    setDraftServices([...draftServices,draft])
-    await addDraftToAPI(draft) .then((res)=>{
+    setDraftServices([...draftServices, draft])
+    await addDraftToAPI(draft).then((res) => {
       showMessage(res?.message);
-    }).catch(e => console.log("add draft error ->",e))
+    }).catch(e => console.log("add draft error ->", e))
   }
 
 
@@ -239,8 +239,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     paddingHorizontal: '10%',
-    position:'absolute',
-    bottom:0
+    position: 'absolute',
+    bottom: 0
   },
 
 })

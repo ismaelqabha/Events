@@ -1,0 +1,506 @@
+import { StyleSheet, Text, View, Pressable, TextInput, ScrollView, ToastAndroid } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react'
+import FontAwesome from "react-native-vector-icons/FontAwesome"
+import Entypo from "react-native-vector-icons/Entypo"
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { colors } from '../assets/AppColors';
+import { updateRequest } from '../resources/API';
+import SearchContext from '../../store/SearchContext';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+import moment from "moment";
+import ServiceProviderContext from '../../store/ServiceProviderContext';
+import { TouchableOpacity } from 'react-native';
+import { showMessage } from '../resources/Functions';
+
+
+const PaymentDetailComp = (props) => {
+
+    const { setRequestInfoByService, requestInfoByService, isFirst } = useContext(SearchContext);
+    const { serviceInfoAccorUser } = useContext(ServiceProviderContext);
+    const [paymentDataArray, setPaymentDataArray] = useState([])
+    const { reqInfo, setShowPaymentModal } = props
+
+    var payId = uuidv4();
+
+    const filterService = () => {
+        const service = serviceInfoAccorUser?.filter(item => {
+            return item.service_id === isFirst;
+        });
+        return service
+    };
+
+    useEffect(() => {
+
+    }, [])
+
+    const updateData = () => {
+        // First, check if all payment fields are filled properly
+        const service = filterService();
+        for (let payment of paymentDataArray) {
+            if (!payment.pers || payment.pers <= 0 || !payment.PayDate) {
+                showMessage('يجب تعبئة جميع الحقول بشكل صحيح');
+                return;
+            }
+            const paymentDate = new Date(payment.PayDate);
+            const eventDate = new Date(reqInfo.requestInfo.reservationDetail[0].reservationDate);
+
+            if (service[0].paymentPolicy === 'pre' && paymentDate >= eventDate) {
+                showMessage('التاريخ يجب ان يكون قبل تاريخ الحدث نظرا لسياسة الدفع المسبق');
+                return;
+            }
+        }
+
+
+        // Calculate the total percentage
+        const result = checkSumPersentage();
+
+        // Ensure the total percentage is exactly 100
+        if (result !== 100) {
+            showMessage('يجب أن يكون مجموع النسب 100%');
+            return;
+        }
+
+        // Proceed with updating the request if all conditions are met
+        const requestInfoAccServiceIndex = requestInfoByService?.findIndex(
+            item => item.requestInfo.RequestId === reqInfo.requestInfo.RequestId
+        );
+
+        const newData = {
+            RequestId: reqInfo.requestInfo.RequestId,
+            ReqStatus: 'waiting pay',
+            paymentInfo: paymentDataArray,
+        };
+
+        updateRequest(newData).then(res => {
+            if (res.message === "Updated Successfully") {
+                const data = requestInfoByService || [];
+                if (requestInfoAccServiceIndex > -1) {
+                    data[requestInfoAccServiceIndex] = {
+                        ...data[requestInfoAccServiceIndex],
+                        ...newData,
+                    };
+                }
+                setRequestInfoByService([...data]);
+
+                showMessage('تم التعديل بنجاح');
+                setShowPaymentModal(false);
+            }
+        });
+    };
+
+
+    const addPaymentData = () => {
+        setPaymentDataArray([...paymentDataArray, { empty: "empty" }])
+    }
+
+    const renderAddButton = () => {
+        return (
+            <TouchableOpacity style={styles.item} onPress={addPaymentData}
+            >
+                <Text style={styles.basicInfo}>اضافة</Text>
+                <View style={styles.IconView}>
+                    <Entypo
+                        style={styles.icon}
+                        name={"plus"}
+                        color={colors.puprble}
+                        size={25} />
+                </View>
+            </TouchableOpacity>
+        )
+    }
+
+
+    const checkSumPersentage = () => {
+        let sumPers = 0;
+
+        paymentDataArray.forEach((element, index) => {
+            const percentage = parseFloat(element.pers);
+            if (!isNaN(percentage)) {
+                console.log(index + 1, "percentage", percentage);
+
+                sumPers += percentage;
+            }
+        });
+
+        return sumPers;
+    };
+
+    const renderPaymentFeilds = () => {
+        const service = filterService()
+        const fields = paymentDataArray?.map((val, index) =>
+            <PaymentComponent val={val} index={index} service={service} />
+        )
+        return fields
+    }
+
+
+    const updateArray = (data, index) => {
+        setPaymentDataArray(prevArray => {
+            const newArray = [...prevArray];
+            newArray[index] = data;
+            return newArray;
+        });
+    };
+
+    const removePaymentItem = (index) => {
+        const newArray = [...paymentDataArray];
+        newArray.splice(index, 1);
+        setPaymentDataArray(newArray);
+    };
+
+    const PaymentComponent = (props) => {
+        const [paymentDate, setPaymentDate] = useState(props?.val?.PayDate || null)
+        const [persentage, setPersentage] = useState(props?.val?.pers || null)
+        const [amount, setAmount] = useState(props?.val?.amount || null)
+
+        const index = props.index
+
+        const [date, setDate] = useState(new Date());
+        const [mode, setMode] = useState('date');
+        const [show, setShow] = useState(false);
+
+        const { service } = props
+        const paymentPolicy = service[0]?.paymentPolicy;
+
+        var payDate
+        var todayDate = new Date();
+
+        todayDate.setHours(0);
+        todayDate.setMinutes(0);
+        todayDate.setSeconds(0);
+        todayDate.setMilliseconds(0);
+
+
+        const calculateAmountFromPersentage = (pers) => {
+            const ReqPrice = reqInfo.requestInfo.Cost;
+            const currentTotal = checkSumPersentage() - paymentDataArray[index]?.pers;
+
+            const maxAllowed = 100 - currentTotal;
+
+            let adjustedPers = pers;
+
+            if (currentTotal + parseFloat(pers) > 100) {
+                adjustedPers = maxAllowed;
+            }
+
+            const fact = ReqPrice * adjustedPers;
+            const realAmount = fact / 100;
+            const newPersentage = parseInt(adjustedPers)?.toFixed(0).toString() || '0';
+            const newAmount = realAmount?.toFixed(0).toString() || '0';
+
+            setPersentage(newPersentage);
+            setAmount(newAmount);
+
+            updateArray(
+                {
+                    id: payId,
+                    PayDate: paymentDate,
+                    pers: newPersentage,
+                    paymentStutes: 'not paid',
+                    amount: newAmount
+                },
+                index
+            );
+        };
+        const calculatePersentageFromAmount = (amou) => {
+            const ReqPrice = reqInfo.requestInfo.Cost;
+            const currentTotalPercentage = checkSumPersentage() - parseFloat(paymentDataArray[index]?.pers || 0);
+
+            const maxAllowedPercentage = 100 - currentTotalPercentage;
+            const maxAllowedAmount = (ReqPrice * maxAllowedPercentage) / 100;
+
+            let adjustedAmount = amou;
+
+            if (amou > maxAllowedAmount) {
+                adjustedAmount = maxAllowedAmount;
+            }
+
+            const value = adjustedAmount / ReqPrice;
+            const pers = value * 100;
+            const newAmount = parseInt(adjustedAmount)?.toFixed(0).toString() || '0';
+            const newPersentage = pers?.toFixed(0).toString() || '0';
+
+            setAmount(newAmount);
+            setPersentage(newPersentage);
+
+            updateArray(
+                {
+                    id: payId,
+                    PayDate: paymentDate,
+                    pers: newPersentage,
+                    paymentStutes: 'not paid',
+                    amount: newAmount
+                },
+                index
+            );
+        };
+
+        const onChange = (event, selectedDate) => {
+            setShow(false);
+            const chosenDate = selectedDate || date;
+
+            // Check the policy conditions
+            if (paymentPolicy === 'pre' && chosenDate >= eventDate) {
+                showMessage('التاريخ يجب ان يكون قبل تاريخ الحدث نظرا لسياسة الدفع المسبق');
+                return;
+            }
+            // Set the valid date
+            setDate(chosenDate);
+            setPaymentDate(chosenDate.toISOString().split('T')[0]);
+
+            const data = {
+                id: payId,
+                PayDate: chosenDate.toISOString().split('T')[0],
+                pers: persentage,
+                amount: amount,
+                paymentStutes: 'not paid'
+            };
+            updateArray(data, index);
+        };
+        const showMode = (currentMode) => {
+            setShow(true);
+            setMode(currentMode);
+        }
+        // console.log("props.val", props.val);
+        useEffect(() => {
+            if (props.val) {
+                setPaymentDate(props?.val?.PayDate)
+                setPersentage(props?.val?.pers)
+            }
+        }, [])
+
+        return (
+            <View key={props?.index} style={styles.mediaItem}>
+
+                <View style={styles.mediaList}>
+                    <TouchableOpacity onPress={() => removePaymentItem(index)} style={{ width: '10%', padding: 5, alignItems: 'center' }}
+                    >
+                        <FontAwesome name="remove" size={15} />
+                    </TouchableOpacity>
+
+                </View>
+                <View>
+                    <TouchableOpacity onPress={() => showMode('date')} >
+                        <View style={styles.viewDate}>
+                            <View style={{ width: '80%', alignItems: 'center' }}>
+                                <Text style={styles.datetxt}>{paymentDate || "تاريخ الدفعة"}</Text>
+                            </View>
+                            <Entypo
+                                name='calendar'
+                                style={{ fontSize: 30, color: colors.puprble, paddingRight: 10 }}
+                            />
+                        </View>
+                    </TouchableOpacity>
+                    {show && (
+                        <DateTimePicker
+                            testID='dateTimePicker'
+                            value={date}
+                            mode={mode}
+                            is24Hour={true}
+                            display='spinner'
+                            onChange={onChange}
+                        />
+                    )}
+                </View>
+
+                <View style={styles.inputView}>
+
+                    <TextInput style={styles.input}
+                        keyboardType={'numeric'}
+                        placeholder={'الدفعة'}
+                        value={amount}
+                        onChangeText={setAmount}
+                        //onChangeText={(val) => setAmount(val)}
+                        onEndEditing={(val) => calculatePersentageFromAmount(val.nativeEvent.text)}
+                    />
+
+                    <View style={styles.inputPersentageView}>
+                        <TextInput style={{ fontSize: 18 }}
+                            keyboardType={'numeric'}
+                            placeholder={'النسبة'}
+                            value={persentage}
+                            onChangeText={setPersentage}
+                            onEndEditing={(val) => calculateAmountFromPersentage(val.nativeEvent.text)}
+                        />
+                        <Text style={styles.text}>%</Text>
+                    </View>
+
+                </View>
+            </View>
+        )
+    }
+
+    const renderSaveButton = () => {
+        return (
+            <TouchableOpacity style={styles.footer} onPress={updateData}
+            >
+                <Text style={styles.text}>حفظ</Text>
+            </TouchableOpacity>
+        )
+    }
+    const seperator = () => {
+        return (
+            <View style={{ borderBottomWidth: 1, borderColor: colors.silver, marginTop: 10 }}></View>
+        )
+    }
+
+    const renderRequestDetail = () => {
+        return (
+            <View style={styles.reqInfoView}>
+                <View style={{ height: '50%' }}>
+                    <Text style={styles.text}>{"الدفعةالاولى قبل تاريخ  " + moment(reqInfo.requestInfo.reservationDetail[0].reservationDate).format('L')}</Text>
+                </View>
+                <View style={styles.amount}>
+                    <Text style={styles.text}>{"₪" + reqInfo.requestInfo.Cost}</Text>
+                </View>
+            </View>
+        )
+    }
+
+    return (
+        <View style={styles.comp}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                {renderSaveButton()}
+                <Text style={styles.text}>تحديد عدد الدفعات </Text>
+            </View>
+            {/* {seperator()} */}
+            {renderRequestDetail()}
+            {renderAddButton()}
+
+            {paymentDataArray.length > 0 &&
+                <View style={styles.payFeildView}>
+                    <ScrollView>
+                        {renderPaymentFeilds()}
+                    </ScrollView>
+                </View>}
+        </View>
+    )
+}
+
+export default PaymentDetailComp
+
+const styles = StyleSheet.create({
+    comp: {
+        padding: 20
+        // backgroundColor: 'red'
+    },
+    item: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        // alignSelf: 'flex-end',
+        marginVertical: 5,
+        borderWidth: 2,
+        borderColor: colors.silver,
+        width: '100%',
+        borderRadius: 20
+
+    },
+    IconView: {
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // backgroundColor: 'lightgray',
+        borderRadius: 30,
+        marginLeft: 15
+    },
+    txt: {
+        fontSize: 20,
+        color: colors.puprble,
+        fontWeight: 'bold'
+    },
+    basicInfo: {
+        fontSize: 18,
+        color: colors.puprble,
+        fontWeight: 'bold'
+    },
+    mediaItem: {
+        borderWidth: 1,
+        padding: 5,
+        borderRadius: 8,
+        borderColor: colors.silver,
+        marginVertical: 10
+    },
+
+    inputView: {
+        flexDirection: 'row',
+        height: 50,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        alignSelf: 'center',
+    },
+    input: {
+        height: 50,
+        width: '45%',
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: colors.silver,
+        justifyContent: 'center',
+        alignSelf: 'center',
+        fontSize: 18,
+        textAlign: 'center'
+    },
+
+    inputPersentageView: {
+        flexDirection: 'row',
+        height: 50,
+        width: '45%',
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: colors.silver,
+        justifyContent: 'center',
+    },
+
+    viewDate: {
+        flexDirection: 'row',
+        height: 50,
+        width: '95%',
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: colors.silver,
+        justifyContent: 'flex-end',
+        alignSelf: 'center',
+        marginBottom: 20
+    },
+    datetxt: {
+        fontSize: 18,
+    },
+    text: {
+        fontSize: 20,
+        color: colors.puprble
+    },
+    footer: {
+        borderWidth: 1,
+        borderColor: colors.puprble,
+        width: 60,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 8
+    },
+    reqInfoView: {
+        borderWidth: 2,
+        borderColor: colors.silver,
+        width: '100%',
+        height: 140,
+        padding: 10,
+        marginVertical: 10
+    },
+    payFeildView: {
+        borderWidth: 2,
+        borderColor: colors.silver,
+        width: "100%",
+        height: '65%',
+        padding: 5
+    },
+    amount: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '50%',
+    }
+
+})

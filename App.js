@@ -8,6 +8,7 @@ import SearchProvider from '../Events/store/SearchProvider';
 import ServiceProviderProvider from './store/ServiceProviderProvider';
 import UsersContext from './store/UsersContext';
 import UsersProvider from './store/UsersProvider';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 const App = () => {
   LogBox.ignoreLogs([
@@ -15,19 +16,14 @@ const App = () => {
     'Warning: Each child in a list should have a unique "key" prop.',
   ]);
 
-  useEffect(() => {
-    var url = 'https://nameless-meadow-25389.herokuapp.com/server';
-    fetch(url)
-      .then(res => res.json())
-      .then(resJson => console.log('res', resJson));
-  }, []);
-
   return (
     <UsersProvider>
       <SearchProvider>
         <ServiceProviderProvider>
           <KeyboardAvoidingView style={{ flex: 1 }}>
-            <MainNavigation />
+            <BottomSheetModalProvider>
+              <MainNavigation />
+            </BottomSheetModalProvider>
           </KeyboardAvoidingView>
         </ServiceProviderProvider>
       </SearchProvider>

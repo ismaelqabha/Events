@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image } from 'react-native'
+import React, { useContext } from 'react'
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Icon, { Icons } from "../src/components/Icons"
 import { colors } from '../src/assets/AppColors'
+import UsersContext from '../store/UsersContext'
 
 
 const DrawerItem = ({ label, onPress, tapBarTestID, type, name, color, activeItemColor }) => {
@@ -24,18 +25,16 @@ const DrawerItem = ({ label, onPress, tapBarTestID, type, name, color, activeIte
 
 const CustomDrewer1 = (props) => {
     const { state, descriptors, navigation } = props
-
+    const { userInfo, userId, userName } = useContext(UsersContext);
+    const userPhoto = userInfo.UserPhoto
 
     return (
         <View style={styles.container}>
             <View style={[styles.dreView, styles.marginTop]}>
                 <View style={styles.iconContainer}>
-                    <FontAwesome
-                        name='user-circle-o'
-                        size={100}
-                        style={styles.userIcon}
-                    />
-                    <Text style={styles.hederTxt}>IQ</Text>
+
+                    <Image style={styles.userImg} source={{ uri: userPhoto }} />
+                    <Text style={styles.hederTxt}>{userName}</Text>
                 </View>
 
             </View>
@@ -124,5 +123,12 @@ const styles = StyleSheet.create({
     },
     iconContainer: {
         alignItems: 'center'
+    },
+    userImg:{
+        width: '50%', 
+        height: 100, 
+        borderRadius: 20, 
+        borderWidth: 5, 
+        borderColor: colors.puprble 
     }
 })

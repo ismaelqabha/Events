@@ -1,39 +1,118 @@
-// const baseUrl = 'https://ev-server.onrender.com/';
-const baseUrl = "http://localhost:7000/"
+const baseUrl = 'https://ev-server.onrender.com/';
+// const baseUrl = "http://localhost:8000/"
 
 // Users
-export const getUserData = async (body) => {
-    const url = 'Users/getUserInfo'
-    return await AppFetch(url, 'POST', body)
-}
-export const addUser = async (AddNewUser , UserPhoto) => {
-    const url = 'Users/create'
-    try {
-      const formData = new FormData();
-      formData.append("UserPhoto",{
-        uri:UserPhoto,
-        type: 'image/jpeg',
-        name: `userPhoto.jpg`,
-      })
-      formData.append("UserData",JSON.stringify(AddNewUser))
-      const headers={
-        'Content-Type': 'multipart/form-data',
-      }
-    
-      return await AppFetch(url, 'POST', formData ,headers)
-      
-    } catch (error) {
-      
-    }
-}
-export const signIn = async (body) => {
-  const url = 'Users/login'
-  return await AppFetch(url, 'POST', body)
-}
+export const getAllUsersInfo = async body => {
+  const url = 'Users/getAllUsers';
+  return await AppFetch(url, 'POST', body);
+};
+export const getUserData = async body => {
+  const url = 'Users/getUserInfo';
+  return await AppFetch(url, 'POST', body);
+};
+export const addUser = async (AddNewUser, UserPhoto) => {
+  const url = 'Users/create';
+  try {
+    const formData = new FormData();
+    formData.append('UserPhoto', {
+      uri: UserPhoto,
+      type: 'image/jpeg',
+      name: `userPhoto.jpg`,
+    });
+    formData.append('UserData', JSON.stringify(AddNewUser));
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+    };
 
-// Service Data
+    return await AppFetch(url, 'POST', formData, headers);
+  } catch (error) {
+    console.log('error adding user ', error);
+  }
+};
+export const checkUserExists = async ({phone, email}) => {
+  const url = 'Users/checkIfExists';
+  try {
+    const response = await AppFetch(url, 'POST', {phone, email});
+    return response.exists;
+  } catch (error) {
+    console.error('Error checking user existence:', error);
+    return true;
+  }
+};
+export const LoginGoogleUser = async body => {
+  const url = 'Users/loginGoogle';
+  return await AppFetch(url, 'POST', body);
+};
+export const signIn = async body => {
+  const url = 'Users/login';
+  return await AppFetch(url, 'POST', body);
+};
+export const updateUserData = async body => {
+  const url = 'Users/updateByid';
+  return await AppFetch(url, 'PATCH', body);
+};
+
+export const getRelations = async body => {
+  const url = 'Users/getRelations';
+  return await AppFetch(url, 'POST', body);
+};
+export const searchUsersAPI = async body => {
+  const url = 'Users/searchUsers';
+  return await AppFetch(url, 'POST', body);
+};
+export const addFriend = async body => {
+  const url = 'Users/addFriend';
+  return await AppFetch(url, 'POST', body);
+};
+export const updateRelation = async body => {
+  const url = 'Users/updateFriend';
+  return await AppFetch(url, 'POST', body);
+};
+
+// Invitation
+export const createInvitation = async invitationData => {
+  const url = 'invitation/';
+  return await AppFetch(url, 'POST', invitationData);
+};
+export const updateInviteeStatus = async inviteeData => {
+  const url = 'invitation/invitee/status';
+  return await AppFetch(url, 'PATCH', inviteeData);
+};
+export const getInvitationStatus = async ({createdBy, eventLogoId}) => {
+  const url = 'invitation/status';
+  return await AppFetch(url, 'POST', {createdBy, eventLogoId});
+};
+export const updateInvitationDetails = async (invitationId, updateData) => {
+  const url = `invitation/${invitationId}`;
+  return await AppFetch(url, 'PATCH', updateData);
+};
+
+export const removeInvitee = async (invitationId, userId) => {
+  const url = `invitation/${invitationId}/invitee/${userId}`;
+  return await AppFetch(url, 'DELETE');
+};
+
+export const addInvitee = async (invitationId, inviteeData) => {
+  const url = `invitation/${invitationId}/invitee`;
+  return await AppFetch(url, 'POST', inviteeData);
+};
+
+export const getAllInvitationBackgrounds = async body => {
+  const url = 'invitation/backGrounds';
+  return await AppFetch(url, 'POST', body || {});
+};
+export const getInvetationByUser = async body => {
+  const url = 'invitation/getInvetationAccUser';
+  return await AppFetch(url, 'POST', body || {});
+};
+
+/// services
 export const getHomePageData = async body => {
   const url = 'servicesData/getServiceAccordingCategory';
+  return await AppFetch(url, 'POST', body);
+};
+export const getServiceBySerId = async body => {
+  const url = 'servicesData/getServiceAccordingServiceId';
   return await AppFetch(url, 'POST', body);
 };
 export const getServiceInfoById = async body => {
@@ -44,24 +123,40 @@ export const addService = async body => {
   const url = 'servicesData/create';
   return await AppFetch(url, 'POST', body);
 };
-//Service Detail
-export const getServiceDetail = async body => {
-  const url = 'serviceDetail/getServiceDetailByServID';
+export const updateService = async body => {
+  const url = 'servicesData/updateByid';
+  return await AppFetch(url, 'PATCH', body);
+};
+export const checkServiceTypeById = async body => {
+  const url = 'servicesData/checkServiceTypeById';
   return await AppFetch(url, 'POST', body);
 };
-//Service sub Detail
-export const getServiceSubDetail = async body => {
-  const url = 'subDetail/getSubDetail';
+export const getServiceLocationById = async body => {
+  const url = 'servicesData/getServiceLocationById';
   return await AppFetch(url, 'POST', body);
 };
-export const getOrderSubdetailInfo = async body => {
-  const url = 'OrderServiceDetail/getOrderDetailById';
+
+export const findRequestsByUserId = async body => {
+  const url = 'servicesData/getClientsReqPayAccId';
   return await AppFetch(url, 'POST', body);
 };
-export const addNewOrderDetail = async body => {
-  const url = 'OrderServiceDetail/addOrderDetail';
+
+/// Payment
+export const createNewPayment = async body => {
+  const url = 'Payments/makePayment';
   return await AppFetch(url, 'POST', body);
 };
+
+/// Review
+export const getReviewForClient = async body => {
+  const url = 'reviews/getClientReview';
+  return await AppFetch(url, 'POST', body);
+};
+export const getReviewForProvider = async body => {
+  const url = 'reviews/getProviderReview';
+  return await AppFetch(url, 'POST', body);
+};
+
 //Event
 export const getEventsInfo = async body => {
   const url = 'Events/getEvent';
@@ -75,40 +170,83 @@ export const updateEvent = async body => {
   const url = 'Events/updateByid';
   return await AppFetch(url, 'PATCH', body);
 };
-// Request
+export const deleteEventInfo = async body => {
+  const url = 'Events/deleteById';
+  return await AppFetch(url, 'DELETE', body);
+};
+export const getEventList = async body => {
+  const url = 'EventList/getEventItem';
+  return await AppFetch(url, 'POST', body);
+};
 
-export const getRequestInfoWithservice = async (body) => {
-    const url = 'Request/getRequestService'
-    return await AppFetch(url, 'POST', body)
-}
-export const addNewRequest = async (body) => {
-    const url = 'Request/addRequest'
-    return await AppFetch(url, 'POST', body)
-}
-export const updateRequest = async (body) => {
-    const url = 'Request/updateByid'
-    return await AppFetch(url, 'PATCH', body)
-}
-export const getRequestbyUserId = async (body) => {
-    const url = 'Request/getRequest'
-    return await AppFetch(url, 'POST', body)
-}
-export const deleteRequestbyId = async (body) => {
-    const url = 'Request/deleteByid'
-    return await AppFetch(url, 'DELETE', body)
-}
+// Request
+export const getRequestByServiceId = async body => {
+  const url = 'Request/getRequestByServiceId';
+  return await AppFetch(url, 'POST', body);
+};
+export const getRequestsAndUsersByServiceId = async body => {
+  const url = 'Request/getAllClientsRequestService';
+  return await AppFetch(url, 'POST', body);
+};
+export const getRequestInfoWithservice = async body => {
+  const url = 'Request/getRequestService';
+  return await AppFetch(url, 'POST', body);
+};
+export const getProviderRequests = async body => {
+  const url = 'Request/getAllRequestsForService';
+  return await AppFetch(url, 'POST', body);
+};
+export const addNewRequest = async body => {
+  const url = 'Request/addRequest';
+  return await AppFetch(url, 'POST', body);
+};
+export const updateRequest = async body => {
+  const url = 'Request/updateByid';
+  return await AppFetch(url, 'PATCH', body);
+};
+export const getRequestbyUserId = async body => {
+  const url = 'Request/getRequest';
+  return await AppFetch(url, 'POST', body);
+};
+export const deleteRequestbyId = async body => {
+  const url = 'Request/deleteByid';
+  return await AppFetch(url, 'DELETE', body);
+};
+
 // Camaighns
-export const getCampaigns = async (body) => {
-    const url = 'Campaigns/getCampaigns'
-    return await AppFetch(url, 'POST', body)
-}
-export const getCampaignsByServiceId = async (body) => {
-    const url = 'Campaigns/getCampByServiceId'
-    return await AppFetch(url, 'POST', body)
-}
-export const createNewOffer = async (body) => {
-  const url = 'Campaigns/createCamp'
-  return await AppFetch(url, 'POST', body)
+export const getCampaigns = async body => {
+  const url = 'Campaigns/getCampaigns';
+  return await AppFetch(url, 'POST', body);
+};
+export const getCampaignsByServiceId = async body => {
+  const url = 'Campaigns/getCampByServiceId';
+  return await AppFetch(url, 'POST', body);
+};
+export const uodateCampaignsById = async body => {
+  const url = 'Campaigns/updateCamp';
+  return await AppFetch(url, 'PATCH', body);
+};
+export const createNewOffer = async (AddNewOffer, offerImg) => {
+  const url = 'Campaigns/createCamp';
+  //console.log("AddNewOffer", AddNewOffer);
+  //console.log("offerImg", offerImg);
+  try {
+    const formData = new FormData();
+    formData.append('OfferPhoto', {
+      uri: offerImg,
+      type: 'image/jpeg',
+      name: `OfferPhoto.jpg`,
+    });
+
+    formData.append('offerData', JSON.stringify(AddNewOffer));
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+    }
+   // console.log("form data ", formData);
+    return await AppFetch(url, 'POST', formData, headers)
+  } catch (error) {
+
+  }
 }
 
 //Add New Dates According Service Id
@@ -140,57 +278,118 @@ export const getCities = async body => {
   return await AppFetch(url, 'POST', body);
 };
 
-// Draft services 
-export const addDraftToAPI= async body =>{
-  const url = 'DraftServices/addDraftService';
-  return await AppFetch(url,'POST',body)
-}
-
-export const getDraftFromAPI = async body =>{
-  const url ='DraftServices/getDraftService'
-  return await AppFetch(url,"POST",body)
-}
-
-export const removeDraftFromAPI = async body =>{
-  const url ='DraftServices/deleteDraftService'
-  return await AppFetch(url,"POST",body)
-}
-
-//Service Images
-export const getServiceImages = async body => {
-  const url = 'ServiceImags/getImg';
+// Regions
+export const getRegions = async body => {
+  const url = 'Region/getRegions';
   return await AppFetch(url, 'POST', body);
 };
 
-export const addServiceImages = async (imagesArray,serviceID) => {
+// Draft services
+export const addDraftToAPI = async body => {
+  const url = 'DraftServices/addDraftService';
+  try {
+    const {photoArray, ...draftDataWithoutPhotos} = body;
+    const formData = new FormData();
+
+    photoArray?.forEach((data, index) => {
+      formData.append(`images`, {
+        uri: data.uri,
+        type: 'image/jpeg',
+        name: `image${index}.jpg`,
+      });
+    });
+    formData.append('draftData', JSON.stringify(draftDataWithoutPhotos));
+
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+    };
+    return await AppFetch(url, 'POST', formData, headers);
+  } catch (error) {
+    // Handle error
+  }
+};
+export const getDraftFromAPI = async body => {
+  const url = 'DraftServices/getDraftService';
+  return await AppFetch(url, 'POST', body);
+};
+
+export const removeDraftFromAPI = async body => {
+  const url = 'DraftServices/deleteDraftService';
+  return await AppFetch(url, 'POST', body);
+};
+
+//Service Images
+export const getServiceImages = async body => {
+  try {
+    const url = 'ServiceImags/getImg';
+    const response = await AppFetch(url, 'POST', {serviceID: body});
+    return response;
+  } catch (error) {
+    console.error('Error fetching service images:', error);
+    return {serviceImages: [], logoArray: []}; // Return empty arrays in case of error
+  }
+};
+
+export const addServiceImages = async (imagesArray, serviceID) => {
   const url = 'ServiceImags/addImg';
   try {
     const formData = new FormData();
-    const headers={
+    const headers = {
       'Content-Type': 'multipart/form-data',
-    }
-    const logoArray = [];
-    formData.append("serviceID",serviceID)
-      imagesArray?.forEach((data,index) => {
-        formData.append(`images`,{
-          uri:data.uri,
-          type: 'image/jpeg',
-          name: `image${index}.jpg`,
-        })
-        formData.append("logoArray" , data.logo)
+    };
+    formData.append('serviceID', serviceID);
+
+    imagesArray?.forEach((data, index) => {
+      formData.append(`images`, {
+        uri: data.uri,
+        type: data.type || 'image/jpeg',
+        name: `image${index}.jpg`,
       });
-      
-    return await AppFetch(url, 'POST', formData , headers);
+
+      // Append each logo individually with a unique key
+      formData.append(`logoArray[${index}]`, data.logo);
+    });
+
+    return await AppFetch(url, 'POST', formData, headers);
   } catch (error) {
-    console.log("error adding images ", error);
+    console.log('error adding images ', error);
   }
-  
+};
+
+export const updateServiceLogo = async body => {
+  const url = 'ServiceImags/updateLogoImg';
+  const headers = {
+    'Content-Type': 'multipart/form-data',
+  };
+  return await AppFetch(url, 'PATCH', body, headers);
+};
+
+export const deleteServiceImage = async (serviceID, imgId) => {
+  const url = 'ServiceImags/deleteImg';
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  const body = JSON.stringify({
+    serviceId: serviceID,
+    imgId: imgId,
+  });
+
+  return await AppFetch(url, 'DELETE', body, headers);
 };
 
 // Service Booking Dates
 export const getbookingDates = async body => {
   const url = 'Dates/getDates';
   return await AppFetch(url, 'POST', body);
+};
+export const addNewbookingDate = async body => {
+  const url = 'Dates/createDates';
+  return await AppFetch(url, 'POST', body);
+};
+export const updatebookingDate = async body => {
+  const url = 'Dates/updateDates';
+  return await AppFetch(url, 'PATCH', body);
 };
 
 // Favorites Services Info
@@ -216,25 +415,41 @@ export const RemoveFavorite = async body => {
   return await AppFetch(url, 'DELETE', body);
 };
 
-const AppFetch = async (url, method, body , headers) => {
-  const fullUrl = baseUrl + url;
-  const bodyStr = JSON.stringify(body) || '';
+// Screen Visits
 
-  return fetch(fullUrl, {
-    method: method,
-    body: headers ? body : bodyStr,
-    headers: headers || {
-      'content-type': 'application/json',
-    },
-  })
-    .then(res => {
-      console.log('req: ', fullUrl, 'res code: ', res?.status);
-      return res?.json?.();
-    })
-    .then(resJson => {
-      return resJson;
-    })
-    .catch(e => {
-      console.log('fetch error: ', e);
+export const getScreenVisits = async body => {
+  const url = 'visits/getvisits';
+  return await AppFetch(url, 'POST', body);
+};
+export const addNewVisit = async body => {
+  const url = 'visits/updateVisit';
+  return await AppFetch(url, 'PATCH', body);
+};
+
+const AppFetch = async (url, method, body, headers) => {
+  const fullUrl = baseUrl + url;
+  const bodyStr = headers ? body : JSON.stringify(body) || '';
+
+  try {
+    const response = await fetch(fullUrl, {
+      method: method,
+      body: bodyStr,
+      headers: headers || {
+        'Content-Type': 'application/json',
+      },
     });
+
+    console.log('Request:', fullUrl, 'Response Status:', response.status);
+    const responseText = await response.text();
+    
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return JSON.parse(responseText);
+    } else {
+      console.error(`Invalid content-type: ${contentType}, expected JSON`);
+      return {error: 'Invalid content-type', details: responseText};
+    }
+  } catch (error) {
+    console.log('Fetch error:', error.message);
+  }
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Image, TextInput, Pressable, ImageBackground, ToastAndroid } from 'react-native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SearchContext from '../../store/SearchContext';
@@ -6,58 +6,81 @@ import { colors } from '../assets/AppColors';
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { getUserData, signIn } from '../resources/API';
+import UsersContext from '../../store/UsersContext';
+import { asyncFunctions, showMessage } from '../resources/Functions';
+import { emailVerification, passwordRegex, phoneNumberRegex } from '../resources/Regex';
+import GoogleSignInButton from '../components/Login/GoogleSignInButton';
+import { Platform } from 'react-native';
 
 
 const SignIn = (props) => {
-    const { userId,
-        setuserId,
+    //const { userId,setuserId, } = useContext(SearchContext);
+    const {
+        setuserId, userId,
         userEmail,
         password,
         setPassword,
         setUserEmail,
         userInfo,
-        setUserInfo, } = useContext(SearchContext);
+        setUserInfo,
+        setUserName } = useContext(UsersContext);
 
-    const [verifyUser, setVerifyUser] = useState()
 
     const logUser = () => {
         signIn({ Email: userEmail, Password: password }).then(res => {
-            if (res.message === 'Authentecatin successed') {
-                //setVerifyUser(res)
-                ToastAndroid.showWithGravity('تم التسجيل بنجاح',
-                    ToastAndroid.SHORT,
-                    ToastAndroid.BOTTOM
-                )
-                getUserInfo()
-                props.navigation.navigate(ScreenNames.Splash);
-                console.log("id", userId);
+            if (res.message === 'Authentication succeeded') {
+                showMessage('تم التسجيل بنجاح');
+                // Save user info in AsyncStorage
+                let userInfo = {
+                    Email: userEmail,
+                    Password: password
+                };
+
+                asyncFunctions.setItem("userInfo", JSON.stringify(userInfo))
+                    .then(() => {
+                        // Clear password field for security
+                        setPassword("");
+
+                        // Fetch user info and navigate to next screen
+                        getUserInfo();
+                        props.navigation.navigate(ScreenNames.Splash, { signIn: true });
+                    })
+                    .catch(error => {
+                        showMessage('Failed to save user info: ' + error.message);
+                    });
             } else {
                 if (res.message === 'not found') {
-                    ToastAndroid.showWithGravity('عذرا لا يوجد حساب لهذة البيانات المدخلة',
-                        ToastAndroid.SHORT,
-                        ToastAndroid.BOTTOM
-                    )
+                    showMessage('عذرا لا يوجد حساب لهذة البيانات المدخلة');
                 } else {
-                    ToastAndroid.showWithGravity('',
-                        ToastAndroid.SHORT,
-                        ToastAndroid.BOTTOM
-                    )
+                    showMessage('An error occurred: ' + res.message);
                 }
             }
-        })
+        }).catch(error => {
+            showMessage('An error occurred: ' + error.message);
+        });
     }
 
     const getUserInfo = () => {
         getUserData({ Email: userEmail }).then(res => {
             setUserInfo(res)
-            console.log("user data", res);
-            renderUserId()
+            setuserId(res.user[0].USER_ID)
+            setUserName(res.user[0].User_name)
         })
     }
 
     const onEnterPress = () => {
-        logUser()
-    }
+        // if (!emailVerification.test(userEmail) && !phoneNumberRegex.test(userEmail)) {
+        //     showMessage("Enter a valid email");
+        //     return;
+        // }
+
+        // if (!password || !password.trim() || !passwordRegex.test(password)) {
+        //     showMessage("Enter a valid password");
+        //     return;
+        // }
+
+        logUser();
+    };
     const onSignupPress = () => {
         props.navigation.navigate(ScreenNames.CreateUpersonalInfo);
     }
@@ -69,11 +92,15 @@ const SignIn = (props) => {
         return UserArray;
     };
 
+    const onForgotPassword = () => {
+        props.navigation.navigate(ScreenNames.ForgotPassword);
+    }
+
     return (
         <ImageBackground style={styles.container}
             source={require('../assets/photos/backgroundMain.png')}
         >
-             <Image
+            <Image
                 source={require('../assets/photos/logoIcon.png')}
                 style={styles.image}
             />
@@ -88,7 +115,8 @@ const SignIn = (props) => {
                 />
                 <TextInput
                     style={styles.input}
-                    keyboardType="visible-password"
+                    keyboardType={Platform.OS === 'ios' ? 'default' : 'visible-password'}
+                    secureTextEntry={Platform.OS === 'ios' ? true : false}
                     placeholder='كلمة المرور'
                     onChangeText={(value) => setPassword(value)}
                 />
@@ -97,20 +125,14 @@ const SignIn = (props) => {
                 </Pressable>
             </View>
 
-            <Pressable>
+            <Pressable onPress={() => onForgotPassword()}>
                 <Text>هل نسيت كلمة المرور؟</Text>
             </Pressable>
             <Text style={styles.or}>أو</Text>
             <Text style={styles.txt}>سجل من خلال</Text>
 
             <View style={styles.logInView}>
-                <Pressable style={styles.facebookbtn} onPress={() => onEnterPress()}>
-                    <AntDesign
-                        name={"google"}
-                        color={"white"}
-                        size={15} />
-                    <Text style={styles.facetxtُ}>Google</Text>
-                </Pressable>
+                <GoogleSignInButton nav={props?.navigation} />
                 <Pressable style={styles.facebookbtn}>
                     <EvilIcons
                         name={"sc-facebook"}
@@ -165,8 +187,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginVertical: 10,
     },
-    or:{
-      marginVertical: 10
+    or: {
+        marginVertical: 10
     },
     txtُEnter: {
         fontSize: 15,

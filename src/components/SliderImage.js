@@ -1,13 +1,14 @@
 
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Image, Text, ScrollView, Dimensions, Pressable, ImageBackground } from 'react-native';
+import { View, StyleSheet, Image, Text, ScrollView, Dimensions, Pressable, ImageBackground, ToastAndroid } from 'react-native';
 import SearchContext from '../../store/SearchContext';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../route/ScreenNames';
 import SIZES from '../resources/sizes';
 import Icon from "react-native-vector-icons/FontAwesome";
-import { RemoveFavorite, getFavoritesforUser } from '../resources/API';
+import { UpdateFileFavorite } from '../resources/API';
 import { colors } from '../assets/AppColors';
+
 
 const height = SIZES.screenWidth * 0.6;
 const width = SIZES.screenWidth - 10;
@@ -15,33 +16,73 @@ const width = SIZES.screenWidth - 10;
 const SliderImage = (props) => {
     const navigation = useNavigation();
     const [active, setActive] = useState();
-    const { setSType, userFavorates, setUserFavorates, setImgOfServeice, userId,setServId } = useContext(SearchContext);
+    const { favorites, setFavorites } = useContext(SearchContext);
 
 
-    const checkIfFavorate = () => {
-        const isFav = userFavorates?.find(item =>
-            item.favoListServiceId === props.service_id)
-        return !!isFav;
-    }
-    
 
+    useEffect(() => {
 
-    const removeFromFavorates = () => {
-        RemoveFavorite({ favoListUserId: userId, favoListServiceId: props.service_id }).then(res => {
-            setUserFavorates(res?.favorates)
+    }, [])
+
+    const checkFavorates = () => {
+        const isFav = favorites?.find(item => {
+            return item.favoListServiceId.find(elem => {
+                return elem === props.service_id
+            })
         })
+        return !!isFav;
     }
 
     const navigateToFavoratesList = () => {
-        setImgOfServeice(props.img)
-        navigation.navigate(ScreenNames.FileFavorites, { isFromFavorateClick: true }, { ...props });
+        const serviceId = props.service_id
+        const index = props.images[0].logoArray?.findIndex((val) => val === true)
+        const lastSerLogoSelected = props.images[0]?.serviceImages[index]
+        navigation.navigate(ScreenNames.FileFavorites, { isFromFavorateClick: true, lastSerLogoSelected, serviceId }, { ...props });
+    }
+
+    const filterFavoritesFile = () => {
+        const file = favorites?.findIndex(item => {
+            return item.favoListServiceId.find(elem => {
+                return elem === props.service_id
+            })
+        })
+        return file;
+    }
+
+    const updatefavorites = () => {
+        const fileFavoritesIndex = filterFavoritesFile()
+        const file = favorites || [];
+
+        const favoSer = file[fileFavoritesIndex].favoListServiceId.filter(elme => elme !== props.service_id)
+
+        const newData = {
+            fileId: file[fileFavoritesIndex].fileId,
+            fileImg: '',
+            fileName: file[fileFavoritesIndex].fileName,
+            favoListServiceId: [...favoSer]
+        }
+
+        UpdateFileFavorite(newData).then(res => {
+            if (res.message === 'Updated Sucessfuly') {
+
+                if (fileFavoritesIndex > -1) {
+                    file[fileFavoritesIndex] = newData;
+                }
+                setFavorites([...file])
+                ToastAndroid.showWithGravity(
+                    'تم التعديل بنجاح',
+                    ToastAndroid.SHORT,
+                    ToastAndroid.BOTTOM,
+                );
+            }
+
+        })
     }
 
     const OnClickFavorite = () => {
-        if (checkIfFavorate()) {
-            removeFromFavorates()
+        if (checkFavorates()) {
+            updatefavorites()
         } else {
-            setServId(props.service_id)
             navigateToFavoratesList()
         }
     }
@@ -53,16 +94,12 @@ const SliderImage = (props) => {
         }
     }
     const onImagesPress = () => {
-
-        setSType((props.servType))
         navigation.navigate(ScreenNames.ServiceDescr, { data: { ...props } })
     }
 
 
     const renderImages = () => {
-        const imageArray = props.images?.map(photo => {
-            return photo.image;
-        });
+        const imageArray = props.images[0].serviceImages
         return imageArray?.map((image, index) => {
             return (
                 <Pressable onPress={onImagesPress}>
@@ -99,8 +136,8 @@ const SliderImage = (props) => {
                 <View style={styles.heartView}>
                     <Icon
                         style={styles.icon}
-                        name={(checkIfFavorate()) ? "heart" : "heart-o"}
-                        color={(checkIfFavorate()) ? "red" : colors.puprble}
+                        name={(checkFavorates()) ? "heart" : "heart-o"}
+                        color={(checkFavorates()) ? "red" : colors.puprble}
                         size={25} />
                 </View>
             </Pressable>
@@ -135,7 +172,8 @@ const styles = StyleSheet.create({
         height,
         resizeMode: 'contain',
         borderTopLeftRadius: 15,
-        borderTopRightRadius: 15
+        borderTopRightRadius: 15,
+        resizeMode: 'stretch'
     },
     heartFavo: {
         position: 'absolute',

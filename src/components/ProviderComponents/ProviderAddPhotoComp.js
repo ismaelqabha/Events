@@ -1,99 +1,61 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { TouchableOpacity, StyleSheet, Image, View } from 'react-native';
-import strings from '../../assets/res/strings'
-import { Alert } from 'react-native';
+import { TouchableOpacity, StyleSheet, Image, View, Dimensions, Text } from 'react-native';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import { AppStyles } from '../../assets/res/AppStyles';
 import { colors } from '../../assets/AppColors';
-import LottieView from 'lottie-react-native';
+import IonIcons from 'react-native-vector-icons/Ionicons'
 
-const ProviderAddPhotoComp = props => {
-  const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
-  const [isSelected, setIsSelected] = useState(false)
-  const { photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext)
-  const tickRef = useRef(null)
-  const { selectedPhotos, setSelectedPhotos } = props
-  const removeSelectedPhoto = () => {
-    let newArray = photoArray.filter(Imageobj => Imageobj.image !== props.uri);
-    setPhotoArray(newArray);
+const ProviderAddPhotoComp = (props) => {
+  const [isSelected, setIsSelected] = useState(false);
+  const { selectedPhotos, setSelectedPhotos, isFromModal, setIsModalVisible, setOptionsModalVisible, logo } = props;
+  const showImagesModal = () => {
+    setIsModalVisible(true);
   };
 
-  //   confirmation popup for removing the selected photo
-  const ShowImagePopUp = () => {
-    setIsDeleteMode(true)
+  const showModal = () => {
+    addToSelected();
+    setOptionsModalVisible(true);
   };
 
-  useEffect(() => {
-    isSelected ? tickRef.current?.play(10,50) : tickRef.current?.play(50, 10)
-  }, [isSelected])
-
-  const setCoverPhoto = () => {
-    let warningButtons = [
-      {
-        text: language.cancelButton,
-        onPress: () => null,
-      },
-      {
-        text: language.confirmButton,
-        onPress: () => removeSelectedPhoto(),
-      },
-    ];
-
-    return Alert.alert(language.warning, language.backWarning, warningButtons);
-  }
   const setSelected = () => {
     selectedPhotos.includes(props.uri) ? removeFromSelected() : addToSelected();
-  }
+  };
 
   const removeFromSelected = () => {
     const newSelected = selectedPhotos.filter((selected) => {
-      return selected.image === props.uri
-    })
-    setSelectedPhotos(newSelected)
-    setIsSelected(false)
-  }
-  const addToSelected = () => {
-    selectedPhotos.length < 1 ?
-      setSelectedPhotos([props.uri]) :
-      setSelectedPhotos([...selectedPhotos, props.uri])
-    setIsSelected(true)
+      return selected.image === props.uri;
+    });
+    setSelectedPhotos(newSelected);
+    setIsSelected(false);
+  };
 
-  }
+  const addToSelected = () => {
+    selectedPhotos.length < 1
+      ? setSelectedPhotos([props.uri])
+      : setSelectedPhotos([...selectedPhotos, props.uri]);
+    setIsSelected(true);
+  };
+
   try {
     return (
-      <TouchableOpacity
-        onPress={() => setCoverPhoto()}
-        onLongPress={() => ShowImagePopUp()}
-        style={[styles.container, AppStyles.shadow]}
-        disabled={isDeleteMode}
+      <View
+        style={[isFromModal ? styles.modalContainer : styles.container, AppStyles.shadow]}
       >
-
-        {isDeleteMode ? <TouchableOpacity style={{ flex: 1 }} onPress={() => setSelected()}>
-
-          <Image
-            resizeMode="cover"
-            style={styles.image}
-            source={{ uri: props.uri }}
-          />
-          <View style={styles.circule}>
-            <LottieView
-              speed={1.5}
-              ref={tickRef}
-              loop={false}
-              style={styles.tick} source={require('../../LottieFiles/tick.json')} />
+        <View style={{ flex: 1 }}>
+          <Image resizeMode={isFromModal ? 'center' : 'cover'} style={styles.image} source={{ uri: props.uri }} />
+          <View>
+            {logo && <Text>Cover Photo</Text>}
           </View>
-        </TouchableOpacity>
-          :
-          <Image
-            resizeMode="cover"
-            style={styles.image}
-            source={{ uri: props.uri }}
-          />
-        }
-      </TouchableOpacity>
+
+          <TouchableOpacity onPress={showModal} style={isFromModal ? styles.modalCircule : styles.circule}>
+            <IonIcons name="ellipsis-horizontal" style={styles.tick} size={18} />
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   } catch (error) {
     console.log('presenting photo error -> ', error);
+    return null; // Render null or a placeholder component in case of an error
   }
 };
 
@@ -109,6 +71,28 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderColor: colors.darkGold,
     backgroundColor: colors.BGScereen,
+  },
+  modalContainer: {
+    flex: 1,
+    width: Dimensions.get('window').width * 0.9,
+    height: Dimensions.get('window').height * 0.95,
+    marginVertical: 5,
+    marginHorizontal: 5,
+    // borderWidth: 1,
+    alignSelf: 'center',
+    borderColor: colors.darkGold,
+    backgroundColor: colors.BGScereen,
+  },
+  modalDeleteContainer: {
+    flex: 1,
+    width: Dimensions.get('window').width * 0.9,
+    height: Dimensions.get('window').height * 0.95,
+    marginVertical: 5,
+    marginHorizontal: 5,
+    // borderWidth: 1,
+    alignSelf: 'center',
+    borderColor: colors.darkGold,
+    // backgroundColor: colors.BGScereen,
   },
   image: {
     flex: 1,
@@ -126,10 +110,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.BGScereen
   },
+  modalCircule: {
+    position: 'absolute',
+    right: 10,
+    top: Dimensions.get('window').height * 0.15,
+    // borderWidth: 2,
+    height: 20,
+    width: 20,
+    // backgroundColor: 'red',
+    borderRadius: 50,
+    alignSelf: 'flex-end',
+    justifyContent: 'center',
+    backgroundColor: colors.BGScereen
+  },
   tick: {
     width: 25,
     height: 25,
-    alignSelf: 'center'
+    alignSelf: 'center',
+    // backgroundColor:'red',
+    paddingLeft: 4,
+    paddingTop: 2
   }
 })
 

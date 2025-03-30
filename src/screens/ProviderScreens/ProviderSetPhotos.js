@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,9 +6,12 @@ import {
   Text,
   TouchableOpacity,
   Platform,
-  Linking
+  Linking,
+  Modal,
+  Dimensions,
+  Image
 } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
@@ -25,32 +28,57 @@ import { colors } from '../../assets/AppColors';
 import { ToastAndroid } from 'react-native';
 import { Alert } from 'react-native';
 import { servicesCategory } from '../../resources/data';
+import { Button, Icon } from 'react-native-elements';
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 
 const ProviderSetPhotos = props => {
-  const { selectServiceType,photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
+  const { selectServiceType, photoArray, setPhotoArray, isDeleteMode, setIsDeleteMode } = useContext(ServiceProviderContext);
   const [selectedPhotos, setSelectedPhotos] = useState([])
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const bottomSheetModalRef = useRef(null);
+  const snapPoints = ['25%', '25%', '50%'];
   const language = strings.arabic.ProviderScreens.ProviderSetPhotos;
-  
+
+
   const onNextPress = () => {
     // photoArray.length <5 ? showMessage() :
     checkServiceType()
   };
-  
-  useEffect(()=>{
-    console.log("photoArray -> ",photoArray);
-  },[photoArray])
 
-  const checkServiceType=()=>{
-    selectServiceType === servicesCategory[0].titleCategory ? 
-    props.navigation.navigate(ScreenNames.ProviderSocialMediaScreen, {
-      data: { ...props },
-      data: { ...props },
-    })
-    :
-    props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
-      data: { ...props },
-      data: { ...props },
-    });
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
+
+  const handleCloseModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.close();
+    setOptionsModalVisible(false)
+  }, []);
+
+  useEffect(() => {
+    if (optionsModalVisible) {
+      handlePresentModalPress();
+    } else {
+      handleCloseModalPress();
+    }
+  }, [optionsModalVisible]);
+
+
+  useEffect(() => {
+    console.log("photo array -> ", photoArray);
+  }, [photoArray]);
+
+  const checkServiceType = () => {
+    selectServiceType === servicesCategory[0].titleCategory ?
+      props.navigation.navigate(ScreenNames.ProviderSocialMediaScreen, {
+        data: { ...props },
+        data: { ...props },
+      })
+      :
+      props.navigation.navigate(ScreenNames.ProviderSetWorkingRegion, {
+        data: { ...props },
+        data: { ...props },
+      });
   }
   const openAppSettings = () => {
     Platform.OS === 'ios' ?
@@ -72,19 +100,18 @@ const ProviderSetPhotos = props => {
 
   const onAddImgPress = async () => {
     try {
-          let options = {
-          mediaType: 'photo',
-          includeBase64: false,
-            
-        };
+      let options = {
+        mediaType: 'photo',
+        includeBase64: false,
+        selectionLimit: 0,
+      };
 
-        launchImageLibrary(options, response => GalleryImageResponse(response));
-      }
-     catch (error) {
+      launchImageLibrary(options, response => GalleryImageResponse(response));
+    }
+    catch (error) {
       console.error(error);
     }
   };
-
 
   const GalleryImageResponse = response => {
     if (response.didCancel) {
@@ -94,21 +121,32 @@ const ProviderSetPhotos = props => {
     } else if (response.customButton) {
       console.log('User tapped custom Button ', response.customButton);
     } else {
-      let imageUri = response.uri || response.assets?.[0]?.uri;
-      SaveImg(imageUri);
+      if (Array.isArray(response.assets)) {
+        SaveImg(response.assets);
+      }
+      else if (response.uri) {
+        SaveImg(response.uri);
+      }
     }
   };
 
-  const SaveImg = source => {
-    if (source) {
+  const SaveImg = sources => {
+    if (Array.isArray(sources)) {
+      const newImages = sources.map((photo, i) => ({
+        imgId: uuidv4(),
+        uri: photo.uri,
+        logo: photoArray.length === 0 && i === 0 ? true : false,
+      }));
+      setPhotoArray(prevArray => [...prevArray, ...newImages]);
+    } else if (sources) {
       const AddNewImg = {
         imgId: uuidv4(),
-        uri: source,
-        logo: true,
+        uri: sources,
+        logo: photoArray.length === 0 ? true : false,
       };
-      setPhotoArray([AddNewImg, ...photoArray]);
+      setPhotoArray(prevArray => [...prevArray, AddNewImg]);
     } else {
-      console.log('error source isnt legable, source is :', source);
+      console.log('Error: Source is not valid.');
     }
   };
 
@@ -156,7 +194,16 @@ const ProviderSetPhotos = props => {
   };
 
   const renderServiceImg = ({ item }) => {
-    return <ProviderAddPhotoComp uri={item?.uri} selectedPhotos={selectedPhotos} setSelectedPhotos={setSelectedPhotos} />;
+    const providerAddPhotoProps = {
+      uri: item?.uri,
+      selectedPhotos: selectedPhotos,
+      setSelectedPhotos: setSelectedPhotos,
+      isModalVisible: isModalVisible,
+      setIsModalVisible: setIsModalVisible,
+      setOptionsModalVisible: setOptionsModalVisible,
+      logo: item?.logo
+    };
+    return <ProviderAddPhotoComp {...providerAddPhotoProps} />;
   };
 
   const RenderMainHeader = () => {
@@ -215,6 +262,90 @@ const ProviderSetPhotos = props => {
     );
   };
 
+  const RenderModal = () => {
+
+    const setAsLogo = (uri) => {
+      setPhotoArray((prevPhotoArray) => {
+        return prevPhotoArray.map((photo) => {
+          if (photo.uri === uri) {
+            return { ...photo, logo: true };
+          } else if (photo.logo) {
+            return { ...photo, logo: false };
+          }
+          return photo;
+        });
+      });
+    };
+
+    const renderPhoto = (photo, index) => {
+      const providerAddPhotoProps = {
+        uri: photo?.uri,
+        selectedPhotos: selectedPhotos,
+        setSelectedPhotos: setSelectedPhotos,
+        isFromModal: true
+      };
+      return (
+        <View key={index}>
+          <Pressable onPress={() => setAsLogo(photo.uri)} disabled={isDeleteMode}>
+            <ProviderAddPhotoComp {...providerAddPhotoProps} />
+          </Pressable>
+        </View>
+
+      );
+    };
+
+    return (
+      // <Modal
+      //   animationType='fade'
+      //   transparent={false}
+      //   visible={isModalVisible}
+      //   onRequestClose={() => setIsModalVisible(false)}
+      // >
+      //   <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
+      //     <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+      //       <View style={{ width: '100%', paddingHorizontal: 10 }}>
+      //         {photoArray.map((photo, index) => (
+      //           <View key={index}>
+      //             {renderPhoto(photo, index)}
+      //           </View>
+      //         ))}
+      //       </View>
+      //     </ScrollView>
+      //     <View style={[styles.footer, isDeleteMode ?
+      //       { justifyContent: 'space-between' } :
+      //       { justifyContent: 'flex-end' }]}>
+      //       {isDeleteMode && renderCancelButton()}
+      //       {RenderNextButton(true)}
+      //     </View>
+      //   </View>
+
+      // </Modal>
+      null
+    );
+  };
+
+  const renderOptionsModal = () => {
+    return (
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+      >
+        <BottomSheetView style={{ flexDirection: 'row', alignItems: 'center', padding: 20 }}>
+          <TouchableOpacity onPress={deletePhotos} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 20 }}>
+            <Icon name="trash" size={20} color="red" />
+            <Text style={{ marginLeft: 10 }}>Delete Photo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={makeCoverPhoto} style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Icon name="star" size={20} color="gold" />
+            <Text style={{ marginLeft: 10 }}>Make Cover Photo</Text>
+          </TouchableOpacity>
+        </BottomSheetView>
+      </BottomSheetModal>
+    );
+  };
   const showMessage = () => {
     Platform.OS === 'android'
       ? ToastAndroid.show(language.showDeleteMessage, ToastAndroid.SHORT)
@@ -225,17 +356,54 @@ const ProviderSetPhotos = props => {
     selectedPhotos.length < 1 ? showMessage() : deletePhotos()
   }
 
+  const makeCoverPhoto = () => {
+    try {
+      const logoPhotoIndex = photoArray.findIndex((photo) => photo.logo === true);
+
+      if (logoPhotoIndex !== -1) {
+        // Update the object in photoArray with logo set to true to have logo set to false
+        const updatedPhotoArray = photoArray.map((photo, index) => {
+          if (index === logoPhotoIndex) {
+            return { ...photo, logo: false };
+          }
+          return photo;
+        });
+
+        const newPhoto = updatedPhotoArray.map((photo, index) => {
+
+          return selectedPhotos.includes(photo.uri) ? { ...photo, logo: true } : photo
+        })
+
+        // Update the state variables
+        setPhotoArray(newPhoto);
+        setSelectedPhotos([]);
+        handleCloseModalPress();
+      }
+    } catch (error) {
+      console.log("makeCoverPhoto error ->", error);
+    }
+  };
+
   const deletePhotos = () => {
     try {
       const newArray = photoArray.filter((photo) => {
-        return !selectedPhotos.includes(photo.image)
-      })
+        return !selectedPhotos.includes(photo.uri);
+      });
+
+      // Check if newArray doesn't have any photo with logo set to true
+      const hasLogoPhoto = newArray.some((photo) => photo.logo);
+      // If no photo with logo, update the first photo in newArray to have logo set to true
+      if (!hasLogoPhoto && newArray.length > 0) {
+        newArray[0] = { ...newArray[0], logo: true };
+      }
+
       setPhotoArray(newArray);
-      setIsDeleteMode(false)
+      setIsDeleteMode(false);
+      handleCloseModalPress();
     } catch (error) {
-      console.log("delete phtots error ->", error);
+      console.log("delete photos error ->", error);
     }
-  }
+  };
   const cancelDeleteMode = () => {
     setIsDeleteMode(false)
     setSelectedPhotos([])
@@ -249,9 +417,15 @@ const ProviderSetPhotos = props => {
     )
   }
 
-  const RenderNextButton = () => {
+  const RenderNextButton = (isFromModal = false) => {
     return (
-      !isDeleteMode ? <Pressable style={AppStyles.next} onPress={onNextPress}>
+      !isDeleteMode ? <Pressable style={AppStyles.next} onPress={() => {
+        if (isFromModal) {
+          setIsModalVisible(false);
+        } else {
+          onNextPress();
+        }
+      }}>
         <Text style={AppStyles.nextText}>{language.Next}</Text>
       </Pressable> :
         <Pressable style={AppStyles.next} onPress={onConfirmDelete}>
@@ -268,6 +442,7 @@ const ProviderSetPhotos = props => {
         {RenderCapturePhoto()}
         {RenderSelectedImages()}
       </View>
+      {renderOptionsModal()}
       <View style={[styles.footer, isDeleteMode ?
         { justifyContent: 'space-between' } :
         { justifyContent: 'flex-end' }]}>
@@ -308,8 +483,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     paddingHorizontal: '10%',
-    position:'absolute',
-    bottom:0
+    position: 'absolute',
+    bottom: 0
 
   },
   backText: {

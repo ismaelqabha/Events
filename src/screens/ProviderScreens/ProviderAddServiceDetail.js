@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Alert,
 } from 'react-native';
 import ProviderShowServDetailComp from '../../components/ProviderComponents/ProviderShowServDetailComp';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -19,17 +20,31 @@ import ScreenBack from '../../components/ProviderComponents/ScreenBack';
 import ScreenNext from '../../components/ProviderComponents/ScreenNext';
 import { colors } from '../../assets/AppColors';
 import SearchContext from '../../../store/SearchContext';
-import { mandoteryOptions } from '../../resources/data';
+import { hallDetailOptions, mandoteryOptions } from '../../resources/data';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { showMessage } from '../../resources/Functions';
-import { addServiceImages } from '../../resources/API';
+import { onPublishPress, showMessage } from '../../resources/Functions';
+import { addService, addServiceImages } from '../../resources/API';
+import UsersContext from '../../../store/UsersContext';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ProviderAddServiceDetail = props => {
   const [showModal, setShowModal] = useState(false);
   const [Dtitle, setDTitle] = useState('');
-  const [nec, setNec] = useState("Mandatory");
+  const [nec, setNec] = useState();
+  const [additionType, setAdditionType] = useState(null);
+  const [numberPerTable, setNumberPerTable] = useState('')
   const [isMan, setIsMan] = useState(false);
   const [isOpt, setIsOpt] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [other, setOther] = useState(false);
+  const [editedDetailId, setEditedDetailId] = useState('');
+
+  const [PerPackage, setPerPackage] = useState(false);
+  const [PerPerson, setPerPerson] = useState(false);
+  const [PerTable, setPerTable] = useState(false);
+
+  const [priceInclude, setPriceInclude] = useState(null);
   const {
     serviceAddress,
     price,
@@ -38,15 +53,20 @@ const ProviderAddServiceDetail = props => {
     SuTitle,
     description,
     selectServiceType,
-    workAreas,
     additionalServices,
     setAdditionalServices,
     photoArray,
-    socialMediaArray
-
+    socialMediaArray,
+    hallCapacity,
+    hallType,
+    phoneNumer,
+    email,
   } = useContext(ServiceProviderContext);
-  const { userId } = useContext(SearchContext);
+  const { userId } = useContext(UsersContext);
+  const { allData } = useContext(ServiceProviderContext);
+
   const language = strings.arabic.ProviderScreens.ProviderAddServiceDetail;
+
 
   useEffect(() => {
     var man = filterData(additionalServices, "Mandatory")
@@ -73,37 +93,37 @@ const ProviderAddServiceDetail = props => {
       nextStyle: styles.next,
       nextTextStyle: styles.nextText,
       Text: language.Next,
-      onPress: () => onPublishPress(),
+      onPress: () => onPublishPress(allData),
     },
   };
 
-  const onPublishPress = async () => {
-    const body = {
-      userID: userId,
-      servType: selectServiceType,
-      title: title,
-      subTitle: SuTitle,
-      desc: description,
-      region: serviceRegion,
-      address: serviceAddress,
-      servicePrice: price,
-      workingRegion: workAreas,
-      additionalServices: additionalServices,
-      socialMedia:socialMediaArray
-    };
-    await addService(body)
-      .then(async res => {
-        console.log(' service res ->', res.serviceID);
-        await addServiceImages(photoArray,res?.serviceID).then((res)=>{
-          console.log("images res -> ",res );
-          showMessage("تم حفظ البيانات")
-        })
-      })
-      .catch(e => {
-        console.log('create new event error : ', e);
-      });
+  const Package = () => {
+    setPerPackage(true)
+    setPerPerson(false)
+    setPerTable(false)
+    setAdditionType('perRequest')
+    setPriceInclude('perRequest')
+    // setPriceIncludeUpdated('perRequest')
+  }
 
-  };
+  const Person = () => {
+    setPerPackage(false)
+    setPerPerson(true)
+    setPerTable(false)
+    setPriceInclude('perPerson')
+    setAdditionType('perPerson')
+    // setPriceIncludeUpdated('perPerson')
+  }
+
+  const Table = () => {
+    setPerPackage(false)
+    setPerPerson(false)
+    setPerTable(true)
+    setPriceInclude('perTable')
+    setAdditionType('perTable')
+    // setPriceIncludeUpdated('perTable')
+  }
+
 
   const modalSavePress = () => {
     if (Dtitle.trim().length > 0 && doesntExists()) {
@@ -111,10 +131,14 @@ const ProviderAddServiceDetail = props => {
         detail_Id: Did,
         detailTitle: Dtitle,
         necessity: nec,
+        additionType: additionType,
+        numberPerTable: numberPerTable,
         subDetailArray: []
       };
       setAdditionalServices([...additionalServices, AddNewDetail]);
       setDTitle('');
+      setAdditionType(null)
+      setNumberPerTable('')
       setNec("Mandatory")
       setShowModal(false);
     }
@@ -126,9 +150,14 @@ const ProviderAddServiceDetail = props => {
     return exists == -1 ? true : false;
   };
   const modalDeletePress = () => {
+    setDTitle('');
+    setAdditionType(null)
+    setNumberPerTable('')
+    setNec("Mandatory");
     setShowModal(false);
   };
   const onStartPress = () => {
+    setIsEdit(false)
     setShowModal(true);
   };
   const onBackPress = () => {
@@ -143,18 +172,54 @@ const ProviderAddServiceDetail = props => {
     })
     return filterArray
   }
-
+  const deleteItem = (detail_Id) => {
+    // Show an alert to confirm the delete
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this item?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel'
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            // If user confirms, proceed with delete
+            const updatedServices = additionalServices.filter(service => service.detail_Id !== detail_Id);
+            setAdditionalServices(updatedServices);
+            setDTitle('');
+            setAdditionType(null)
+            setNumberPerTable('')
+            setNec("Mandatory");
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+  const openEdit = (allData) => {
+    setEditedDetailId(allData.detail_Id)
+    setDTitle(allData.detailTitle);
+    setAdditionType(allData.additionType);
+    setNumberPerTable(allData.numberPerTable)
+    setNec(allData.necessity);
+    setIsEdit(true)
+    setShowModal(true)
+  };
   const renderMandatoryServices = () => {
     const filterArray = filterData(additionalServices, "Mandatory")
     const cardsArray = filterArray?.map(card => {
-      return <ProviderShowServDetailComp {...card} />;
+      return <ProviderShowServDetailComp key={card.detail_Id} {...card} openEdit={openEdit} deleteItem={deleteItem} />;
     });
     return cardsArray;
   };
+
   const renderOptionalServices = () => {
     const filterArray = filterData(additionalServices, "Optional")
     const cardsArray = filterArray.map(card => {
-      return <ProviderShowServDetailComp {...card} />;
+      return <ProviderShowServDetailComp key={card.detail_Id} {...card} openEdit={openEdit} deleteItem={deleteItem} />;
     });
     return cardsArray;
   };
@@ -203,27 +268,106 @@ const ProviderAddServiceDetail = props => {
   const RenderTitleBox = () => {
     return (
       <View style={styles.listView}>
-        <TextInput
-          style={styles.titleInput}
-          keyboardType="default"
-          maxLength={60}
-          onChangeText={value => {
-            setDTitle(value);
-          }}
-        />
         <View style={styles.list}>
           <SelectList
-            data={mandoteryOptions}
-            setSelected={val => { setNec(mandoteryOptions[val].alt) }}
-            placeholder={language.dropdownText}
+            data={hallDetailOptions}
+            setSelected={val => {
+              if (hallDetailOptions[val].value === 'أخرى') {
+                setOther(true)
+              } else {
+                setDTitle(hallDetailOptions[val].value)
+                setOther(false)
+              }
+            }}
+            placeholder={'اختيار وصف الخدمة'}
             boxStyles={styles.dropdown}
             inputStyles={styles.droptext}
             dropdownTextStyles={styles.dropstyle}
           />
         </View>
+        {other &&
+          <TextInput
+            style={styles.titleInput}
+            keyboardType="default"
+            maxLength={60}
+            onChangeText={value => {
+              setDTitle(value);
+            }}
+            value={Dtitle}
+          />}
+
+        <View style={styles.list}>
+          <SelectList
+            data={mandoteryOptions}
+            setSelected={val => { setNec(mandoteryOptions[val].alt) }}
+            placeholder={isEdit ? nec === 'Mandatory' ? mandoteryOptions[0].value : mandoteryOptions[1].value : language.dropdownText}
+            boxStyles={styles.dropdown}
+            inputStyles={styles.droptext}
+            dropdownTextStyles={styles.dropstyle}
+
+          />
+        </View>
+        {/* {renderIsPerPerson()} */}
+        {renderIncludedType()}
       </View>
     );
   };
+
+ 
+  const renderIncludedType = () => {
+
+    return (
+      <View >
+        <Text style={styles.perPersoneText}>السعر يشمل </Text>
+        <View style={styles.perPersoneView}>
+          <TouchableOpacity style={[PerPackage ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Package}>
+
+            <MaterialCommunityIcons
+              style={{ alignSelf: 'center' }}
+              name={"all-inclusive"}
+              color={colors.puprble}
+              size={30} />
+            <Text style={styles.perPersoneText}>لكل الحجز</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[PerPerson ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Person}>
+
+            <Fontisto
+              style={{ alignSelf: 'center' }}
+              name={"person"}
+              color={colors.puprble}
+              size={30} />
+            <Text style={styles.perPersoneText}>للشخص</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[PerTable ? styles.itemPersonViewPressed : styles.itemPersonView]} onPress={Table}>
+
+            <MaterialCommunityIcons
+              style={{ alignSelf: 'center' }}
+              name={"table-furniture"}
+              color={colors.puprble}
+              size={30} />
+            <Text style={styles.perPersoneText}>للطاولة</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          {additionType === 'perTable' &&
+            <TextInput
+              style={styles.numTableInput}
+              keyboardType="default"
+              maxLength={60}
+              placeholder='عدد الاشخاص للطاولة'
+              onChangeText={(text) => {
+                setNumberPerTable(text)
+              }}
+              value={numberPerTable}
+            />}
+        </View>
+      </View>
+    )
+  }
+
+ 
   const RenderButtons = () => {
     return (
       <View style={styles.Modalbtn}>
@@ -241,12 +385,31 @@ const ProviderAddServiceDetail = props => {
   };
   const RenderSaveButton = () => {
     return (
-      <Pressable onPress={() => modalSavePress()}>
-        <Text style={styles.text}>{language.Save}</Text>
+      <Pressable onPress={() => isEdit ? saveEdited() : modalSavePress()}>
+        <Text style={styles.text}>{isEdit ? language.editSave : language.Save}</Text>
       </Pressable>
     );
   };
-
+  const saveEdited = () => {
+    if (Dtitle.trim().length > 0 && editedDetailId) {
+      const updatedServices = additionalServices.map(service => {
+        if (service.detail_Id === editedDetailId) {
+          return {
+            ...service,
+            detailTitle: Dtitle,
+            necessity: nec,
+            additionType: additionType,
+          };
+        }
+        return service;
+      });
+      setAdditionalServices(updatedServices);
+      setDTitle('');
+      setAdditionType(null)
+      setNec("Mandatory");
+      setShowModal(false);
+    }
+  };
   const renderHeader = () => {
     return (
       <View style={styles.header}>
@@ -421,7 +584,7 @@ const styles = StyleSheet.create({
   },
   detailModal: {
     width: '100%',
-    height: 300,
+    height: 550,
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -433,11 +596,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#00000099',
   },
   Motitle: {
-    height: 50,
+
     justifyContent: 'center',
     alignItems: 'center',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+
   },
   body: {
     alignItems: 'center',
@@ -451,25 +615,38 @@ const styles = StyleSheet.create({
   Modalbtn: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 50,
+    position: 'absolute',
+    bottom: 10,
+    width: '100%'
   },
   titleInput: {
     textAlign: 'right',
     height: 50,
-    width: 315,
+    width: '80%',
     borderWidth: 2,
     borderRadius: 10,
     borderColor: '#dcdcdc',
     fontSize: 18,
-    // color: 'black',
     backgroundColor: 'white',
+    marginTop: 20
   },
+  numTableInput: {
+    textAlign: 'center',
+    height: 40,
+    width: '60%',
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: '#dcdcdc',
+    fontSize: 18,
+    backgroundColor: 'white',
+    marginTop: 10
+  },
+
   MandatoryView: {
 
   },
   dropdown: {
     height: 50,
-    // maxWidth: '60%',
     minWidth: '60%',
     fontSize: 17,
     borderColor: '#dcdcdc',
@@ -489,12 +666,49 @@ const styles = StyleSheet.create({
     textAlign: 'right'
   },
   listView: {
-    alignItems: 'center'
+    alignItems: 'center',
+
   },
   list: {
-    width: '70%',
-    marginTop: 5
+    width: '80%',
+    marginTop: 20
+  },
+  perPersoneView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: colors.silver,
+    elevation: 5,
+    marginVertical: 10
+  },
+
+  itemPersonView: {
+    borderWidth: 2,
+    borderColor: '#dcdcdc',
+    width: '30%',
+    height: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+    borderRadius: 5,
+  },
+  itemPersonViewPressed: {
+    borderWidth: 3,
+    borderColor: colors.puprble,
+    width: '30%',
+    height: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+    borderRadius: 5,
+
+  },
+  perPersoneText: {
+    fontSize: 18,
+    color: colors.puprble,
+
   }
+
 });
 
 export default ProviderAddServiceDetail;

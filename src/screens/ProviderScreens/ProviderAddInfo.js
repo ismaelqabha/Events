@@ -7,10 +7,12 @@ import {
   TextInput,
   ScrollView,
   Animated,
+  Platform,
+  Keyboard,
 } from 'react-native';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { ScreenNames } from '../../../route/ScreenNames';
-import { hallData, regionData } from '../../resources/data';
+import { hallData } from '../../resources/data';
 import strings from '../../assets/res/strings';
 import ServiceProviderContext from '../../../store/ServiceProviderContext';
 import DynamicHeader from '../../components/ProviderComponents/ScrollView/DynamicHeader';
@@ -20,6 +22,10 @@ import { colors } from '../../assets/AppColors';
 import Entypo from "react-native-vector-icons/Entypo";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import HallTypeCard from '../../components/HallTypeCard';
+import { PERMISSIONS, RESULTS, request } from 'react-native-permissions';
+import { showMessage } from '../../resources/Functions';
+import Geolocation from '@react-native-community/geolocation';
+import { getRegions } from '../../resources/API';
 
 const ProviderAddInfo = props => {
   const language = strings.arabic.ProviderScreens.ProviderAddInfo;
@@ -30,6 +36,13 @@ const ProviderAddInfo = props => {
   const [titleLengthError, setTitleLengthError] = useState(null);
   const [subTitleLengthError, setSubTitleLengthError] = useState(null);
   const [desLengthError, setDesLengthError] = useState(null);
+  const [selectHallType, setSelectHallType] = useState('')
+
+  const [disableLocation, setDisbaleLocation] = useState(false);
+  const [regionData, setRegionData] = useState([])
+  const [regions, setRegions] = useState(null)
+  const [address, setAddress] = useState(null)
+  const translateY = useRef(new Animated.Value(0)).current;
 
   //   service Data
   const {
@@ -48,20 +61,50 @@ const ProviderAddInfo = props => {
     setHallCapacity,
     hallType,
     setHallType,
+    setLatitude,
+    setLongitude,
+    maxNumberOFRequest,
+    setMaxNumberOFRequest
   } = useContext(ServiceProviderContext);
 
-  const [detailesHeight, setDetailesHeight] = useState(500);
   let scrollOffsetY = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     setSubTitleError(!checkStrings(SuTitle));
     setTitleError(!checkStrings(title));
-    setDesError(!checkStrings(description));
     setSubTitleLengthError(!checkLength(SuTitle, 50));
     setTitleLengthError(!checkLength(title, 30));
-    setDesLengthError(!checkLength(description, 300));
-
   }, [title, SuTitle, description]);
+
+  useEffect(() => {
+    getRegionsfromApi()
+  }, [])
+
+  useEffect(() => {  // Keyboard Listeners 
+    const keyboardShowEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const keyboardHideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const keyboardDidShowListener = Keyboard.addListener(keyboardShowEvent, () => {
+      Animated.timing(translateY, {
+        toValue: 100, // Adjust slide distance as needed
+        duration: 200, // Adjust duration as needed
+        useNativeDriver: true,
+      }).start();
+    });
+
+    const keyboardDidHideListener = Keyboard.addListener(keyboardHideEvent, () => {
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 200, // Adjust duration as needed
+        useNativeDriver: true,
+      }).start();
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   //   to save data on leaving, on return user can continue where he left off
   const params = {
@@ -90,32 +133,15 @@ const ProviderAddInfo = props => {
       return true
     }
   }
-
-  const onNextPress = () => {
-    true
-      ? props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
-        data: { ...props },
-      })
-      : missingData();
-  };
-
-  const checkRequestedData = () => {
-    return checkStrings(title) &&
-      checkStrings(SuTitle) &&
-      checkStrings(description) &&
-      checkLength(title, 30) &&
-      checkLength(SuTitle, 50) &&
-      checkLength(description, 300)
-      ? true
-      : false;
-  };
-
   const checkStrings = val => {
     if (!val) {
+      return false;
+    } else if (val.length == 0) {
       return false;
     } else if (val.trim().length <= 0) {
       return false;
     }
+
     return true;
   };
 
@@ -128,20 +154,128 @@ const ProviderAddInfo = props => {
     checkLength(description, 300) ? null : showMissingTitle("length")
   };
 
-  const showMissingTitle = (val) => {
+  const showMissingTitle = (val) => { };
+  const showMissingSubTitle = (val) => { };
+  const showMissingDescription = (val) => { };
 
+
+
+  const getRegionsfromApi = async () => {
+    getRegions().then((res) => {
+      res?.message ? showMessage(res.message) : updateData(res?.regions)
+    }).catch((e) => {
+      console.log("error fetching -> ", e);
+    })
+
+  }
+  // region part
+  const updateData = (regions) => {
+    setRegions(regions)
+    const allData = []
+    regions?.forEach(region => {
+      allData.push(...region?.regionCities)
+    });
+    allData.sort()
+    setRegionData(allData)
+  }
+  const searchRegion = (val) => {
+    if (!regions) {
+      return;
+    } else {
+      regions.forEach((region) => {
+        var index = region?.regionCities?.findIndex(city => {
+          return city === val
+        })
+        if (!(index === -1)) {
+          setAddress(region?.regionName)
+          setserviceRegion(region?.regionName)
+        }
+      })
+    }
+  }
+
+  const checkRequestedData = () => {
+    return checkStrings(title) &&
+      checkStrings(SuTitle) &&
+      checkLength(title, 30) &&
+      checkLength(SuTitle, 50)
+      ? true
+      : false;
   };
 
-  const showMissingSubTitle = (val) => { };
+  // Address and location part
+  const requestLocationPermission = async () => {
+    setDisbaleLocation(true)
+    if (Platform.OS === 'android') {
+      const permission = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+      if (permission === RESULTS.GRANTED) {
+        getLocation()
+      } else {
+        showMessage("permission denide")
 
-  const showMissingDescription = (val) => { };
+      }
+    } else if (Platform.OS === 'ios') {
+      const permission = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      if (permission === RESULTS.GRANTED) {
+        getLocation()
+      } else {
+        showMessage("permission denide")
+
+      }
+    }
+  };
+  const getLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        setDisbaleLocation(false)
+        showMessage("location have been saved")
+      },
+      (err) => showMessage(err.message),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+  };
+  const RenderLocationDetails = () => {
+    return (
+      <View style={[styles.borderAddressView, AppStyles.shadow]}>
+        <Text style={styles.headText}>{language.LocationHeadText}</Text>
+
+        <View style={styles.region}>
+          <Text> {address || language.address}</Text>
+        </View>
+        <SelectList
+          data={regionData}
+          setSelected={val => {
+            setserviceAddress(val)
+            searchRegion(val)
+          }}
+          placeholder={serviceAddress || language.chooseLocation}
+          boxStyles={styles.dropdown}
+          inputstyles={styles.droptext}
+          dropdownTextstyles={styles.dropstyle}
+        />
+
+        <Pressable disabled={disableLocation} style={styles.location} onPress={requestLocationPermission}>
+          <Text style={styles.locationTitle}>أضف موقع</Text>
+          <View style={styles.IconView}>
+            <Entypo
+              name={"location-pin"}
+              color={colors.puprble}
+              size={25} />
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
+
+
 
 
 
   const RenderHeaderTitle = () => {
     return <Text style={styles.headText}>{language.SubHeader}</Text>;
   };
-
   const RenderTitleBox = () => {
     return (
       <View>
@@ -164,9 +298,9 @@ const ProviderAddInfo = props => {
         <TextInput
           style={styles.titleInput}
           keyboardType="default"
-          maxLength={30}
+          maxLength={50}
           onChangeText={value => {
-            value.trim().length < 30 ?
+            value.trim().length < 50 ?
               setTitle(value) &&
               setTitleLengthError(false)
               :
@@ -177,7 +311,6 @@ const ProviderAddInfo = props => {
       </View>
     );
   };
-
   const RenderSubTitleBox = () => {
     return (<View>
       <View style={styles.viewwholeInput}>
@@ -199,10 +332,10 @@ const ProviderAddInfo = props => {
       <TextInput
         style={styles.subtitleInput}
         keyboardType="default"
-        maxLength={50}
+        maxLength={25}
         multiline
         onChangeText={value => {
-          value.trim().length < 50 ?
+          value.trim().length < 25 ?
             setSuTitle(value) &&
             setSubTitleLengthError(false)
             :
@@ -213,44 +346,6 @@ const ProviderAddInfo = props => {
     </View>
     );
   };
-
-  const RenderDescription = () => {
-    return (
-      <View>
-        <View style={styles.viewwholeInput}>
-          <View>
-            <AntDesign
-              name={"question"}
-              color={colors.puprble}
-              size={20} />
-          </View>
-          <View style={styles.itemView}>
-            {(desError || desLengthError) && (
-              <Text style={styles.textRequired}>
-                {desError ? language.titleRequired : language.titleLengthError}
-              </Text>
-            )}
-            <Text style={styles.text}> {language.description}</Text>
-          </View>
-        </View>
-        <TextInput
-          style={styles.descInput}
-          keyboardType="default"
-          maxLength={300}
-          multiline
-          onChangeText={value => {
-            value.trim().length < 300 ?
-              setDescription(value) &&
-              setDesLengthError(false)
-              :
-              setDesLengthError(true)
-          }}
-          value={description}
-        />
-      </View>
-    );
-  };
-
   const renderHallCapacity = () => {
     return (
       <View style={{ marginBottom: 30 }}>
@@ -282,21 +377,11 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
-
-
-  const RenderMainDetails = () => {
-    return (
-      <View style={[styles.borderTitleView, AppStyles.shadow]}>
-        {RenderHeaderTitle()}
-        {RenderTitleBox()}
-        {RenderSubTitleBox()}
-        {RenderDescription()}
-      </View>
-    );
-  };
   const renderHallTyes = () => {
     return hallData?.map((item) => {
-      return <HallTypeCard {...item} />
+      return <HallTypeCard {...item}
+        isChecked={item.hallType === selectHallType}
+        onHallTypePress={(value) => setSelectHallType(value)} />
     })
   }
   const RenderHallDetails = () => {
@@ -311,9 +396,6 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
-
-
-
   const renderHallTypesHeader = () => {
     return (
       <View style={styles.HallTypesView}>
@@ -326,55 +408,51 @@ const ProviderAddInfo = props => {
       </View>
     )
   }
-
-  const RenderLocationDetails = () => {
+  const handleChangeText = (text) => {
+    const newMaxNumberOfRequests = parseInt(text, 10);
+    if (isNaN(newMaxNumberOfRequests)) {
+      setMaxNumberOFRequest(0);
+      return;
+    }
+    setMaxNumberOFRequest(newMaxNumberOfRequests);
+  };
+  const RenderInputNumofRequested = () => {
     return (
-      <View style={[styles.borderAddressView, AppStyles.shadow]}>
-        <Text style={styles.headText}>{language.LocationHeadText}</Text>
-        <View style={styles.region}>
-          <Text>{language.address}</Text>
-        </View>
-
-        {/* <TextInput
-          style={styles.input}
-          keyboardType="default"
-          placeholder={language.address}
-          onChangeText={value => setserviceAddress(value)}
-          value={serviceAddress || null}
-          editable={false}
-        /> */}
-        {/* {(titleError || titleLengthError) && (
-          <Text style={{ color: 'red', marginLeft: 100 }}>
-            {titleError ? language.titleRequired : language.titleLengthError}
-            </Text>
-        )} */}
-        <SelectList
-          data={regionData}
-          setSelected={val => {
-            let cityObj = regionData.find(city => city.key == val);
-            setserviceRegion(cityObj.value);
-          }}
-          placeholder={serviceRegion || language.chooseLocation}
-          boxStyles={styles.dropdown}
-          inputstyles={styles.droptext}
-          dropdownTextstyles={styles.dropstyle}
-        />
-
-        <Pressable style={styles.location}>
-          <Text style={styles.locationTitle}>أضف موقع</Text>
-          <View style={styles.IconView}>
-            <Entypo
-              name={"location-pin"}
+      <View>
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
               color={colors.puprble}
-              size={25} />
+              size={20} />
           </View>
-        </Pressable>
+          <View style={styles.itemView}>
+            {(titleError || titleLengthError) && (
+              <Text style={styles.textRequired}>
+                {titleError ? language.titleRequired : language.titleLengthError}
+              </Text>
+            )}
+            <Text style={styles.text}>الحد الاقصى لاستقبال الحجوزات</Text>
+          </View>
+        </View>
+        <TextInput
+          style={styles.titleInput}
+          keyboardType="numeric"
+          maxLength={50}
+          onChangeText={handleChangeText}
+          value={maxNumberOFRequest.toString()}
+        />
       </View>
     );
   };
 
+  // footer part
   const RenderFooter = () => {
-    return <View style={styles.footer}>{RenderNextButton()}</View>;
+    return (
+      <Animated.View style={[styles.footer, { transform: [{ translateY: translateY }] }]}>
+        <View style={styles.footer}>{RenderNextButton()}</View>
+      </Animated.View>
+    )
   };
   const RenderNextButton = () => {
     return (
@@ -383,6 +461,110 @@ const ProviderAddInfo = props => {
         onPress={() => onNextPress()}>
         <Text style={AppStyles.nextText}>{language.next}</Text>
       </Pressable>
+    );
+  };
+  const onNextPress = () => {
+    true
+      ? props.navigation.navigate(ScreenNames.ProviderSetPhotos, {
+        data: { ...props },
+      })
+      : missingData();
+  };
+
+  // description part 
+  const addDescrTextInput = () => {
+    setDescription([...description, { empty: "empty" }])
+  }
+  const renderdescItem = () => {
+    const fields = description?.map((val, index) => {
+      return <DescrriptionComponent val={val} index={index} />
+    })
+    return fields
+  }
+  const removeDescription = (desToRemove) => {
+    var i = description.findIndex((val) => val.descItem === desToRemove)
+    if (i === -1) {
+      console.log("there is no such desc to remove ");
+      return
+    } else {
+      const updatedDescription = [...description];
+      updatedDescription.splice(i, 1);
+      setDescription(updatedDescription)
+    }
+  }
+  const DescrriptionComponent = (props) => {
+    const [descriptionItem, setDescriptionItem] = useState(null)
+
+    useEffect(() => {
+      if (props.val) {
+        setDescriptionItem(props?.val?.descItem)
+      }
+    }, [])
+
+    return (
+      <View style={styles.contentItemView}>
+        <Pressable onPress={() => removeDescription(descriptionItem)}>
+          <AntDesign name='delete' size={15} color={'gray'} />
+        </Pressable>
+        <TextInput
+          style={styles.descriptionInput}
+          keyboardType='default'
+          placeholder='أضف وصف جديد'
+          value={descriptionItem}
+          onChangeText={(val) => setDescriptionItem(val)}
+          onEndEditing={(val) => {
+            const data = {
+              descItem: descriptionItem
+            }
+            updateDescrArray(data, props.index)
+          }}
+        />
+      </View>)
+  }
+  const updateDescrArray = (data, index) => {
+    setDescription(prevArray => {
+      const newArray = [...prevArray];
+      newArray[index] = data;
+      return newArray;
+    });
+  }
+  const Renderdescriptionr = () => {
+    return (
+      <View style={styles.description}>
+        <View style={styles.viewwholeInput}>
+          <View>
+            <AntDesign
+              name={"question"}
+              color={colors.puprble}
+              size={20} />
+          </View>
+          <View style={styles.itemView}>
+            <Text style={styles.text}> {language.description}</Text>
+          </View>
+        </View>
+        {renderdescItem()}
+        <Pressable style={styles.descLabel} onPress={addDescrTextInput}>
+          <Text style={styles.AddDesctxt}>اضافة شرح عن مصلحتك</Text>
+          <View style={styles.IconAdd}>
+            <Entypo
+              name={"plus"}
+              color={colors.puprble}
+              size={25} />
+          </View>
+        </Pressable>
+      </View>
+    )
+  }
+
+  const RenderMainDetails = () => {
+    return (
+      <View style={[styles.borderTitleView, AppStyles.shadow]}>
+        {RenderHeaderTitle()}
+        {RenderTitleBox()}
+        {RenderSubTitleBox()}
+        {Renderdescriptionr()}
+        {selectServiceType == 'قاعات' && RenderInputNumofRequested()}
+      </View>
     );
   };
 
@@ -454,17 +636,17 @@ const styles = StyleSheet.create({
   },
 
   borderTitleView: {
-    height: 520,
+    // height: 520,
     width: "90%",
     borderRadius: 20,
     marginBottom: 30,
-    marginTop: 5,
+    // marginTop: 5,
     alignItems: 'center',
     backgroundColor: 'white',
-    elevation: 5
+    elevation: 5,
+    paddingVertical: 20
   },
   borderAddressView: {
-    //height: 350,
     width: "90%",
     borderRadius: 15,
     marginBottom: 30,
@@ -488,7 +670,6 @@ const styles = StyleSheet.create({
     maxWidth: '60%',
     minWidth: '60%',
     fontSize: 17,
-
   },
   dropstyle: {
     textAlign: 'left',
@@ -535,7 +716,7 @@ const styles = StyleSheet.create({
   },
   subtitleInput: {
     textAlign: 'right',
-    height: 60,
+    height: 40,
     width: 315,
     borderWidth: 1.5,
     borderRadius: 10,
@@ -555,6 +736,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'black',
     backgroundColor: 'white',
+  },
+  descriptionInput: {
+    flex: 1,
+    textAlign: 'right',
+    fontSize: 18,
+    color: 'black',
+    height: 40,
+    width: '90%',
+    marginLeft: 10
+  },
+  contentItemView: {
+    borderWidth: 1.5,
+    borderRadius: 10,
+    borderColor: "darkgray",
+    width: 315,
+    padding: 5,
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   capsityInput: {
     textAlign: 'right',
@@ -591,6 +792,30 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgray',
     borderRadius: 30,
     marginLeft: 15
+  },
+  description: {
+    width: 315,
+    marginVertical: 20
+  },
+  descLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderWidth: 1,
+    justifyContent: 'flex-end'
+  },
+  AddDesctxt: {
+    fontSize: 15,
+    textAlign: 'right',
+    color: colors.puprble
+  },
+  IconAdd: {
+    // width: 50,
+    // height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // backgroundColor: 'lightgray',
+    // borderRadius: 30,
+    // marginLeft: 15
   },
 })
 

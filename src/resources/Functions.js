@@ -1,29 +1,205 @@
-import { Alert } from "react-native";
-import { ToastAndroid } from "react-native";
-import { Platform } from "react-native";
-import { addService, addServiceImages } from "./API";
+import {Alert, Image} from 'react-native';
+import {ToastAndroid} from 'react-native';
+import {Platform} from 'react-native';
+import {addService, addServiceImages} from './API';
+import * as asyncFunctions from './common/asyncStorageFunctions';
+import {images} from '../assets/photos/images';
 
-
-export const showMessage = (msg) => {
+const showMessage = msg => {
   Platform.OS === 'android'
     ? ToastAndroid.show(msg, ToastAndroid.SHORT)
-    : Alert.IOS.alert(msg);
+    : Alert.alert(msg);
 };
-export const onPublishPress = async (allData) => {
-
+const onPublishPress = async allData => {
   await addService(allData)
     .then(async res => {
       console.log(' service res ->', res.serviceID);
 
-      await addServiceImages(allData.photoArray, res?.serviceID).then((res) => {
-        console.log("images res -> ", res);
-        showMessage("تم حفظ البيانات")
-      }).catch((e) =>{
-      console.log('upload photos event error : ', e);
-
-      })
+      await addServiceImages(allData.photoArray, res?.serviceID)
+        .then(res => {
+          console.log('images res -> ', res);
+          showMessage('تم حفظ البيانات');
+        })
+        .catch(e => {
+          console.log('upload photos event error : ', e);
+        });
     })
     .catch(e => {
       console.log('create new event error : ', e);
     });
+};
+
+/**
+ * Calculate the total price based on reservation details and service data.
+ *
+ * @param {Array} resDetail - Array of reservation details.
+ * @param {string | Array} requestedDate - Requested date(s) for reservation.
+ * @param {Object} data - Data of the service.
+ * @param {Array} campInfo - Data of the service offers | campaigns.
+ */
+const calculateTotalPrice = (resDetail, requestedDate, data, campInfo) => {
+  let total = 0;
+
+  // Function to calculate total price for a single date
+  const calculateDateTotal = date => {
+    const detailIndex = resDetail.findIndex(
+      item => item.reservationDate === date,
+    );
+    if (detailIndex !== -1) {
+      const {
+        subDetailId,
+        numOfInviters,
+        offerId: campaigns,
+      } = resDetail[detailIndex];
+      var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
+      const filteredCampaings =
+        campInfo?.filter(camp => campaigns?.includes(camp?.CampId)) || false;
+
+      if (filteredCampaings) {
+        filteredCampaings.forEach(campaign => {
+          const multiplier = calculateMultiplier(
+            campaign.priceInclude,
+            numOfInviters,
+            campaign.numberPerTable,
+          );
+          dateTotal += (campaign.campCost || 0) * multiplier;
+        });
+      }
+      updateReservationObject(detailIndex, dateTotal);
+      total += dateTotal;
+    }
+  };
+
+  // Function to calculate total price for a single date
+  const calculateSingleDateTotal = () => {
+    if (resDetail.length > 0) {
+      const {subDetailId, numOfInviters, offerId: campaigns} = resDetail[0];
+      // console.log("subDetailId", subDetailId, "campaigns", campaigns);
+      var dateTotal = calculateSubDetailTotal(subDetailId, numOfInviters);
+
+      const filteredCampaings =
+        campInfo?.filter(camp => campaigns?.includes(camp?.CampId)) || false;
+
+      if (filteredCampaings) {
+        filteredCampaings.forEach(campaign => {
+          const multiplier = calculateMultiplier(
+            campaign.priceInclude,
+            numOfInviters,
+            campaign.numberPerTable,
+          );
+          dateTotal += (campaign.campCost || 0) * multiplier;
+        });
+      }
+      updateReservationObject(0, dateTotal);
+      total += dateTotal;
+    }
+  };
+
+  // Function to calculate sub detail total price
+  const calculateSubDetailTotal = (subDetailId, numOfInviters) => {
+    let dateTotal = 0;
+    const filteredSubDetails = filterSubDetails(data, subDetailId);
+    filteredSubDetails?.forEach(subDetail => {
+      const additionType = subDetail.additionType
+        ? subDetail.additionType
+        : subDetail?.isPerPerson
+        ? 'perPerson'
+        : 'perRequest';
+      const numberPerTable = subDetail.numberPerTable;
+      subDetail.subDetailArray.forEach(detail => {
+        const price =
+          parseInt(detail.detailSubtitleCost) *
+          calculateMultiplier(additionType, numOfInviters, numberPerTable);
+        dateTotal += price;
+      });
+    });
+    return dateTotal;
+  };
+
+  // Function to calculate multiplier based on price include type
+  const calculateMultiplier = (priceInclude, numOfInviters, numberPerTable) => {
+    switch (priceInclude) {
+      case 'perPerson':
+        return numOfInviters || 0;
+      case 'perTable':
+        return Math.ceil(numOfInviters / numberPerTable);
+      default:
+        return 1;
+    }
+  };
+
+  // Function to update reservation object with total price
+  const updateReservationObject = (index, dateTotal) => {
+    resDetail[index].datePrice = dateTotal;
+  };
+
+  // Calculate total price for requested dates
+
+  if (Array.isArray(requestedDate)) {
+    requestedDate.forEach(date => calculateDateTotal(date));
+  } else {
+    calculateSingleDateTotal();
+  }
+
+  // Add service price to total if available
+  const price = data.servicePrice;
+  if (price) {
+    total += price;
+  }
+
+  return total;
+};
+
+const filterSubDetails = (data, subDetailId) => {
+  return data.additionalServices?.map(service => {
+    // Filter sub details based on whether their id exists in subDetailId array
+    const filteredSubDetailArray = service?.subDetailArray.filter(subDetail =>
+      subDetailId.includes(subDetail.subDetail_Id),
+    );
+
+    // Return the service object with modified subDetailArray
+    return {
+      ...service,
+      subDetailArray: filteredSubDetailArray,
+    };
+  });
+};
+
+const getProfileImageSource = (profilePhoto, userGender) => {
+  if (profilePhoto) {
+    return {uri: profilePhoto};
+  } else {
+    return userGender === 'ذكر'
+      ? images.profileMalePicture
+      : userGender === 'أنثى'
+      ? images.profileFemalePicture
+      : images.profileMalePicture;
+  }
+};
+const getProfileImageURI = (profilePhoto, userGender) => {
+  if (profilePhoto) {
+    return {uri: profilePhoto}; // Handle cases where an external URI is provided
+  } else {
+    // Resolve the correct local image asset
+    const localImage =
+      userGender === 'ذكر'
+        ? images.profileMalePicture
+        : userGender === 'أنثى'
+        ? images.profileFemalePicture
+        : images.profileMalePicture;
+
+    const resolvedAsset = Image.resolveAssetSource(localImage);
+
+    return resolvedAsset.uri;
+  }
+};
+
+export {
+  asyncFunctions,
+  showMessage,
+  onPublishPress,
+  calculateTotalPrice,
+  getProfileImageSource,
+  filterSubDetails,
+  getProfileImageURI,
 };

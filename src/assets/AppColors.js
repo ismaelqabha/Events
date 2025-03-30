@@ -6,8 +6,10 @@ export const colors = {
         // 
         green: '#828a3a',
         // 
-        silver: '#f2f2f2',
+        silver: '#dcdcdc',
         // buttons 
         puprble: '#543c82',
+
+        
 
     }

@@ -1,161 +1,6 @@
 import { ScreenNames } from '../../route/ScreenNames';
+import { images } from '../assets/photos/images';
 
-export const Users = [
-    {
-        USER_ID: 1,
-        User_name: 'Ali',
-        Password: '123',
-        Email: '',
-        UserAdress: '',
-        UserPhone: '',
-        UserType: 'Client',
-    },
-    {
-        USER_ID: 2,
-        User_name: 'Ahmed',
-        Password: '000',
-        Email: '',
-        UserAdress: '',
-        UserPhone: '',
-        UserType: 'Provider',
-    },
-];
-export const servicesData = [
-    {
-        service_id: 1,
-        UserId: 1,
-        servType: 'قاعات',
-        title: 'قاعات الامير',
-        subTitle: 'قاعة الامير لاحياء جميع مناسباتكم السعيدة اهلا وسهلا بكم',
-        desc: '',
-        region: 'المثلث الشمالي',
-        address: 'برطعة',
-        workingRegion: [],
-        servicePice: '',
-        serviceStutes: '',
-
-
-    },
-
-];
-export const hallData = [
-    { key: '0', hallType: 'فندق', img: (require('../assets/photos/hotel.png')) },
-    { key: '1', hallType: 'مطعم', img: (require('../assets/photos/restaurant.png')) },
-    { key: '2', hallType: 'قاعة داخلية', img: (require('../assets/photos/externalHall.png')) },
-    { key: '3', hallType: 'قاعة خارجية', img: (require('../assets/photos/hallIcon.png')) },
-
-];
-
-export const regionData = [
-    { key: '0', value: 'الجليل' },
-    { key: '1', value: 'النقب ' },
-    { key: '2', value: 'الساحل' },
-    { key: '3', value: 'المثلث الشمالي' },
-    { key: '4', value: 'المثلث الجنوبي' },
-    { key: '5', value: 'الضفة الغربية' },
-]
-export const socialMediaList = [
-    { key: '0', value: 'facebook' },
-    { key: '1', value: 'instagram' },
-    { key: '2', value: 'tiktok' },
-    { key: '3', value: 'youtube' },
-    { key: '4', value: 'X'},
-];
-export const mandoteryOptions = [
-    { key: '0', value: 'اجباري' ,alt:"Mandatory" },
-    { key: '1', value: 'اختياري' , alt:"Optional" }
-];
-// export const ServiceImages = [
-//     {
-//         imgId: 1,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: true,
-//     },
-//     {
-//         imgId: 2,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 3,
-//         serviceID: 1,
-//         image: (require('../../src/assets/photos/ameer.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 1,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: true,
-//     },
-//     {
-//         imgId: 2,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 3,
-//         serviceID: 2,
-//         image: (require('../../src/assets/photos/MaisAlrem.png')),
-//         coverPhoto: false,
-//     },
-//     {
-//         imgId: 1,
-//         serviceID: 3,
-//         image: (require('../../src/assets/photos/talmarah.png')),
-//         coverPhoto: true,
-//     },
-
-// ];
-export const subDetailData = [
-    {
-        orderItems: [
-            {
-                detial_id: 1, // 3sha 
-                orderProducts: []
-            },
-            {
-                detial_id: 2, // firewoks 
-                orderProducts: []
-            },
-        ],
-        request_Id: 1,
-        UserID: 1,
-    },
-];
-export const subDetail = [
-    {
-        subDetail_Id: 1,
-        id: 1,
-        detailSubtitle: 'لحمة',
-        detailSubtitleCost: 50,
-        //imgSrc: (require('../../src/assets/photos/meat.png')),
-    },
-
-];
-export const serviceDetail = [
-    {
-        detail_Id: 1,
-        detailTitle: 'وجبة عشاء',
-        SDserviceID: 1,
-        serviceType: 'قاعات',
-    },
-    {
-        detail_Id: 2,
-        detailTitle: 'ألعاب نارية',
-        serviceType: 'قاعات',
-        SDserviceID: 1,
-    },
-    {
-        detail_Id: 3,
-        detailTitle: 'تفاصيل التصوير',
-        SDserviceID: 4,
-        serviceType: 'تصوير',
-    },
-];
 export const servicesCategory = [
     {
         cat_id: 1,
@@ -237,7 +82,7 @@ export const servicesCategory = [
 
 
     {
-        cat_id: 18, 
+        cat_id: 18,
         titleCategory: 'مهرج',
         img: (require('../assets/photos/jockerIcon.png')),
     },
@@ -252,6 +97,275 @@ export const servicesCategory = [
         img: (require('../assets/photos/tools.png')),
     },
 
+];
+export const EventType = [
+    { key: '0', eventTitle: 'زفاف', img: (require('../assets/photos/wedding.png')) },
+    { key: '1', eventTitle: 'خطوبة', img: (require('../assets/photos/engagment.png')) },
+    { key: '2', eventTitle: 'ذكرى زواج', img: (require('../assets/photos/MariedAnvesrary.png')) },
+    { key: '3', eventTitle: 'تخرج', img: (require('../assets/photos/graduation.png')) },
+    { key: '4', eventTitle: 'وليمة', img: (require('../assets/photos/feastEvent.png')) },
+    { key: '5', eventTitle: 'مولود جديد', img: (require('../assets/photos/newPorn.png')) },
+    { key: '6', eventTitle: 'عيد ميلاد', img: (require('../assets/photos/BDEvent.png')) },
+    { key: '7', eventTitle: 'اجتماع عمل', img: (require('../assets/photos/meeting.png')) },
+    { key: '8', eventTitle: 'مؤتمر', img: (require('../assets/photos/coference.png')) }
+
+];
+export const hallData = [
+    { key: '0', hallType: 'فندق', img: (require('../assets/photos/hotel.png')) },
+    { key: '1', hallType: 'مطعم', img: (require('../assets/photos/restaurant.png')) },
+    { key: '2', hallType: 'قاعة داخلية', img: (require('../assets/photos/externalHall.png')) },
+    { key: '3', hallType: 'قاعة خارجية', img: (require('../assets/photos/hallIcon.png')) },
+];
+
+export const regionData = [
+    { key: "الجليل الأعلى", value: ["ترشيحا", "حرفيش", "معليا", "البقيعة", "بيت جن", "فسوطة", "المغار", "كسرى", "الرامة", "ساجور", "نحف", " دير الأسد-البعنة", " وادي سلامة", "طوبا", "الزنغرية"] },
+    { key: '1', value: 'النقب ' },
+    { key: '2', value: 'الساحل' },
+    { key: '3', value: 'المثلث الشمالي' },
+    { key: '4', value: 'المثلث الجنوبي' },
+    { key: '5', value: 'الضفة الغربية' },
+
+]
+export const socialMediaList = [
+    { key: '0', value: 'facebook' },
+    { key: '1', value: 'instagram' },
+    { key: '2', value: 'tiktok' },
+    { key: '3', value: 'youtube' },
+    { key: '4', value: 'X' },
+];
+export const mandoteryOptions = [
+    { key: '0', value: 'اجبارية', alt: "Mandatory" },
+    { key: '1', value: 'اختيارية', alt: "Optional" }
+];
+export const hallDetailOptions = [
+    { key: '0', value: 'وجبات طعام' },
+    { key: '1', value: 'تزيين' },
+    { key: '2', value: 'ضيافة' },
+    { key: '3', value: 'أخرى' }
+];
+export const invetationBackground = [
+    { key: '0', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationCard.png" },
+    { key: '1', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg1.png" },
+    { key: '2', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg2.png" },
+    { key: '3', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg3.png" },
+    { key: '4', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg4.png" },
+    { key: '5', value: "https://eventsimage.s3.eu-north-1.amazonaws.com/photos/Invitation/invetationImg5.png" },
+]
+
+export const Views = [
+    {
+        serviceID :'',
+        accessPoint : [
+            {
+                fieldType : 'view',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'view',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'call',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'faceBook',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'faceBook',
+                user : '',
+                visitDate: ''
+            },
+            {
+                fieldType : 'instegram',
+                user : '',
+                visitDate: ''
+            },
+
+        ]
+
+    }
+]
+
+export const invitation = [
+    {
+        user_Id: '65ad914764fcb68f0ed422a1',
+        eventLogoId: '65bfea90ed6965ed8854aec2',
+        eventTitle: 'حفل زفاف احمد',
+        sentStatus: 'unsend',
+
+        invitationCard: {
+            invitId: '0005',
+            invitationBackgraund: images.invetationCard(),
+            location: 'My Location',
+            eventDate: '2024-9-15',
+            welcomePharse: 'نتشرف بدعوة حضرتكم لحضور حفل زفاف أبننا الغالي',
+            explanatoryPhrase: 'كما ندعوكم لحضور سهرة الحناء مساء الجمعة الموافق 2040/9/13 في بيت والد العريس يحي السهرة المطرب احمد كبها',
+            time: '20:00',
+            callerNames: ["عبد الله احمد عباس", "خالد فتحي حسين"],
+            eventStar: ['أحمد', 'سمر']
+        },
+
+        inviteesList: [
+            {
+                recived_Id: '65fdd05a0f07c96522542a06',
+                status: '',
+                invitationSentDate: '',
+
+            },
+            {
+                recived_Id: '669bc369c09d0043b89f03b1',
+                recivedName: 'Ali',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: '',
+                invitationSentDate: '',
+            },
+
+        ],
+    },
+    {
+        user_Id: '65ad914764fcb68f0ed422a1',
+        userName: 'اسماعيل',
+        userPhoto: require('../assets/photos/user.png'),
+
+        eventLogoId: '65bfeaf2ed6965ed8854aec8',
+        eventTitle: 'حفل تخرج جواد',
+
+        sentStatus: 'sent',
+        recivedStatus: 'open',
+
+        invitationCard: {
+            invitId: '0006',
+            invitationBackgraund: require('../assets/photos/invetationImg5.png'),
+            location: 'My Location',
+            eventDate: '2024-10-15',
+            welcomePharse: 'نتشرف بدعوة حضرتكم لحضور حفل زفاف أبننا الغالي',
+            explanatoryPhrase: 'كما ندعوكم لحضور سهرة الحناء مساء الجمعة الموافق 2040/9/13 في بيت والد العريس يحي السهرة المطرب خالد كبها',
+            time: '21:00',
+            callerNames: ["عبد الله احمد عباس", "خالد فتحي حسين"],
+            eventStar: ['جواد']
+        },
+        inviteesList: [
+            {
+                recived_Id: '66a559b90cb14bbc32ec0b69',
+                recivedName: 'Ahmed',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: '',
+                invitationSentDate: '',
+            },
+            {
+                recived_Id: '669bc369c09d0043b89f03b1',
+                recivedName: 'Ali',
+                recivedPhoto: require('../assets/photos/user.png'),
+                recivedConfirmation: '',
+                invitationSentDate: '',
+            },
+
+        ],
+    }
+]
+
+export const review = [
+    {
+        reviewId: '111',
+        senderId: '65ad914764fcb68f0ed422a1',
+        RecieverId: '661059d64cc4ba7664305a1a',
+        reviewText: 'كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير',
+        reviewDate: '2022-11-3',
+        replay: [
+            {
+                replierId: '',
+                replayText: '',
+                replayDate: ''
+            }
+        ],
+
+    },
+    {
+        reviewId: '111',
+        senderId: '670017d2cc910aa746bfd115',
+        RecieverId: '661059d64cc4ba7664305a1a',
+        reviewText: 'كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير',
+        reviewDate: '2024-11-3',
+        replay: [
+            {
+                replierId: '',
+                replayText: '',
+                replayDate: ''
+            }
+        ],
+
+    },
+    {
+        reviewId: '111',
+        senderId: '661059d64cc4ba7664305a1a',
+        RecieverId: '65ad914764fcb68f0ed422a1',
+        reviewText: 'كان ملتزم في كل الشروط والتعليمات كل الاحترام والتقدير',
+        reviewDate: '2024-5-3',
+        replay: [
+            {
+                replierId: '',
+                replayText: '',
+                replayDate: ''
+            }
+        ],
+
+    }
+]
+
+
+export const requst = [
+    {
+        requestID: '',
+        ReqEventId: 1,
+        ReqServId: 1,
+        ReqUserId: 1,
+        ReqStatus: '',
+        ReqDate: '10/1/2023',
+        Cost: 5000,
+        reqDetail: [
+            {
+                reservationDate: '12/1/2023',
+                reservationTime: '14:30',
+                subDetailId: []
+            }
+        ]
+    }
+]
+export const subDetail = [
+    {
+        subDetail_Id: 1,
+        id: 1,
+        detailSubtitle: 'لحمة',
+        detailSubtitleCost: 50,
+        //imgSrc: (require('../../src/assets/photos/meat.png')),
+    },
+
+];
+export const serviceDetail = [
+    {
+        detail_Id: 1,
+        detailTitle: 'وجبة عشاء',
+        SDserviceID: 1,
+        serviceType: 'قاعات',
+    },
+    {
+        detail_Id: 2,
+        detailTitle: 'ألعاب نارية',
+        serviceType: 'قاعات',
+        SDserviceID: 1,
+    },
+    {
+        detail_Id: 3,
+        detailTitle: 'تفاصيل التصوير',
+        SDserviceID: 4,
+        serviceType: 'تصوير',
+    },
 ];
 export const Events = [
     {
@@ -314,21 +428,6 @@ export const Payment = [
     },
 
 ];
-
-// export const fileFavorites = [
-//     {
-//         fileId: 1,
-//         fileName: 'اقتراحاتي للحجز',
-//         fileImg: (require('../../src/assets/sedawi.png')),
-//         fileFavoUserId: 1,
-//     },
-//     {
-//         fileId: 2,
-//         fileName: 'اقتراحاتي',
-//         fileImg: (require('../../src/assets/abofaneh.png')),
-//         fileFavoUserId: 1,
-//     },
-// ];
 
 export const favoritesList = [
     {

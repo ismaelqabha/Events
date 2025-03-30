@@ -1,17 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import ServiceProviderContext from '../store/ServiceProviderContext';
-import SearchContext from './SearchContext';
+
+import UsersContext from './UsersContext';
 
 const ProviderProvider = props => {
 
-  const { userId } = useContext(SearchContext);
+  const { userId } = useContext(UsersContext);
 
   //   service Data
   const [serviceAddress, setserviceAddress] = useState(null);
   const [serviceRegion, setserviceRegion] = useState(null);
   const [title, setTitle] = useState(null);
   const [SuTitle, setSuTitle] = useState(null);
-  const [description, setDescription] = useState(null);
+  const [description, setDescription] = useState([]);
   const [selectServiceType, setSelectServiceType] = useState(null);
   const [photoArray, setPhotoArray] = useState([]);
   const [workAreas, setWorkAreas] = useState([]);
@@ -22,6 +23,14 @@ const ProviderProvider = props => {
   const [socialMediaArray, setSocialMediaArray] = useState([])
   const [phoneNumer, setPhoneNumer] = useState(null);
   const [email, setEmail] = useState(null);
+  const [eventsTypeWorking, setEventsTypeWorking] = useState([])
+  const [maxNumberOFRequest,
+    setMaxNumberOFRequest] = useState('')
+  const [Region, SetRegion] = useState([])
+
+  // location 
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
   // Photo delete mode 
   const [isDeleteMode, setIsDeleteMode] = useState(false)
@@ -32,6 +41,33 @@ const ProviderProvider = props => {
 
   // Calender Scrren
   const [serviceInfoAccorUser, setServiceInfoAccorUser] = useState([]);
+
+
+  // screen visit
+
+  const [visits, setVisits] = useState([]);
+
+  // edit service variable
+  const [editTitle, seteditTitle] = useState(false);
+  const [editSubTitle, seteditSubTitle] = useState(false);
+  const [editCity, seteditCity] = useState(false);
+  const [locationEdit, setlocationEdit] = useState(false);
+  const [editHallType, seteditHallType] = useState(false);
+  const [editHallcapasity, seteditHallcapasity] = useState(false);
+  const [editphone, seteditphone] = useState(false);
+  const [editEmail, setEditEmail] = useState(false);
+  const [editSocialMedia, setEditSocialMedia] = useState(false);
+  const [editprice, setEditprice] = useState(false);
+  const [editDescrItem, setEditDescrItem] = useState(false);
+  const [editNumofRequest, setEditNumofRequest] = useState(false);
+  const [addSocilMedia, setAddSocilMedia] = useState(false);
+  const [addNewDesc, setAddNewDesc] = useState(false);
+  const [addNewDetail, setAddNewDetail] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showSubDetailModal, setShowSubDetailModal] = useState(false);
+  const [detailId, setDetailId] = useState();
+ 
+
 
   return (
     <ServiceProviderContext.Provider
@@ -52,6 +88,8 @@ const ProviderProvider = props => {
         setPhotoArray,
         workAreas,
         setWorkAreas,
+        eventsTypeWorking,
+        setEventsTypeWorking,
         price,
         setPrice,
         additionalServices,
@@ -62,6 +100,14 @@ const ProviderProvider = props => {
         setHallCapacity,
         hallType,
         setHallType,
+        latitude,
+        setLatitude,
+        longitude,
+        setLongitude,
+        Region,
+        SetRegion,
+        maxNumberOFRequest,
+        setMaxNumberOFRequest,
         allData: {
           userID: userId,
           servType: selectServiceType,
@@ -79,6 +125,7 @@ const ProviderProvider = props => {
           additionalServices: additionalServices,
           socialMedia: socialMediaArray,
           photoArray,
+          maxNumberOFRequest
         },
 
         // socail data
@@ -95,6 +142,45 @@ const ProviderProvider = props => {
         setDraftServices,
         draftID,
         setDraftID,
+        visits, 
+        setVisits,
+
+        editTitle,
+        seteditTitle,
+        editSubTitle,
+        seteditSubTitle,
+        editCity,
+        seteditCity,
+        locationEdit,
+        setlocationEdit,
+        editHallType,
+        seteditHallType,
+        editHallcapasity,
+        seteditHallcapasity,
+        editphone,
+        seteditphone,
+        editEmail,
+        setEditEmail,
+        editSocialMedia,
+        setEditSocialMedia,
+        editprice,
+        setEditprice,
+        editDescrItem,
+        setEditDescrItem,
+        editNumofRequest,
+        setEditNumofRequest,
+        
+        addSocilMedia,
+        setAddSocilMedia,
+        addNewDesc,
+        setAddNewDesc,
+        addNewDetail,
+        setAddNewDetail,
+        showDetailModal,
+        setShowDetailModal,
+        detailId, setDetailId,
+        showSubDetailModal, 
+        setShowSubDetailModal
       }}>
       {props.children}
     </ServiceProviderContext.Provider>

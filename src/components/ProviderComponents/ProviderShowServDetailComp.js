@@ -1,21 +1,33 @@
 import React from 'react';
-import {View, StyleSheet,TouchableOpacity,Text} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ScreenNames } from '../../../route/ScreenNames';
 import { colors } from '../../assets/AppColors';
+import Feather from 'react-native-vector-icons/Feather'
+import AntDesign from 'react-native-vector-icons/AntDesign'
 
 const ProviderShowServDetailComp = (props) => {
     const navigation = useNavigation();
     const onCaardPress = () => {
-        navigation.navigate(ScreenNames.ProviderAddSubDetail, { data: { ...props} });
+        navigation.navigate(ScreenNames.ProviderAddSubDetail, { data: { ...props } });
     }
     return (
         <View style={styles.container}>
-                <TouchableOpacity style={styles.cardHeader}
-                 onPress={onCaardPress}
+            <View style={styles.cardHeader}>
+                <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity style={{ margin: 10 }} onPress={() => { props.deleteItem(props.detail_Id) }}>
+                        <AntDesign name='delete' size={20} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ margin: 10 }} onPress={() => { props.openEdit(props) }}>
+                        <Feather name='edit' size={20} />
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                    onPress={onCaardPress}
                 >
                     <Text style={styles.textTitle}>{props.detailTitle}</Text>
                 </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -33,15 +45,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         width: '80%',
         borderRadius: 10,
-        justifyContent:'center',
+        justifyContent: 'space-around',
         alignItems: 'center',
-        margin:5 ,
-        alignSelf:'center'
+        margin: 5,
+        alignSelf: 'center',
+        flexDirection: 'row'
     },
-    textTitle:{
-        fontSize:25,
+    textTitle: {
+        fontSize: 25,
         fontWeight: 'bold',
-        color:colors.puprble
+        color: colors.puprble
     },
 })
 

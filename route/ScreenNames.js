@@ -1,6 +1,8 @@
+import ForgotPassword from "../src/screens/ForgotPassword";
+
 export const ScreenNames = {
     SignIn: 'SignIn',
-    SignUp: 'SignUp',
+    ForgotPassword: 'ForgotPassword',
     //Client Screens
     ClientBook: 'ClientBook',
     ClientHomeAds: 'ClientHomeAds',
@@ -9,7 +11,6 @@ export const ScreenNames = {
     ClientEvents: 'ClientEvents',
     FileFavorites: 'FileFavorites',
     Favorites: 'Favorites',
-    ServiceDetail: 'ServiceDetail',
     SubDetailPrices: 'SubDetailPrices',
     Campaigns: 'Campaigns',
     ClientSearch: 'ClientSearch',
@@ -22,6 +23,18 @@ export const ScreenNames = {
     ClientNotification: 'ClientNotification',
     LogOut: 'LogOut',
     ClientProfile: 'ClientProfile',
+    ReviewsScreen: 'ReviewsScreen',
+    ClientSpecialDates: 'ClientSpecialDates',
+    ClientRelations: 'ClientRelations',
+    ClientShowRequest:'ClientShowRequest',
+    ClientDuePayments: 'ClientDuePayments',
+    ClientOldEvents:'ClientOldEvents',
+    ClientIncomingRelation: 'ClientIncomingRelation',
+    
+    CreateInvetation: 'CreateInvetation',
+    MyInvetationsCards: "MyInvetationsCards",
+    InvetationShow:'InvetationShow',
+    InvetationOutboxShow: 'InvetationOutboxShow',
 
     // Create User
     CreateUpersonalInfo: 'CreateUpersonalInfo',
@@ -51,11 +64,28 @@ export const ScreenNames = {
     ProviderSocialMediaScreen : 'ProviderSocialMedia',
     ProviderInitialWithDetailPrice : 'ProviderInitialWithDetailPrice',
     ProviderContantPrice: 'ProviderContantPrice',
-
-
+    ProviderSetEventType: 'ProviderSetEventType',
+    ProviderNotification: 'ProviderNotification',
+    ProviderClientScreen: 'ProviderClientScreen',
+    ProviderShowOffers: 'ProviderShowOffers',
+    ProviderOfferDesc: 'ProviderOfferDesc',
+    ProviderShowRequest: 'ProviderShowRequest',
+    ProviderDuePayments: 'ProviderDuePayments',
+    ProviderPhotosPrview: 'ProviderPhotosPrview',
+    ProviderUsersView:'ProviderUsersView',
+    ProviderSetNewBooking: 'ProviderSetNewBooking',
+    ProviderSales: 'ProviderSales',
+    ProviderSalesShow:'ProviderSalesShow',
+    
+    AdminHome: 'AdminHome',
+    AdminClients: 'AdminClients',
+    AdminVisits: 'AdminVisits',
 
     Splash: 'Splash',
     Results: 'Results',
     SearchServcies: 'SearchServcies',
+    RequestDuePaymentsShow: 'RequestDuePaymentsShow',
+    PaymentDetail: 'PaymentDetail',
+    MakePayment: 'MakePayment'
 
 };

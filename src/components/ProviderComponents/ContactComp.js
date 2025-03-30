@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { Dimensions, Modal, StyleSheet } from "react-native";
 import { TextInput } from "react-native";
 import { View, Text, Pressable } from "react-native";
 import Entypo from 'react-native-vector-icons/Entypo'
+import IonIcons from 'react-native-vector-icons/Ionicons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import FontAwesome5Brands from 'react-native-vector-icons/FontAwesome5'
 import strings from "../../assets/res/strings";
@@ -11,6 +12,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { socialMediaList } from "../../resources/data";
 import { emailVerification } from "../../resources/Regex";
 import ServiceProviderContext from "../../../store/ServiceProviderContext";
+import WebView from "react-native-webview";
 
 const ContactComp = () => {
 
@@ -22,22 +24,13 @@ const ContactComp = () => {
         email,
         setEmail } = useContext(ServiceProviderContext)
 
-    const updateArray = (data) => {
-        var i = socialMediaArray.findIndex((val) => val.social === data.social || val.link === data.link)
-        //console.log("i ",i);
-        if (i == -1) {
-            var temp = socialMediaArray.findIndex((val) => val.empty === "empty")
-            var newArr = socialMediaArray
-            newArr[temp] = data
-            setSocialMediaArray(newArr)
-        } else {
-            var current = socialMediaArray
-            current[i] = data
-            setSocialMediaArray(current)
-        }
-        //console.log("updated -> ",socialMediaArray);
-
-    }
+    const updateArray = (data, index) => {
+        setSocialMediaArray(prevArray => {
+            const newArray = [...prevArray];
+            newArray[index] = data;
+            return newArray;
+        });
+    };
 
 
 
@@ -60,10 +53,40 @@ const ContactComp = () => {
         tiktok: 'black',
         youtube: 'red'
     }
+    const webUri = {
+        facebook: "https://www.facebook.com",
+        instagram: "https://www.instagram.com",
+        tiktok: "https://www.tiktok.com",
+        youtube: "https://www.youtube.com"
+    };
+
+    const removeSocialComp = (index) => {
+        const newArray = [...socialMediaArray];
+        newArray.splice(index, 1);
+        setSocialMediaArray(newArray);
+    };
+    const handleWebViewNavigationStateChange = (newNavState) => {
+        // Extract relevant data from the web view's navigation state
+        // You can check if the user has logged in and extract profile information here
+        console.log("new state ->", newNavState);
+    };
 
     const SocialMediaComp = (props) => {
         const [contactVal, setContactVal] = useState(null)
         const [contactType, setContactType] = useState(null)
+        const [webViewVisible, setWebViewVisible] = useState(false);
+        const webViewRef = useRef(null);
+        const index = props.index
+        const handleLogin = () => {
+            setWebViewVisible(true);
+        };
+
+        const onBackPress = () => {
+            if (webViewRef.current) {
+                setWebViewVisible(false)
+            }
+        };
+
         useEffect(() => {
             if (props.val) {
                 setContactType(props?.val?.social)
@@ -74,6 +97,9 @@ const ContactComp = () => {
         return (
             <View key={props?.index} style={styles.mediaItem}>
                 <View style={styles.mediaList}>
+                    <Pressable onPress={() => removeSocialComp(index)} style={{ width: '10%', padding: 5, alignItems: 'center' }}>
+                        <FontAwesome name="remove" size={15} />
+                    </Pressable>
                     <SelectList
                         data={socialMediaList}
                         setSelected={val => {
@@ -82,7 +108,7 @@ const ContactComp = () => {
                                 social: socialMediaList[val].value,
                                 link: contactVal,
                             }
-                            updateArray(data)
+                            updateArray(data, index)
                         }}
 
                         placeholder={contactType || language.socialType}
@@ -92,24 +118,42 @@ const ContactComp = () => {
                     />
                 </View>
                 <View style={styles.socialInput}>
-                    <FontAwesome5Brands name={contactType} size={25} style={styles.socialIcon} color={iconColors[contactType]} />
+                    <Pressable style={styles.socialIcon} onPress={handleLogin}>
+                        <FontAwesome5Brands name={contactType} size={25} color={iconColors[contactType]} />
+                    </Pressable>
                     <TextInput style={styles.TextInput}
                         keyboardType={'default'}
                         placeholder={'حمل رابط الشبكة'}
                         value={contactVal}
                         onChangeText={(val) => setContactVal(val)}
-                        onSubmitEditing={(val) => {
+                        onEndEditing={(event) => {
+                            const text = event.nativeEvent.text
                             const data = {
                                 social: contactType,
-                                link: val,
+                                link: text,
                             }
-                            updateArray(data)
+                            updateArray(data, index)
                         }}
                     />
                 </View>
+                <Modal visible={webViewVisible} animationType="slide">
+                    <View style={styles.modalContainer}>
+                        <Pressable style={{alignSelf:"flex-start" , margin:5}} onPress={() => onBackPress()}>
+                            <IonIcons name="chevron-back-outline" color={'black'} size={25} />
+                        </Pressable>
+                        <WebView
+                            ref={webViewRef}
+                            source={{ uri: webUri[contactType] }}
+                            onNavigationStateChange={handleWebViewNavigationStateChange}
+                            style={{ flex: 1, width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
+                        />
+                    </View>
+                </Modal>
             </View>
         )
     }
+
+
 
     const renderPhoneField = () => {
 
@@ -183,6 +227,8 @@ const ContactComp = () => {
             </Pressable>
         )
     }
+
+   
     return (
         <View>
             {renderPhoneField()}
@@ -192,6 +238,7 @@ const ContactComp = () => {
                 {renderAddButton()}
             </View>
             {renderSocialFeilds()}
+           
         </View>
     )
 }
@@ -268,7 +315,7 @@ const styles = StyleSheet.create({
         fontSize: 17,
         borderRadius: 10,
         fontWeight: 'bold',
-        marginTop: 30,
+        marginTop: 10,
     },
     dropstyle: {
         textAlign: 'left',
@@ -298,5 +345,11 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginLeft: 10
     },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    }
 })
 export default ContactComp

@@ -9,10 +9,9 @@ import { colors } from '../assets/AppColors';
 
 const ServiceCard = (props) => {
     const { isFromChooseServiceClick, isFromSearchServiceClick, isChecked } = props;
-    const { cat, setCat, ServiceDataInfo, setServiceDataInfo, ServId, userId, setCategorychozen } = useContext(SearchContext);
+    const { setCat, ServiceDataInfo, setServiceDataInfo, ServId, setCategorychozen } = useContext(SearchContext);
     const navigation = useNavigation();
 
-    const [pressed, setPressed] = useState(true)
 
     const chickIfChecked = () => {
         return isChecked
@@ -58,7 +57,8 @@ const ServiceCard = (props) => {
         if (isFromChooseServiceClick === true) {
             const ServiceCard = props;
             const clicked = chickIfChecked(ServiceCard);
-            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody,styles.shadow]} onPress={() => onCatPress(ServiceCard)}>
+            return <TouchableOpacity style={[clicked ? styles.otherbodyActive : styles.otherbody, styles.shadow]} 
+            onPress={() => onCatPress(ServiceCard)}>
                 <Image
                     source={ServiceCard.img}
 
@@ -88,13 +88,14 @@ const ServiceCard = (props) => {
                 return <View style={clicked ? styles.HomeScreenViewPress : styles.HomeScreenView}>
                     <TouchableOpacity
                         onPress={() => onCatPress()}
-
+                        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
                     >
+                        <Text style={styles.text}>{props.titleCategory}</Text>
                         <Image
                             source={props.img}
                             style={styles.HomeScreenimg}
                         />
-                        <Text style={styles.text}>{props.titleCategory}</Text>
+
                     </TouchableOpacity>
 
                 </View>;
@@ -116,57 +117,59 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     body: {
-        height: 100,
-        width: 100,
-        borderRadius: 30,
+        height: 80,
+        width: 80,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        margin: 10,
+        margin: 5,
         paddingVertical: 20,
         backgroundColor: '#ffff',
         elevation: 5,
     },
     pressBody: {
-        height: 100,
-        width: 100,
-        borderRadius: 30,
+        height: 80,
+        width: 80,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        margin: 10,
+        margin: 5,
         paddingVertical: 20,
         backgroundColor: '#ffff',
         elevation: 5,
-        borderColor: 'gray',
+        borderColor: colors.puprble,
         borderWidth: 2
     },
     img: {
-        width: 100,
-        height: 100,
-    },
-    HomeScreenView: {
-        //alignItems: 'center',
-        justifyContent: 'center',
-        margin: 15,
-        height: 100,
-        width: 60,
-    },
-    HomeScreenViewPress: {
-        justifyContent: 'center',
-        margin: 15,
-        height: 100,
-        width: 65,
-        borderWidth: 3,
-        borderColor: colors.darkGold,
-        borderRadius: 15,
-        //elevation: 5
-    },
-    HomeScreenimg: {
         width: 60,
         height: 60,
     },
+    HomeScreenView: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 5,
+        width: 100,
+        backgroundColor: colors.BGScereen,
+        borderRadius: 10,
+        elevation: 5
+    },
+    HomeScreenViewPress: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 5,
+        width: 100,
+        borderRadius: 20,
+        backgroundColor: colors.gold,
+        borderRadius: 10,
+        elevation: 5
+    },
+    HomeScreenimg: {
+        width: 30,
+        height: 30,
+    },
     text: {
         textAlign: 'center',
-        fontSize: 17,
+        fontSize: 12,
         fontWeight: 'bold',
         color: colors.puprble,
         //fontFamily: 'Cairo-VariableFont_slnt,wght',
